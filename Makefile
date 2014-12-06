@@ -123,7 +123,6 @@ endif
 		
 
 ########### HAL_RTL8723B #################################
-ifeq ($(CONFIG_RTL8723B), y)
 
 RTL871X = rtl8723b
 ifeq ($(CONFIG_USB_HCI), y)
@@ -165,7 +164,6 @@ _OUTSRC_FILES += hal/HalHWImg8723B_BB.o\
 			hal/HalPhyRf_8723B.o\
 			hal/odm_RTL8723B.o
 
-endif
 
 ########### AUTO_CFG  #################################	
 		
@@ -176,10 +174,8 @@ endif
 ########### END OF PATH  #################################
 
 
-ifeq ($(CONFIG_USB_HCI), y)
 ifeq ($(CONFIG_USB_AUTOSUSPEND), y)
 EXTRA_CFLAGS += -DCONFIG_USB_AUTOSUSPEND
-endif
 endif
 
 ifeq ($(CONFIG_MP_INCLUDED), y)
@@ -332,7 +328,7 @@ rtk_core :=	core/rtw_cmd.o \
 		core/rtw_btcoex.o \
 		core/rtw_beamforming.o \
 		core/rtw_odm.o \
-		core/efuse/rtw_efuse.o
+		core/rtw_efuse.o
 
 $(MODULE_NAME)-y += $(rtk_core)
 
