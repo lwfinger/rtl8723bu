@@ -718,7 +718,7 @@ void rtw_cfg80211_ibss_indicate_connect(_adapter *padapter)
 			DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" BSS not found !!\n", FUNC_ADPT_ARG(padapter));
 	}
 	//notify cfg80211 that device joined an IBSS
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(3, 14, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0))
 	cfg80211_ibss_joined(padapter->pnetdev, cur_network->network.MacAddress, GFP_ATOMIC);
 #else
 	cfg80211_ibss_joined(padapter->pnetdev, cur_network->network.MacAddress,
@@ -4237,13 +4237,13 @@ static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev
 
 }
 
-#if (LINUX_VERSION_CODE <= KERNEL_VERSION(3, 15, 0))
 static int	cfg80211_rtw_change_station(struct wiphy *wiphy, struct net_device *ndev,
-				  u8 *mac, struct station_parameters *params)
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3,16,0))
+			u8 *mac,
 #else
-static int	cfg80211_rtw_change_station(struct wiphy *wiphy, struct net_device *ndev,
-				  const u8 *mac, struct station_parameters *params)
+			const u8 *mac,
 #endif
+			struct station_parameters *params)
 {
 	DBG_871X(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
 	
