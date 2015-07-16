@@ -787,7 +787,7 @@ static char *translate_scan(_adapter *padapter,
 
 		buf = kmalloc(MAX_WPA_IE_LEN, GFP_KERNEL);
 		if (!buf)
-			return -ENOMEM;
+			return NULL;
 		p = buf;
 		pos = pnetwork->network.Reserved;
 		_rtw_memset(buf, 0, MAX_WPA_IE_LEN);
