@@ -781,9 +781,13 @@ static char *translate_scan(_adapter *padapter,
 }
 
 	{
-		u8 buf[MAX_WPA_IE_LEN];
-		u8 * p,*pos;
+		u8 *buf[MAX_WPA_IE_LEN];
+		u8 *p, *pos;
 		int len;
+
+		buf = kmalloc(MAX_WPA_IE_LEN, GFP_KERNEL);
+		if (!buf)
+			return -ENOMEM;
 		p = buf;
 		pos = pnetwork->network.Reserved;
 		_rtw_memset(buf, 0, MAX_WPA_IE_LEN);
@@ -792,6 +796,7 @@ static char *translate_scan(_adapter *padapter,
 		iwe.cmd = IWEVCUSTOM;
 		iwe.u.data.length = strlen(buf);
 		start = iwe_stream_add_point(info, start, stop, &iwe, buf);
+		kfree(buf);
 	}
 	
 	return start;	
