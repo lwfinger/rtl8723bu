@@ -781,7 +781,7 @@ static char *translate_scan(_adapter *padapter,
 }
 
 	{
-		u8 *buf[MAX_WPA_IE_LEN];
+		u8 *buf;
 		u8 *p, *pos;
 		int len;
 
