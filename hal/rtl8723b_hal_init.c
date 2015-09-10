@@ -411,15 +411,6 @@ void rtl8723b_FirmwareSelfReset(PADAPTER padapter)
 	}
 }
 
-#ifdef CONFIG_FILE_FWIMG
-extern char *rtw_fw_file_path;
-extern char *rtw_fw_wow_file_path;
-#ifdef CONFIG_MP_INCLUDED
-extern char *rtw_fw_mp_bt_file_path;
-#endif // CONFIG_MP_INCLUDED
-u8 FwBuffer[FW_8723B_SIZE];
-#endif // CONFIG_FILE_FWIMG
-
 #ifdef CONFIG_MP_INCLUDED
 int _WriteBTFWtoTxPktBuf8723B(
 	IN		PADAPTER		Adapter,
@@ -483,15 +474,6 @@ int _WriteBTFWtoTxPktBuf8723B(
 	// 1. Pause BCN
 	//---------------------------------------------------------
 	//Set REG_CR bit 8. DMA beacon by SW.
-#if 0//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	u1bTmp = PlatformEFIORead1Byte(Adapter, REG_CR+1);
-	PlatformEFIOWrite1Byte(Adapter,  REG_CR+1, (u1bTmp|BIT0));
-#else
-	// Remove for temparaily because of the code on v2002 is not sync to MERGE_TMEP for USB/SDIO.
-	// De not remove this part on MERGE_TEMP. by tynli.
-	//pHalData->RegCR_1 |= (BIT0);
-	//PlatformEFIOWrite1Byte(Adapter,  REG_CR+1, pHalData->RegCR_1);
-#endif
 
 	// Disable Hw protection for a time which revserd for Hw sending beacon.
 	// Fix download reserved page packet fail that access collision with the protection time.
@@ -501,34 +483,15 @@ int _WriteBTFWtoTxPktBuf8723B(
 	val8 |= DIS_TSF_UDT;
 	rtw_write8(Adapter, REG_BCN_CTRL, val8);
 
-#if 0//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	tmpReg422 = PlatformEFIORead1Byte(Adapter, REG_FWHW_TXQ_CTRL+2);
-	if( tmpReg422&BIT6)
-		bRecover = TRUE;
-	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2,  tmpReg422&(~BIT6));
-#else
 	// Set FWHW_TXQ_CTRL 0x422[6]=0 to tell Hw the packet is not a real beacon frame.
 	if(pHalData->RegFwHwTxQCtrl & BIT(6))
 		bRecover=_TRUE;
 	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2, (pHalData->RegFwHwTxQCtrl&(~BIT(6))));
 	pHalData->RegFwHwTxQCtrl &= (~ BIT(6));
-#endif
 
 	//---------------------------------------------------------
 	// 2. Adjust LLT table to an even boundary.
 	//---------------------------------------------------------
-#if 0//(DEV_BUS_TYPE == RT_SDIO_INTERFACE)
-	txpktbuf_bndy = 10; // rsvd page start address should be an even value. 														
-	rtStatus =	InitLLTTable8723BS(Adapter, txpktbuf_bndy);
-	if(RT_STATUS_SUCCESS != rtStatus){
-		DBG_8192C("_CheckWLANFwPatchBTFwReady_8723B(): Failed to init LLT!\n");
-		return RT_STATUS_FAILURE;
-	}
-	
-	// Init Tx boundary.
-	PlatformEFIOWrite1Byte(Adapter, REG_DWBCN0_CTRL_8723B+1, (u1Byte)txpktbuf_bndy);	
-#endif
-
 
 	//---------------------------------------------------------
 	// 3. Write Fw to Tx packet buffer by reseverd page.
@@ -549,19 +512,6 @@ int _WriteBTFWtoTxPktBuf8723B(
 		RT_TRACE(_module_mp_, _drv_info_,("0x209:%x\n",
 					PlatformEFIORead1Byte(Adapter, REG_TDECTRL+1)));
 
-#if 0
-		// Acquice TX spin lock before GetFwBuf and send the packet to prevent system deadlock.
-		// Advertised by Roger. Added by tynli. 2010.02.22.
-		PlatformAcquireSpinLock(Adapter, RT_TX_SPINLOCK);
-		if(MgntGetFWBuffer(Adapter, &pTcb, &pBuf))
-		{
-			PlatformMoveMemory(pBuf->Buffer.VirtualAddress, ReservedPagePacket, TotalPktLen);
-			CmdSendPacket(Adapter, pTcb, pBuf, TotalPktLen, DESC_PACKET_TYPE_NORMAL, FALSE);
-		}
-		else
-			dbgdump("SetFwRsvdPagePkt(): MgntGetFWBuffer FAIL!!!!!!!!.\n");
-		PlatformReleaseSpinLock(Adapter, RT_TX_SPINLOCK);
-#else
 		/*---------------------------------------------------------
 		tx reserved_page_packet
 		----------------------------------------------------------*/
@@ -588,8 +538,6 @@ int _WriteBTFWtoTxPktBuf8723B(
 			dump_mgntframe_and_wait(Adapter, pmgntframe, 100);
 #endif
 
-#endif
-#if 1
 		// check rsvd page download OK.
 		BcnValidReg = PlatformEFIORead1Byte(Adapter, REG_TDECTRL+2);
 		while(!(BcnValidReg & BIT(0)) && count <200)
@@ -608,7 +556,6 @@ int _WriteBTFWtoTxPktBuf8723B(
 	}while((!(BcnValidReg&BIT(0))) && DLBcnCount<5);
 
 
-#endif
 	if(DLBcnCount >=5){
 		DBG_871X(" check rsvd page download OK DLBcnCount =%d  \n",DLBcnCount);
 		rtStatus = _FAIL;
