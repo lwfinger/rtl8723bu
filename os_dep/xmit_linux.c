@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -36,28 +36,28 @@ _func_enter_;
 	pfile->pkt_len = pfile->buf_len = pktptr->len;
 
 	pfile->cur_buffer = pfile->buf_start ;
-	
+
 _func_exit_;
 }
 
 uint _rtw_pktfile_read (struct pkt_file *pfile, u8 *rmem, uint rlen)
-{	
+{
 	uint	len = 0;
-	
+
 _func_enter_;
 
        len =  rtw_remainder_len(pfile);
-      	len = (rlen > len)? len: rlen;
+	len = (rlen > len)? len: rlen;
 
        if(rmem)
 	  skb_copy_bits(pfile->pkt, pfile->buf_len-pfile->pkt_len, rmem, len);
 
        pfile->cur_addr += len;
        pfile->pkt_len -= len;
-	   
-_func_exit_;	       		
 
-	return len;	
+_func_exit_;
+
+	return len;
 }
 
 sint rtw_endofpktfile(struct pkt_file *pfile)
@@ -80,10 +80,10 @@ void rtw_set_tx_chksum_offload(_pkt *pkt, struct pkt_attrib *pattrib)
 #ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
 	struct sk_buff *skb = (struct sk_buff *)pkt;
 	pattrib->hw_tcp_csum = 0;
-	
+
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		if (skb_shinfo(skb)->nr_frags == 0)
-		{	
+		{
                         const struct iphdr *ip = ip_hdr(skb);
                         if (ip->protocol == IPPROTO_TCP) {
                                 // TCP checksum offload by HW
@@ -92,7 +92,7 @@ void rtw_set_tx_chksum_offload(_pkt *pkt, struct pkt_attrib *pattrib)
                                 //skb_checksum_help(skb);
                         } else if (ip->protocol == IPPROTO_UDP) {
                                 //DBG_871X("CHECKSUM_PARTIAL UDP\n");
-#if 1                       
+#if 1
                                 skb_checksum_help(skb);
 #else
                                 // Set UDP checksum = 0 to skip checksum check
@@ -106,11 +106,11 @@ void rtw_set_tx_chksum_offload(_pkt *pkt, struct pkt_attrib *pattrib)
 		}
 		else { // IP fragmentation case
 			DBG_871X("%s-%d nr_frags != 0, using skb_checksum_help(skb);!!\n", __FUNCTION__, __LINE__);
-                	skb_checksum_help(skb);
-		}		
+			skb_checksum_help(skb);
+		}
 	}
-#endif	
-	
+#endif
+
 }
 
 int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u32 alloc_sz, u8 flag)
@@ -125,7 +125,7 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 		if(pxmitbuf->pallocated_buf == NULL)
 			return _FAIL;
 #else // CONFIG_USE_USB_BUFFER_ALLOC_TX
-		
+
 		pxmitbuf->pallocated_buf = rtw_zmalloc(alloc_sz);
 		if (pxmitbuf->pallocated_buf == NULL)
 		{
@@ -141,18 +141,18 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 #ifdef CONFIG_USB_HCI
 		int i;
 		for(i=0; i<8; i++)
-	      	{
-	      		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
-	             if(pxmitbuf->pxmit_urb[i] == NULL) 
+		{
+			pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
+	             if(pxmitbuf->pxmit_urb[i] == NULL)
 	             {
-	             	DBG_871X("pxmitbuf->pxmit_urb[i]==NULL");
-		       	return _FAIL;	 
+			DBG_871X("pxmitbuf->pxmit_urb[i]==NULL");
+			return _FAIL;
 	             }
-	      	}
+		}
 #endif
 	}
 
-	return _SUCCESS;	
+	return _SUCCESS;
 }
 
 void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz, u8 flag)
@@ -250,7 +250,7 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 
 	_enter_critical_bh(&pxmitpriv->lock, &irqL);
 
-	if(rtw_txframes_pending(padapter))	
+	if(rtw_txframes_pending(padapter))
 	{
 		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 	}
@@ -309,7 +309,7 @@ int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
 	_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
 	phead = &pstapriv->asoc_list;
 	plist = get_next(phead);
-	
+
 	//free sta asoc_queue
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 		int stainfo_offset;
@@ -328,10 +328,10 @@ int rtw_mlcst2unicst(_adapter *padapter, struct sk_buff *skb)
 		if(!(psta->state &_FW_LINKED))
 		{
 			DBG_COUNTER(padapter->tx_logs.os_tx_m2u_ignore_fw_linked);
-			continue;		
+			continue;
 		}
-		
-		/* avoid come from STA1 and send back STA1 */ 
+
+		/* avoid come from STA1 and send back STA1 */
 		if (_rtw_memcmp(psta->hwaddr, &skb->data[6], 6) == _TRUE
 			|| _rtw_memcmp(psta->hwaddr, null_addr, 6) == _TRUE
 			|| _rtw_memcmp(psta->hwaddr, bc_addr, 6) == _TRUE
@@ -376,7 +376,7 @@ int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 #ifdef CONFIG_TX_MCAST2UNI
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	extern int rtw_mc2u_disable;
-#endif	// CONFIG_TX_MCAST2UNI	
+#endif	// CONFIG_TX_MCAST2UNI
 	s32 res = 0;
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 	u16 queue;
@@ -425,8 +425,8 @@ _func_enter_;
 			//DBG_871X("!m2u );
 			DBG_COUNTER(padapter->tx_logs.os_tx_m2u_stop);
 		}
-	}	
-#endif	// CONFIG_TX_MCAST2UNI	
+	}
+#endif	// CONFIG_TX_MCAST2UNI
 
 	res = rtw_xmit(padapter, &pkt);
 	if (res < 0) {
@@ -462,4 +462,3 @@ int rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 
 	return ret;
 }
-

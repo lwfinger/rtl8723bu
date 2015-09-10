@@ -34,7 +34,7 @@
  * Data			Who		Remark
  *
  * 09/25/2008	MHC		Create initial version.
- * 11/05/2008 	MHC		Add API for tw power setting.
+ * 11/05/2008	MHC		Add API for tw power setting.
  *
  *
 ******************************************************************************/
@@ -124,7 +124,7 @@ phy_RF6052_Config_ParaFile(
 
 	static char			sz8723RadioAFile[] = RTL8723B_PHY_RADIO_A;
 	static char			sz8723RadioBFile[] = RTL8723B_PHY_RADIO_B;
-	static s1Byte 			sz8723BTxPwrTrackFile[] = RTL8723B_TXPWR_TRACK;	
+	static s1Byte			sz8723BTxPwrTrackFile[] = RTL8723B_TXPWR_TRACK;
 	char					*pszRadioAFile, *pszRadioBFile, *pszTxPwrTrackFile;
 
 	pszRadioAFile = sz8723RadioAFile;
@@ -162,7 +162,7 @@ phy_RF6052_Config_ParaFile(
 		rtw_udelay_os(1);//PlatformStallExecution(1);
 
 		/* Set bit number of Address and Data for RF register */
-		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, b3WireAddressLength, 0x0); 	// Set 1 to 4 bits for 8255
+		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, b3WireAddressLength, 0x0);	// Set 1 to 4 bits for 8255
 		rtw_udelay_os(1);//PlatformStallExecution(1);
 
 		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, b3WireDataLength, 0x0);	// Set 0 to 12  bits for 8255
@@ -220,9 +220,9 @@ phy_RF6052_Config_ParaFile(
 	}
 
 	//3 -----------------------------------------------------------------
-	//3 Configuration of Tx Power Tracking 
+	//3 Configuration of Tx Power Tracking
 	//3 -----------------------------------------------------------------
-	
+
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
 	if (PHY_ConfigRFWithTxPwrTrackParaFile(Adapter, pszTxPwrTrackFile) == _FAIL)
 #endif
@@ -231,7 +231,7 @@ phy_RF6052_Config_ParaFile(
 		ODM_ConfigRFWithTxPwrTrackHeaderFile(&pHalData->odmpriv);
 #endif
 	}
-	
+
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("<---phy_RF6052_Config_ParaFile()\n"));
 	return rtStatus;
 
@@ -265,4 +265,3 @@ PHY_RF6052_Config8723B(
 }
 
 /* End of HalRf6052.c */
-

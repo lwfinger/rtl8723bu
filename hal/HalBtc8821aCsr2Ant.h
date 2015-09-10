@@ -63,7 +63,7 @@ typedef struct _COEX_DM_8821A_CSR_2ANT{
 	BOOLEAN		bPreRfRxLpfShrink;
 	BOOLEAN		bCurRfRxLpfShrink;
 	u4Byte		btRf0x1eBackup;
-	BOOLEAN 	bPreLowPenaltyRa;
+	BOOLEAN		bPreLowPenaltyRa;
 	BOOLEAN		bCurLowPenaltyRa;
 	BOOLEAN		bPreDacSwingOn;
 	u4Byte		preDacSwingLvl;
@@ -71,7 +71,7 @@ typedef struct _COEX_DM_8821A_CSR_2ANT{
 	u4Byte		curDacSwingLvl;
 	BOOLEAN		bPreAdcBackOff;
 	BOOLEAN		bCurAdcBackOff;
-	BOOLEAN 	bPreAgcTableEn;
+	BOOLEAN		bPreAgcTableEn;
 	BOOLEAN		bCurAgcTableEn;
 	u4Byte		preVal0x6c0;
 	u4Byte		curVal0x6c0;
@@ -94,8 +94,8 @@ typedef struct _COEX_DM_8821A_CSR_2ANT{
 	u1Byte preAmpduTimeType;
 	u1Byte backupAmpduMaxTime;
 
-	u1Byte 		curArfrType;
-	u1Byte 		preArfrType;
+	u1Byte		curArfrType;
+	u1Byte		preArfrType;
 	u4Byte		backupArfrCnt1;
 	u4Byte		backupArfrCnt2;
 
@@ -204,4 +204,3 @@ VOID
 EXhalbtc8821aCsr2ant_DisplayCoexInfo(
 	IN	PBTC_COEXIST		pBtCoexist
 	);
-

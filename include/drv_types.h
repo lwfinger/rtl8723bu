@@ -201,7 +201,7 @@ struct registry_priv
 	u8	network_mode;	//infra, ad-hoc, auto
 	u8	channel;//ad-hoc support requirement
 	u8	wireless_mode;//A, B, G, auto
-	u8 	scan_mode;//active, passive
+	u8	scan_mode;//active, passive
 	u8	radio_enable;
 	u8	preamble;//long, short, auto
 	u8	vrtl_carrier_sense;//Enable, Disable, Auto
@@ -244,7 +244,7 @@ struct registry_priv
 	// 0x21 means enable 2.4G 40MHz & 5G 80MHz
 	u8	bw_mode;
 	u8	ampdu_enable;//for tx
-	u8 	rx_stbc;
+	u8	rx_stbc;
 	u8	ampdu_amsdu;//A-MPDU Supports A-MSDU is permitted
 	// Short GI support Bit Map
 	// BIT0 - 20MHz, 1: support, 0: non-support
@@ -589,7 +589,7 @@ struct cam_entry_cache {
 
 struct dvobj_priv
 {
-	/*-------- below is common data --------*/	
+	/*-------- below is common data --------*/
 	_adapter *if1; //PRIMARY_ADAPTER
 	_adapter *if2; //SECONDARY_ADAPTER
 
@@ -701,10 +701,10 @@ struct dvobj_priv
 	u8	const_hwsw_rfoff_d3;
 	u8	const_support_pciaspm;
 	// pci-e bridge */
-	u8 	const_hostpci_aspm_setting;
+	u8	const_hostpci_aspm_setting;
 	// pci-e device */
-	u8 	const_devicepci_aspm_setting;
-	u8 	b_support_aspm; // If it supports ASPM, Offset[560h] = 0x40, otherwise Offset[560h] = 0x00.
+	u8	const_devicepci_aspm_setting;
+	u8	b_support_aspm; // If it supports ASPM, Offset[560h] = 0x40, otherwise Offset[560h] = 0x00.
 	u8	b_support_backdoor;
 	u8	bdma64;
 #endif//PLATFORM_LINUX
@@ -790,7 +790,7 @@ struct _ADAPTER{
 	int	DriverState;// for disable driver using module, use dongle to replace module.
 	int	pid[3];//process id from UI, 0:wps, 1:hostapd, 2:dhcpcd
 	int	bDongle;//build-in module or external dongle
-	u16 	chip_type;
+	u16	chip_type;
 	u16	HardwareType;
 	u16	interface_type;//USB,SDIO,SPI,PCI
 
@@ -800,14 +800,14 @@ struct _ADAPTER{
 	struct	cmd_priv	cmdpriv;
 	struct	evt_priv	evtpriv;
 	//struct	io_queue	*pio_queue;
-	struct 	io_priv	iopriv;
+	struct	io_priv	iopriv;
 	struct	xmit_priv	xmitpriv;
 	struct	recv_priv	recvpriv;
 	struct	sta_priv	stapriv;
 	struct	security_priv	securitypriv;
 	_lock   security_key_mutex; // add for CONFIG_IEEE80211W, none 11w also can use
 	struct	registry_priv	registrypriv;
-	struct 	eeprom_priv eeprompriv;
+	struct	eeprom_priv eeprompriv;
 	struct	led_priv	ledpriv;
 
 #ifdef CONFIG_MP_INCLUDED
@@ -873,11 +873,11 @@ struct _ADAPTER{
 	void (*dvobj_deinit)(struct dvobj_priv *dvobj);
 #endif
 
- 	u32 (*intf_init)(struct dvobj_priv *dvobj);
+	u32 (*intf_init)(struct dvobj_priv *dvobj);
 	void (*intf_deinit)(struct dvobj_priv *dvobj);
 	int (*intf_alloc_irq)(struct dvobj_priv *dvobj);
 	void (*intf_free_irq)(struct dvobj_priv *dvobj);
-	
+
 
 	void (*intf_start)(_adapter * adapter);
 	void (*intf_stop)(_adapter * adapter);
@@ -905,7 +905,7 @@ struct _ADAPTER{
 #endif //CONFIG_IOCTL_CFG80211
 
 	int net_closed;
-	
+
 	u8 netif_up;
 
 	u8 bFWReady;
@@ -987,7 +987,7 @@ struct _ADAPTER{
 
 	unsigned char     in_cta_test;
 
-#ifdef CONFIG_DBG_COUNTER	
+#ifdef CONFIG_DBG_COUNTER
 	struct rx_logs rx_logs;
 	struct tx_logs tx_logs;
 	struct int_logs int_logs;
@@ -1041,7 +1041,7 @@ int rtw_handle_dualmac(_adapter *adapter, bool init);
 
 #ifdef CONFIG_PNO_SUPPORT
 int rtw_parse_ssid_list_tlv(char** list_str, pno_ssid_t* ssid, int max, int *bytes_left);
-int rtw_dev_pno_set(struct net_device *net, pno_ssid_t* ssid, int num, 
+int rtw_dev_pno_set(struct net_device *net, pno_ssid_t* ssid, int num,
 					int pno_time, int pno_repeat, int pno_freq_expo_max);
 #ifdef CONFIG_PNO_SET_DEBUG
 void rtw_dev_pno_debug(struct net_device *net);
@@ -1094,4 +1094,3 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 #endif // CONFIG_BT_COEXIST
 
 #endif //__DRV_TYPES_H__
-

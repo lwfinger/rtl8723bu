@@ -82,7 +82,7 @@ typedef struct _COEX_DM_8192E_1ANT{
 	u1Byte		curRpwm;
 
 	// sw mechanism
-	BOOLEAN 	bPreLowPenaltyRa;
+	BOOLEAN		bPreLowPenaltyRa;
 	BOOLEAN		bCurLowPenaltyRa;
 	BOOLEAN		bPreDacSwingOn;
 	u4Byte		preDacSwingLvl;
@@ -210,5 +210,5 @@ EXhalbtc8192e1ant_DbgControl(
 	IN	PBTC_COEXIST			pBtCoexist,
 	IN	u1Byte				opCode,
 	IN	u1Byte				opLen,
-	IN	pu1Byte 			pData
+	IN	pu1Byte				pData
 	);

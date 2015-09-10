@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,28 +17,28 @@
  *
  *
  ******************************************************************************/
- 
+
 #ifndef	__ODMPATHDIV_H__
 #define    __ODMPATHDIV_H__
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE)) 
+#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 
-VOID	
+VOID
 odm_PathDiversityInit(
 	IN	PVOID	pDM_VOID
 	);
 
-VOID    
+VOID
 odm_PathDiversity(
 	IN	PVOID	pDM_VOID
 	);
 
-#endif  //(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE)) 
+#endif  //(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN)) 
+#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN))
 
-//#define   PATHDIV_ENABLE 	 1
+//#define   PATHDIV_ENABLE	 1
 #define dm_PathDiv_RSSI_Check	ODM_PathDivChkPerPktRssi
 #define PathDivCheckBeforeLink8192C	ODM_PathDiversityBeforeLink92C
 
@@ -64,18 +64,18 @@ typedef struct _PathDiv_Parameter_define_
 	u4Byte swt_2g_RegCA0;
 }PATHDIV_PARA,*pPATHDIV_PARA;
 
-VOID	
+VOID
 odm_PathDiversityInit_92C(
 	IN	PADAPTER	Adapter
 	);
 
-VOID	
+VOID
 odm_2TPathDiversityInit_92C(
 	IN	PADAPTER	Adapter
 	);
 
-VOID	
-odm_1TPathDiversityInit_92C(	
+VOID
+odm_1TPathDiversityInit_92C(
 	IN	PADAPTER	Adapter
 	);
 
@@ -84,35 +84,35 @@ odm_IsConnected_92C(
 	IN	PADAPTER	Adapter
 	);
 
-BOOLEAN 
+BOOLEAN
 ODM_PathDiversityBeforeLink92C(
 	//IN	PADAPTER	Adapter
 	IN		PDM_ODM_T		pDM_Odm
 	);
 
-VOID	
+VOID
 odm_PathDiversityAfterLink_92C(
 	IN	PADAPTER	Adapter
 	);
 
 VOID
-odm_SetRespPath_92C(	
-	IN	PADAPTER	Adapter, 	
+odm_SetRespPath_92C(
+	IN	PADAPTER	Adapter,
 	IN	u1Byte	DefaultRespPath
 	);
 
-VOID	
+VOID
 odm_OFDMTXPathDiversity_92C(
 	IN	PADAPTER	Adapter
 	);
 
-VOID	
-odm_CCKTXPathDiversity_92C(	
+VOID
+odm_CCKTXPathDiversity_92C(
 	IN	PADAPTER	Adapter
 	);
 
-VOID	
-odm_ResetPathDiversity_92C(	
+VOID
+odm_ResetPathDiversity_92C(
 	IN	PADAPTER	Adapter
 	);
 
@@ -137,7 +137,7 @@ odm_PathDivChkAntSwitchWorkitemCallback(
 	);
 
 
-VOID 
+VOID
 odm_PathDivChkAntSwitch(
 	PDM_ODM_T    pDM_Odm
 	);
@@ -152,13 +152,13 @@ ODM_CCKPathDiversityChkPerPktRssi(
 	pu1Byte			pDesc
 	);
 
-VOID 
+VOID
 ODM_PathDivChkPerPktRssi(
 	PADAPTER		Adapter,
 	BOOLEAN			bIsDefPort,
 	BOOLEAN			bMatchBSSID,
 	PRT_WLAN_STA	pEntry,
-	PRT_RFD			pRfd	
+	PRT_RFD			pRfd
 	);
 
 VOID
@@ -175,7 +175,7 @@ ODM_FillTXPathInTXDESC(
 
 VOID
 odm_PathDivInit_92D(
-	IN	PDM_ODM_T 	pDM_Odm
+	IN	PDM_ODM_T	pDM_Odm
 	);
 
 u1Byte
@@ -188,9 +188,8 @@ odm_SwAntDivConstructScanChnl(
 	IN	PADAPTER	Adapter,
 	IN	u1Byte		ScanChnl
 	);
-	
- #endif       //#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN)) 
- 
- 
- #endif		 //#ifndef  __ODMPATHDIV_H__
 
+ #endif       //#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN))
+
+
+ #endif		 //#ifndef  __ODMPATHDIV_H__

@@ -66,7 +66,7 @@ typedef struct _COEX_DM_8723A_2ANT{
 	BOOLEAN		bPreRfRxLpfShrink;
 	BOOLEAN		bCurRfRxLpfShrink;
 	u4Byte		btRf0x1eBackup;
-	BOOLEAN 	bPreLowPenaltyRa;
+	BOOLEAN		bPreLowPenaltyRa;
 	BOOLEAN		bCurLowPenaltyRa;
 	BOOLEAN		bPreDacSwingOn;
 	u4Byte		preDacSwingLvl;
@@ -74,7 +74,7 @@ typedef struct _COEX_DM_8723A_2ANT{
 	u4Byte		curDacSwingLvl;
 	BOOLEAN		bPreAdcBackOff;
 	BOOLEAN		bCurAdcBackOff;
-	BOOLEAN 	bPreAgcTableEn;
+	BOOLEAN		bPreAgcTableEn;
 	BOOLEAN		bCurAgcTableEn;
 	u4Byte		preVal0x6c0;
 	u4Byte		curVal0x6c0;
@@ -181,4 +181,3 @@ VOID
 EXhalbtc8723a2ant_DisplayCoexInfo(
 	IN	PBTC_COEXIST		pBtCoexist
 	);
-

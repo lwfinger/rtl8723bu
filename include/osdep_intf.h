@@ -25,7 +25,7 @@
 struct intf_priv {
 
 	u8 *intf_dev;
-	u32	max_iosz; 	//USB2.0: 128, USB1.1: 64, SDIO:64
+	u32	max_iosz;	//USB2.0: 128, USB1.1: 64, SDIO:64
 	u32	max_xmitsz; //USB2.0: unlimited, SDIO:512
 	u32	max_recvsz; //USB2.0: unlimited, SDIO:512
 
@@ -51,7 +51,7 @@ The protection mechanism is through the pending queue.
 #ifdef PLATFORM_LINUX
 	#ifdef CONFIG_USB_HCI
 	// when in USB, IO is through interrupt in/out endpoints
-	struct usb_device 	*udev;
+	struct usb_device	*udev;
 	PURB	piorw_urb;
 	u8 io_irp_cnt;
 	u8 bio_irp_pending;
@@ -158,4 +158,3 @@ int rtw_suspend_common(_adapter *padapter);
 int rtw_resume_common(_adapter *padapter);
 
 #endif	//_OSDEP_INTF_H_
-

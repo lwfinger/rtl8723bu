@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,7 +17,7 @@
  *
  *
  ******************************************************************************/
- 
+
 #ifndef	__ODMDIG_H__
 #define    __ODMDIG_H__
 
@@ -28,9 +28,9 @@ typedef struct _Dynamic_Initial_Gain_Threshold_
 
 	u1Byte		Dig_Enable_Flag;
 	u1Byte		Dig_Ext_Port_Stage;
-	
-	int		   	RssiLowThresh;
-	int		    	RssiHighThresh;
+
+	int			RssiLowThresh;
+	int			RssiHighThresh;
 
 	u4Byte		FALowThresh;
 	u4Byte		FAHighThresh;
@@ -106,19 +106,19 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 	DIG_TYPE_BACKOFF		= 2,
 	DIG_TYPE_RX_GAIN_MIN	= 3,
 	DIG_TYPE_RX_GAIN_MAX	= 4,
-	DIG_TYPE_ENABLE 		= 5,
-	DIG_TYPE_DISABLE 		= 6,	
+	DIG_TYPE_ENABLE			= 5,
+	DIG_TYPE_DISABLE		= 6,
 	DIG_OP_TYPE_MAX
 }DM_DIG_OP_E;
 
 typedef enum tag_ODM_PauseDIG_Type {
-	ODM_PAUSE_DIG    		= 	BIT0,
-	ODM_RESUME_DIG  		= 	BIT1
+	ODM_PAUSE_DIG			=	BIT0,
+	ODM_RESUME_DIG			=	BIT1
 } ODM_Pause_DIG_TYPE;
 
 typedef enum tag_ODM_PauseCCKPD_Type {
-	ODM_PAUSE_CCKPD    	= 	BIT0,
-	ODM_RESUME_CCKPD  	= 	BIT1
+	ODM_PAUSE_CCKPD		=	BIT0,
+	ODM_RESUME_CCKPD	=	BIT1
 } ODM_Pause_CCKPD_TYPE;
 
 #if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
@@ -126,8 +126,8 @@ typedef enum _tag_ODM_REGULATION_Type {
 	REGULATION_FCC = 0,
 	REGULATION_MKK = 1,
 	REGULATION_ETSI = 2,
-	REGULATION_WW = 3,	
-	
+	REGULATION_WW = 3,
+
 	MAX_REGULATION_NUM = 4
 } ODM_REGULATION_TYPE;
 #endif
@@ -151,7 +151,7 @@ typedef enum tag_DIG_EXT_PORT_ALGO_Definition
 
 typedef enum tag_DIG_Connect_Definition
 {
-	DIG_STA_DISCONNECT = 0,	
+	DIG_STA_DISCONNECT = 0,
 	DIG_STA_CONNECT = 1,
 	DIG_STA_BEFORE_CONNECT = 2,
 	DIG_MultiSTA_DISCONNECT = 3,
@@ -222,16 +222,16 @@ typedef enum tag_DIG_Connect_Definition
 #define		DM_DIG_BACKOFF_MIN			-4
 #define		DM_DIG_BACKOFF_DEFAULT		10
 
-#define 		DM_DIG_FA_TH0_LPS				4 //-> 4 in lps
-#define 		DM_DIG_FA_TH1_LPS				15 //-> 15 lps
-#define 		DM_DIG_FA_TH2_LPS				30 //-> 30 lps
-#define 		RSSI_OFFSET_DIG				0x05
+#define			DM_DIG_FA_TH0_LPS				4 //-> 4 in lps
+#define			DM_DIG_FA_TH1_LPS				15 //-> 15 lps
+#define			DM_DIG_FA_TH2_LPS				30 //-> 30 lps
+#define			RSSI_OFFSET_DIG				0x05
 
 VOID
 ODM_ChangeDynamicInitGainThresh(
 	IN		PVOID					pDM_VOID,
-	IN		u4Byte  					DM_Type,
-	IN		u4Byte 					DM_Value
+	IN		u4Byte						DM_Type,
+	IN		u4Byte					DM_Value
 	);
 
 VOID
@@ -270,7 +270,7 @@ odm_SearchPwdBLowerBound(
 	IN		u1Byte					IGI_target
 );
 
-VOID 
+VOID
 odm_AdaptivityInit(
 	IN		PVOID					pDM_VOID
 	);
@@ -283,7 +283,7 @@ odm_Adaptivity(
 
 VOID
 ODM_Write_DIG(
-	IN		PVOID					pDM_VOID, 	
+	IN		PVOID					pDM_VOID,
 	IN		u1Byte					CurrentIGI
 	);
 
@@ -299,7 +299,7 @@ odm_DIGInit(
 	IN		PVOID					pDM_VOID
 	);
 
-VOID	
+VOID
 odm_DIG(
 	IN		PVOID					pDM_VOID
 	);
@@ -314,7 +314,7 @@ odm_DigForBtHsMode(
 	IN		PVOID					pDM_VOID
 	);
 
-VOID 
+VOID
 odm_FalseAlarmCounterStatistics(
 	IN		PVOID					pDM_VOID
 	);
@@ -337,11 +337,11 @@ odm_ForbiddenIGICheck(
 	);
 
 VOID
-odm_InbandNoiseCalculate (	
+odm_InbandNoiseCalculate (
 	IN		PVOID					pDM_VOID
 	);
 
-BOOLEAN 
+BOOLEAN
 odm_DigAbort(
 	IN		PVOID					pDM_VOID
 	);
@@ -353,14 +353,14 @@ odm_PauseCCKPacketDetection(
 	IN		u1Byte					CCKPDThreshold
 	);
 
-VOID 
+VOID
 odm_CCKPacketDetectionThresh(
 	IN		PVOID					pDM_VOID
 	);
 
-VOID 
+VOID
 ODM_Write_CCK_CCA_Thres(
-	IN		PVOID					pDM_VOID, 
+	IN		PVOID					pDM_VOID,
 	IN		u1Byte					CurCCK_CCAThres
 	);
 
@@ -383,7 +383,7 @@ odm_MPT_DIGCallback(
 
 VOID
 odm_MPT_DIGWorkItemCallback(
-    IN 		PVOID            			pContext
+    IN		PVOID					pContext
     );
 
 #endif

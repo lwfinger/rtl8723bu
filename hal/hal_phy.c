@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -33,7 +33,7 @@ static RF_SHADOW_T RF_Shadow[RF6052_MAX_PATH][RF6052_MAX_REG];
 * OverView:	Get shifted position of the BitMask
 *
 * Input:
-*			u4Byte		BitMask,	
+*			u4Byte		BitMask,
 *
 * Output:	none
 * Return:		u4Byte		Return the shift bit bit position of the mask
@@ -80,7 +80,7 @@ PHY_CalculateBitShift(
  *
  * Revised History:
  * When			Who		Remark
- * 11/20/2008 	MHC		Create Version 0.
+ * 11/20/2008	MHC		Create Version 0.
  *
  *---------------------------------------------------------------------------*/
 u32
@@ -281,5 +281,3 @@ PHY_RFShadowRefresh(
 	}
 
 }	/* PHY_RFShadowRead */
-
-

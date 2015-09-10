@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,7 +17,7 @@
  *
  *
  ******************************************************************************/
- 
+
 #ifndef	__ODMANTDIV_H__
 #define    __ODMANTDIV_H__
 
@@ -52,7 +52,7 @@
 
 VOID
 ODM_AntDivInit(
-	IN		 PDM_ODM_T		pDM_Odm 
+	IN		 PDM_ODM_T		pDM_Odm
 );
 
 VOID
@@ -64,7 +64,7 @@ ODM_AntDiv(
 
 VOID
 ODM_UpdateRxIdleAnt(
-	IN	 	PDM_ODM_T 		pDM_Odm, 
+	IN		PDM_ODM_T		pDM_Odm,
 	IN		 u1Byte			Ant
 );
 
@@ -72,12 +72,12 @@ ODM_UpdateRxIdleAnt(
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 VOID
 ODM_SW_AntDiv_Callback(
-	IN 	PRT_TIMER			pTimer
+	IN	PRT_TIMER			pTimer
 );
 
 VOID
 ODM_SW_AntDiv_WorkitemCallback(
-    	IN 	PVOID            pContext
+	IN	PVOID            pContext
 );
 #endif //#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
@@ -106,7 +106,7 @@ odm_FastAntTrainingWorkItemCallback(
 #endif
 
 VOID
-ODM_Process_RSSIForAntDiv(	
+ODM_Process_RSSIForAntDiv(
 	IN OUT	PDM_ODM_T					pDM_Odm,
 	IN		PODM_PHY_INFO_T				pPhyInfo,
 	IN		PODM_PACKET_INFO_T			pPktinfo
@@ -117,7 +117,7 @@ VOID
 ODM_SetTxAntByTxInfo(
 	IN		PDM_ODM_T		pDM_Odm,
 	IN		pu1Byte			pDesc,
-	IN		u1Byte			macId	
+	IN		u1Byte			macId
 );
 
 #else// (DM_ODM_SUPPORT_TYPE == ODM_AP)
@@ -125,9 +125,9 @@ VOID
 ODM_SetTxAntByTxInfo(
 	//IN		PDM_ODM_T		pDM_Odm,
 	struct	rtl8192cd_priv		*priv,
-	struct 	tx_desc			*pdesc,
+	struct	tx_desc			*pdesc,
 	struct	tx_insn			*txcfg,
-	unsigned short			aid	
+	unsigned short			aid
 );
 
 #endif

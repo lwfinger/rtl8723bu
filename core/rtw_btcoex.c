@@ -72,7 +72,7 @@ void rtw_btcoex_ConnectNotify(PADAPTER padapter, u8 action)
 		return;
 	}
 #endif // DBG_CONFIG_ERROR_RESET
-		
+
 #ifdef CONFIG_CONCURRENT_MODE
 	if ((_FALSE == action) && (padapter->pbuddy_adapter))
 	{
@@ -157,7 +157,7 @@ void rtw_btcoex_HaltNotify(PADAPTER padapter)
 
 void rtw_btcoex_SwitchBtTRxMask(PADAPTER padapter)
 {
-	hal_btcoex_SwitchBtTRxMask(padapter);	
+	hal_btcoex_SwitchBtTRxMask(padapter);
 }
 
 void rtw_btcoex_Switch(PADAPTER padapter, u8 enable)
@@ -329,7 +329,7 @@ void rtw_btcoex_RejectApAggregatedPacket(PADAPTER padapter, u8 enable)
 
 			while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 				int stainfo_offset;
-				
+
 				psta = LIST_CONTAINOR(plist, struct sta_info, asoc_list);
 				plist = get_next(plist);
 
@@ -337,7 +337,7 @@ void rtw_btcoex_RejectApAggregatedPacket(PADAPTER padapter, u8 enable)
 				if (stainfo_offset_valid(stainfo_offset))
 					peers[peer_num++] = stainfo_offset;
 			}
-	
+
 			_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
 
 			if (peer_num) {
@@ -383,4 +383,3 @@ void rtw_btcoex_LPS_Leave(PADAPTER padapter)
 	}
 }
 #endif // CONFIG_BT_COEXIST
-

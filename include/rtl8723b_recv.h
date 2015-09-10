@@ -53,4 +53,3 @@ void rtl8723be_free_recv_priv(PADAPTER padapter);
 void	rtl8723b_query_rx_desc_status(union recv_frame *precvframe, u8 *pdesc);
 
 #endif
-

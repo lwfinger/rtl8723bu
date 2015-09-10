@@ -80,7 +80,7 @@ typedef struct _COEX_DM_8723B_1ANT{
 	u1Byte		curRpwm;
 
 	// sw mechanism
-	BOOLEAN 	bPreLowPenaltyRa;
+	BOOLEAN		bPreLowPenaltyRa;
 	BOOLEAN		bCurLowPenaltyRa;
 	u4Byte		preVal0x6c0;
 	u4Byte		curVal0x6c0;
@@ -149,11 +149,11 @@ typedef struct _COEX_STA_8723B_1ANT{
 	u4Byte					nCRCOK_11g;
 	u4Byte					nCRCOK_11n;
 	u4Byte					nCRCOK_11nAgg;
-	
+
 	u4Byte					nCRCErr_CCK;
 	u4Byte					nCRCErr_11g;
 	u4Byte					nCRCErr_11n;
-	u4Byte					nCRCErr_11nAgg;	
+	u4Byte					nCRCErr_11nAgg;
 
 	BOOLEAN					bCCKLock;
 	BOOLEAN					bPreCCKLock;
@@ -240,4 +240,3 @@ VOID
 EXhalbtc8723b1ant_DisplayCoexInfo(
 	IN	PBTC_COEXIST		pBtCoexist
 	);
-

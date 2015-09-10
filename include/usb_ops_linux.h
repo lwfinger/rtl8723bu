@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -26,8 +26,8 @@
 #define RTW_USB_CONTROL_MSG_TIMEOUT_TEST	10//ms
 #define RTW_USB_CONTROL_MSG_TIMEOUT	500//ms
 
-#define RECV_BULK_IN_ADDR		0x80//assign by drv,not real address 
-#define RECV_INT_IN_ADDR		0x81//assign by drv,not real address 
+#define RECV_BULK_IN_ADDR		0x80//assign by drv,not real address
+#define RECV_INT_IN_ADDR		0x81//assign by drv,not real address
 
 
 #if defined(CONFIG_VENDOR_REQ_RETRY) && defined(CONFIG_USB_VENDOR_REQ_MUTEX)
@@ -66,4 +66,3 @@ void usb_write_port_cancel(struct intf_hdl *pintfhdl);
 
 int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 index, void *pdata, u16 len, u8 requesttype);
 #endif
-

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -45,7 +45,7 @@ int	rtl8723bu_init_recv_priv(_adapter *padapter)
 	int	i, res = _SUCCESS;
 	struct recv_buf *precvbuf;
 
-#ifdef CONFIG_RECV_THREAD_MODE	
+#ifdef CONFIG_RECV_THREAD_MODE
 	_rtw_init_sema(&precvpriv->recv_sema, 0);//will be removed
 	_rtw_init_sema(&precvpriv->terminate_recvthread_sema, 0);//will be removed
 #endif
@@ -213,13 +213,13 @@ void rtl8723bu_free_recv_priv (_adapter *padapter)
 		{
 			if(i<NR_PREALLOC_RECV_SKB)
 				rtw_free_skb_premem(skb);
-			else				
+			else
 				_rtw_skb_free(skb);
 
 			i++;
-		}	
-	}	
-#else 
+		}
+	}
+#else
 	rtw_skb_queue_purge(&precvpriv->free_recv_skb_queue);
 #endif //CONFIG_PREALLOC_RX_SKB_BUFFER
 
@@ -280,10 +280,10 @@ void update_recvframe_phyinfo(
 	union recv_frame	*precvframe,
 	struct phy_stat *pphy_status)
 {
-	PADAPTER 			padapter = precvframe->u.hdr.adapter;
+	PADAPTER			padapter = precvframe->u.hdr.adapter;
 	struct rx_pkt_attrib	*pattrib = &precvframe->u.hdr.attrib;
-	HAL_DATA_TYPE		*pHalData= GET_HAL_DATA(padapter); 	
-	PODM_PHY_INFO_T 	pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info); 
+	HAL_DATA_TYPE		*pHalData= GET_HAL_DATA(padapter);
+	PODM_PHY_INFO_T		pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info);
 
 	u8					*wlanhdr;
 	ODM_PACKET_INFO_T	pkt_info;
@@ -291,7 +291,7 @@ void update_recvframe_phyinfo(
 	//_irqL		irqL;
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;
-	
+
 	pkt_info.bPacketMatchBSSID =_FALSE;
 	pkt_info.bPacketToSelf = _FALSE;
 	pkt_info.bPacketBeacon = _FALSE;
@@ -308,12 +308,12 @@ void update_recvframe_phyinfo(
 	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID && (GetFrameSubType(wlanhdr) == WIFI_BEACON);
 /*
 	if(pkt_info.bPacketBeacon){
-		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){				
+		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
 			#if 0
-			{					
+			{
 				DBG_871X("==> rx beacon from AP[%02x:%02x:%02x:%02x:%02x:%02x]\n",
-					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);					
+					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);
 			}
 			#endif
 		}
@@ -321,8 +321,8 @@ void update_recvframe_phyinfo(
 	}
 	else{
 		sa = get_sa(wlanhdr);
-	}		
-*/		
+	}
+*/
 	sa = get_ta(wlanhdr);
 
 	pkt_info.StationID = 0xFF;
@@ -338,30 +338,28 @@ void update_recvframe_phyinfo(
 
 	//rtl8723b_query_rx_phy_status(precvframe, pphy_status);
 	//_enter_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
-	 ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));	
+	 ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
 	if(psta) psta->rssi = pattrib->phy_info.RecvSignalPower;
 	//_exit_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
 	precvframe->u.hdr.psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
 		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE))
-	{			
+	{
 		if (psta)
-		{                  
+		{
 			precvframe->u.hdr.psta = psta;
-			rtl8723b_process_phy_info(padapter, precvframe);	               
+			rtl8723b_process_phy_info(padapter, precvframe);
                 }
 	}
 	else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon)
 	{
 		if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == _TRUE)
-		{			
+		{
 			if (psta)
 			{
 				precvframe->u.hdr.psta = psta;
 			}
 		}
-		rtl8723b_process_phy_info(padapter, precvframe);             
+		rtl8723b_process_phy_info(padapter, precvframe);
 	}
 }
-
-

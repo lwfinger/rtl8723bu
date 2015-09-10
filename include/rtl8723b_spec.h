@@ -80,7 +80,7 @@
 //
 //-----------------------------------------------------
 #define	REG_PCIE_CTRL_REG_8723B		0x0300
-#define	REG_INT_MIG_8723B				0x0304	// Interrupt Migration 
+#define	REG_INT_MIG_8723B				0x0304	// Interrupt Migration
 #define	REG_BCNQ_DESA_8723B			0x0308	// TX Beacon Descriptor Address
 #define	REG_HQ_DESA_8723B				0x0310	// TX High Queue Descriptor Address
 #define	REG_MGQ_DESA_8723B			0x0318	// TX Manage Queue Descriptor Address
@@ -224,28 +224,28 @@
 #define	IMR_DISABLED_8723B					0
 // IMR DW0(0x00B0-00B3) Bit 0-31
 #define	IMR_TIMER2_8723B					BIT31		// Timeout interrupt 2
-#define	IMR_TIMER1_8723B					BIT30		// Timeout interrupt 1	
+#define	IMR_TIMER1_8723B					BIT30		// Timeout interrupt 1
 #define	IMR_PSTIMEOUT_8723B				BIT29		// Power Save Time Out Interrupt
-#define	IMR_GTINT4_8723B					BIT28		// When GTIMER4 expires, this bit is set to 1	
-#define	IMR_GTINT3_8723B					BIT27		// When GTIMER3 expires, this bit is set to 1	
-#define	IMR_TXBCN0ERR_8723B				BIT26		// Transmit Beacon0 Error			
-#define	IMR_TXBCN0OK_8723B				BIT25		// Transmit Beacon0 OK			
-#define	IMR_TSF_BIT32_TOGGLE_8723B		BIT24		// TSF Timer BIT32 toggle indication interrupt			
-#define	IMR_BCNDMAINT0_8723B				BIT20		// Beacon DMA Interrupt 0			
-#define	IMR_BCNDERR0_8723B				BIT16		// Beacon Queue DMA OK0			
+#define	IMR_GTINT4_8723B					BIT28		// When GTIMER4 expires, this bit is set to 1
+#define	IMR_GTINT3_8723B					BIT27		// When GTIMER3 expires, this bit is set to 1
+#define	IMR_TXBCN0ERR_8723B				BIT26		// Transmit Beacon0 Error
+#define	IMR_TXBCN0OK_8723B				BIT25		// Transmit Beacon0 OK
+#define	IMR_TSF_BIT32_TOGGLE_8723B		BIT24		// TSF Timer BIT32 toggle indication interrupt
+#define	IMR_BCNDMAINT0_8723B				BIT20		// Beacon DMA Interrupt 0
+#define	IMR_BCNDERR0_8723B				BIT16		// Beacon Queue DMA OK0
 #define	IMR_HSISR_IND_ON_INT_8723B		BIT15		// HSISR Indicator (HSIMR & HSISR is true, this bit is set to 1)
-#define	IMR_BCNDMAINT_E_8723B			BIT14		// Beacon DMA Interrupt Extension for Win7			
+#define	IMR_BCNDMAINT_E_8723B			BIT14		// Beacon DMA Interrupt Extension for Win7
 #define	IMR_ATIMEND_8723B				BIT12		// CTWidnow End or ATIM Window End
-#define	IMR_C2HCMD_8723B					BIT10		// CPU to Host Command INT Status, Write 1 clear	
-#define	IMR_CPWM2_8723B					BIT9			// CPU power Mode exchange INT Status, Write 1 clear	
-#define	IMR_CPWM_8723B					BIT8			// CPU power Mode exchange INT Status, Write 1 clear	
-#define	IMR_HIGHDOK_8723B				BIT7			// High Queue DMA OK	
-#define	IMR_MGNTDOK_8723B				BIT6			// Management Queue DMA OK	
-#define	IMR_BKDOK_8723B					BIT5			// AC_BK DMA OK		
-#define	IMR_BEDOK_8723B					BIT4			// AC_BE DMA OK	
-#define	IMR_VIDOK_8723B					BIT3			// AC_VI DMA OK		
-#define	IMR_VODOK_8723B					BIT2			// AC_VO DMA OK	
-#define	IMR_RDU_8723B					BIT1			// Rx Descriptor Unavailable	
+#define	IMR_C2HCMD_8723B					BIT10		// CPU to Host Command INT Status, Write 1 clear
+#define	IMR_CPWM2_8723B					BIT9			// CPU power Mode exchange INT Status, Write 1 clear
+#define	IMR_CPWM_8723B					BIT8			// CPU power Mode exchange INT Status, Write 1 clear
+#define	IMR_HIGHDOK_8723B				BIT7			// High Queue DMA OK
+#define	IMR_MGNTDOK_8723B				BIT6			// Management Queue DMA OK
+#define	IMR_BKDOK_8723B					BIT5			// AC_BK DMA OK
+#define	IMR_BEDOK_8723B					BIT4			// AC_BE DMA OK
+#define	IMR_VIDOK_8723B					BIT3			// AC_VI DMA OK
+#define	IMR_VODOK_8723B					BIT2			// AC_VO DMA OK
+#define	IMR_RDU_8723B					BIT1			// Rx Descriptor Unavailable
 #define	IMR_ROK_8723B					BIT0			// Receive DMA OK
 
 // IMR DW1(0x00B4-00B7) Bit 0-31
@@ -283,10 +283,10 @@
 #ifdef CONFIG_USB_HCI
 //should be renamed and moved to another file
 typedef	enum _BOARD_TYPE_8192CUSB{
-	BOARD_USB_DONGLE 			= 0,		// USB dongle
-	BOARD_USB_High_PA 		= 1,		// USB dongle with high power PA
-	BOARD_MINICARD		  	= 2,		// Minicard
-	BOARD_USB_SOLO 		 	= 3,		// USB solo-Slim module
+	BOARD_USB_DONGLE			= 0,		// USB dongle
+	BOARD_USB_High_PA		= 1,		// USB dongle with high power PA
+	BOARD_MINICARD			= 2,		// Minicard
+	BOARD_USB_SOLO			= 3,		// USB solo-Slim module
 	BOARD_USB_COMBO			= 4,		// USB Combo-Slim module
 } BOARD_TYPE_8723BUSB, *PBOARD_TYPE_8723BUSB;
 

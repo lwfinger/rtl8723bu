@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -24,7 +24,7 @@
 
 #include "odm_precomp.h"
 
-VOID 
+VOID
 odm_DynamicBBPowerSavingInit(
 	IN		PVOID					pDM_VOID
 	)
@@ -45,7 +45,7 @@ VOID
 odm_DynamicBBPowerSaving(
 	IN		PVOID					pDM_VOID
 	)
-{	
+{
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 #if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 
@@ -55,13 +55,13 @@ odm_DynamicBBPowerSaving(
 		return;
 	if(!(pDM_Odm->SupportPlatform & (ODM_WIN|ODM_CE)))
 		return;
-	
+
 	//1 2.Power Saving for 92C
 	if((pDM_Odm->SupportICType == ODM_RTL8192C) &&(pDM_Odm->RFType == ODM_2T2R))
 	{
 		odm_1R_CCA(pDM_Odm);
 	}
-	
+
 	// 20100628 Joseph: Turn off BB power save for 88CE because it makesthroughput unstable.
 	// 20100831 Joseph: Turn ON BB power save again after modifying AGC delay from 900ns ot 600ns.
 	//1 3.Power Saving for 88C
@@ -70,7 +70,7 @@ odm_DynamicBBPowerSaving(
 		ODM_RF_Saving(pDM_Odm, FALSE);
 	}
 #endif	// #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	
+
 }
 
 VOID
@@ -83,14 +83,14 @@ odm_1R_CCA(
 
 	if(pDM_Odm->RSSI_Min!= 0xFF)
 	{
-		 
+
 		if(pDM_PSTable->PreCCAState == CCA_2R)
 		{
 			if(pDM_Odm->RSSI_Min >= 35)
 				pDM_PSTable->CurCCAState = CCA_1R;
 			else
 				pDM_PSTable->CurCCAState = CCA_2R;
-			
+
 		}
 		else{
 			if(pDM_Odm->RSSI_Min <= 30)
@@ -102,7 +102,7 @@ odm_1R_CCA(
 	else{
 		pDM_PSTable->CurCCAState=CCA_MAX;
 	}
-	
+
 	if(pDM_PSTable->PreCCAState != pDM_PSTable->CurCCAState)
 	{
 		if(pDM_PSTable->CurCCAState == CCA_1R)
@@ -130,7 +130,7 @@ odm_1R_CCA(
 void
 ODM_RF_Saving(
 	IN		PVOID					pDM_VOID,
-	IN	u1Byte		bForceInNormal 
+	IN	u1Byte		bForceInNormal
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -146,7 +146,7 @@ ODM_RF_Saving(
 	}
 #endif
 	if(pDM_PSTable->initialize == 0){
-		
+
 		pDM_PSTable->Reg874 = (ODM_GetBBReg(pDM_Odm, 0x874, bMaskDWord)&0x1CC000)>>14;
 		pDM_PSTable->RegC70 = (ODM_GetBBReg(pDM_Odm, 0xc70, bMaskDWord)&BIT3)>>3;
 		pDM_PSTable->Reg85C = (ODM_GetBBReg(pDM_Odm, 0x85c, bMaskDWord)&0xFF000000)>>24;
@@ -158,7 +158,7 @@ ODM_RF_Saving(
 	if(!bForceInNormal)
 	{
 		if(pDM_Odm->RSSI_Min != 0xFF)
-		{			 
+		{
 			if(pDM_PSTable->PreRFState == RF_Normal)
 			{
 				if(pDM_Odm->RSSI_Min >= Rssi_Up_bound)
@@ -180,7 +180,7 @@ ODM_RF_Saving(
 	{
 		pDM_PSTable->CurRFState = RF_Normal;
 	}
-	
+
 	if(pDM_PSTable->PreRFState != pDM_PSTable->CurRFState)
 	{
 		if(pDM_PSTable->CurRFState == RF_Save)
@@ -201,11 +201,11 @@ ODM_RF_Saving(
 		}
 		else
 		{
-			ODM_SetBBReg(pDM_Odm, 0x874  , 0x1CC000, pDM_PSTable->Reg874); 
-			ODM_SetBBReg(pDM_Odm, 0xc70, BIT3, pDM_PSTable->RegC70); 
+			ODM_SetBBReg(pDM_Odm, 0x874  , 0x1CC000, pDM_PSTable->Reg874);
+			ODM_SetBBReg(pDM_Odm, 0xc70, BIT3, pDM_PSTable->RegC70);
 			ODM_SetBBReg(pDM_Odm, 0x85c, 0xFF000000, pDM_PSTable->Reg85C);
-			ODM_SetBBReg(pDM_Odm, 0xa74, 0xF000, pDM_PSTable->RegA74); 
-			ODM_SetBBReg(pDM_Odm,0x818, BIT28, 0x0);  
+			ODM_SetBBReg(pDM_Odm, 0xa74, 0xF000, pDM_PSTable->RegA74);
+			ODM_SetBBReg(pDM_Odm,0x818, BIT28, 0x0);
 
 			if(pDM_Odm->SupportICType == ODM_RTL8723A)
 			{
@@ -214,5 +214,5 @@ ODM_RF_Saving(
 		}
 		pDM_PSTable->PreRFState =pDM_PSTable->CurRFState;
 	}
-#endif	
+#endif
 }

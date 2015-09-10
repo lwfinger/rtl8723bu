@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -381,7 +381,7 @@ struct oid_obj_priv oid_rtl_seg_87_12_00[]=
 	{1, &oid_rt_pro_read_efuse_hdl},		//0x05	Q	OID_RT_PRO_READ_EFUSE
 	{1, &oid_rt_pro_write_efuse_hdl},		//0x06	S	OID_RT_PRO_WRITE_EFUSE
 	{1, &oid_rt_pro_rw_efuse_pgpkt_hdl},		//0x07	Q,S
-	{1, &oid_rt_get_efuse_current_size_hdl},	//0x08 	Q
+	{1, &oid_rt_get_efuse_current_size_hdl},	//0x08	Q
 	{1, &oid_rt_set_bandwidth_hdl},			//0x09
 	{1, &oid_rt_set_crystal_cap_hdl},		//0x0a
 	{1, &oid_rt_set_rx_packet_type_hdl},		//0x0b	S
@@ -522,7 +522,7 @@ enum RTL871X_MP_IOCTL_SUBCODE {
 	GEN_MP_IOCTL_SUBCODE(TRIGGER_GPIO),
 	GEN_MP_IOCTL_SUBCODE(SET_DM_BT),		/*32*/
 	GEN_MP_IOCTL_SUBCODE(DEL_BA),			/*33*/
-	GEN_MP_IOCTL_SUBCODE(GET_WIFI_STATUS),	/*34*/	
+	GEN_MP_IOCTL_SUBCODE(GET_WIFI_STATUS),	/*34*/
 	MAX_MP_IOCTL_SUBCODE,
 };
 
@@ -588,4 +588,3 @@ extern struct mp_ioctl_handler mp_ioctl_hdl[];
 #endif /* _RTW_MP_IOCTL_C_ */
 
 #endif
-

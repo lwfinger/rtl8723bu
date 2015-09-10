@@ -46,4 +46,3 @@ void rtl8723be_DeInitSwLeds(PADAPTER padapter);
 #endif
 
 #endif
-

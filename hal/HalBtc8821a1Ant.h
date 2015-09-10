@@ -78,7 +78,7 @@ typedef struct _COEX_DM_8821A_1ANT{
 	u1Byte		curRpwm;
 
 	// sw mechanism
-	BOOLEAN 	bPreLowPenaltyRa;
+	BOOLEAN		bPreLowPenaltyRa;
 	BOOLEAN		bCurLowPenaltyRa;
 	u4Byte		preVal0x6c0;
 	u4Byte		curVal0x6c0;
@@ -210,4 +210,3 @@ VOID
 EXhalbtc8821a1ant_DisplayCoexInfo(
 	IN	PBTC_COEXIST		pBtCoexist
 	);
-

@@ -297,10 +297,10 @@ static void Init_ODM_ComInfo_8723b(PADAPTER	Adapter)
 	#else
 	pdmpriv->InitODMFlag =	ODM_RF_CALIBRATION		|
 							ODM_RF_TX_PWR_TRACK	//|
-							;	
+							;
 	//if(pHalData->AntDivCfg)
 	//	pdmpriv->InitODMFlag |= ODM_BB_ANT_DIV;
-	#endif	
+	#endif
 
 	ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_ABILITY,pdmpriv->InitODMFlag);
 }
@@ -382,7 +382,7 @@ static void Update_ODM_ComInfo_8723b(PADAPTER	Adapter)
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_BT_DISABLE_EDCA,&(pDM_Odm->u1Byte_temp));
 	*/
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_FORCED_RATE,&(pHalData->ForcedDataRate));
-	
+
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_SCAN,&(pmlmepriv->bScanInProcess));
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_POWER_SAVING,&(pwrctrlpriv->bpower_saving));
 
@@ -418,7 +418,7 @@ rtl8723b_InitHalDm(
 	pdmpriv->InitDMFlag = pdmpriv->DMFlag;
 
 	Update_ODM_ComInfo_8723b(Adapter);
-	
+
 	if (Adapter->registrypriv.mp_mode == 0)
 		ODM_DMInit(pDM_Odm);
 
@@ -445,7 +445,7 @@ IN	PADAPTER	pAdapter
 
 		if((pdmpriv->EntryMinUndecoratedSmoothedPWDB != 0) &&
                   (pbuddy_dmpriv->EntryMinUndecoratedSmoothedPWDB != 0))
-      		{
+		{
 
 			if(pdmpriv->EntryMinUndecoratedSmoothedPWDB > pbuddy_dmpriv->EntryMinUndecoratedSmoothedPWDB)
 				pdmpriv->EntryMinUndecoratedSmoothedPWDB = pbuddy_dmpriv->EntryMinUndecoratedSmoothedPWDB;
@@ -456,7 +456,7 @@ IN	PADAPTER	pAdapter
 			      pdmpriv->EntryMinUndecoratedSmoothedPWDB = pbuddy_dmpriv->EntryMinUndecoratedSmoothedPWDB;
 
 		}
- 		#if 0
+		#if 0
 		if((pdmpriv->UndecoratedSmoothedPWDB != (-1)) &&
 			 (pbuddy_dmpriv->UndecoratedSmoothedPWDB != (-1)))
 		{
@@ -577,12 +577,12 @@ if (Adapter->registrypriv.mp_mode == 1 && Adapter->mppriv.mp_dm ==0) // for MP p
 		u8	bsta_state=_FALSE;
 		u8	bBtDisabled = _TRUE;
 
-		if(rtw_linked_check(Adapter)){			
+		if(rtw_linked_check(Adapter)){
 			bLinked = _TRUE;
 			if (check_fwstate(&Adapter->mlmepriv, WIFI_STATION_STATE))
 				bsta_state = _TRUE;
 		}
-			
+
 #ifdef CONFIG_CONCURRENT_MODE
 		if(pbuddy_adapter && rtw_linked_check(pbuddy_adapter)){
 			bLinked = _TRUE;
@@ -622,8 +622,8 @@ skip_dm:
 
 void rtl8723b_hal_dm_in_lps(PADAPTER padapter)
 {
-	u32	PWDB_rssi=0;	
-	struct mlme_priv 	*pmlmepriv = &padapter->mlmepriv;
+	u32	PWDB_rssi=0;
+	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 	PDM_ODM_T		pDM_Odm = &pHalData->odmpriv;
 	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
@@ -641,9 +641,9 @@ void rtl8723b_hal_dm_in_lps(PADAPTER padapter)
 	if(psta && (psta->rssi_stat.UndecoratedSmoothedPWDB > 0))
 	{
 		PWDB_rssi = (psta->mac_id | (psta->rssi_stat.UndecoratedSmoothedPWDB<<16) );
-		
+
 		rtl8723b_set_rssi_cmd(padapter, (u8*)&PWDB_rssi);
-	}	
+	}
 
 }
 
@@ -651,7 +651,7 @@ void rtl8723b_HalDmWatchDog_in_LPS(IN	PADAPTER	Adapter)
 {
 	u8	bLinked=_FALSE;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
-	struct mlme_priv 	*pmlmepriv = &Adapter->mlmepriv;
+	struct mlme_priv	*pmlmepriv = &Adapter->mlmepriv;
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &pHalData->odmpriv;
 	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
@@ -682,9 +682,9 @@ void rtl8723b_HalDmWatchDog_in_LPS(IN	PADAPTER	Adapter)
 		goto skip_lps_dm;
 
 
-	//ODM_DMWatchdog(&pHalData->odmpriv);	
-	//Do DIG by RSSI In LPS-32K 
-	
+	//ODM_DMWatchdog(&pHalData->odmpriv);
+	//Do DIG by RSSI In LPS-32K
+
       //.1 Find MIN-RSSI
 	psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv));
 	if(psta == NULL)
@@ -702,14 +702,14 @@ void rtl8723b_HalDmWatchDog_in_LPS(IN	PADAPTER	Adapter)
 	pDM_Odm->RSSI_Min = pdmpriv->MinUndecoratedPWDBForDM;
 
 	//if(pDM_DigTable->CurIGValue != pDM_Odm->RSSI_Min)
-	if((pDM_DigTable->CurIGValue > pDM_Odm->RSSI_Min + 5) || 
+	if((pDM_DigTable->CurIGValue > pDM_Odm->RSSI_Min + 5) ||
              (pDM_DigTable->CurIGValue < pDM_Odm->RSSI_Min - 5))
 
-	{		
-		rtw_dm_in_lps_wk_cmd(Adapter);		
+	{
+		rtw_dm_in_lps_wk_cmd(Adapter);
 	}
-	
-	
+
+
 skip_lps_dm:
 
 	return;
@@ -720,7 +720,7 @@ void rtl8723b_init_dm_priv(IN PADAPTER Adapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	PDM_ODM_T 		podmpriv = &pHalData->odmpriv;
+	PDM_ODM_T		podmpriv = &pHalData->odmpriv;
 	_rtw_memset(pdmpriv, 0, sizeof(struct dm_priv));
 	Init_ODM_ComInfo_8723b(Adapter);
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY
@@ -734,10 +734,9 @@ void rtl8723b_deinit_dm_priv(IN PADAPTER Adapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	PDM_ODM_T 		podmpriv = &pHalData->odmpriv;
+	PDM_ODM_T		podmpriv = &pHalData->odmpriv;
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY
 	//_cancel_timer_ex(&pdmpriv->SwAntennaSwitchTimer);
 	ODM_CancelAllTimers(podmpriv);
 #endif
 }
-

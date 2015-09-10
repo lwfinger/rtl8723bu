@@ -26,9 +26,9 @@
 //====================================================
 #define EEPROM_VID_92C							0x0A
 #define EEPROM_PID_92C							0x0C
-#define EEPROM_DID_92C							0x0C 
+#define EEPROM_DID_92C							0x0C
 #define EEPROM_SVID_92C						0x0E
-#define EEPROM_SMID_92C						0x10 
+#define EEPROM_SMID_92C						0x10
 #define EEPROM_MAC_ADDR_92C					0x16
 
 #define EEPROM_MAC_ADDR						0x16
@@ -41,7 +41,7 @@
 #define EEPROM_OFDM_TX_PWR_INX_DIFF			0x6C
 #define EEPROM_HT40_MAX_PWR_OFFSET			0x6F
 #define EEPROM_HT20_MAX_PWR_OFFSET			0x72
-#define EEPROM_CHANNEL_PLAN_92C 				0x75
+#define EEPROM_CHANNEL_PLAN_92C					0x75
 #define EEPROM_TSSI_A							0x76
 #define EEPROM_TSSI_B							0x77
 #define EEPROM_THERMAL_METER_92C				0x78
@@ -74,8 +74,8 @@
 #define EEPROM_HT40_1S_TX_PWR_INX_8723A		0x16
 #define EEPROM_HT20_TX_PWR_INX_DIFF_8723A	0x1C
 #define EEPROM_OFDM_TX_PWR_INX_DIFF_8723A	0x1F
-#define EEPROM_HT40_MAX_PWR_OFFSET_8723A	0x22 
-#define EEPROM_HT20_MAX_PWR_OFFSET_8723A	0x25 
+#define EEPROM_HT40_MAX_PWR_OFFSET_8723A	0x22
+#define EEPROM_HT20_MAX_PWR_OFFSET_8723A	0x25
 
 #define EEPROM_ChannelPlan_8723A				0x28
 #define EEPROM_TSSI_A_8723A					0x29
@@ -162,7 +162,7 @@
 #define EEPROM_HT20_MAX_PWR_OFFSET_5GH_92D				0xB8
 
 
-#define EEPROM_CHANNEL_PLAN_92D							0xBB // Map of supported channels.	
+#define EEPROM_CHANNEL_PLAN_92D							0xBB // Map of supported channels.
 #define EEPROM_TEST_CHANNEL_PLAN_92D					0xBB
 #define EEPROM_THERMAL_METER_92D							0xC3	//[4:0]
 #define EEPROM_IQK_DELTA_92D								0xBC
@@ -276,9 +276,9 @@
 #define	EEPROM_MAC_ADDR_8192EU				0xD7
 #define	EEPROM_VID_8192EU						0xD0
 #define	EEPROM_PID_8192EU						0xD2
-#define 	EEPROM_PA_TYPE_8192EU               		0xBC
-#define 	EEPROM_LNA_TYPE_2G_8192EU           	0xBD
-#define 	EEPROM_LNA_TYPE_5G_8192EU           	0xBF
+#define		EEPROM_PA_TYPE_8192EU				0xBC
+#define		EEPROM_LNA_TYPE_2G_8192EU		0xBD
+#define		EEPROM_LNA_TYPE_5G_8192EU		0xBF
 
 // RTL8192ES
 #define	EEPROM_MAC_ADDR_8192ES				0x11B
@@ -378,11 +378,11 @@
 
 
 #define EEPROM_VID_92SU						0x08
-#define EEPROM_PID_92SU						0x0A 
+#define EEPROM_PID_92SU						0x0A
 
 #define EEPROM_Version_92SU					0x50
-#define EEPROM_TSSI_A_92SU						0x6b 
-#define EEPROM_TSSI_B_92SU						0x6c 
+#define EEPROM_TSSI_A_92SU						0x6b
+#define EEPROM_TSSI_B_92SU						0x6c
 
 //====================================================
 //			EEPROM/Efuse PG Offset for 8723BE/8723BU/8723BS
@@ -439,7 +439,7 @@
 #define EEPROM_CID_TOSHIBA						0x4
 #define EEPROM_CID_CCX							0x10
 #define EEPROM_CID_QMI							0x0D
-#define EEPROM_CID_WHQL 						0xFE
+#define EEPROM_CID_WHQL							0xFE
 
 #define EEPROM_CHANNEL_PLAN_FCC				0x0
 #define EEPROM_CHANNEL_PLAN_IC				0x1
@@ -456,12 +456,12 @@
 #define EEPROM_CHANNEL_PLAN_CHIAN			0XC
 #define EEPROM_CHANNEL_PLAN_SINGAPORE_INDIA_MEXICO  0XD
 #define EEPROM_CHANNEL_PLAN_KOREA			0xE
-#define EEPROM_CHANNEL_PLAN_TURKEY              	0xF
-#define EEPROM_CHANNEL_PLAN_JAPAN                 	0x10
+#define EEPROM_CHANNEL_PLAN_TURKEY			0xF
+#define EEPROM_CHANNEL_PLAN_JAPAN			0x10
 #define EEPROM_CHANNEL_PLAN_FCC_NO_DFS		0x11
 #define EEPROM_CHANNEL_PLAN_JAPAN_NO_DFS	0x12
 #define EEPROM_CHANNEL_PLAN_WORLD_WIDE_5G	0x13
-#define EEPROM_CHANNEL_PLAN_TAIWAN_NO_DFS 	0x14
+#define EEPROM_CHANNEL_PLAN_TAIWAN_NO_DFS	0x14
 
 #define EEPROM_USB_OPTIONAL1					0xE
 #define EEPROM_CHANNEL_PLAN_BY_HW_MASK		0x80
@@ -479,7 +479,7 @@
 
 #define EEPROM_Default_CrystalCap				0x0
 #define EEPROM_Default_CrystalCap_8723A		0x20
-#define EEPROM_Default_CrystalCap_88E 			0x20
+#define EEPROM_Default_CrystalCap_88E			0x20
 #define EEPROM_Default_CrystalCap_8812			0x20
 #define EEPROM_Default_CrystalCap_8192E			0x20
 #define EEPROM_Default_CrystalCap_8723B			0x20
@@ -492,7 +492,7 @@
 #define EEPROM_Default_HT20_Diff				2
 #define EEPROM_Default_LegacyHTTxPowerDiff		0x3
 #define EEPROM_Default_LegacyHTTxPowerDiff_92C	0x3
-#define EEPROM_Default_LegacyHTTxPowerDiff_92D	0x4	
+#define EEPROM_Default_LegacyHTTxPowerDiff_92D	0x4
 #define EEPROM_Default_HT40_PwrMaxOffset		0
 #define EEPROM_Default_HT20_PwrMaxOffset		0
 
@@ -537,10 +537,10 @@
 
 //
 // For VHT series TX power by rate table.
-// VHT TX power by rate off setArray = 
+// VHT TX power by rate off setArray =
 // Band:-2G&5G = 0 / 1
 // RF: at most 4*4 = ABCD=0/1/2/3
-// CCK=0 OFDM=1/2 HT-MCS 0-15=3/4/56 VHT=7/8/9/10/11			
+// CCK=0 OFDM=1/2 HT-MCS 0-15=3/4/56 VHT=7/8/9/10/11
 //
 #define TX_PWR_BY_RATE_NUM_BAND			2
 #define TX_PWR_BY_RATE_NUM_RF			4
@@ -571,7 +571,7 @@ typedef struct _TxPowerInfo{
 //For 88E new structure
 
 /*
-2.4G: 
+2.4G:
 {
 {1,2},
 {3,4,5},
@@ -599,18 +599,18 @@ typedef struct _TxPowerInfo{
 }
 */
 #define	MAX_RF_PATH				4
-#define 	RF_PATH_MAX				MAX_RF_PATH	
-#define	MAX_CHNL_GROUP_24G		6 
-#define	MAX_CHNL_GROUP_5G		14 
+#define		RF_PATH_MAX				MAX_RF_PATH
+#define	MAX_CHNL_GROUP_24G		6
+#define	MAX_CHNL_GROUP_5G		14
 
 //It must always set to 4, otherwise read efuse table secquence will be wrong.
-#define 	MAX_TX_COUNT				4
+#define		MAX_TX_COUNT				4
 
 typedef struct _TxPowerInfo24G{
 	u8 IndexCCK_Base[MAX_RF_PATH][MAX_CHNL_GROUP_24G];
 	u8 IndexBW40_Base[MAX_RF_PATH][MAX_CHNL_GROUP_24G];
 	//If only one tx, only BW20 and OFDM are used.
-	s8 CCK_Diff[MAX_RF_PATH][MAX_TX_COUNT];	
+	s8 CCK_Diff[MAX_RF_PATH][MAX_TX_COUNT];
 	s8 OFDM_Diff[MAX_RF_PATH][MAX_TX_COUNT];
 	s8 BW20_Diff[MAX_RF_PATH][MAX_TX_COUNT];
 	s8 BW40_Diff[MAX_RF_PATH][MAX_TX_COUNT];
@@ -628,12 +628,12 @@ typedef struct _TxPowerInfo5G{
 
 
 typedef	enum _BT_Ant_NUM{
-	Ant_x2	= 0,		
+	Ant_x2	= 0,
 	Ant_x1	= 1
 } BT_Ant_NUM, *PBT_Ant_NUM;
 
 typedef	enum _BT_CoType{
-	BT_2WIRE		= 0,		
+	BT_2WIRE		= 0,
 	BT_ISSC_3WIRE	= 1,
 	BT_ACCEL		= 2,
 	BT_CSR_BC4		= 3,
@@ -648,7 +648,7 @@ typedef	enum _BT_CoType{
 } BT_CoType, *PBT_CoType;
 
 typedef	enum _BT_RadioShared{
-	BT_Radio_Shared 	= 0,	
+	BT_Radio_Shared		= 0,
 	BT_Radio_Individual	= 1,
 } BT_RadioShared, *PBT_RadioShared;
 

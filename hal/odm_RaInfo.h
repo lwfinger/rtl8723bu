@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,7 +17,7 @@
  *
  *
  ******************************************************************************/
- 
+
 #ifndef	__ODMRAINFO_H__
 #define    __ODMRAINFO_H__
 
@@ -25,8 +25,8 @@
 
 #define		DM_RATR_STA_INIT			0
 #define		DM_RATR_STA_HIGH			1
-#define 		DM_RATR_STA_MIDDLE		2
-#define 		DM_RATR_STA_LOW			3
+#define			DM_RATR_STA_MIDDLE		2
+#define			DM_RATR_STA_LOW			3
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 #define		DM_RATR_STA_ULTRA_LOW	4
 #endif
@@ -73,7 +73,7 @@ odm_RSSIMonitorInit(
 
 VOID
 odm_RSSIMonitorCheck(
-	IN	 	PVOID	 	 pDM_VOID
+	IN		PVOID		 pDM_VOID
 	);
 
 #if(DM_ODM_SUPPORT_TYPE==ODM_WIN)
@@ -85,15 +85,15 @@ odm_RSSIDumpToRegister(
 
 VOID
 odm_RSSIMonitorCheckMP(
-	IN		PVOID	 	pDM_VOID
+	IN		PVOID		pDM_VOID
 	);
 
-VOID 
+VOID
 odm_RSSIMonitorCheckCE(
 	IN		PVOID		pDM_VOID
 	);
 
-VOID 
+VOID
 odm_RSSIMonitorCheckAP(
 	IN		PVOID		 pDM_VOID
 	);
@@ -101,7 +101,7 @@ odm_RSSIMonitorCheckAP(
 
 VOID
 odm_RateAdaptiveMaskInit(
-	IN	PVOID	pDM_VOID	
+	IN	PVOID	pDM_VOID
 	);
 
 VOID
@@ -116,7 +116,7 @@ odm_RefreshRateAdaptiveMaskMP(
 
 VOID
 odm_RefreshRateAdaptiveMaskCE(
-	IN	PVOID	pDM_VOID	
+	IN	PVOID	pDM_VOID
 	);
 
 VOID
@@ -124,14 +124,14 @@ odm_RefreshRateAdaptiveMaskAPADSL(
 	IN	PVOID	pDM_VOID
 	);
 
-BOOLEAN 
+BOOLEAN
 ODM_RAStateCheck(
 	IN		PVOID			pDM_VOID,
 	IN		s4Byte			RSSI,
 	IN		BOOLEAN			bForceUpdate,
 	OUT		pu1Byte			pRATRState
 	);
-	
+
 #if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 odm_RefreshBasicRateMask(
@@ -143,27 +143,25 @@ odm_RefreshBasicRateMask(
 VOID
 ODM_DynamicARFBSelect(
 	IN		PVOID			pDM_VOID,
-	IN 		u1Byte			rate,
-	IN  	BOOLEAN			Collision_State	
+	IN		u1Byte			rate,
+	IN	BOOLEAN			Collision_State
 	);
-	
+
 VOID
-ODM_RateAdaptiveStateApInit(	
+ODM_RateAdaptiveStateApInit(
 	IN	PVOID		PADAPTER_VOID,
-	IN	PRT_WLAN_STA  	pEntry
+	IN	PRT_WLAN_STA	pEntry
 	);
 #endif
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
-u4Byte 
+u4Byte
 ODM_Get_Rate_Bitmap(
-	IN	PVOID		pDM_VOID,	
+	IN	PVOID		pDM_VOID,
 	IN	u4Byte		macid,
-	IN	u4Byte 		ra_mask,	
-	IN	u1Byte 		rssi_level
+	IN	u4Byte		ra_mask,
+	IN	u1Byte		rssi_level
 	);
 #endif
 
 #endif //#ifndef	__ODMRAINFO_H__
-
-

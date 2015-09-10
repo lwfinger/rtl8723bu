@@ -21,15 +21,15 @@
 #define __RTW_PWRCTRL_H_
 
 
-#define FW_PWR0	0	
-#define FW_PWR1 	1
-#define FW_PWR2 	2
-#define FW_PWR3 	3
+#define FW_PWR0	0
+#define FW_PWR1		1
+#define FW_PWR2		2
+#define FW_PWR3		3
 
 
-#define HW_PWR0	7	
-#define HW_PWR1 	6
-#define HW_PWR2 	2
+#define HW_PWR0	7
+#define HW_PWR1		6
+#define HW_PWR2		2
 #define HW_PWR3	0
 #define HW_PWR4	8
 
@@ -107,7 +107,7 @@ struct reportpwrstate_parm {
 	unsigned char mode;
 	unsigned char state; //the CPWM value
 	unsigned short rsvd;
-}; 
+};
 
 
 typedef _sema _pwrlock;
@@ -183,7 +183,7 @@ enum _PS_BBRegBackup_ {
 enum { // for ips_mode
 	IPS_NONE=0,
 	IPS_NORMAL,
-	IPS_LEVEL_2,	
+	IPS_LEVEL_2,
 	IPS_NUM
 };
 
@@ -211,7 +211,7 @@ typedef struct pno_nlo_info
 	u8	ssid_length[MAX_PNO_LIST_COUNT];	//SSID Length Array
 	u8	ssid_cipher_info[MAX_PNO_LIST_COUNT];	//Cipher information for security
 	u8	ssid_channel_info[MAX_PNO_LIST_COUNT];	//channel information
-}pno_nlo_info_t;	
+}pno_nlo_info_t;
 
 typedef struct pno_ssid {
 	u32		SSID_len;
@@ -257,7 +257,7 @@ struct pwrctrl_priv
 	u8	pwr_mode;
 	u8	smart_ps;
 	u8	bcn_ant_mode;
-	u8 	dtim;
+	u8	dtim;
 
 	u32	alives;
 	_workitem cpwm_event;
@@ -277,11 +277,11 @@ struct pwrctrl_priv
 	u32	cur_ps_level;
 	u32	reg_rfps_level;
 
-	uint 	ips_enter_cnts;
-	uint 	ips_leave_cnts;
+	uint	ips_enter_cnts;
+	uint	ips_leave_cnts;
 
-	u8	ips_mode; 
-	u8	ips_org_mode; 
+	u8	ips_mode;
+	u8	ips_org_mode;
 	u8	ips_mode_req; // used to accept the mode setting request, will update to ipsmode later
 	uint bips_processing;
 	u32 ips_deny_time; /* will deny IPS when system time is smaller than this */
@@ -312,7 +312,7 @@ struct pwrctrl_priv
 	u8		bAutoResume;
 	u8		autopm_cnt;
 #endif
-	u8		bSupportRemoteWakeup;	
+	u8		bSupportRemoteWakeup;
 	u8		wowlan_wake_reason;
 	u8		wowlan_ap_mode;
 	u8		wowlan_mode;
@@ -332,14 +332,14 @@ struct pwrctrl_priv
 	u32		wowlan_pattern_context[8][5];
 	u64		wowlan_fw_iv;
 #endif // CONFIG_WOWLAN
-	_timer 	pwr_state_check_timer;
+	_timer	pwr_state_check_timer;
 	int		pwr_state_check_interval;
 	u8		pwr_state_check_cnts;
 
-	int 		ps_flag; /* used by autosuspend */
-	
+	int		ps_flag; /* used by autosuspend */
+
 	rt_rf_power_state	rf_pwrstate;//cur power state, only for IPS
-	//rt_rf_power_state 	current_rfpwrstate;
+	//rt_rf_power_state	current_rfpwrstate;
 	rt_rf_power_state	change_rfpwrstate;
 
 	u8		bHWPowerdown; /* power down mode selection. 0:radio off, 1:power down */
@@ -357,7 +357,7 @@ struct pwrctrl_priv
 	struct early_suspend early_suspend;
 	u8 do_late_resume;
 	#endif //CONFIG_HAS_EARLYSUSPEND
-	
+
 	#ifdef CONFIG_ANDROID_POWER
 	android_early_suspend_t early_suspend;
 	u8 do_late_resume;
@@ -381,7 +381,7 @@ struct pwrctrl_priv
 		/*DBG_871X("%s _rtw_set_pwr_state_check_timer(%p, %d)\n", __FUNCTION__, (pwrctl), (ms));*/ \
 		_set_timer(&(pwrctl)->pwr_state_check_timer, (ms)); \
 	} while(0)
-	
+
 #define rtw_set_pwr_state_check_timer(pwrctl) \
 	_rtw_set_pwr_state_check_timer((pwrctl), (pwrctl)->pwr_state_check_interval)
 
@@ -464,4 +464,3 @@ void rtw_ps_deny_cancel(PADAPTER padapter, PS_DENY_REASON reason);
 u32 rtw_ps_deny_get(PADAPTER padapter);
 
 #endif  //__RTL871X_PWRCTRL_H_
-

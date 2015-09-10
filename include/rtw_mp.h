@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -54,7 +54,7 @@
 #endif
 
 
-#define MAX_MP_XMITBUF_SZ 	2048
+#define MAX_MP_XMITBUF_SZ	2048
 #define NR_MP_XMITFRAME		8
 
 struct mp_xmit_frame
@@ -129,28 +129,28 @@ struct mp_tx
 #define u4Byte u32
 #define s4Byte s32
 #define u1Byte		u8
-#define pu1Byte 		u8* 
+#define pu1Byte			u8*
 
 #define u2Byte		u16
-#define pu2Byte 		u16*		
+#define pu2Byte			u16*
 
 #define u4Byte		u32
-#define pu4Byte 		u32*	
+#define pu4Byte			u32*
 
 #define u8Byte		u64
-#define pu8Byte 		u64*
+#define pu8Byte			u64*
 
 #define s1Byte		s8
-#define ps1Byte 		s8* 
+#define ps1Byte			s8*
 
 #define s2Byte		s16
-#define ps2Byte 		s16*	
+#define ps2Byte			s16*
 
 #define s4Byte		s32
-#define ps4Byte 		s32*	
+#define ps4Byte			s32*
 
 #define s8Byte		s64
-#define ps8Byte 		s64*
+#define ps8Byte			s64*
 
 #define UCHAR u8
 #define USHORT u16
@@ -176,7 +176,7 @@ typedef struct _MPT_CONTEXT
 	BOOLEAN		MptH2cRspEvent;
 	BOOLEAN		MptBtC2hEvent;
 	BOOLEAN		bMPh2c_timeout;
-	
+
 	/* 8190 PCI does not support NDIS_WORK_ITEM. */
 	// Work Item for Mass Production Test.
 	//NDIS_WORK_ITEM	MptWorkItem;
@@ -195,7 +195,7 @@ typedef struct _MPT_CONTEXT
 	// _TEST_MODE, defined in MPT_Req2.h
 	ULONG			MptTestItem;
 	// Variable needed in each implementation of CurrMptAct.
-	ULONG			MptActType; 	// Type of action performed in CurrMptAct.
+	ULONG			MptActType;	// Type of action performed in CurrMptAct.
 	// The Offset of IO operation is depend of MptActType.
 	ULONG			MptIoOffset;
 	// The Value of IO operation is depend of MptActType.
@@ -204,9 +204,9 @@ typedef struct _MPT_CONTEXT
 	ULONG			MptRfPath;
 
 	WIRELESS_MODE		MptWirelessModeToSw;	// Wireless mode to switch.
-	u8			MptChannelToSw; 	// Channel to switch.
-	u8			MptInitGainToSet; 	// Initial gain to set.
-	//ULONG			bMptAntennaA; 		// TRUE if we want to use antenna A.
+	u8			MptChannelToSw;		// Channel to switch.
+	u8			MptInitGainToSet;	// Initial gain to set.
+	//ULONG			bMptAntennaA;		// TRUE if we want to use antenna A.
 	ULONG			MptBandWidth;		// bandwidth to switch.
 	ULONG			MptRateIndex;		// rate index.
 	// Register value kept for Single Carrier Tx test.
@@ -220,14 +220,14 @@ typedef struct _MPT_CONTEXT
 	ULONG			MptRCR;
 	// TRUE if we only receive packets with specific pattern.
 	BOOLEAN			bMptFilterPattern;
- 	// Rx OK count, statistics used in Mass Production Test.
- 	ULONG			MptRxOkCnt;
- 	// Rx CRC32 error count, statistics used in Mass Production Test.
- 	ULONG			MptRxCrcErrCnt;
+	// Rx OK count, statistics used in Mass Production Test.
+	ULONG			MptRxOkCnt;
+	// Rx CRC32 error count, statistics used in Mass Production Test.
+	ULONG			MptRxCrcErrCnt;
 
 	BOOLEAN			bCckContTx;	// TRUE if we are in CCK Continuous Tx test.
- 	BOOLEAN			bOfdmContTx;	// TRUE if we are in OFDM Continuous Tx test.
-	BOOLEAN			bStartContTx; 	// TRUE if we have start Continuous Tx test.
+	BOOLEAN			bOfdmContTx;	// TRUE if we are in OFDM Continuous Tx test.
+	BOOLEAN			bStartContTx;	// TRUE if we have start Continuous Tx test.
 	// TRUE if we are in Single Carrier Tx test.
 	BOOLEAN			bSingleCarrier;
 	// TRUE if we are in Carrier Suppression Tx Test.
@@ -250,19 +250,19 @@ typedef struct _MPT_CONTEXT
 	u8		backup0xc50;
 	u8		backup0xc58;
 	u8		backup0xc30;
-	u8 		backup0x52_RF_A;
-	u8 		backup0x52_RF_B;
-	
-	u4Byte			backup0x58_RF_A;	
+	u8		backup0x52_RF_A;
+	u8		backup0x52_RF_B;
+
+	u4Byte			backup0x58_RF_A;
 	u4Byte			backup0x58_RF_B;
-	
+
 	u1Byte			h2cReqNum;
 	u1Byte			c2hBuf[32];
 
     u1Byte          btInBuf[100];
 	ULONG			mptOutLen;
     u1Byte          mptOutBuf[100];
-    
+
 }MPT_CONTEXT, *PMPT_CONTEXT;
 #endif
 //#endif
@@ -299,8 +299,8 @@ typedef struct _MPT_CONTEXT
 #endif
 /* end of E-Fuse */
 
-//#define RTPRIV_IOCTL_MP 					( SIOCIWFIRSTPRIV + 0x17)
-enum {	  
+//#define RTPRIV_IOCTL_MP					( SIOCIWFIRSTPRIV + 0x17)
+enum {
 	WRITE_REG = 1,
 	READ_REG,
 	WRITE_RF,
@@ -384,7 +384,7 @@ struct mp_priv
 	u16 antenna_tx;
 	u16 antenna_rx;
 //	u8 curr_rfpath;
-	
+
 	u8 check_mp_pkt;
 
 	u8 bSetTxPower;
@@ -392,7 +392,7 @@ struct mp_priv
 	u8 mp_dm;
 	u8 mac_filter[ETH_ALEN];
 	u8 bmac_filter;
-	
+
 	struct wlan_network mp_network;
 	NDIS_802_11_MAC_ADDRESS network_macaddr;
 
@@ -402,7 +402,7 @@ struct mp_priv
 	u32 free_mp_xmitframe_cnt;
 	BOOLEAN bSetRxBssid;
 	BOOLEAN bTxBufCkFail;
-	
+
 	MPT_CONTEXT MptCtx;
 
 	u8		*TXradomBuffer;
@@ -428,11 +428,11 @@ struct bb_reg_param {
 typedef struct _MP_FIRMWARE {
 	FIRMWARE_SOURCE eFWSource;
 #ifdef CONFIG_EMBEDDED_FWIMG
-	u8* 		szFwBuffer;
+	u8*		szFwBuffer;
 #else
 	u8			szFwBuffer[0x8000];
 #endif
-	u32 		ulFwLength;
+	u32		ulFwLength;
 } RT_MP_FIRMWARE, *PRT_MP_FIRMWARE;
 
 
@@ -440,7 +440,7 @@ typedef struct _MP_FIRMWARE {
 
 //=======================================================================
 
-#define LOWER 	_TRUE
+#define LOWER	_TRUE
 #define RAISE	_FALSE
 
 /* Hardware Registers */
@@ -555,10 +555,10 @@ typedef enum _POWER_MODE_ {
 
 // The following enumeration is used to define the value of Reg0xD00[30:28] or JaguarReg0x914[18:16].
 typedef enum _OFDM_TX_MODE {
-	OFDM_ALL_OFF		= 0,	
+	OFDM_ALL_OFF		= 0,
 	OFDM_ContinuousTx	= 1,
 	OFDM_SingleCarrier	= 2,
-	OFDM_SingleTone 	= 4,
+	OFDM_SingleTone		= 4,
 } OFDM_TX_MODE;
 
 
@@ -570,7 +570,7 @@ typedef enum _OFDM_TX_MODE {
 #define RPTMaxCount 0x000FFFFF;
 
 // parameter 1 : BitMask
-// 	bit 0  : OFDM PPDU
+//	bit 0  : OFDM PPDU
 //	bit 1  : OFDM False Alarm
 //	bit 2  : OFDM MPDU OK
 //	bit 3  : OFDM MPDU Fail
@@ -602,14 +602,14 @@ typedef enum _RXPHY_BITMASK_
 } RXPHY_BITMASK;
 #endif
 
-#define Mac_OFDM_OK 			0x00000000
+#define Mac_OFDM_OK			0x00000000
 #define Mac_OFDM_Fail			0x10000000
-#define Mac_OFDM_FasleAlarm 	0x20000000
+#define Mac_OFDM_FasleAlarm	0x20000000
 #define Mac_CCK_OK				0x30000000
 #define Mac_CCK_Fail			0x40000000
 #define Mac_CCK_FasleAlarm		0x50000000
 #define Mac_HT_OK				0x60000000
-#define Mac_HT_Fail 			0x70000000
+#define Mac_HT_Fail			0x70000000
 #define Mac_HT_FasleAlarm		0x90000000
 #define Mac_DropPacket			0xA0000000
 
@@ -629,18 +629,18 @@ typedef enum	_MPT_TXPWR_DEF{
 #ifdef CONFIG_RF_GAIN_OFFSET
 
 #if defined(CONFIG_RTL8723A)
-	#define 	REG_RF_BB_GAIN_OFFSET_CCK	0x0d
-	#define 	REG_RF_BB_GAIN_OFFSET_OFDM	0x0e
-	#define 	RF_GAIN_OFFSET_MASK 	0xfffff
+	#define		REG_RF_BB_GAIN_OFFSET_CCK	0x0d
+	#define		REG_RF_BB_GAIN_OFFSET_OFDM	0x0e
+	#define		RF_GAIN_OFFSET_MASK	0xfffff
 #elif defined(CONFIG_RTL8723B)
-	#define 	REG_RF_BB_GAIN_OFFSET	0x7f
-	#define 	RF_GAIN_OFFSET_MASK 	0xfffff
+	#define		REG_RF_BB_GAIN_OFFSET	0x7f
+	#define		RF_GAIN_OFFSET_MASK	0xfffff
 #elif defined(CONFIG_RTL8188E)
-	#define 	REG_RF_BB_GAIN_OFFSET	0x55
-	#define 	RF_GAIN_OFFSET_MASK 	0xfffff
+	#define		REG_RF_BB_GAIN_OFFSET	0x55
+	#define		RF_GAIN_OFFSET_MASK	0xfffff
 #else
-	#define 	REG_RF_BB_GAIN_OFFSET	0x55
-	#define 	RF_GAIN_OFFSET_MASK 	0xfffff
+	#define		REG_RF_BB_GAIN_OFFSET	0x55
+	#define		RF_GAIN_OFFSET_MASK	0xfffff
 #endif	//CONFIG_RTL8723A
 
 #endif //CONFIG_RF_GAIN_OFFSET
@@ -747,4 +747,3 @@ extern void MPT_PwrCtlDM(PADAPTER padapter, u32 bstart);
 extern u8 MptToMgntRate(u32	MptRateIdx);
 
 #endif //_RTW_MP_H_
-

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -42,7 +42,7 @@ odm_PathDiversityInit(
 
 	if(pDM_Odm->SupportICType & ODM_RTL8812)
 		ODM_PathDiversityInit_8812A(pDM_Odm);
-#endif	
+#endif
 #endif
 }
 
@@ -63,9 +63,9 @@ odm_PathDiversity(
 
 	if(pDM_Odm->SupportICType & ODM_RTL8812)
 		ODM_PathDiversity_8812A(pDM_Odm);
-#endif	
+#endif
 }
-#endif  //(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE)) 
+#endif  //(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 
 
 
@@ -83,7 +83,7 @@ odm_IsConnected_92C(
 	PMGNT_INFO		pMgntInfo = &(Adapter->MgntInfo);
 	u4Byte		i;
 	BOOLEAN		bConnected=FALSE;
-	
+
 	if(pMgntInfo->mAssoc)
 	{
 		bConnected = TRUE;
@@ -141,11 +141,11 @@ ODM_PathDiversityBeforeLink92C(
 	pHalData = GET_HAL_DATA(Adapter);
 	pMgntInfo = &Adapter->MgntInfo;
 	pDM_PDTable = &Adapter->DM_PDTable;
-	
+
 	// Condition that does not need to use path diversity.
 	if((!IS_92C_SERIAL(pHalData->VersionID)) || (pHalData->PathDivCfg!=1) || pMgntInfo->AntennaTest )
 	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, 
+		RT_TRACE(COMP_INIT, DBG_LOUD,
 				("ODM_PathDiversityBeforeLink92C(): No PathDiv Mechanism before link.\n"));
 		return FALSE;
 	}
@@ -155,15 +155,15 @@ ODM_PathDiversityBeforeLink92C(
 	if(pHalData->eRFPowerState!=eRfOn || pMgntInfo->RFChangeInProgress || pMgntInfo->bMediaConnect)
 	{
 		PlatformReleaseSpinLock(Adapter, RT_RF_STATE_SPINLOCK);
-	
-		RT_TRACE(COMP_INIT, DBG_LOUD, 
-				("ODM_PathDiversityBeforeLink92C(): RFChangeInProgress(%x), eRFPowerState(%x)\n", 
+
+		RT_TRACE(COMP_INIT, DBG_LOUD,
+				("ODM_PathDiversityBeforeLink92C(): RFChangeInProgress(%x), eRFPowerState(%x)\n",
 				pMgntInfo->RFChangeInProgress,
 				pHalData->eRFPowerState));
-	
+
 		//pDM_SWAT_Table->SWAS_NoLink_State = 0;
 		pDM_PDTable->PathDiv_NoLink_State = 0;
-		
+
 		return FALSE;
 	}
 	else
@@ -180,7 +180,7 @@ ODM_PathDiversityBeforeLink92C(
 		// Set check state to next step.
 		//pDM_SWAT_Table->SWAS_NoLink_State = 1;
 		pDM_PDTable->PathDiv_NoLink_State = 1;
-	
+
 		// Copy Current Scan list.
 		Adapter->MgntInfo.tmpNumBssDesc = pMgntInfo->NumBssDesc;
 		PlatformMoveMemory((PVOID)Adapter->MgntInfo.tmpbssDesc, (PVOID)pMgntInfo->bssDesc, sizeof(RT_WLAN_BSS)*MAX_BSS_DESC);
@@ -200,12 +200,12 @@ ODM_PathDiversityBeforeLink92C(
 			pDM_PDTable->OFDMTXPath = 0x0;
 			pDM_PDTable->CCKTXPath = 0x0;
 		}
-#if 0	
+#if 0
 
 		pDM_SWAT_Table->PreAntenna = pDM_SWAT_Table->CurAntenna;
 		pDM_SWAT_Table->CurAntenna = (pDM_SWAT_Table->CurAntenna==Antenna_A)?Antenna_B:Antenna_A;
-		
-		RT_TRACE(COMP_INIT, DBG_LOUD, 
+
+		RT_TRACE(COMP_INIT, DBG_LOUD,
 			("ODM_SwAntDivCheckBeforeLink: Change to Ant(%s) for testing.\n", (pDM_SWAT_Table->CurAntenna==Antenna_A)?"A":"B"));
 		//PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, 0x300, DM_SWAT_Table.CurAntenna);
 		pDM_SWAT_Table->SWAS_NoLink_BK_Reg860 = ((pDM_SWAT_Table->SWAS_NoLink_BK_Reg860 & 0xfffffcff) | (pDM_SWAT_Table->CurAntenna<<8));
@@ -243,7 +243,7 @@ ODM_PathDiversityBeforeLink92C(
 				RT_TRACE(COMP_INIT, DBG_LOUD, ("ODM_PathDiversityBeforeLink92C: Compare scan entry: Score++\n"));
 				RT_PRINT_STR(COMP_INIT, DBG_LOUD, "SSID: ", pTestBssDesc->bdSsIdBuf, pTestBssDesc->bdSsIdLen);
 				RT_TRACE(COMP_INIT, DBG_LOUD, ("Original: %d, Test: %d\n", pTmpBssDesc->RecvSignalPower, pTestBssDesc->RecvSignalPower));
-			
+
 				Score++;
 				PlatformMoveMemory(pTestBssDesc, pTmpBssDesc, sizeof(RT_WLAN_BSS));
 			}
@@ -266,7 +266,7 @@ ODM_PathDiversityBeforeLink92C(
 		}
 		else
 		{
-			RT_TRACE(COMP_INIT, DBG_LOUD, 
+			RT_TRACE(COMP_INIT, DBG_LOUD,
 				("ODM_PathDiversityBeforeLink92C(): DefaultRespPath=%d\n", pDM_PDTable->DefaultRespPath));
 
 			if(pDM_PDTable->DefaultRespPath == 0)
@@ -299,7 +299,7 @@ ODM_PathDiversityBeforeLink92C(
 #else
 		return	FALSE;
 #endif
-	
+
 }
 
 
@@ -331,8 +331,8 @@ odm_PathDiversityAfterLink_92C(
 		RT_TRACE(	COMP_INIT, DBG_LOUD, ("ODM_TXPathDiversity(): No Connections\n"));
 		return;
 	}
-	
-	
+
+
 	if(pDM_PDTable->TrainingState == 0)
 	{
 		RT_TRACE(	COMP_INIT, DBG_LOUD, ("ODM_TXPathDiversity() ==>\n"));
@@ -341,7 +341,7 @@ odm_PathDiversityAfterLink_92C(
 		if((pDM_PDTable->CCKPathDivEnable == TRUE) && (pDM_PDTable->OFDM_Pkt_Cnt < 100))
 		{
 			//RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_CCKTXPathDiversity_92C: TrainingState=0\n"));
-			
+
 			if(pDM_PDTable->CCK_Pkt_Cnt > 300)
 				pDM_PDTable->Timer = 20;
 			else if(pDM_PDTable->CCK_Pkt_Cnt > 100)
@@ -366,7 +366,7 @@ odm_PathDiversityAfterLink_92C(
 		}
 	}
 	else if(pDM_PDTable->TrainingState == 1)
-	{		
+	{
 		//RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_CCKTXPathDiversity_92C: TrainingState=1\n"));
 		PHY_SetBBReg(Adapter, rCCK0_AFESetting  , 0x0F000000, 0x05); // RX path = PathB
 		pDM_PDTable->TrainingState = 2;
@@ -375,8 +375,8 @@ odm_PathDiversityAfterLink_92C(
 	else
 	{
 		//RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_CCKTXPathDiversity_92C: TrainingState=2\n"));
-		pDM_PDTable->TrainingState = 0;	
-		odm_CCKTXPathDiversity_92C(Adapter); 
+		pDM_PDTable->TrainingState = 0;
+		odm_CCKTXPathDiversity_92C(Adapter);
 		if(pDM_PDTable->OFDM_Pkt_Cnt != 0)
 		{
 			DefaultRespPath = pDM_PDTable->OFDMDefaultRespPath;
@@ -407,12 +407,12 @@ odm_SetRespPath_92C(
 	{
 		if(DefaultRespPath == 0)
 		{
-			PlatformEFIOWrite1Byte(Adapter, 0x6D8, (PlatformEFIORead1Byte(Adapter, 0x6D8)&0xc0)|0x15);	
+			PlatformEFIOWrite1Byte(Adapter, 0x6D8, (PlatformEFIORead1Byte(Adapter, 0x6D8)&0xc0)|0x15);
 		}
 		else
 		{
 			PlatformEFIOWrite1Byte(Adapter, 0x6D8, (PlatformEFIORead1Byte(Adapter, 0x6D8)&0xc0)|0x2A);
-		}	
+		}
 	}
 	pDM_PDTable->DefaultRespPath = DefaultRespPath;
 }
@@ -428,7 +428,7 @@ odm_OFDMTXPathDiversity_92C(
 	s4Byte	MinRSSI = 0xFF;
 	pPD_T	pDM_PDTable = &Adapter->DM_PDTable;
 	pDM_PDTable->OFDMTXPath = 0;
-	
+
 	//1 Default Port
 	if(pMgntInfo->mAssoc)
 	{
@@ -462,9 +462,9 @@ odm_OFDMTXPathDiversity_92C(
 		{
 			if(pEntry->bAssociated)
 			{
-				RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_OFDMTXPathDiversity_92C: MACID=%d, RSSI_0=%d, RSSI_1=%d\n", 
+				RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_OFDMTXPathDiversity_92C: MACID=%d, RSSI_0=%d, RSSI_1=%d\n",
 					pEntry->AssociatedMacId, pEntry->rssi_stat.RxRSSIPercentage[0], pEntry->rssi_stat.RxRSSIPercentage[1]));
-				
+
 				if(pEntry->rssi_stat.RxRSSIPercentage[0] > pEntry->rssi_stat.RxRSSIPercentage[1])
 				{
 					pDM_PDTable->OFDMTXPath = pDM_PDTable->OFDMTXPath & ~(BIT(pEntry->AssociatedMacId));
@@ -528,7 +528,7 @@ odm_CCKTXPathDiversity_92C(
 				pDM_PDTable->RSSI_CCK_Path[0], pDM_PDTable->RSSI_CCK_Path[1]));
 			RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_CCKTXPathDiversity_92C: pDM_PDTable->RSSI_CCK_Path_cnt[0]=%d, pDM_PDTable->RSSI_CCK_Path_cnt[1]=%d\n",
 				pDM_PDTable->RSSI_CCK_Path_cnt[0], pDM_PDTable->RSSI_CCK_Path_cnt[1]));
-		
+
 			if(pDM_PDTable->RSSI_CCK_Path[0] > pDM_PDTable->RSSI_CCK_Path[1])
 			{
 				pDM_PDTable->CCKTXPath = pDM_PDTable->CCKTXPath & (~BIT0);
@@ -587,9 +587,9 @@ odm_CCKTXPathDiversity_92C(
 						else
 							pEntry->rssi_stat.RSSI_CCK_Path[j] = 0;
 					}
-					RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_CCKTXPathDiversity_92C: MACID=%d, RSSI_CCK0=%d, RSSI_CCK1=%d\n", 
+					RT_TRACE(	COMP_INIT, DBG_LOUD, ("odm_CCKTXPathDiversity_92C: MACID=%d, RSSI_CCK0=%d, RSSI_CCK1=%d\n",
 						pEntry->AssociatedMacId, pEntry->rssi_stat.RSSI_CCK_Path[0], pEntry->rssi_stat.RSSI_CCK_Path[1]));
-					
+
 					if(pEntry->rssi_stat.RSSI_CCK_Path[0] >pEntry->rssi_stat.RSSI_CCK_Path[1])
 					{
 						pDM_PDTable->CCKTXPath = pDM_PDTable->CCKTXPath & ~(BIT(pEntry->AssociatedMacId));
@@ -663,8 +663,8 @@ odm_ResetPathDiversity_92C(
 	pDM_PDTable->OFDM_Pkt_Cnt = 0;
 	pHalData->CCK_Pkt_Cnt =0;
 	pHalData->OFDM_Pkt_Cnt =0;
-	
-	if(pDM_PDTable->CCKPathDivEnable == TRUE)	
+
+	if(pDM_PDTable->CCKPathDivEnable == TRUE)
 		PHY_SetBBReg(Adapter, rCCK0_AFESetting  , 0x0F000000, 0x01); //RX path = PathAB
 
 	for(i=0; i<2; i++)
@@ -782,7 +782,7 @@ odm_PathDivChkAntSwitchWorkitemCallback(
 // Refer to Jr.Luke's SW ANT DIV
 // 92D Path Diversity Main function
 // refer to 88C software antenna diversity
-// 
+//
 VOID
 odm_PathDivChkAntSwitch(
 	PDM_ODM_T		pDM_Odm
@@ -806,14 +806,14 @@ odm_PathDivChkAntSwitch(
 	u1Byte			Score_A=0, Score_B=0;
 	u1Byte			i=0x0;
        // Neil Chen
-       static u1Byte        pathdiv_para=0x0;     
+       static u1Byte        pathdiv_para=0x0;
        static u1Byte        switchfirsttime=0x00;
 	// u1Byte                 regB33 = (u1Byte) PHY_QueryBBReg(Adapter, 0xB30,BIT27);
 	u1Byte			regB33 = (u1Byte)ODM_GetBBReg(pDM_Odm, PATHDIV_REG, BIT27);
 
 
-       //u1Byte                 reg637 =0x0;   
-       static u1Byte        fw_value=0x0;         
+       //u1Byte                 reg637 =0x0;
+       static u1Byte        fw_value=0x0;
 	//u8Byte			curTxOkCnt_tmp, curRxOkCnt_tmp;
        PADAPTER            BuddyAdapter = Adapter->BuddyAdapter;     // another adapter MAC
         // Path Diversity   //Neil Chen--2011--06--22
@@ -823,7 +823,7 @@ odm_PathDivChkAntSwitch(
 	u1Byte                 PathDiv_Enable = pHalData->bPathDiv_Enable;
 
 
-	//DbgPrint("Path Div PG Value:%x \n",PathDiv_Enable);	
+	//DbgPrint("Path Div PG Value:%x \n",PathDiv_Enable);
        if((BuddyAdapter==NULL)||(!PathDiv_Enable)||(PathDiv_Trigger)||(pHalData->CurrentBandType == BAND_ON_2_4G))
        {
            return;
@@ -835,8 +835,8 @@ odm_PathDivChkAntSwitch(
 	{
 	    if(regB33==0)
 	    {
-	       pDM_SWAT_Table->CurAntenna = MAIN_ANT;    // Default MAC0_5G-->Path A (current antenna)     
-	    }	    
+	       pDM_SWAT_Table->CurAntenna = MAIN_ANT;    // Default MAC0_5G-->Path A (current antenna)
+	    }
 	}
 
 	// Condition that does not need to use antenna diversity.
@@ -860,7 +860,7 @@ odm_PathDivChkAntSwitch(
 	{
 		ODM_SwAntDivRestAfterLink(Adapter);
 	} */
-	
+
 	if(pDM_SWAT_Table->try_flag == 0xff)
 	{
 		// Select RSSI checking target
@@ -875,7 +875,7 @@ odm_PathDivChkAntSwitch(
 			u1Byte			index = 0;
 			PRT_WLAN_STA	pEntry = NULL;
 			PADAPTER		pTargetAdapter = NULL;
-		
+
 			if(	pMgntInfo->mIbss || ACTING_AS_AP(Adapter) )
 			{
 				// Target: AP/IBSS peer.
@@ -895,7 +895,7 @@ odm_PathDivChkAntSwitch(
 					if(pEntry != NULL)
 					{
 						if(pEntry->bAssociated)
-							break;			
+							break;
 					}
 				}
 			}
@@ -912,7 +912,7 @@ odm_PathDivChkAntSwitch(
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("odm_SwAntDivChkAntSwitch(): RSSI_target is PEER STA\n"));
 			}
 		}
-			
+
 		pHalData->RSSI_cnt_A = 0;
 		pHalData->RSSI_cnt_B = 0;
 		pDM_SWAT_Table->try_flag = 0;
@@ -926,7 +926,7 @@ odm_PathDivChkAntSwitch(
 		curRxOkCnt = Adapter->RxStats.NumRxBytesUnicast - lastRxOkCnt;
 		lastTxOkCnt = Adapter->TxStats.NumTxBytesUnicast;
 		lastRxOkCnt = Adapter->RxStats.NumRxBytesUnicast;
-	
+
 		if(pDM_SWAT_Table->try_flag == 1)   // Training State
 		{
 			if(pDM_SWAT_Table->CurAntenna == MAIN_ANT)
@@ -939,7 +939,7 @@ odm_PathDivChkAntSwitch(
 				TXByteCnt_B += curTxOkCnt;
 				RXByteCnt_B += curRxOkCnt;
 			}
-		
+
 			nextAntenna = (pDM_SWAT_Table->CurAntenna == MAIN_ANT)? AUX_ANT : MAIN_ANT;
 			pDM_SWAT_Table->RSSI_Trying--;
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: RSSI_Trying = %d\n",pDM_SWAT_Table->RSSI_Trying));
@@ -947,7 +947,7 @@ odm_PathDivChkAntSwitch(
 			{
 				CurByteCnt = (pDM_SWAT_Table->CurAntenna == MAIN_ANT)? (TXByteCnt_A+RXByteCnt_A) : (TXByteCnt_B+RXByteCnt_B);
 				PreByteCnt = (pDM_SWAT_Table->CurAntenna == MAIN_ANT)? (TXByteCnt_B+RXByteCnt_B) : (TXByteCnt_A+RXByteCnt_A);
-				
+
 				if(TrafficLoad == TRAFFIC_HIGH)
 				{
 					//CurByteCnt = PlatformDivision64(CurByteCnt, 9);
@@ -959,17 +959,17 @@ odm_PathDivChkAntSwitch(
 					PreByteCnt =PreByteCnt*2;
 				}
 				if(pHalData->RSSI_cnt_A > 0)
-					RSSI_A = pHalData->RSSI_sum_A/pHalData->RSSI_cnt_A; 
+					RSSI_A = pHalData->RSSI_sum_A/pHalData->RSSI_cnt_A;
 				else
 					RSSI_A = 0;
 				if(pHalData->RSSI_cnt_B > 0)
-					RSSI_B = pHalData->RSSI_sum_B/pHalData->RSSI_cnt_B; 
+					RSSI_B = pHalData->RSSI_sum_B/pHalData->RSSI_cnt_B;
 		             else
 					RSSI_B = 0;
 				curRSSI = (pDM_SWAT_Table->CurAntenna == MAIN_ANT)? RSSI_A : RSSI_B;
 				pDM_SWAT_Table->PreRSSI =  (pDM_SWAT_Table->CurAntenna == MAIN_ANT)? RSSI_B : RSSI_A;
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: PreRSSI = %d, CurRSSI = %d\n",pDM_SWAT_Table->PreRSSI, curRSSI));
-				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: preAntenna= %s, curAntenna= %s \n", 
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: preAntenna= %s, curAntenna= %s \n",
 				(pDM_SWAT_Table->PreAntenna == MAIN_ANT?"MAIN":"AUX"), (pDM_SWAT_Table->CurAntenna == MAIN_ANT?"MAIN":"AUX")));
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: RSSI_A= %d, RSSI_cnt_A = %d, RSSI_B= %d, RSSI_cnt_B = %d\n",
 					RSSI_A, pHalData->RSSI_cnt_A, RSSI_B, pHalData->RSSI_cnt_B));
@@ -978,19 +978,19 @@ odm_PathDivChkAntSwitch(
 		}
 		else   // try_flag=0
 		{
-		
+
 			if(pHalData->RSSI_cnt_A > 0)
-				RSSI_A = pHalData->RSSI_sum_A/pHalData->RSSI_cnt_A; 
+				RSSI_A = pHalData->RSSI_sum_A/pHalData->RSSI_cnt_A;
 			else
 				RSSI_A = 0;
 			if(pHalData->RSSI_cnt_B > 0)
-				RSSI_B = pHalData->RSSI_sum_B/pHalData->RSSI_cnt_B; 
+				RSSI_B = pHalData->RSSI_sum_B/pHalData->RSSI_cnt_B;
 			else
-				RSSI_B = 0;	
+				RSSI_B = 0;
 			curRSSI = (pDM_SWAT_Table->CurAntenna == MAIN_ANT)? RSSI_A : RSSI_B;
 			pDM_SWAT_Table->PreRSSI =  (pDM_SWAT_Table->PreAntenna == MAIN_ANT)? RSSI_A : RSSI_B;
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: PreRSSI = %d, CurRSSI = %d\n", pDM_SWAT_Table->PreRSSI, curRSSI));
-		       ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: preAntenna= %s, curAntenna= %s \n", 
+		       ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: preAntenna= %s, curAntenna= %s \n",
 			(pDM_SWAT_Table->PreAntenna == MAIN_ANT?"MAIN":"AUX"), (pDM_SWAT_Table->CurAntenna == MAIN_ANT?"MAIN":"AUX")));
 
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH DIV=: RSSI_A= %d, RSSI_cnt_A = %d, RSSI_B= %d, RSSI_cnt_B = %d\n",
@@ -1007,7 +1007,7 @@ odm_PathDivChkAntSwitch(
 			{
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: TestMode = TP_MODE"));
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH= TRY:CurByteCnt = %"i64fmt"d,", CurByteCnt));
-				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH= TRY:PreByteCnt = %"i64fmt"d\n",PreByteCnt));		
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH= TRY:PreByteCnt = %"i64fmt"d\n",PreByteCnt));
 				if(CurByteCnt < PreByteCnt)
 				{
 					if(pDM_SWAT_Table->CurAntenna == MAIN_ANT)
@@ -1031,7 +1031,7 @@ odm_PathDivChkAntSwitch(
 				}
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("SelectAntennaMap=%x\n ",pDM_SWAT_Table->SelectAntennaMap));
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: Score_A=%d, Score_B=%d\n", Score_A, Score_B));
-			
+
 				if(pDM_SWAT_Table->CurAntenna == MAIN_ANT)
 				{
 					nextAntenna = (Score_A >= Score_B)?MAIN_ANT:AUX_ANT;
@@ -1041,7 +1041,7 @@ odm_PathDivChkAntSwitch(
 					nextAntenna = (Score_B >= Score_A)?AUX_ANT:MAIN_ANT;
 				}
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: nextAntenna=%s\n",(nextAntenna==MAIN_ANT)?"MAIN":"AUX"));
-				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: preAntenna= %s, curAntenna= %s \n", 
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: preAntenna= %s, curAntenna= %s \n",
 				(pDM_SWAT_Table->PreAntenna == MAIN_ANT?"MAIN":"AUX"), (pDM_SWAT_Table->CurAntenna == MAIN_ANT?"MAIN":"AUX")));
 
 				if(nextAntenna != pDM_SWAT_Table->CurAntenna)
@@ -1051,12 +1051,12 @@ odm_PathDivChkAntSwitch(
 				else
 				{
 					ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: current anntena is good\n"));
-				}	
+				}
 			}
 
-                    
+
 			if(pDM_SWAT_Table->TestMode == RSSI_MODE)
-			{	
+			{
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: TestMode = RSSI_MODE"));
 				pDM_SWAT_Table->SelectAntennaMap=0xAA;
 				if(curRSSI < pDM_SWAT_Table->PreRSSI) //Current antenna is worse than previous antenna
@@ -1070,7 +1070,7 @@ odm_PathDivChkAntSwitch(
 					//RT_TRACE(COMP_INIT, DBG_LOUD, ("SWAS: current anntena is good\n"));
 				}
 			}
-			
+
 			pDM_SWAT_Table->try_flag = 0;
 			pHalData->RSSI_test = FALSE;
 			pHalData->RSSI_sum_A = 0;
@@ -1081,7 +1081,7 @@ odm_PathDivChkAntSwitch(
 			TXByteCnt_B = 0;
 			RXByteCnt_A = 0;
 			RXByteCnt_B = 0;
-			
+
 		}
 
 		//1 Normal State
@@ -1105,14 +1105,14 @@ odm_PathDivChkAntSwitch(
 				pDM_SWAT_Table->bTriggerAntennaSwitch = 0;
 			//RT_TRACE(COMP_INIT, DBG_LOUD, ("Normal:TrafficLoad = %llu\n", curTxOkCnt+curRxOkCnt));
 
-			//Prepare To Try Antenna		
+			//Prepare To Try Antenna
 				nextAntenna = (pDM_SWAT_Table->CurAntenna == MAIN_ANT)? AUX_ANT : MAIN_ANT;
 				pDM_SWAT_Table->try_flag = 1;
 				pHalData->RSSI_test = TRUE;
 			if((curRxOkCnt+curTxOkCnt) > 1000)
 			{
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
-	                    pDM_SWAT_Table->RSSI_Trying = 4;                           
+	                    pDM_SWAT_Table->RSSI_Trying = 4;
 #else
 	                    pDM_SWAT_Table->RSSI_Trying = 2;
 #endif
@@ -1124,19 +1124,19 @@ odm_PathDivChkAntSwitch(
 				pDM_SWAT_Table->TestMode = RSSI_MODE;
 
 			}
-                          
-			//RT_TRACE(COMP_INIT, DBG_LOUD, ("SWAS: Normal State -> Begin Trying!\n"));			
+
+			//RT_TRACE(COMP_INIT, DBG_LOUD, ("SWAS: Normal State -> Begin Trying!\n"));
 			pHalData->RSSI_sum_A = 0;
 			pHalData->RSSI_cnt_A = 0;
 			pHalData->RSSI_sum_B = 0;
 			pHalData->RSSI_cnt_B = 0;
 		} // end of try_flag=0
 	}
-	
+
 	//1 4.Change TRX antenna
 	if(nextAntenna != pDM_SWAT_Table->CurAntenna)
 	{
-	
+
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: Change TX Antenna!\n "));
 		//PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, 0x300, nextAntenna); for 88C
 		if(nextAntenna==MAIN_ANT)
@@ -1147,9 +1147,9 @@ odm_PathDivChkAntSwitch(
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
                  odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
 #else
-                 ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));	
+                 ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
 #endif
-		}	
+		}
 	       else if(nextAntenna==AUX_ANT)
 	       {
 	           ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: Next Antenna is RF PATH B\n "));
@@ -1157,33 +1157,33 @@ odm_PathDivChkAntSwitch(
 	           {
 	               switchfirsttime=0x01;
                       pathdiv_para = 0x00;
-			  fw_value=0x00;    // to backup RF Path A Releated Registers		  
-					  
+			  fw_value=0x00;    // to backup RF Path A Releated Registers
+
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
                      odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
 #else
-                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));	
+                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
                      //for(u1Byte n=0; n<80,n++)
                      //{
                      //delay_us(500);
 			  ODM_delay_ms(500);
                      odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
-			 		 
-			 fw_value=0x01;   	// to backup RF Path A Releated Registers		 
-                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));	
-#endif	
-			ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: FIRST TIME To DO PATH SWITCH!\n "));	
-	           }		   
+
+			 fw_value=0x01;		// to backup RF Path A Releated Registers
+                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
+#endif
+			ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: FIRST TIME To DO PATH SWITCH!\n "));
+	           }
 		    else
 		    {
 		        pathdiv_para = 0x01;
-			 fw_value = 0x02;	
+			 fw_value = 0x02;
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
                      odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
 #else
-                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));	
-#endif	
-		    }		
+                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
+#endif
+		    }
 	       }
            //   odm_PathDiversity_8192D(Adapter, pathdiv_para);
 	}
@@ -1210,7 +1210,7 @@ odm_PathDivChkAntSwitch(
 #else
 				ODM_SetTimer( pDM_Odm, &pDM_Odm->PathDivSwitchTimer, 20 ); //ms
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: Test another antenna for 20 ms\n"));
-#endif				
+#endif
 			}
 			else if(TrafficLoad == TRAFFIC_LOW)
 			{
@@ -1229,13 +1229,13 @@ odm_PathDivChkAntSwitch(
 		if(pDM_SWAT_Table->TestMode == TP_MODE)
 		{
 			if(TrafficLoad == TRAFFIC_HIGH)
-				
+
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
 				ODM_SetTimer( pDM_Odm, &pDM_Odm->PathDivSwitchTimer, 90 ); //ms
 				//ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: Test another antenna for 90 ms\n"));
-#else		
+#else
 				ODM_SetTimer( pDM_Odm, &pDM_Odm->PathDivSwitchTimer, 180); //ms
-#endif				
+#endif
 			else if(TrafficLoad == TRAFFIC_LOW)
 				ODM_SetTimer( pDM_Odm, &pDM_Odm->PathDivSwitchTimer, 100 ); //ms
 		}
@@ -1268,7 +1268,7 @@ ODM_CCKPathDiversityChkPerPktRssi(
 
 	if((pHalData->PathDivCfg != 1) || (pHalData->RSSI_test == FALSE))
 		return;
-		
+
 	if(pHalData->RSSI_target==NULL && bIsDefPort && bMatchBSSID)
 		bCount = TRUE;
 	else if(pHalData->RSSI_target!=NULL && pEntry!=NULL && pHalData->RSSI_target==pEntry)
@@ -1316,7 +1316,7 @@ ODM_CCKPathDiversityChkPerPktRssi(
 //----92D Path Diversity----//
 //#ifdef PathDiv92D
 //==================================
-//3 Path Diversity 
+//3 Path Diversity
 //==================================
 //
 // 20100514 Luke/Joseph:
@@ -1328,7 +1328,7 @@ ODM_CCKPathDiversityChkPerPktRssi(
 // After 500ms, ODM_SwAntDivChkAntSwitchCallback() calls this function to compare the signal just
 // listened on the air with the RSSI of original antenna.
 // It chooses the antenna with better RSSI.
-// There is also a aged policy for error trying. Each error trying will cost more 5 seconds waiting 
+// There is also a aged policy for error trying. Each error trying will cost more 5 seconds waiting
 // penalty to get next try.
 //
 //
@@ -1355,7 +1355,7 @@ ODM_PathDivChkPerPktRssi(
 	PRT_RFD			pRfd
 	)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);	
+	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	BOOLEAN			bCount = FALSE;
 	PDM_ODM_T		pDM_Odm = &pHalData->DM_OutSrc;
 	pSWAT_T			pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
@@ -1402,7 +1402,7 @@ ODM_PathDivRestAfterLink(
 	pDM_SWAT_Table->try_flag = 0x0;       // NOT 0xff
 	pDM_SWAT_Table->RSSI_Trying = 0;
 	pDM_SWAT_Table->SelectAntennaMap=0xAA;
-	pDM_SWAT_Table->CurAntenna = MAIN_ANT;  
+	pDM_SWAT_Table->CurAntenna = MAIN_ANT;
 }
 
 
@@ -1424,7 +1424,7 @@ ODM_FillTXPathInTXDESC(
 
 	//2011.09.05  Add by Luke Lee for path diversity
 	if(pHalData->PathDivCfg == 1)
-	{	
+	{
 		TXPath = (pDM_PDTable->OFDMTXPath >> pTcb->macId) & BIT0;
 		//RT_TRACE(	COMP_INIT, DBG_LOUD, ("Fill TXDESC: macID=%d, TXPath=%d\n", pTcb->macId, TXPath));
 		//SET_TX_DESC_TX_ANT_CCK(pDesc,TXPath);
@@ -1453,7 +1453,7 @@ ODM_FillTXPathInTXDESC(
 //Only for MP //Neil Chen--2012--0502--
 VOID
 odm_PathDivInit_92D(
-IN	PDM_ODM_T 	pDM_Odm)
+IN	PDM_ODM_T	pDM_Odm)
 {
 	pPATHDIV_PARA	pathIQK = &pDM_Odm->pathIQK;
 
@@ -1486,15 +1486,15 @@ odm_SwAntDivSelectScanChnl(
 	PHAL_DATA_TYPE		pHalData = GET_HAL_DATA(Adapter);
 	PMGNT_INFO			pMgntInfo = &(Adapter->MgntInfo);
 	PDM_ODM_T			pDM_Odm = &pHalData->DM_OutSrc;
-	u1Byte 				i, j, ScanChannel = 0, ChannelNum = 0;
+	u1Byte				i, j, ScanChannel = 0, ChannelNum = 0;
 	PRT_CHANNEL_LIST	pChannelList = GET_RT_CHANNEL_LIST(pMgntInfo);
-	u1Byte 				EachChannelSTAs[MAX_SCAN_CHANNEL_NUM] = {0};
+	u1Byte				EachChannelSTAs[MAX_SCAN_CHANNEL_NUM] = {0};
 
 	if(pMgntInfo->tmpNumBssDesc == 0)
 		return 0;
 
 	for(i = 0; i < pMgntInfo->tmpNumBssDesc; i++)
-	{		
+	{
 		ChannelNum = pMgntInfo->tmpbssDesc[i].ChannelNumber;
 		for(j = 0; j < pChannelList->ChannelLen; j++)
 		{
@@ -1505,7 +1505,7 @@ odm_SwAntDivSelectScanChnl(
 			}
 		}
 	}
-	
+
 	for(i = 0; i < MAX_SCAN_CHANNEL_NUM; i++)
 		{
 		if(EachChannelSTAs[i] > EachChannelSTAs[ScanChannel])
@@ -1517,18 +1517,18 @@ odm_SwAntDivSelectScanChnl(
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, DBG_LOUD, ("odm_SwAntDivSelectScanChnl(): Scan List is empty.\n"));
 		return 0;
 	}
-	
+
 	ScanChannel = pChannelList->ChnlListEntry[ScanChannel].ChannelNum;
 
-	
 
-	ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, DBG_LOUD, 
+
+	ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, DBG_LOUD,
 		("odm_SwAntDivSelectScanChnl(): Channel (( %d )) is select as scan channel.\n", ScanChannel));
 
 	return ScanChannel;
 #else
 	return	0;
-#endif	
+#endif
 }
 
 
@@ -1543,10 +1543,10 @@ odm_SwAntDivConstructScanChnl(
 
 	if(ScanChnl == 0)
 	{
-		u1Byte				i;		
+		u1Byte				i;
 		PRT_CHANNEL_LIST	pChannelList = GET_RT_CHANNEL_LIST(pMgntInfo);
-	
-		// 20100519 Joseph: Original antenna scanned nothing. 
+
+		// 20100519 Joseph: Original antenna scanned nothing.
 		// Test antenna shall scan all channel with half period in this condition.
 
 		RT_TRACE_F(COMP_SCAN, DBG_TRACE, (" RT_CHNL_LIST_ACTION_CONSTRUCT chnl %d \n", ScanChnl));
@@ -1557,7 +1557,7 @@ odm_SwAntDivConstructScanChnl(
 	}
 	else
 	{
-		// The using of this CustomizedScanRequest is a trick to rescan the two channels 
+		// The using of this CustomizedScanRequest is a trick to rescan the two channels
 		//	under the NORMAL scanning process. It will not affect MGNT_INFO.CustomizedScanRequest.
 		CUSTOMIZED_SCAN_REQUEST CustomScanReq;
 
@@ -1577,4 +1577,3 @@ odm_SwAntDivConstructScanChnl(
 
 
 #endif	// #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-

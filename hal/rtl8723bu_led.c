@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -30,7 +30,7 @@
 //================================================================================
 
 //================================================================================
-// LED_819xUsb routines. 
+// LED_819xUsb routines.
 //================================================================================
 
 //
@@ -39,7 +39,7 @@
 //
 void
 SwLedOn_8723BU(
-	_adapter			*padapter, 
+	_adapter			*padapter,
 	PLED_USB		pLed
 )
 {
@@ -52,7 +52,7 @@ SwLedOn_8723BU(
 	}
 
 	pLed->bLedOn = _TRUE;
-	
+
 }
 
 
@@ -62,7 +62,7 @@ SwLedOn_8723BU(
 //
 void
 SwLedOff_8723BU(
-	_adapter			*padapter, 
+	_adapter			*padapter,
 	PLED_USB		pLed
 )
 {
@@ -76,7 +76,7 @@ SwLedOff_8723BU(
 
 exit:
 	pLed->bLedOn = _FALSE;
-	
+
 }
 
 //================================================================================
@@ -123,4 +123,3 @@ rtl8723bu_DeInitSwLeds(
 	DeInitLed( &(ledpriv->SwLed0) );
 	DeInitLed( &(ledpriv->SwLed1) );
 }
-

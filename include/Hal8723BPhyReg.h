@@ -28,7 +28,7 @@
 //
 #define rDPDT_control				0x92c
 #define rfe_ctrl_anta_src				0x930
-#define rS0S1_PathSwitch   			0x948
+#define rS0S1_PathSwitch			0x948
 #define AGC_table_select				0xb2c
 
 //
@@ -45,7 +45,7 @@
 #define rPdp_AntA_20					0xb20
 #define rPdp_AntA_24					0xb24
 
-#define rConfig_Pmpd_AntA 				0xb28
+#define rConfig_Pmpd_AntA				0xb28
 #define rConfig_ram64x16				0xb2c
 
 #define rBndA							0xb30
@@ -80,4 +80,3 @@
 #define rPm_Rx3_AntB					0xbf8
 
 #endif
-

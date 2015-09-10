@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -171,7 +171,7 @@ _func_enter_;
 		  path, offset, value));
 
 	_irqlevel_changed_(&oldirql, LOWER);
- 	write_rfreg(Adapter, path, offset, value);
+	write_rfreg(Adapter, path, offset, value);
 	_irqlevel_changed_(&oldirql, RAISE);
 
 _func_exit_;
@@ -823,7 +823,7 @@ NDIS_STATUS oid_rt_pro_set_single_tone_tx_hdl(struct oid_par_priv *poid_par_priv
 #ifdef PLATFORM_OS_XP
 	_irqL		oldirql;
 #endif
-	u32 		bStartTest;
+	u32		bStartTest;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
 
@@ -919,7 +919,7 @@ NDIS_STATUS oid_rt_pro_read_register_hdl(struct oid_par_priv *poid_par_priv)
 #ifdef PLATFORM_OS_XP
 	_irqL		oldirql;
 #endif
-	pRW_Reg 	RegRWStruct;
+	pRW_Reg		RegRWStruct;
 	u32		offset, width;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -971,7 +971,7 @@ NDIS_STATUS oid_rt_pro_write_register_hdl(struct oid_par_priv *poid_par_priv)
 #ifdef PLATFORM_OS_XP
 	_irqL		oldirql;
 #endif
-	pRW_Reg 	RegRWStruct;
+	pRW_Reg		RegRWStruct;
 	u32		offset, width, value;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	padapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -1120,7 +1120,7 @@ _func_enter_;
 	TxCmd_Info=(TX_CMD_Desc*)poid_par_priv->information_buf;
 
 	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:Addr=%.8X\n", TxCmd_Info->offset));
-  	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:1.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[0]));
+	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:1.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[0]));
 	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:2.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[1]));
 	RT_TRACE(_module_mp_, _drv_info_, (("WRITE_TXCMD:3.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[2]));
 	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:4.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[3]));
@@ -1924,7 +1924,7 @@ NDIS_STATUS oid_rt_pro_add_sta_info_hdl(struct oid_par_priv *poid_par_priv)
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 
 	struct sta_info *psta = NULL;
-	UCHAR 		*macaddr;
+	UCHAR		*macaddr;
 
 
 	if (poid_par_priv->type_of_oid != SET_OID)
@@ -2687,7 +2687,7 @@ NDIS_STATUS oid_rt_pro_set_tx_agc_offset_hdl(struct oid_par_priv *poid_par_priv)
 #endif
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 
-	u32 		txagc;
+	u32		txagc;
 
 _func_enter_;
 
@@ -2722,7 +2722,7 @@ NDIS_STATUS oid_rt_pro_set_pkt_test_mode_hdl(struct oid_par_priv *poid_par_priv)
 
 	struct mlme_priv	*pmlmepriv = &Adapter->mlmepriv;
 	struct mp_priv		*pmppriv = &Adapter->mppriv;
-	u32 			type;
+	u32			type;
 
 _func_enter_;
 
@@ -2897,7 +2897,7 @@ _func_enter_;
 	//CALL  the power_down function
 #ifdef PLATFORM_LINUX
 #if defined(CONFIG_RTL8712) //Linux MP insmod unknown symbol
-	dev_power_down(padapter,bpwrup); 
+	dev_power_down(padapter,bpwrup);
 #endif
 #endif
 	_irqlevel_changed_(&oldirql, RAISE);
@@ -2945,4 +2945,3 @@ _func_exit_;
 	return 0;
 #endif
 }
-

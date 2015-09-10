@@ -148,12 +148,12 @@ static void halbtcoutsrc_DbgInit(void)
 	for (i=0; i<BTC_MSG_MAX; i++)
 		GLBtcDbgType[i] = 0;
 
-	GLBtcDbgType[BTC_MSG_INTERFACE]			= 	\
+	GLBtcDbgType[BTC_MSG_INTERFACE]			=	\
 //			INTF_INIT								|
 //			INTF_NOTIFY							|
 			0;
 
-	GLBtcDbgType[BTC_MSG_ALGORITHM]			= 	\
+	GLBtcDbgType[BTC_MSG_ALGORITHM]			=	\
 //			ALGO_BT_RSSI_STATE					|
 //			ALGO_WIFI_RSSI_STATE					|
 //			ALGO_BT_MONITOR						|
@@ -451,7 +451,7 @@ u32 halbtcoutsrc_GetWifiLinkStatus(PBTC_COEXIST pBtCoexist)
 #endif // CONFIG_CONCURRENT_MODE
 
 	retVal = (numOfConnectedPort << 16) | portConnectedStatus;
-	
+
 	return retVal;
 }
 
@@ -580,7 +580,7 @@ u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 			break;
 
 		case BTC_GET_BL_WIFI_SCAN:
-#if 0			
+#if 0
 			*pu8 = check_fwstate(&padapter->mlmepriv, WIFI_SITE_MONITOR);
 #ifdef CONFIG_CONCURRENT_MODE
 			if ((_FALSE == *pu8) && padapter->pbuddy_adapter)
@@ -588,8 +588,8 @@ u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 				*pu8 = check_fwstate(&padapter->pbuddy_adapter->mlmepriv, WIFI_SITE_MONITOR);
 			}
 #endif // CONFIG_CONCURRENT_MODE
-#else		
-			/* Use the value of the new variable GLBtcWiFiInScanState to judge whether WiFi is in scan state or not, since the originally used flag 
+#else
+			/* Use the value of the new variable GLBtcWiFiInScanState to judge whether WiFi is in scan state or not, since the originally used flag
 				WIFI_SITE_MONITOR in fwstate may not be cleared in time */
 			*pu8 = GLBtcWiFiInScanState;
 #endif
@@ -1223,7 +1223,7 @@ void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
 	u8 CmdBuffer1[4] = {0};
 	u8 CmdBuffer2[4] = {0};
 	u8* AddrToSet = (u8*)&RegAddr;
-	u8* ValueToSet = (u8*)&Data;	
+	u8* ValueToSet = (u8*)&Data;
 	u8 OperVer = 0;
 	u8 ReqNum = 0;
 
@@ -1234,8 +1234,8 @@ void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
 	{
 		CmdBuffer1[0] |= (OperVer & 0x0f);						/* Set OperVer */
 		CmdBuffer1[0] |= ((ReqNum << 4) & 0xf0);				/* Set ReqNum */
-		CmdBuffer1[1] = 0x0d; 									/* Set OpCode to BT_LO_OP_WRITE_REG_VALUE */
-		CmdBuffer1[2] = ValueToSet[0]; 							/* Set WriteRegValue */
+		CmdBuffer1[1] = 0x0d;									/* Set OpCode to BT_LO_OP_WRITE_REG_VALUE */
+		CmdBuffer1[2] = ValueToSet[0];							/* Set WriteRegValue */
 		rtw_hal_fill_h2c_cmd(padapter, 0x67, 4, &(CmdBuffer1[0]));
 
 		rtw_msleep_os(200);
@@ -1243,7 +1243,7 @@ void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
 
 		CmdBuffer2[0] |= (OperVer & 0x0f);						/* Set OperVer */
 		CmdBuffer2[0] |= ((ReqNum << 4) & 0xf0);				/* Set ReqNum */
-		CmdBuffer2[1] = 0x0c; 									/* Set OpCode of BT_LO_OP_WRITE_REG_ADDR */
+		CmdBuffer2[1] = 0x0c;									/* Set OpCode of BT_LO_OP_WRITE_REG_ADDR */
 		CmdBuffer2[3] = AddrToSet[0];							/* Set WriteRegAddr */
 		rtw_hal_fill_h2c_cmd(padapter, 0x67, 4, &(CmdBuffer2[0]));
 	}
@@ -1327,16 +1327,16 @@ u8 EXhalbtcoutsrc_BindBtCoexWithAdapter(void *padapter)
 {
 	PBTC_COEXIST		pBtCoexist=&GLBtCoexist;
 	u1Byte	antNum=2, chipType;
-	
+
 	if(pBtCoexist->bBinded)
 		return _FALSE;
 	else
 		pBtCoexist->bBinded = _TRUE;
 
 	pBtCoexist->statistics.cntBind++;
-	
+
 	pBtCoexist->Adapter = padapter;
-	
+
 	pBtCoexist->stackInfo.bProfileNotified = _FALSE;
 
 	pBtCoexist->btInfo.bBtCtrlAggBufSize = _FALSE;
@@ -1352,8 +1352,8 @@ u8 EXhalbtcoutsrc_BindBtCoexWithAdapter(void *padapter)
 	EXhalbtcoutsrc_SetAntNum(BT_COEX_ANT_TYPE_PG, antNum);
 #endif
 	// set default antenna position to main  port
-	pBtCoexist->boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;	
-	
+	pBtCoexist->boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
+
 	return _TRUE;
 }
 
@@ -1403,7 +1403,7 @@ u8 EXhalbtcoutsrc_InitlizeVariables(void *padapter)
 	pBtCoexist->cliBuf = &GLBtcDbgBuf[0];
 
 	pBtCoexist->boardInfo.singleAntPath = 0;
-	
+
 	GLBtcWiFiInScanState = _FALSE;
 
 	GLBtcWiFiInIQKState = _FALSE;
@@ -2012,13 +2012,13 @@ void EXhalbtcoutsrc_BtInfoNotify(PBTC_COEXIST pBtCoexist, u8 *tmpBuf, u8 length)
 VOID
 EXhalbtcoutsrc_RfStatusNotify(
 	IN	PBTC_COEXIST		pBtCoexist,
-	IN	u1Byte 				type
+	IN	u1Byte				type
 	)
 {
 	if(!halbtcoutsrc_IsBtCoexistAvailable(pBtCoexist))
 		return;
 	pBtCoexist->statistics.cntRfStatusNotify++;
-	
+
 	if(IS_HARDWARE_TYPE_8821(pBtCoexist->Adapter))
 	{
 	}
@@ -2026,7 +2026,7 @@ EXhalbtcoutsrc_RfStatusNotify(
 	{
 		if(pBtCoexist->boardInfo.btdmAntNum == 1)
 			EXhalbtc8723b1ant_RfStatusNotify(pBtCoexist, type);
-	}	
+	}
 	else if(IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
 	{
 	}
@@ -2446,7 +2446,7 @@ void EXhalbtcoutsrc_SetAntNum(u8 type, u8 antNum)
 	else if (BT_COEX_ANT_TYPE_ANTDIV == type)
 	{
 		GLBtCoexist.boardInfo.btdmAntNum = antNum;
-		//GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;	
+		//GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
 	}
 	else if (BT_COEX_ANT_TYPE_DETECTED == type)
 	{
@@ -2737,7 +2737,7 @@ void hal_btcoex_BtInfoNotify(PADAPTER padapter, u8 length, u8 *tmpBuf)
 {
 	if (GLBtcWiFiInIQKState == _TRUE)
 		return;
-	
+
 	EXhalbtcoutsrc_BtInfoNotify(&GLBtCoexist, tmpBuf, length);
 }
 
@@ -2929,7 +2929,7 @@ u32 hal_btcoex_GetDBG(PADAPTER padapter, u8 *pStrBuf, u32 bufSize)
 		goto exit;
 	pstr += count;
 	leftSize -= count;
-	
+
 	count = rtw_sprintf(pstr, leftSize, "ALGORITHM Debug Setting Definition:\n");
 	if ((count < 0) || (count >= leftSize))
 		goto exit;
@@ -3022,4 +3022,3 @@ u8 hal_btcoex_IsBtLinkExist(PADAPTER padapter)
 	return _FALSE;
 }
 #endif // CONFIG_BT_COEXIST
-

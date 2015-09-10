@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -45,7 +45,7 @@
 #ifdef CONFIG_IOCTL_CFG80211
 	//#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
 	#define CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER
-	//#define CONFIG_DEBUG_CFG80211 
+	//#define CONFIG_DEBUG_CFG80211
 	//#define CONFIG_DRV_ISSUE_PROV_REQ // IOT FOR S2
 	#define CONFIG_SET_SCAN_DENY_TIMER
 #endif
@@ -98,8 +98,8 @@
 //#define CONFIG_ANTENNA_DIVERSITY
 
 //after link
-#ifdef CONFIG_ANTENNA_DIVERSITY	 
-	#define CONFIG_HW_ANTENNA_DIVERSITY		
+#ifdef CONFIG_ANTENNA_DIVERSITY
+	#define CONFIG_HW_ANTENNA_DIVERSITY
 #endif
 
 
@@ -125,13 +125,13 @@
 	#endif
 	#ifdef CONFIG_INTERRUPT_BASED_TXBCN
 		//#define CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-		#define CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR		
+		#define CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
 	#endif
-	
+
 	#define CONFIG_NATIVEAP_MLME
 	#ifndef CONFIG_NATIVEAP_MLME
 		#define CONFIG_HOSTAPD_MLME	1
-	#endif			
+	#endif
 	//#define CONFIG_FIND_BEST_CHANNEL	1
 	//#define CONFIG_NO_WIRELESS_HANDLERS	1
 
@@ -143,7 +143,7 @@
 #ifdef CONFIG_P2P
 	//The CONFIG_WFD is for supporting the Wi-Fi display
 	#define CONFIG_WFD
-	
+
 	#ifndef CONFIG_WIFI_TEST
 		#define CONFIG_P2P_REMOVE_GROUP_INFO
 	#endif
@@ -211,8 +211,8 @@
 #define CONFIG_RF_GAIN_OFFSET
 
 
-/* 
- * Interface  Related Config 
+/*
+ * Interface  Related Config
  */
 
 #ifndef CONFIG_MINIMAL_MEMORY_USAGE
@@ -224,7 +224,7 @@
 //#define CONFIG_REDUCE_USB_TX_INT	1	// Trade-off: Improve performance, but may cause TX URBs blocked by USB Host/Bus driver on few platforms.
 //#define CONFIG_EASY_REPLACEMENT	1
 
-/* 
+/*
  * CONFIG_USE_USB_BUFFER_ALLOC_XX uses Linux USB Buffer alloc API and is for Linux platform only now!
  */
 //#define CONFIG_USE_USB_BUFFER_ALLOC_TX 1	// Trade-off: For TX path, improve stability on some platforms, but may cause performance degrade on other platforms.
@@ -235,7 +235,7 @@
 #endif
 
 
-/* 
+/*
  * USB VENDOR REQ BUFFER ALLOCATION METHOD
  * if not set we'll use function local variable (stack memory)
  */
@@ -282,13 +282,13 @@
 
 #define TESTCHIP_SUPPORT				0
 
-#define RTL8192CE_SUPPORT 				0
-#define RTL8192CU_SUPPORT 				0
-#define RTL8192C_SUPPORT 				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)	
+#define RTL8192CE_SUPPORT				0
+#define RTL8192CU_SUPPORT				0
+#define RTL8192C_SUPPORT				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)
 
-#define RTL8192DE_SUPPORT 				0
-#define RTL8192DU_SUPPORT 				0
-#define RTL8192D_SUPPORT 				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)	
+#define RTL8192DE_SUPPORT				0
+#define RTL8192DU_SUPPORT				0
+#define RTL8192D_SUPPORT				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)
 
 #define RTL8723AU_SUPPORT				0
 #define RTL8723AS_SUPPORT				0
@@ -303,11 +303,11 @@
 #define RTL8192E_SUPPORT				0
 #define RTL8814A_SUPPORT				0
 
-#define RATE_ADAPTIVE_SUPPORT 			0
+#define RATE_ADAPTIVE_SUPPORT			0
 #define POWER_TRAINING_ACTIVE			0
 
 #ifdef CONFIG_USB_TX_AGGREGATION
-//#define 	CONFIG_TX_EARLY_MODE
+//#define	CONFIG_TX_EARLY_MODE
 #endif
 
 #ifdef CONFIG_TX_EARLY_MODE
@@ -359,4 +359,3 @@
 //#define DBG_HAL_INIT_PROFILING
 
 //#define DBG_MEMORY_LEAK	1
-

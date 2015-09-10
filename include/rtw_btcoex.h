@@ -74,4 +74,3 @@ void rtw_btcoex_LPS_Enter(PADAPTER);
 void rtw_btcoex_LPS_Leave(PADAPTER);
 
 #endif // __RTW_BTCOEX_H__
-

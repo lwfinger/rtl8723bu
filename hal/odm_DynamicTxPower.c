@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -24,9 +24,9 @@
 
 #include "odm_precomp.h"
 
-VOID 
+VOID
 odm_DynamicTxPowerInit(
-	IN		PVOID					pDM_VOID	
+	IN		PVOID					pDM_VOID
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -35,13 +35,13 @@ odm_DynamicTxPowerInit(
 	PMGNT_INFO			pMgntInfo = &Adapter->MgntInfo;
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 
-	#if DEV_BUS_TYPE==RT_USB_INTERFACE					
+	#if DEV_BUS_TYPE==RT_USB_INTERFACE
 	if(RT_GetInterfaceSelection(Adapter) == INTF_SEL1_USB_High_Power)
 	{
 		odm_DynamicTxPowerSavePowerIndex(pDM_Odm);
 		pMgntInfo->bDynamicTxPowerEnable = TRUE;
-	}		
-	else	
+	}
+	else
 	#else
 	//so 92c pci do not need dynamic tx power? vivi check it later
 	if(IS_HARDWARE_TYPE_8192D(Adapter))
@@ -49,7 +49,7 @@ odm_DynamicTxPowerInit(
 	else
 		pMgntInfo->bDynamicTxPowerEnable = FALSE;
 	#endif
-	
+
 
 	pHalData->LastDTPLvl = TxHighPwrLevel_Normal;
 	pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
@@ -59,7 +59,7 @@ odm_DynamicTxPowerInit(
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	pdmpriv->bDynamicTxPowerEnable = _FALSE;
 
-	#if (RTL8192C_SUPPORT==1) 
+	#if (RTL8192C_SUPPORT==1)
 	#ifdef CONFIG_USB_HCI
 
 	#ifdef CONFIG_INTEL_PROXIM
@@ -72,36 +72,36 @@ odm_DynamicTxPowerInit(
 		//odm_SavePowerIndex(Adapter);
 		odm_DynamicTxPowerSavePowerIndex(pDM_Odm);
 		pdmpriv->bDynamicTxPowerEnable = _TRUE;
-	}		
-	else	
+	}
+	else
 	#else
 		pdmpriv->bDynamicTxPowerEnable = _FALSE;
 	#endif
 	#endif
-	
+
 	pdmpriv->LastDTPLvl = TxHighPwrLevel_Normal;
-	pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;	
-	
+	pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
+
 #endif
-	
+
 }
 
 VOID
 odm_DynamicTxPowerSavePowerIndex(
-	IN		PVOID					pDM_VOID	
+	IN		PVOID					pDM_VOID
 	)
-{	
+{
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 #if (DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_WIN))
 	u1Byte		index;
 	u4Byte		Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
-	
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)	
+
+#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);	
+	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	for(index = 0; index< 6; index++)
 		pHalData->PowerIndex_backup[index] = PlatformEFIORead1Byte(Adapter, Power_Index_REG[index]);
-#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)	
+#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -125,7 +125,7 @@ odm_DynamicTxPowerRestorePowerIndex(
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	for(index = 0; index< 6; index++)
 		PlatformEFIOWrite1Byte(Adapter, Power_Index_REG[index], pHalData->PowerIndex_backup[index]);
-#elif(DM_ODM_SUPPORT_TYPE == ODM_CE)	
+#elif(DM_ODM_SUPPORT_TYPE == ODM_CE)
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	for(index = 0; index< 6; index++)
 		rtw_write8(Adapter, Power_Index_REG[index], pdmpriv->PowerIndex_backup[index]);
@@ -135,13 +135,13 @@ odm_DynamicTxPowerRestorePowerIndex(
 
 VOID
 odm_DynamicTxPowerWritePowerIndex(
-	IN		PVOID					pDM_VOID, 
-	IN 	u1Byte		Value)
+	IN		PVOID					pDM_VOID,
+	IN	u1Byte		Value)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	u1Byte			index;
 	u4Byte			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
-	
+
 	for(index = 0; index< 6; index++)
 		//PlatformEFIOWrite1Byte(Adapter, Power_Index_REG[index], Value);
 		ODM_Write1Byte(pDM_Odm, Power_Index_REG[index], Value);
@@ -149,12 +149,12 @@ odm_DynamicTxPowerWritePowerIndex(
 }
 
 
-VOID 
+VOID
 odm_DynamicTxPower(
 	IN		PVOID					pDM_VOID
 	)
 {
-	// 
+	//
 	// For AP/ADSL use prtl8192cd_priv
 	// For CE/NIC use PADAPTER
 	//
@@ -173,33 +173,33 @@ odm_DynamicTxPower(
 		case	ODM_WIN:
 		case	ODM_CE:
 			odm_DynamicTxPowerNIC(pDM_Odm);
-			break;	
+			break;
 		case	ODM_AP:
 			odm_DynamicTxPowerAP(pDM_Odm);
-			break;		
+			break;
 
 		case	ODM_ADSL:
 			//odm_DIGAP(pDM_Odm);
-			break;	
+			break;
 	}
 
-	
+
 }
 
 
-VOID 
+VOID
 odm_DynamicTxPowerNIC(
 	IN		PVOID					pDM_VOID
 	)
-{	
+{
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
-	
+
 	if (!(pDM_Odm->SupportAbility & ODM_BB_DYNAMIC_TXPWR))
 		return;
-	
+
 #if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 
-	if(pDM_Odm->SupportICType == ODM_RTL8192C)	
+	if(pDM_Odm->SupportICType == ODM_RTL8192C)
 	{
 		odm_DynamicTxPower_92C(pDM_Odm);
 	}
@@ -227,15 +227,15 @@ odm_DynamicTxPowerNIC(
 		}
 #endif
 	}
-#endif	
+#endif
 }
 
-VOID 
+VOID
 odm_DynamicTxPowerAP(
 	IN		PVOID					pDM_VOID
 
 	)
-{	
+{
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 #if (DM_ODM_SUPPORT_TYPE == ODM_AP)
 
@@ -248,7 +248,7 @@ odm_DynamicTxPowerAP(
 
 	if(!priv->pshare->rf_ft_var.tx_pwr_ctrl)
 		return;
-	
+
 #if ((RTL8812E_SUPPORT==1) || (RTL8881A_SUPPORT==1))
 	if (pDM_Odm->SupportICType & (ODM_RTL8812 | ODM_RTL8881A))
 		pwr_thd = TX_POWER_NEAR_FIELD_THRESH_8812;
@@ -260,16 +260,16 @@ odm_DynamicTxPowerAP(
 #ifdef HIGH_POWER_EXT_PA
 	if(pDM_Odm->ExtPA)
 		tx_power_control(priv);
-#endif		
+#endif
 	}
-#endif	
+#endif
 	/*
 	 *	Check if station is near by to use lower tx power
 	 */
 
 	if ((priv->up_time % 3) == 0 )  {
 		int disable_pwr_ctrl = ((pDM_Odm->FalseAlmCnt.Cnt_all > 1000 ) || ((pDM_Odm->FalseAlmCnt.Cnt_all > 300 ) && ((RTL_R8(0xc50) & 0x7f) >= 0x32))) ? 1 : 0;
-			
+
 		for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++){
 			PSTA_INFO_T pstat = pDM_Odm->pODM_StaInfo[i];
 			if(IS_STA_VALID(pstat) ) {
@@ -293,15 +293,15 @@ odm_DynamicTxPowerAP(
 					RRSR_power_control_11n(priv,  0 );
 			}
 		}
-#endif			
+#endif
 	}
-//#endif	
+//#endif
 
-#endif	
+#endif
 }
 
 
-VOID 
+VOID
 odm_DynamicTxPower_92C(
 	IN		PVOID					pDM_VOID
 	)
@@ -318,13 +318,13 @@ odm_DynamicTxPower_92C(
 		return;
 
 	// STA not connected and AP not connected
-	if((!pMgntInfo->bMediaConnect) &&	
+	if((!pMgntInfo->bMediaConnect) &&
 		(pHalData->EntryMinUndecoratedSmoothedPWDB == 0))
 	{
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR, DBG_LOUD, ("Not connected to any \n"));
 		pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
 
-		//the LastDTPlvl should reset when disconnect, 
+		//the LastDTPlvl should reset when disconnect,
 		//otherwise the tx power level wouldn't change when disconnect and connect again.
 		// Maddest 20091220.
 		 pHalData->LastDTPLvl=TxHighPwrLevel_Normal;
@@ -332,7 +332,7 @@ odm_DynamicTxPower_92C(
 	}
 
 #if (INTEL_PROXIMITY_SUPPORT == 1)
-	// Intel set fixed tx power 
+	// Intel set fixed tx power
 	if(pMgntInfo->IntelProximityModeInfo.PowerOutput > 0)
 	{
 		switch(pMgntInfo->IntelProximityModeInfo.PowerOutput){
@@ -360,11 +360,11 @@ odm_DynamicTxPower_92C(
 				pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_100;
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR, DBG_LOUD, ("TxHighPwrLevel_100\n"));
 				break;
-		}		
+		}
 	}
 	else
-#endif		
-	{ 
+#endif
+	{
 		if(	(pMgntInfo->bDynamicTxPowerEnable != TRUE) ||
 			(pHalData->DMFlag & HAL_DM_HIPWR_DISABLE) ||
 			pMgntInfo->IOTAction & HT_IOT_ACT_DISABLE_HIGH_POWER)
@@ -387,11 +387,11 @@ odm_DynamicTxPower_92C(
 				}
 			}
 			else // associated entry pwdb
-			{	
+			{
 				UndecoratedSmoothedPWDB = pHalData->EntryMinUndecoratedSmoothedPWDB;
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 			}
-				
+
 			if(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2)
 			{
 				pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Level2;
@@ -424,10 +424,10 @@ odm_DynamicTxPower_92C(
 	}
 	pHalData->LastDTPLvl = pHalData->DynamicTxHighPowerLvl;
 
-	
+
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 
-	#if (RTL8192C_SUPPORT==1) 
+	#if (RTL8192C_SUPPORT==1)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
@@ -441,10 +441,10 @@ odm_DynamicTxPower_92C(
 #ifdef CONFIG_INTEL_PROXIM
 	if(Adapter->proximity.proxim_on== _TRUE){
 		struct proximity_priv *prox_priv=Adapter->proximity.proximity_priv;
-		// Intel set fixed tx power 
+		// Intel set fixed tx power
 		printk("\n %s  Adapter->proximity.proxim_on=%d prox_priv->proxim_modeinfo->power_output=%d \n",__FUNCTION__,Adapter->proximity.proxim_on,prox_priv->proxim_modeinfo->power_output);
 		if(prox_priv!=NULL){
-			if(prox_priv->proxim_modeinfo->power_output> 0)	
+			if(prox_priv->proxim_modeinfo->power_output> 0)
 			{
 				switch(prox_priv->proxim_modeinfo->power_output)
 				{
@@ -472,27 +472,27 @@ odm_DynamicTxPower_92C(
 						pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_100;
 						printk("TxHighPwrLevel_100\n");
 						break;
-				}		
+				}
 			}
 		}
 	}
 	else
-#endif	
+#endif
 	{
 		// STA not connected and AP not connected
-		if((check_fwstate(pmlmepriv, _FW_LINKED) != _TRUE) &&	
+		if((check_fwstate(pmlmepriv, _FW_LINKED) != _TRUE) &&
 			(pdmpriv->EntryMinUndecoratedSmoothedPWDB == 0))
 		{
 			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("Not connected to any \n"));
 			pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
 
-			//the LastDTPlvl should reset when disconnect, 
+			//the LastDTPlvl should reset when disconnect,
 			//otherwise the tx power level wouldn't change when disconnect and connect again.
 			// Maddest 20091220.
 			pdmpriv->LastDTPLvl=TxHighPwrLevel_Normal;
 			return;
 		}
-		
+
 		if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)	// Default port
 		{
 		#if 0
@@ -509,15 +509,15 @@ odm_DynamicTxPower_92C(
 				//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("STA Default Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 			}
 		#else
-		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;	
+		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
 		#endif
 		}
 		else // associated entry pwdb
-		{	
+		{
 			UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
 			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 		}
-			
+
 		if(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2)
 		{
 			pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Level2;
@@ -552,7 +552,7 @@ odm_DynamicTxPower_92C(
 }
 
 
-VOID 
+VOID
 odm_DynamicTxPower_92D(
 	IN		PVOID					pDM_VOID
 	)
@@ -582,19 +582,19 @@ odm_DynamicTxPower_92D(
 	}
 
 	// STA not connected and AP not connected
-	if((!pMgntInfo->bMediaConnect) &&	
+	if((!pMgntInfo->bMediaConnect) &&
 		(pHalData->EntryMinUndecoratedSmoothedPWDB == 0))
 	{
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR, DBG_LOUD, ("Not connected to any \n"));
 		pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
 
-		//the LastDTPlvl should reset when disconnect, 
+		//the LastDTPlvl should reset when disconnect,
 		//otherwise the tx power level wouldn't change when disconnect and connect again.
 		// Maddest 20091220.
 		 pHalData->LastDTPLvl=TxHighPwrLevel_Normal;
 		return;
 	}
-	
+
 	if(pMgntInfo->bMediaConnect)	// Default port
 	{
 		if(ACTING_AS_AP(Adapter) || pMgntInfo->mIbss)
@@ -609,11 +609,11 @@ odm_DynamicTxPower_92D(
 		}
 	}
 	else // associated entry pwdb
-	{	
+	{
 		UndecoratedSmoothedPWDB = pHalData->EntryMinUndecoratedSmoothedPWDB;
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 	}
-	
+
 	if(IS_HARDWARE_TYPE_8192D(Adapter) && GET_HAL_DATA(Adapter)->CurrentBandType == 1){
 		if(UndecoratedSmoothedPWDB >= 0x33)
 		{
@@ -634,7 +634,7 @@ odm_DynamicTxPower_92D(
 
 	}
 	else
-	
+
 	{
 		if(UndecoratedSmoothedPWDB >= TX_POWER_NEAR_FIELD_THRESH_LVL2)
 		{
@@ -667,7 +667,7 @@ odm_DynamicTxPower_92D(
 			PHY_SetTxPowerLevel8192C(Adapter, pHalData->CurrentChannel);
 			pHalData->DynamicTxHighPowerLvl = HighPowerLvlBackForMac0;
 			Adapter->DualMacDMSPControl.bChangeTxHighPowerLvlForAnotherMacOfDMSP = FALSE;
-		}						
+		}
 	}
 
 	if( (pHalData->DynamicTxHighPowerLvl != pHalData->LastDTPLvl) )
@@ -696,7 +696,7 @@ odm_DynamicTxPower_92D(
 						}
 						else
 						{
-							ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR,DBG_LOUD,("dm_DynamicTxPower() master case  \n"));					
+							ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR,DBG_LOUD,("dm_DynamicTxPower() master case  \n"));
 							if(!bGetValueFromBuddyAdapter)
 							{
 								ODM_RT_TRACE(pDM_Odm,ODM_COMP_DYNAMIC_TXPWR,DBG_LOUD,("dm_DynamicTxPower() mac 0 for mac 0 \n"));
@@ -719,13 +719,13 @@ odm_DynamicTxPower_92D(
 		}
 	pHalData->LastDTPLvl = pHalData->DynamicTxHighPowerLvl;
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
-#if (RTL8192D_SUPPORT==1) 
+#if (RTL8192D_SUPPORT==1)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
 
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-	DM_ODM_T 		*podmpriv = &pHalData->odmpriv;
+	DM_ODM_T		*podmpriv = &pHalData->odmpriv;
 	int	UndecoratedSmoothedPWDB;
 	#if (RTL8192D_EASY_SMART_CONCURRENT == 1)
 	PADAPTER	BuddyAdapter = Adapter->BuddyAdapter;
@@ -742,18 +742,18 @@ odm_DynamicTxPower_92D(
 	}
 
 	// STA not connected and AP not connected
-	if((check_fwstate(pmlmepriv, _FW_LINKED) != _TRUE) &&	
+	if((check_fwstate(pmlmepriv, _FW_LINKED) != _TRUE) &&
 		(pdmpriv->EntryMinUndecoratedSmoothedPWDB == 0))
 	{
 		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("Not connected to any \n"));
 		pdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
-		//the LastDTPlvl should reset when disconnect, 
+		//the LastDTPlvl should reset when disconnect,
 		//otherwise the tx power level wouldn't change when disconnect and connect again.
 		// Maddest 20091220.
 		pdmpriv->LastDTPLvl=TxHighPwrLevel_Normal;
 		return;
 	}
-		
+
 	if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)	// Default port
 	{
 	#if 0
@@ -774,7 +774,7 @@ odm_DynamicTxPower_92D(
 	#endif
 	}
 	else // associated entry pwdb
-	{	
+	{
 		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
 		//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Ext Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
 	}
@@ -829,7 +829,7 @@ odm_DynamicTxPower_92D(
 			PHY_SetTxPowerLevel8192D(Adapter, pHalData->CurrentChannel);
 			pHalData->DynamicTxHighPowerLvl = HighPowerLvlBackForMac0;
 			Adapter->DualMacDMSPControl.bChangeTxHighPowerLvlForAnotherMacOfDMSP = _FALSE;
-		}						
+		}
 	}
 #endif
 
@@ -858,7 +858,7 @@ odm_DynamicTxPower_92D(
 				}
 				else
 				{
-					//ODM_RT_TRACE(pDM_Odm,COMP_MLME,DBG_LOUD,("dm_DynamicTxPower() master case  \n"));					
+					//ODM_RT_TRACE(pDM_Odm,COMP_MLME,DBG_LOUD,("dm_DynamicTxPower() master case  \n"));
 					if(!bGetValueFromBuddyAdapter)
 					{
 						//ODM_RT_TRACE(pDM_Odm,COMP_MLME,DBG_LOUD,("dm_DynamicTxPower() mac 0 for mac 0 \n"));
@@ -877,8 +877,7 @@ odm_DynamicTxPower_92D(
 #endif
 	}
 	pdmpriv->LastDTPLvl = pdmpriv->DynamicTxHighPowerLvl;
-#endif	
+#endif
 #endif	// #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 
 }
-

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -118,11 +118,11 @@ enum {
 
 #define	IEEE_CRYPT_ALG_NAME_LEN			16
 
-#define WPA_CIPHER_NONE 	BIT(0)
-#define WPA_CIPHER_WEP40 	BIT(1)
+#define WPA_CIPHER_NONE		BIT(0)
+#define WPA_CIPHER_WEP40	BIT(1)
 #define WPA_CIPHER_WEP104 BIT(2)
-#define WPA_CIPHER_TKIP 	BIT(3)
-#define WPA_CIPHER_CCMP 	BIT(4)
+#define WPA_CIPHER_TKIP		BIT(3)
+#define WPA_CIPHER_CCMP		BIT(4)
 
 
 
@@ -190,8 +190,8 @@ enum NETWORK_TYPE
 	WIRELESS_11A = BIT(2), // tx: ofdm only, rx: ofdm only, hw: ofdm only
 	WIRELESS_11_24N = BIT(3), // tx: MCS only, rx: MCS & cck, hw: MCS & cck
 	WIRELESS_11_5N = BIT(4), // tx: MCS only, rx: MCS & ofdm, hw: ofdm only
-	WIRELESS_AUTO = BIT(5), 
-	WIRELESS_11AC = BIT(6), 
+	WIRELESS_AUTO = BIT(5),
+	WIRELESS_11AC = BIT(6),
 
 	//Combination
 	//Type for current wireless mode
@@ -229,9 +229,9 @@ enum NETWORK_TYPE
 
 #define IsSupportedTxCCK(NetType) ((NetType) & (WIRELESS_11B) ? _TRUE : _FALSE)
 #define IsSupportedTxOFDM(NetType) ((NetType) & (WIRELESS_11G|WIRELESS_11A) ? _TRUE : _FALSE)
-#define IsSupportedHT(NetType) ((NetType) & (WIRELESS_11_24N|WIRELESS_11_5N) ? _TRUE : _FALSE) 
+#define IsSupportedHT(NetType) ((NetType) & (WIRELESS_11_24N|WIRELESS_11_5N) ? _TRUE : _FALSE)
 
-#define IsSupportedVHT(NetType) ((NetType) & (WIRELESS_11AC) ? _TRUE : _FALSE) 
+#define IsSupportedVHT(NetType) ((NetType) & (WIRELESS_11AC) ? _TRUE : _FALSE)
 
 
 typedef struct ieee_param {
@@ -249,7 +249,7 @@ typedef struct ieee_param {
 		} wpa_ie;
 	        struct{
 			int command;
-    			int reason_code;
+			int reason_code;
 		} mlme;
 		struct {
 			u8 alg[IEEE_CRYPT_ALG_NAME_LEN];
@@ -265,7 +265,7 @@ typedef struct ieee_param {
 			u16 aid;
 			u16 capability;
 			int flags;
-			u8 tx_supp_rates[16];		
+			u8 tx_supp_rates[16];
 			struct rtw_ieee80211_ht_cap ht_cap;
 		} add_sta;
 		struct {
@@ -274,7 +274,7 @@ typedef struct ieee_param {
 		} bcn_ie;
 #endif
 
-	} u;	   
+	} u;
 }ieee_param;
 
 #ifdef CONFIG_AP_MODE
@@ -289,7 +289,7 @@ struct sta_data{
 	u16 capability;
 	int flags;
 	u32 sta_set;
-	u8 tx_supp_rates[16];	
+	u8 tx_supp_rates[16];
 	u32 tx_supp_rates_len;
 	struct rtw_ieee80211_ht_cap ht_cap;
 	u64	rx_pkts;
@@ -336,7 +336,7 @@ struct ieee_ibss_seq {
 	_list	list;
 };
 
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)||defined(PLATFORM_FREEBSD) 
+#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)||defined(PLATFORM_FREEBSD)
 
 struct rtw_ieee80211_hdr {
 	u16 frame_ctl;
@@ -425,7 +425,7 @@ enum eap_type {
 
 /* management */
 #define RTW_IEEE80211_STYPE_ASSOC_REQ	0x0000
-#define RTW_IEEE80211_STYPE_ASSOC_RESP 	0x0010
+#define RTW_IEEE80211_STYPE_ASSOC_RESP	0x0010
 #define RTW_IEEE80211_STYPE_REASSOC_REQ	0x0020
 #define RTW_IEEE80211_STYPE_REASSOC_RESP	0x0030
 #define RTW_IEEE80211_STYPE_PROBE_REQ	0x0040
@@ -626,7 +626,7 @@ struct ieee80211_snap_hdr {
 #define IEEE80211_24GHZ_BAND     (1<<0)
 #define IEEE80211_52GHZ_BAND     (1<<1)
 
-#define IEEE80211_CCK_RATE_LEN  		4
+#define IEEE80211_CCK_RATE_LEN			4
 #define IEEE80211_NUM_OFDM_RATESLEN	8
 
 
@@ -634,7 +634,7 @@ struct ieee80211_snap_hdr {
 #define IEEE80211_CCK_RATE_2MB		        0x04
 #define IEEE80211_CCK_RATE_5MB		        0x0B
 #define IEEE80211_CCK_RATE_11MB		        0x16
-#define IEEE80211_OFDM_RATE_LEN 		8
+#define IEEE80211_OFDM_RATE_LEN			8
 #define IEEE80211_OFDM_RATE_6MB		        0x0C
 #define IEEE80211_OFDM_RATE_9MB		        0x12
 #define IEEE80211_OFDM_RATE_12MB		0x18
@@ -686,10 +686,10 @@ struct ieee80211_snap_hdr {
 enum MGN_RATE{
 	MGN_1M		= 0x02,
 	MGN_2M		= 0x04,
-	MGN_5_5M 	= 0x0B,
-	MGN_6M	 	= 0x0C,
+	MGN_5_5M	= 0x0B,
+	MGN_6M		= 0x0C,
 	MGN_9M		= 0x12,
-	MGN_11M 	= 0x16,
+	MGN_11M		= 0x16,
 	MGN_12M	= 0x18,
 	MGN_18M	= 0x24,
 	MGN_24M	= 0x30,
@@ -774,7 +774,7 @@ enum MGN_RATE{
 
 #define IS_HT_RATE(_rate)				(_rate >= MGN_MCS0 && _rate <= MGN_MCS31)
 #define IS_VHT_RATE(_rate)				(_rate >= MGN_VHT1SS_MCS0 && _rate <= MGN_VHT4SS_MCS9)
-#define IS_CCK_RATE(_rate) 				(MGN_1M == _rate || _rate == MGN_2M || _rate == MGN_5_5M || _rate == MGN_11M )
+#define IS_CCK_RATE(_rate)				(MGN_1M == _rate || _rate == MGN_2M || _rate == MGN_5_5M || _rate == MGN_11M )
 #define IS_OFDM_RATE(_rate)				(MGN_6M <= _rate && _rate <= MGN_54M  && _rate != MGN_11M)
 
 
@@ -1077,9 +1077,9 @@ struct ieee80211_network {
 	u8 rates_len;
 	u8 rates_ex[MAX_RATES_EX_LENGTH];
 	u8 rates_ex_len;
-	
+
 	u8 edca_parmsets[18];
-		
+
 	u8 mode;
 	u8 flags;
 	u8 time_stamp[8];
@@ -1098,7 +1098,7 @@ struct ieee80211_network {
 	u8 qbssload[5];
 	u8 network_type;
 	int join_res;
-	unsigned long	last_scanned;	
+	unsigned long	last_scanned;
 };
 #endif
 /*
@@ -1114,7 +1114,7 @@ enum ieee80211_state {
 
 	/* the card is not linked at all */
 	IEEE80211_NOLINK = 0,
-	
+
 	/* IEEE80211_ASSOCIATING* are for BSS client mode
 	 * the driver shall not perform RX filtering unless
 	 * the state is LINKED.
@@ -1122,31 +1122,31 @@ enum ieee80211_state {
 	 * defaults to NOLINK for ALL the other states (including
 	 * LINKED_SCANNING)
 	 */
-	
+
 	/* the association procedure will start (wq scheduling)*/
 	IEEE80211_ASSOCIATING,
 	IEEE80211_ASSOCIATING_RETRY,
-	
+
 	/* the association procedure is sending AUTH request*/
 	IEEE80211_ASSOCIATING_AUTHENTICATING,
-	
+
 	/* the association procedure has successfully authentcated
 	 * and is sending association request
 	 */
 	IEEE80211_ASSOCIATING_AUTHENTICATED,
-	
+
 	/* the link is ok. the card associated to a BSS or linked
 	 * to a ibss cell or acting as an AP and creating the bss
 	 */
 	IEEE80211_LINKED,
-	
+
 	/* same as LINKED, but the driver shall apply RX filter
 	 * rules as we are in NO_LINK mode. As the card is still
 	 * logically linked, but it is doing a syncro site survey
 	 * then it will be back to LINKED state.
 	 */
 	IEEE80211_LINKED_SCANNING,
-	
+
 };
 #endif //PLATFORM_FREEBSD
 
@@ -1368,7 +1368,7 @@ enum rtw_ieee80211_vht_actioncode{
           RTW_IEEE80211_CHAN_NO_HT40PLUS      = 1<<4,
           RTW_IEEE80211_CHAN_NO_HT40MINUS     = 1<<5,
   };
-  
+
   #define RTW_IEEE80211_CHAN_NO_HT40 \
           (RTW_IEEE80211_CHAN_NO_HT40PLUS | RTW_IEEE80211_CHAN_NO_HT40MINUS)
 
@@ -1385,7 +1385,7 @@ struct rtw_ieee80211_channel {
 	//u32 orig_flags;
 	//int orig_mag;
 	//int orig_mpwr;
-}; 
+};
 
 #define CHAN_FMT \
 	/*"band:%d, "*/ \
@@ -1398,7 +1398,7 @@ struct rtw_ieee80211_channel {
 	/*"beacon_found:%u\n"*/ \
 	/*"orig_flags:0x%08x\n"*/ \
 	/*"orig_mag:%d\n"*/ \
-	/*"orig_mpwr:%d\n"*/ 
+	/*"orig_mpwr:%d\n"*/
 
 #define CHAN_ARG(channel) \
 	/*(channel)->band*/ \
@@ -1566,4 +1566,3 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8* category, u8 *act
 const char *action_public_str(u8 action);
 
 #endif /* IEEE80211_H */
-

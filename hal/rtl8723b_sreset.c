@@ -108,4 +108,3 @@ void rtl8723b_sreset_linked_status_check(_adapter *padapter)
 }
 
 #endif
-

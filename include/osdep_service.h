@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2013 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -277,7 +277,7 @@ extern void	rtw_sleep_schedulable(int ms);
 extern void	rtw_msleep_os(int ms);
 extern void	rtw_usleep_os(int us);
 
-extern u32 	rtw_atoi(u8* s);
+extern u32	rtw_atoi(u8* s);
 
 #ifdef DBG_DELAY_OS
 #define rtw_mdelay_os(ms) _rtw_mdelay_os((ms), __FUNCTION__, __LINE__)
@@ -308,9 +308,9 @@ static __inline void thread_enter(char *name)
 	allow_signal(SIGTERM);
 }
 
-__inline static void flush_signals_thread(void) 
+__inline static void flush_signals_thread(void)
 {
-	if (signal_pending (current)) 
+	if (signal_pending (current))
 		flush_signals(current);
 }
 
@@ -343,7 +343,7 @@ __inline static u32 _RND4(u32 sz)
 	u32	val;
 
 	val = ((sz >> 2) + ((sz & 3) ? 1: 0)) << 2;
-	
+
 	return val;
 
 }
@@ -354,7 +354,7 @@ __inline static u32 _RND8(u32 sz)
 	u32	val;
 
 	val = ((sz >> 3) + ((sz & 7) ? 1: 0)) << 3;
-	
+
 	return val;
 
 }
@@ -365,7 +365,7 @@ __inline static u32 _RND128(u32 sz)
 	u32	val;
 
 	val = ((sz >> 7) + ((sz & 127) ? 1: 0)) << 7;
-	
+
 	return val;
 
 }
@@ -376,7 +376,7 @@ __inline static u32 _RND256(u32 sz)
 	u32	val;
 
 	val = ((sz >> 8) + ((sz & 255) ? 1: 0)) << 8;
-	
+
 	return val;
 
 }
@@ -387,7 +387,7 @@ __inline static u32 _RND512(u32 sz)
 	u32	val;
 
 	val = ((sz >> 9) + ((sz & 511) ? 1: 0)) << 9;
-	
+
 	return val;
 
 }
@@ -469,7 +469,7 @@ extern u32 rtw_random32(void);
 	} while (0)
 
 #define RTW_GET_BE24(a) ((((u32) (a)[0]) << 16) | (((u32) (a)[1]) << 8) | \
-			 ((u32) (a)[2]))			 
+			 ((u32) (a)[2]))
 #define RTW_PUT_BE24(a, val)					\
 	do {							\
 		(a)[0] = (u8) ((((u32) (val)) >> 16) & 0xff);	\
@@ -478,7 +478,7 @@ extern u32 rtw_random32(void);
 	} while (0)
 
 #define RTW_GET_BE32(a) ((((u32) (a)[0]) << 24) | (((u32) (a)[1]) << 16) | \
-			 (((u32) (a)[2]) << 8) | ((u32) (a)[3]))			 
+			 (((u32) (a)[2]) << 8) | ((u32) (a)[3]))
 #define RTW_PUT_BE32(a, val)					\
 	do {							\
 		(a)[0] = (u8) ((((u32) (val)) >> 24) & 0xff);	\
@@ -488,7 +488,7 @@ extern u32 rtw_random32(void);
 	} while (0)
 
 #define RTW_GET_LE32(a) ((((u32) (a)[3]) << 24) | (((u32) (a)[2]) << 16) | \
-			 (((u32) (a)[1]) << 8) | ((u32) (a)[0]))			 
+			 (((u32) (a)[1]) << 8) | ((u32) (a)[0]))
 #define RTW_PUT_LE32(a, val)					\
 	do {							\
 		(a)[3] = (u8) ((((u32) (val)) >> 24) & 0xff);	\
@@ -500,7 +500,7 @@ extern u32 rtw_random32(void);
 #define RTW_GET_BE64(a) ((((u64) (a)[0]) << 56) | (((u64) (a)[1]) << 48) | \
 			 (((u64) (a)[2]) << 40) | (((u64) (a)[3]) << 32) | \
 			 (((u64) (a)[4]) << 24) | (((u64) (a)[5]) << 16) | \
-			 (((u64) (a)[6]) << 8) | ((u64) (a)[7]))			 
+			 (((u64) (a)[6]) << 8) | ((u64) (a)[7]))
 #define RTW_PUT_BE64(a, val)				\
 	do {						\
 		(a)[0] = (u8) (((u64) (val)) >> 56);	\
@@ -542,4 +542,3 @@ void rtw_cbuf_free(struct rtw_cbuf *cbuf);
 #define rtw_sprintf(buf, size, format, arg...)	snprintf(buf, size, format, ##arg)
 
 #endif
-

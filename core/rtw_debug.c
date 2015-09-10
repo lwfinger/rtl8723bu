@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -77,7 +77,7 @@ void sd_f0_reg_dump(void *sel, _adapter *adapter)
 	int i;
 
 	for(i=0x0;i<=0xff;i++)
-	{	
+	{
 		if(i%16==0)
 			DBG_871X_SEL_NL(sel, "0x%02x ",i);
 
@@ -163,9 +163,9 @@ ssize_t proc_set_write_reg(struct file *file, const char __user *buffer, size_t 
 	{
 		DBG_871X("argument size is less than 3\n");
 		return -EFAULT;
-	}	
+	}
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%x %x %x", &addr, &val, &len);
 
@@ -177,23 +177,23 @@ ssize_t proc_set_write_reg(struct file *file, const char __user *buffer, size_t 
 		switch(len)
 		{
 			case 1:
-				rtw_write8(padapter, addr, (u8)val);				
+				rtw_write8(padapter, addr, (u8)val);
 				break;
 			case 2:
-				rtw_write16(padapter, addr, (u16)val);				
+				rtw_write16(padapter, addr, (u16)val);
 				break;
 			case 4:
-				rtw_write32(padapter, addr, val);				
+				rtw_write32(padapter, addr, val);
 				break;
 			default:
 				DBG_871X("error write length=%d", len);
 				break;
-		}			
-		
+		}
+
 	}
-	
+
 	return count;
-	
+
 }
 
 static u32 proc_get_read_addr=0xeeeeeeee;
@@ -207,11 +207,11 @@ int proc_get_read_reg(struct seq_file *m, void *v)
 	if (proc_get_read_addr==0xeeeeeeee) {
 		DBG_871X_SEL_NL(m, "address not initialized\n");
 		return 0;
-	}	
+	}
 
 	switch(proc_get_read_len)
 	{
-		case 1:			
+		case 1:
 			DBG_871X_SEL_NL(m, "rtw_read8(0x%x)=0x%x\n", proc_get_read_addr, rtw_read8(padapter, proc_get_read_addr));
 			break;
 		case 2:
@@ -238,9 +238,9 @@ ssize_t proc_set_read_reg(struct file *file, const char __user *buffer, size_t c
 	{
 		DBG_871X("argument size is less than 2\n");
 		return -EFAULT;
-	}	
+	}
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%x %x", &addr, &len);
 
@@ -250,10 +250,10 @@ ssize_t proc_set_read_reg(struct file *file, const char __user *buffer, size_t c
 		}
 
 		proc_get_read_addr = addr;
-		
+
 		proc_get_read_len = len;
 	}
-	
+
 	return count;
 
 }
@@ -272,10 +272,10 @@ int proc_get_fwstate(struct seq_file *m, void *v)
 int proc_get_sec_info(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);	
+	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	struct security_priv *sec = &padapter->securitypriv;
 
-	DBG_871X_SEL_NL(m, "auth_alg=0x%x, enc_alg=0x%x, auth_type=0x%x, enc_type=0x%x\n", 
+	DBG_871X_SEL_NL(m, "auth_alg=0x%x, enc_alg=0x%x, auth_type=0x%x, enc_type=0x%x\n",
 						sec->dot11AuthAlgrthm, sec->dot11PrivacyAlgrthm,
 						sec->ndisauthtype, sec->ndisencryptstatus);
 
@@ -288,7 +288,7 @@ int proc_get_sec_info(struct seq_file *m, void *v)
 		, sec->wep_sw_dec_cnt_bc , sec->wep_sw_dec_cnt_mc, sec->wep_sw_dec_cnt_uc);
 
 	DBG_871X_SEL_NL(m, "tkip_sw_enc_cnt=%llu, %llu, %llu\n"
-		, sec->tkip_sw_enc_cnt_bc , sec->tkip_sw_enc_cnt_mc, sec->tkip_sw_enc_cnt_uc);	
+		, sec->tkip_sw_enc_cnt_bc , sec->tkip_sw_enc_cnt_mc, sec->tkip_sw_enc_cnt_uc);
 	DBG_871X_SEL_NL(m, "tkip_sw_dec_cnt=%llu, %llu, %llu\n"
 		, sec->tkip_sw_dec_cnt_bc , sec->tkip_sw_dec_cnt_mc, sec->tkip_sw_dec_cnt_uc);
 
@@ -304,7 +304,7 @@ int proc_get_sec_info(struct seq_file *m, void *v)
 int proc_get_mlmext_state(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);	
+	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
@@ -342,9 +342,9 @@ ssize_t proc_set_roam_flags(struct file *file, const char __user *buffer, size_t
 		if (num == 1)
 			rtw_assign_roam_flags(adapter, flags);
 	}
-	
+
 	return count;
-	
+
 }
 
 int proc_get_roam_param(struct seq_file *m, void *v)
@@ -388,9 +388,9 @@ ssize_t proc_set_roam_param(struct file *file, const char __user *buffer, size_t
 		if (num >= 3)
 			mlme->roam_scan_int_ms = scan_int_ms;
 	}
-	
+
 	return count;
-	
+
 }
 
 ssize_t proc_set_roam_tgt_addr(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
@@ -433,7 +433,7 @@ int proc_get_ht_option(struct seq_file *m, void *v)
 	struct net_device *dev = m->private;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-	
+
 #ifdef CONFIG_80211N_HT
 	DBG_871X_SEL_NL(m, "ht_option=%d\n", pmlmepriv->htpriv.ht_option);
 #endif //CONFIG_80211N_HT
@@ -444,13 +444,13 @@ int proc_get_ht_option(struct seq_file *m, void *v)
 int proc_get_rf_info(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);	
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;	
+	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
+	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 
-	DBG_871X_SEL_NL(m, "cur_ch=%d, cur_bw=%d, cur_ch_offet=%d\n", 
+	DBG_871X_SEL_NL(m, "cur_ch=%d, cur_bw=%d, cur_ch_offet=%d\n",
 					pmlmeext->cur_channel, pmlmeext->cur_bwmode, pmlmeext->cur_ch_offset);
-	
-	DBG_871X_SEL_NL(m, "oper_ch=%d, oper_bw=%d, oper_ch_offet=%d\n", 
+
+	DBG_871X_SEL_NL(m, "oper_ch=%d, oper_bw=%d, oper_ch_offet=%d\n",
 					rtw_get_oper_ch(padapter), rtw_get_oper_bw(padapter),  rtw_get_oper_choffset(padapter));
 
 	return 0;
@@ -469,7 +469,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 	s16 notify_noise = 0;
 	u16  index = 0;
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);	
+	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
 	phead = get_list_head(queue);
 	plist = get_next(phead);
 	if ((!phead) || (!plist))
@@ -484,7 +484,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 		pnetwork = LIST_CONTAINOR(plist, struct wlan_network, list);
                 if (!pnetwork)
 			break;
-	
+
 		if ( check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE &&
 			is_same_network(&pmlmepriv->cur_network.network, &pnetwork->network, 0)) {
 			notify_signal = translate_percentage_to_dbm(padapter->recvpriv.signal_strength);//dbm
@@ -495,10 +495,10 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 		#if defined(CONFIG_SIGNAL_DISPLAY_DBM) && defined(CONFIG_BACKGROUND_NOISE_MONITOR)
 		rtw_hal_get_odm_var(padapter, HAL_ODM_NOISE_MONITOR,&(pnetwork->network.Configuration.DSConfig), &(notify_noise));
 		#endif
-	
-		DBG_871X_SEL_NL(m, "%5d  "MAC_FMT"  %3d  %3d  %4d  %4d  %5d  %s\n", 
+
+		DBG_871X_SEL_NL(m, "%5d  "MAC_FMT"  %3d  %3d  %4d  %4d  %5d  %s\n",
 			++index,
-			MAC_ARG(pnetwork->network.MacAddress), 
+			MAC_ARG(pnetwork->network.MacAddress),
 			pnetwork->network.Configuration.DSConfig,
 			(int)pnetwork->network.Rssi,
 			notify_signal,
@@ -528,16 +528,16 @@ int proc_get_ap_info(struct seq_file *m, void *v)
 	{
 		int i;
 		struct recv_reorder_ctrl *preorder_ctrl;
-					
-		DBG_871X_SEL_NL(m, "SSID=%s\n", cur_network->network.Ssid.Ssid);		
+
+		DBG_871X_SEL_NL(m, "SSID=%s\n", cur_network->network.Ssid.Ssid);
 		DBG_871X_SEL_NL(m, "sta's macaddr:" MAC_FMT "\n", MAC_ARG(psta->hwaddr));
-		DBG_871X_SEL_NL(m, "cur_channel=%d, cur_bwmode=%d, cur_ch_offset=%d\n", pmlmeext->cur_channel, pmlmeext->cur_bwmode, pmlmeext->cur_ch_offset);		
+		DBG_871X_SEL_NL(m, "cur_channel=%d, cur_bwmode=%d, cur_ch_offset=%d\n", pmlmeext->cur_channel, pmlmeext->cur_bwmode, pmlmeext->cur_ch_offset);
 		DBG_871X_SEL_NL(m, "wireless_mode=0x%x, rtsen=%d, cts2slef=%d\n", psta->wireless_mode, psta->rtsen, psta->cts2self);
 		DBG_871X_SEL_NL(m, "state=0x%x, aid=%d, macid=%d, raid=%d\n", psta->state, psta->aid, psta->mac_id, psta->raid);
 #ifdef CONFIG_80211N_HT
-		DBG_871X_SEL_NL(m, "qos_en=%d, ht_en=%d, init_rate=%d\n", psta->qos_option, psta->htpriv.ht_option, psta->init_rate);		
+		DBG_871X_SEL_NL(m, "qos_en=%d, ht_en=%d, init_rate=%d\n", psta->qos_option, psta->htpriv.ht_option, psta->init_rate);
 		DBG_871X_SEL_NL(m, "bwmode=%d, ch_offset=%d, sgi_20m=%d,sgi_40m=%d\n", psta->bw_mode, psta->htpriv.ch_offset, psta->htpriv.sgi_20m, psta->htpriv.sgi_40m);
-		DBG_871X_SEL_NL(m, "ampdu_enable = %d\n", psta->htpriv.ampdu_enable);	
+		DBG_871X_SEL_NL(m, "ampdu_enable = %d\n", psta->htpriv.ampdu_enable);
 		DBG_871X_SEL_NL(m, "agg_enable_bitmap=%x, candidate_tid_bitmap=%x\n", psta->htpriv.agg_enable_bitmap, psta->htpriv.candidate_tid_bitmap);
 		DBG_871X_SEL_NL(m, "ldpc_cap=0x%x, stbc_cap=0x%x, beamform_cap=0x%x\n", psta->htpriv.ldpc_cap, psta->htpriv.stbc_cap, psta->htpriv.beamform_cap);
 #endif //CONFIG_80211N_HT
@@ -546,19 +546,19 @@ int proc_get_ap_info(struct seq_file *m, void *v)
 		DBG_871X_SEL_NL(m, "vht_ldpc_cap=0x%x, vht_stbc_cap=0x%x, vht_beamform_cap=0x%x\n", psta->vhtpriv.ldpc_cap, psta->vhtpriv.stbc_cap, psta->vhtpriv.beamform_cap);
 		DBG_871X_SEL_NL(m, "vht_mcs_map=0x%x, vht_highest_rate=0x%x, vht_ampdu_len=%d\n", *(u16*)psta->vhtpriv.vht_mcs_map, psta->vhtpriv.vht_highest_rate, psta->vhtpriv.ampdu_len);
 #endif
-					
+
 		for(i=0;i<16;i++)
-		{							
+		{
 			preorder_ctrl = &psta->recvreorder_ctrl[i];
 			if(preorder_ctrl->enable)
 			{
 				DBG_871X_SEL_NL(m, "tid=%d, indicate_seq=%d\n", i, preorder_ctrl->indicate_seq);
 			}
-		}	
-							
+		}
+
 	}
 	else
-	{							
+	{
 		DBG_871X_SEL_NL(m, "can't get sta's macaddr, cur_network's macaddr:" MAC_FMT "\n", MAC_ARG(cur_network->network.MacAddress));
 	}
 
@@ -581,7 +581,7 @@ int proc_get_adapter_state(struct seq_file *m, void *v)
 
 	return 0;
 }
-	
+
 int proc_get_trx_info(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
@@ -598,7 +598,7 @@ int proc_get_trx_info(struct seq_file *m, void *v)
 	DBG_871X_SEL_NL(m, "free_recvframe_cnt=%d\n"
 		, precvpriv->free_recvframe_cnt);
 
-	for(i = 0; i < 4; i++) 
+	for(i = 0; i < 4; i++)
 	{
 		phwxmit = pxmitpriv->hwxmits + i;
 		DBG_871X_SEL_NL(m, "%d, hwq.accnt=%d\n", i, phwxmit->accnt);
@@ -637,7 +637,7 @@ ssize_t proc_set_rate_ctl(struct file *file, const char __user *buffer, size_t c
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%hhx", &fix_rate);
 
@@ -660,7 +660,7 @@ ssize_t proc_set_fwdl_test_case(struct file *file, const char __user *buffer, si
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 		int num = sscanf(tmp, "%hhu %hhu", &g_fwdl_chksum_fail, &g_fwdl_wintint_rdy_fail);
 	}
 
@@ -732,7 +732,7 @@ int proc_get_rx_logs(struct seq_file *m, void *v)
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	struct rx_logs *rx_logs = &padapter->rx_logs;
 
-	DBG_871X_SEL_NL(m, 
+	DBG_871X_SEL_NL(m,
 		"intf_rx=%d\n"
 		"intf_rx_err_recvframe=%d\n"
 		"intf_rx_err_skb=%d\n"
@@ -829,7 +829,7 @@ int proc_get_tx_logs(struct seq_file *m, void *v)
 	struct net_device *dev = m->private;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	struct tx_logs *tx_logs = &padapter->tx_logs;
-	
+
 	DBG_871X_SEL_NL(m,
 		"os_tx=%d\n"
 		"os_tx_err_up=%d\n"
@@ -1029,15 +1029,15 @@ ssize_t proc_set_rx_signal(struct file *file, const char __user *buffer, size_t 
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%u %u", &is_signal_dbg, &signal_strength);
 
 		is_signal_dbg = is_signal_dbg==0?0:1;
-		
+
 		if(is_signal_dbg && num!=2)
 			return count;
-			
+
 		signal_strength = signal_strength>100?100:signal_strength;
 
 		padapter->recvpriv.is_signal_dbg = is_signal_dbg;
@@ -1047,11 +1047,11 @@ ssize_t proc_set_rx_signal(struct file *file, const char __user *buffer, size_t 
 			DBG_871X("set %s %u\n", "DBG_SIGNAL_STRENGTH", signal_strength);
 		else
 			DBG_871X("set %s\n", "HW_SIGNAL_STRENGTH");
-		
+
 	}
-	
+
 	return count;
-	
+
 }
 #ifdef CONFIG_80211N_HT
 
@@ -1078,7 +1078,7 @@ ssize_t proc_set_ht_enable(struct file *file, const char __user *buffer, size_t 
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%d ", &mode);
 
@@ -1088,9 +1088,9 @@ ssize_t proc_set_ht_enable(struct file *file, const char __user *buffer, size_t 
 			printk("ht_enable=%d\n", pregpriv->ht_enable);
 		}
 	}
-	
+
 	return count;
-	
+
 }
 
 int proc_get_bw_mode(struct seq_file *m, void *v)
@@ -1116,7 +1116,7 @@ ssize_t proc_set_bw_mode(struct file *file, const char __user *buffer, size_t co
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%d ", &mode);
 
@@ -1128,9 +1128,9 @@ ssize_t proc_set_bw_mode(struct file *file, const char __user *buffer, size_t co
 
 		}
 	}
-	
+
 	return count;
-	
+
 }
 
 int proc_get_ampdu_enable(struct seq_file *m, void *v)
@@ -1156,7 +1156,7 @@ ssize_t proc_set_ampdu_enable(struct file *file, const char __user *buffer, size
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%d ", &mode);
 
@@ -1167,9 +1167,9 @@ ssize_t proc_set_ampdu_enable(struct file *file, const char __user *buffer, size
 		}
 
 	}
-	
+
 	return count;
-	
+
 }
 
 int proc_get_rx_ampdu(struct seq_file *m, void *v)
@@ -1201,7 +1201,7 @@ ssize_t proc_set_rx_ampdu(struct file *file, const char __user *buffer, size_t c
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%d ", &mode);
 
@@ -1303,7 +1303,7 @@ ssize_t proc_set_rx_stbc(struct file *file, const char __user *buffer, size_t co
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%d ", &mode);
 
@@ -1313,9 +1313,9 @@ ssize_t proc_set_rx_stbc(struct file *file, const char __user *buffer, size_t co
 			printk("rx_stbc=%d\n", mode);
 		}
 	}
-	
+
 	return count;
-	
+
 }
 #endif //CONFIG_80211N_HT
 
@@ -1336,9 +1336,9 @@ ssize_t proc_set_rssi_disp(struct file *file, const char __user *buffer, size_t 
 	{
 		DBG_8192C("argument size is less than 1\n");
 		return -EFAULT;
-	}	
+	}
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%x", &enable);
 
@@ -1346,25 +1346,25 @@ ssize_t proc_set_rssi_disp(struct file *file, const char __user *buffer, size_t 
 			DBG_8192C("invalid set_rssi_disp parameter!\n");
 			return count;
 		}
-		
+
 		if(enable)
-		{			
+		{
 			DBG_8192C("Linked info Function Enable\n");
-			padapter->bLinkInfoDump = enable ;			
+			padapter->bLinkInfoDump = enable ;
 		}
 		else
 		{
 			DBG_8192C("Linked info Function Disable\n");
 			padapter->bLinkInfoDump = 0 ;
 		}
-	
-	}
-	
-	return count;
-	
-}	
 
-		
+	}
+
+	return count;
+
+}
+
+
 #ifdef CONFIG_AP_MODE
 
 int proc_get_all_sta_info(struct seq_file *m, void *v)
@@ -1386,7 +1386,7 @@ int proc_get_all_sta_info(struct seq_file *m, void *v)
 	{
 		phead = &(pstapriv->sta_hash[i]);
 		plist = get_next(phead);
-		
+
 		while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
 		{
 			psta = LIST_CONTAINOR(plist, struct sta_info, hash_list);
@@ -1400,9 +1400,9 @@ int proc_get_all_sta_info(struct seq_file *m, void *v)
 				DBG_871X_SEL_NL(m, "rtsen=%d, cts2slef=%d\n", psta->rtsen, psta->cts2self);
 				DBG_871X_SEL_NL(m, "state=0x%x, aid=%d, macid=%d, raid=%d\n", psta->state, psta->aid, psta->mac_id, psta->raid);
 #ifdef CONFIG_80211N_HT
-				DBG_871X_SEL_NL(m, "qos_en=%d, ht_en=%d, init_rate=%d\n", psta->qos_option, psta->htpriv.ht_option, psta->init_rate);	
+				DBG_871X_SEL_NL(m, "qos_en=%d, ht_en=%d, init_rate=%d\n", psta->qos_option, psta->htpriv.ht_option, psta->init_rate);
 				DBG_871X_SEL_NL(m, "bwmode=%d, ch_offset=%d, sgi_20m=%d,sgi_40m=%d\n", psta->bw_mode, psta->htpriv.ch_offset, psta->htpriv.sgi_20m, psta->htpriv.sgi_40m);
-				DBG_871X_SEL_NL(m, "ampdu_enable = %d\n", psta->htpriv.ampdu_enable);									
+				DBG_871X_SEL_NL(m, "ampdu_enable = %d\n", psta->htpriv.ampdu_enable);
 				DBG_871X_SEL_NL(m, "agg_enable_bitmap=%x, candidate_tid_bitmap=%x\n", psta->htpriv.agg_enable_bitmap, psta->htpriv.candidate_tid_bitmap);
 #endif //CONFIG_80211N_HT
 				DBG_871X_SEL_NL(m, "sleepq_len=%d\n", psta->sleepq_len);
@@ -1418,9 +1418,9 @@ int proc_get_all_sta_info(struct seq_file *m, void *v)
 				DBG_871X_SEL_NL(m, "wpa2_pairwise_cipher=0x%x\n", psta->wpa2_pairwise_cipher);
 				DBG_871X_SEL_NL(m, "qos_info=0x%x\n", psta->qos_info);
 				DBG_871X_SEL_NL(m, "dot118021XPrivacy=0x%x\n", psta->dot118021XPrivacy);
-								
+
 				for(j=0;j<16;j++)
-				{							
+				{
 					preorder_ctrl = &psta->recvreorder_ctrl[j];
 					if(preorder_ctrl->enable)
 					{
@@ -1447,8 +1447,8 @@ int proc_get_all_sta_info(struct seq_file *m, void *v)
 
 	return 0;
 }
-	
-#endif		
+
+#endif
 
 #ifdef DBG_MEMORY_LEAK
 #include <asm/atomic.h>
@@ -1477,8 +1477,8 @@ int proc_get_best_channel(struct seq_file *m, void *v)
 			index_24G = i;
 		if ( pmlmeext->channel_set[i].ChannelNum == 36)
 			index_5G = i;
-	}	
-	
+	}
+
 	for (i=0; pmlmeext->channel_set[i].ChannelNum !=0; i++) {
 		// 2.4G
 		if ( pmlmeext->channel_set[i].ChannelNum == 6 ) {
@@ -1509,11 +1509,11 @@ int proc_get_best_channel(struct seq_file *m, void *v)
 			}
 		}
 #if 1 // debug
-		DBG_871X_SEL_NL(m, "The rx cnt of channel %3d = %d\n", 
+		DBG_871X_SEL_NL(m, "The rx cnt of channel %3d = %d\n",
 					pmlmeext->channel_set[i].ChannelNum, pmlmeext->channel_set[i].rx_count);
 #endif
 	}
-	
+
 	DBG_871X_SEL_NL(m, "best_channel_5G = %d\n", best_channel_5G);
 	DBG_871X_SEL_NL(m, "best_channel_24G = %d\n", best_channel_24G);
 
@@ -1576,7 +1576,7 @@ ssize_t proc_set_btcoex_dbg(struct file *file, const char __user *buffer, size_t
 	{
 		DBG_871X(FUNC_ADPT_FMT ": input buffer is NULL!\n",
 			FUNC_ADPT_ARG(padapter));
-		
+
 		return -EFAULT;
 	}
 
@@ -1641,7 +1641,7 @@ int proc_get_btcoex_info(struct seq_file *m, void *v)
 	rtw_btcoex_DisplayBtCoexInfo(padapter, pbuf, bufsize);
 
 	DBG_871X_SEL(m, "%s\n", pbuf);
-	
+
 	rtw_mfree(pbuf, bufsize);
 
 	return 0;
@@ -1668,7 +1668,7 @@ ssize_t proc_set_sreset(struct file *file, const char __user *buffer, size_t cou
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
 		int num = sscanf(tmp, "%d", &trigger_point);
 
@@ -1677,9 +1677,9 @@ ssize_t proc_set_sreset(struct file *file, const char __user *buffer, size_t cou
 		else
 			sreset_set_trigger_point(padapter, trigger_point);
 	}
-	
+
 	return count;
-	
+
 }
 #endif /* DBG_CONFIG_ERROR_DETECT */
 
@@ -1770,4 +1770,3 @@ int proc_get_tx_ring(struct seq_file *m, void *v)
 #endif
 
 #endif
-

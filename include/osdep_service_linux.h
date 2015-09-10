@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2013 Realtek Corporation. All rights reserved.
- *                                        
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -69,10 +69,10 @@
 	#include <asm/io.h>
 #endif
 
-#ifdef CONFIG_IOCTL_CFG80211	
-//	#include <linux/ieee80211.h>        
+#ifdef CONFIG_IOCTL_CFG80211
+//	#include <linux/ieee80211.h>
         #include <net/ieee80211_radiotap.h>
-	#include <net/cfg80211.h>	
+	#include <net/cfg80211.h>
 #endif //CONFIG_IOCTL_CFG80211
 
 #ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
@@ -106,30 +106,30 @@
 #endif
 #endif
 
-	typedef struct 	semaphore _sema;
+	typedef struct	semaphore _sema;
 	typedef	spinlock_t	_lock;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-	typedef struct mutex 		_mutex;
+	typedef struct mutex		_mutex;
 #else
 	typedef struct semaphore	_mutex;
 #endif
 	typedef struct timer_list _timer;
 
 	struct	__queue	{
-		struct	list_head	queue;	
+		struct	list_head	queue;
 		_lock	lock;
 	};
 
 	typedef	struct sk_buff	_pkt;
 	typedef unsigned char	_buffer;
-	
+
 	typedef struct	__queue	_queue;
 	typedef struct	list_head	_list;
 	typedef	int	_OS_STATUS;
 	//typedef u32	_irqL;
 	typedef unsigned long _irqL;
 	typedef	struct	net_device * _nic_hdl;
-	
+
 	typedef void*		_thread_hdl_;
 	typedef int		thread_return;
 	typedef void*	thread_context;
@@ -175,18 +175,18 @@ static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
 __inline static _list *get_next(_list	*list)
 {
 	return list->next;
-}	
+}
 
 __inline static _list	*get_list_head(_queue	*queue)
 {
 	return (&(queue->queue));
 }
 
-	
-#define LIST_CONTAINOR(ptr, type, member) \
-        ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))	
 
-        
+#define LIST_CONTAINOR(ptr, type, member) \
+        ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
+
+
 __inline static void _enter_critical(_lock *plock, _irqL *pirqL)
 {
 	spin_lock_irqsave(plock, *pirqL);
@@ -248,20 +248,20 @@ __inline static void rtw_list_delete(_list *plist)
 
 __inline static void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,void* cntx)
 {
-	//setup_timer(ptimer, pfunc,(u32)cntx);	
+	//setup_timer(ptimer, pfunc,(u32)cntx);
 	ptimer->function = pfunc;
 	ptimer->data = (unsigned long)cntx;
 	init_timer(ptimer);
 }
 
 __inline static void _set_timer(_timer *ptimer,u32 delay_time)
-{	
-	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));	
+{
+	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));
 }
 
 __inline static void _cancel_timer(_timer *ptimer,u8 *bcancelled)
 {
-	del_timer_sync(ptimer); 	
+	del_timer_sync(ptimer);
 	*bcancelled=  _TRUE;//TRUE ==1; FALSE==0
 }
 
@@ -402,4 +402,3 @@ extern struct net_device * rtw_alloc_etherdev(int sizeof_priv);
 
 
 #endif
-

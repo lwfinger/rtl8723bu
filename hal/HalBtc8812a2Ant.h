@@ -37,7 +37,7 @@ typedef enum _BT_8812A_2ANT_BT_STATUS{
 typedef enum _BT_8812A_2ANT_COEX_ALGO{
 	BT_8812A_2ANT_COEX_ALGO_UNDEFINED		= 0x0,
 	BT_8812A_2ANT_COEX_ALGO_SCO				= 0x1,
-	BT_8812A_2ANT_COEX_ALGO_SCO_HID 		= 0x2,
+	BT_8812A_2ANT_COEX_ALGO_SCO_HID			= 0x2,
 	BT_8812A_2ANT_COEX_ALGO_HID				= 0x3,
 	BT_8812A_2ANT_COEX_ALGO_A2DP			= 0x4,
 	BT_8812A_2ANT_COEX_ALGO_A2DP_PANHS		= 0x5,
@@ -78,7 +78,7 @@ typedef struct _COEX_DM_8812A_2ANT{
 	BOOLEAN		bPreRfRxLpfShrink;
 	BOOLEAN		bCurRfRxLpfShrink;
 	u4Byte		btRf0x1eBackup;
-	BOOLEAN 	bPreLowPenaltyRa;
+	BOOLEAN		bPreLowPenaltyRa;
 	BOOLEAN		bCurLowPenaltyRa;
 	BOOLEAN		bPreDacSwingOn;
 	u4Byte		preDacSwingLvl;
@@ -86,7 +86,7 @@ typedef struct _COEX_DM_8812A_2ANT{
 	u4Byte		curDacSwingLvl;
 	BOOLEAN		bPreAdcBackOff;
 	BOOLEAN		bCurAdcBackOff;
-	BOOLEAN 	bPreAgcTableEn;
+	BOOLEAN		bPreAgcTableEn;
 	BOOLEAN		bCurAgcTableEn;
 	u4Byte		preVal0x6c0;
 	u4Byte		curVal0x6c0;
@@ -213,6 +213,5 @@ EXhalbtc8812a2ant_DbgControl(
 	IN	PBTC_COEXIST			pBtCoexist,
 	IN	u1Byte				opCode,
 	IN	u1Byte				opLen,
-	IN	pu1Byte 			pData
+	IN	pu1Byte				pData
 	);
-
