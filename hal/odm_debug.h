@@ -798,7 +798,6 @@ typedef enum tag_DBGP_Flag_Type_Definition
 
 // Please add new OS's print API by yourself
 
-//#if (RT_PLATFORM==PLATFORM_WINDOWS) 
 #if (DEBUG_PRINT == 1) && DBG
 #define	RT_DISP(dbgtype, dbgflag, printstr)\
 {\
@@ -872,14 +871,6 @@ extern	void	DBG_DumpMem(const u1Byte DbgComp,
 							u2Byte Len);
 
 /*--------------------------Exported Function prototype---------------------*/
-
-
-
-
-
-
-
-
 
 extern u4Byte GlobalDebugLevel;
 extern u8Byte GlobalDebugComponents;

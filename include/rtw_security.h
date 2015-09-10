@@ -181,9 +181,6 @@ struct security_priv
 	WLAN_BSSID_EX sec_bss;  //for joinbss (h2c buffer) usage
 
 	NDIS_802_11_WEP ndiswep;
-#ifdef PLATFORM_WINDOWS
-	u8 KeyMaterial[16];// variable length depending on above field.
-#endif
 
 	u8 assoc_info[600];
 	u8 szofcapability[256]; //for wpa2 usage

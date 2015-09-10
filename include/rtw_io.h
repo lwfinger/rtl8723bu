@@ -23,12 +23,7 @@
 
 #define NUM_IOREQ		8
 
-#ifdef PLATFORM_WINDOWS
-#define MAX_PROT_SZ	64
-#endif
-#ifdef PLATFORM_LINUX
 #define MAX_PROT_SZ	(64-16)
-#endif
 
 #define _IOREADY			0
 #define _IO_WAIT_COMPLETE   1
