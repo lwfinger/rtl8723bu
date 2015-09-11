@@ -20,11 +20,6 @@
 #define _RTW_MP_C_
 
 #include <drv_types.h>
-
-#ifdef PLATFORM_FREEBSD
-#include <sys/unistd.h>		/* for RFHIGHPID */
-#endif
-
 #include "../hal/odm_precomp.h"
 #if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8821A)
 #include <rtw_bt_mp.h>
@@ -1612,25 +1607,10 @@ void SetPacketTx(PADAPTER padapter)
 	//_rtw_memset(ptr, payload, pkt_end - ptr);
 	rtw_mfree(pmp_priv->TXradomBuffer,4096);
 	//3 6. start thread
-#ifdef PLATFORM_LINUX
 	pmp_priv->tx.PktTxThread = kthread_run(mp_xmit_packet_thread, pmp_priv, "RTW_MP_THREAD");
 	if (IS_ERR(pmp_priv->tx.PktTxThread))
 		DBG_871X("Create PktTx Thread Fail !!!!!\n");
-#endif
-#ifdef PLATFORM_FREEBSD
-{
-	struct proc *p;
-	struct thread *td;
-	pmp_priv->tx.PktTxThread = kproc_kthread_add(mp_xmit_packet_thread, pmp_priv,
-					&p, &td, RFHIGHPID, 0, "MPXmitThread", "MPXmitThread");
-
-	if (pmp_priv->tx.PktTxThread < 0)
-		DBG_871X("Create PktTx Thread Fail !!!!!\n");
-}
-#endif
-
 	Rtw_MPSetMacTxEDCA(padapter);
-
 }
 
 void SetPacketRx(PADAPTER pAdapter, u8 bStartRx)

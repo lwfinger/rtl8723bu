@@ -68,15 +68,7 @@ void rtl8192cu_xmit_tasklet(void *priv);
 #ifdef CONFIG_RTL8192D
 void rtl8192du_set_hw_type(_adapter *padapter);
 void rtl8192du_set_intf_ops(struct _io_ops *pops);
-#ifndef PLATFORM_FREEBSD
 void rtl8192du_recv_tasklet(void *priv);
-#else	// PLATFORM_FREEBSD
-void rtl8192du_recv_tasklet(void *priv, int npending);
-#ifdef CONFIG_RX_INDICATE_QUEUE
-void rtw_rx_indicate_tasklet(void *priv, int npending);
-#endif	// CONFIG_RX_INDICATE_QUEUE
-#endif	// PLATFORM_FREEBSD
-
 void rtl8192du_xmit_tasklet(void *priv);
 #endif
 
