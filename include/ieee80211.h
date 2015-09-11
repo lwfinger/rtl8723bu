@@ -870,8 +870,6 @@ struct ieee80211_softmac_stats{
 #define BIP_AAD_SIZE  20
 #endif //CONFIG_IEEE80211W
 
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
-
 struct ieee80211_security {
 	u16 active_key:2,
             enabled:1,
@@ -883,8 +881,6 @@ struct ieee80211_security {
 	u8 level;
 	u16 flags;
 } __attribute__ ((packed));
-
-#endif
 
 /*
 
@@ -926,8 +922,6 @@ struct ieee80211_header_data {
 #define MFIE_TYPE_RATES_EX   50
 #define MFIE_TYPE_GENERIC    221
 
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
-
 struct ieee80211_info_element_hdr {
 	u8 id;
 	u8 len;
@@ -938,7 +932,6 @@ struct ieee80211_info_element {
 	u8 len;
 	u8 data[0];
 } __attribute__ ((packed));
-#endif
 
 /*
  * These are the data types that can make up management packets
@@ -959,9 +952,6 @@ struct ieee80211_info_element {
 
 #define IEEE80211_DEFAULT_TX_ESSID "Penguin"
 #define IEEE80211_DEFAULT_BASIC_RATE 10
-
-
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
 
 
 struct ieee80211_authentication {
@@ -1001,7 +991,6 @@ struct ieee80211_assoc_response_frame {
 	u16 aid;
 //	struct ieee80211_info_element info_element; /* supported rates */
 } __attribute__ ((packed));
-#endif
 
 struct ieee80211_txb {
 	u8 nr_frags;

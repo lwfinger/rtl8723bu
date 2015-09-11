@@ -273,9 +273,7 @@ void sreset_stop_adapter(_adapter *padapter)
 	rtw_cancel_all_timer(padapter);
 
 	/* TODO: OS and HCI independent */
-	#if defined(PLATFORM_LINUX) && defined(CONFIG_USB_HCI)
 	tasklet_kill(&pxmitpriv->xmit_tasklet);
-	#endif
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY))
 		rtw_scan_abort(padapter);
@@ -303,9 +301,7 @@ void sreset_start_adapter(_adapter *padapter)
 	}
 
 	/* TODO: OS and HCI independent */
-	#if defined(PLATFORM_LINUX) && defined(CONFIG_USB_HCI)
 	tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
-	#endif
 
 	_set_timer(&padapter->mlmepriv.dynamic_chk_timer, 2000);
 

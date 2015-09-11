@@ -26,14 +26,10 @@
 #define RT_TAG	'1178'
 
 #ifdef DBG_MEMORY_LEAK
-#ifdef PLATFORM_LINUX
 atomic_t _malloc_cnt = ATOMIC_INIT(0);
 atomic_t _malloc_size = ATOMIC_INIT(0);
-#endif
 #endif /* DBG_MEMORY_LEAK */
 
-
-#if defined(PLATFORM_LINUX)
 /*
 * Translate the OS dependent @param error_code to OS independent RTW_STATUS_CODE
 * @return: one of RTW_STATUS_CODE
@@ -49,15 +45,9 @@ inline int RTW_STATUS_CODE(int error_code){
 			return _FAIL;
 	}
 }
-#else
-inline int RTW_STATUS_CODE(int error_code){
-	return error_code;
-}
-#endif
 
 u32 rtw_atoi(u8* s)
 {
-
 	int num=0,flag=0;
 	int i;
 	for(i=0;i<=strlen(s);i++)
@@ -84,12 +74,10 @@ inline u8* _rtw_vmalloc(u32 sz)
 	pbuf = vmalloc(sz);
 
 #ifdef DBG_MEMORY_LEAK
-#ifdef PLATFORM_LINUX
 	if ( pbuf != NULL) {
 		atomic_inc(&_malloc_cnt);
 		atomic_add(sz, &_malloc_size);
 	}
-#endif
 #endif /* DBG_MEMORY_LEAK */
 
 	return pbuf;
@@ -109,10 +97,8 @@ inline void _rtw_vmfree(u8 *pbuf, u32 sz)
 	vfree(pbuf);
 
 #ifdef DBG_MEMORY_LEAK
-#ifdef PLATFORM_LINUX
 	atomic_dec(&_malloc_cnt);
 	atomic_sub(sz, &_malloc_size);
-#endif
 #endif /* DBG_MEMORY_LEAK */
 }
 
@@ -1112,7 +1098,6 @@ inline int ATOMIC_DEC_RETURN(ATOMIC_T *v)
 	return atomic_dec_return(v);
 }
 
-#ifdef PLATFORM_LINUX
 /*
 * Open a file with the specific @param path, @param flag, @param mode
 * @param fpp the pointer of struct file pointer to get struct file pointer while file opening is success
@@ -1186,7 +1171,6 @@ static int writeFile(struct file *fp,char *buf,int len)
 	}
 
 	return sum;
-
 }
 
 /*
@@ -1284,7 +1268,6 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 	}
 	return ret;
 }
-#endif //PLATFORM_LINUX
 
 /*
 * Test if the specifi @param path is a file and readable
@@ -1293,15 +1276,10 @@ static int storeToFile(char *path, u8* buf, u32 sz)
 */
 int rtw_is_file_readable(char *path)
 {
-#ifdef PLATFORM_LINUX
 	if(isFileReadable(path) == 0)
 		return _TRUE;
 	else
 		return _FALSE;
-#else
-	//Todo...
-	return _FALSE;
-#endif
 }
 
 /*
@@ -1313,13 +1291,8 @@ int rtw_is_file_readable(char *path)
 */
 int rtw_retrive_from_file(char *path, u8* buf, u32 sz)
 {
-#ifdef PLATFORM_LINUX
-	int ret =retriveFromFile(path, buf, sz);
-	return ret>=0?ret:0;
-#else
-	//Todo...
-	return 0;
-#endif
+	int ret = retriveFromFile(path, buf, sz);
+	return ret >= 0 ? ret : 0;
 }
 
 /*
@@ -1331,16 +1304,10 @@ int rtw_retrive_from_file(char *path, u8* buf, u32 sz)
 */
 int rtw_store_to_file(char *path, u8* buf, u32 sz)
 {
-#ifdef PLATFORM_LINUX
-	int ret =storeToFile(path, buf, sz);
-	return ret>=0?ret:0;
-#else
-	//Todo...
-	return 0;
-#endif
+	int ret = storeToFile(path, buf, sz);
+	return ret >= 0 ? ret : 0;
 }
 
-#ifdef PLATFORM_LINUX
 struct net_device *rtw_alloc_etherdev_with_old_priv(int sizeof_priv, void *old_priv)
 {
 	struct net_device *pnetdev;
@@ -1471,7 +1438,6 @@ error:
 	return -1;
 
 }
-#endif
 
 #ifdef CONFIG_PLATFORM_SPRD
 #ifdef do_div

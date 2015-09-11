@@ -39,20 +39,9 @@
 #include <net/arp.h>
 #endif
 
-#ifdef PLATFORM_OS_XP
-#include <drv_types_xp.h>
-#endif
-
-#ifdef PLATFORM_OS_CE
-#include <drv_types_ce.h>
-#endif
-
-#ifdef PLATFORM_LINUX
 #include <drv_types_linux.h>
-#endif
 
 enum _NIC_VERSION {
-
 	RTL8711_NIC,
 	RTL8712_NIC,
 	RTL8713_NIC,
@@ -677,7 +666,6 @@ struct dvobj_priv
 
 #ifdef CONFIG_PCI_HCI
 
-#ifdef PLATFORM_LINUX
 	struct pci_dev *ppcidev;
 
 	//PCI MEM map
@@ -707,7 +695,6 @@ struct dvobj_priv
 	u8	b_support_aspm; // If it supports ASPM, Offset[560h] = 0x40, otherwise Offset[560h] = 0x00.
 	u8	b_support_backdoor;
 	u8	bdma64;
-#endif//PLATFORM_LINUX
 
 #endif//CONFIG_PCI_HCI
 };
@@ -715,12 +702,9 @@ struct dvobj_priv
 #define dvobj_to_pwrctl(dvobj) (&(dvobj->pwrctl_priv))
 #define pwrctl_to_dvobj(pwrctl) container_of(pwrctl, struct dvobj_priv, pwrctl_priv)
 
-#ifdef PLATFORM_LINUX
 static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
 	/* todo: get interface type from dvobj and the return the dev accordingly */
-#ifdef RTW_DVOBJ_CHIP_HW_TYPE
-#endif
 
 #ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
@@ -735,7 +719,6 @@ static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 	return &dvobj->ppcidev->dev;
 #endif
 }
-#endif
 
 _adapter *dvobj_get_port0_adapter(struct dvobj_priv *dvobj);
 
@@ -867,11 +850,6 @@ struct _ADAPTER{
 	_thread_hdl_ evtThread;
 	_thread_hdl_ xmitThread;
 	_thread_hdl_ recvThread;
-
-#ifndef PLATFORM_LINUX
-	NDIS_STATUS (*dvobj_init)(struct dvobj_priv *dvobj);
-	void (*dvobj_deinit)(struct dvobj_priv *dvobj);
-#endif
 
 	u32 (*intf_init)(struct dvobj_priv *dvobj);
 	void (*intf_deinit)(struct dvobj_priv *dvobj);
