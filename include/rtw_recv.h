@@ -263,16 +263,7 @@ struct rx_pkt_attrib	{
 
 #define RECVBUFF_ALIGN_SZ 8
 
-#if defined (CONFIG_RTL8192E)
-	#ifdef CONFIG_PCI_HCI
-		#define RXDESC_SIZE 16
-		#define RX_WIFI_INFO_SIZE	24
-	#else
-		#define RXDESC_SIZE	24
-	#endif
-#else
 #define RXDESC_SIZE	24
-#endif
 #define RXDESC_OFFSET RXDESC_SIZE
 
 struct recv_stat
@@ -280,12 +271,6 @@ struct recv_stat
 	unsigned int rxdw0;
 
 	unsigned int rxdw1;
-
-#if !(defined(CONFIG_RTL8192E) && defined(CONFIG_PCI_HCI)) //exclude 8192ee
-	unsigned int rxdw2;
-
-	unsigned int rxdw3;
-#endif
 
 #ifndef BUF_DESC_ARCH
 	unsigned int rxdw4;

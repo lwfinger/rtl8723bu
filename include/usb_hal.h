@@ -22,10 +22,6 @@
 
 void rtw_set_hal_ops(_adapter *padapter);
 
-#ifdef CONFIG_RTL8192C
-void rtl8192cu_set_hal_ops(_adapter * padapter);
-#endif
-
 #ifdef CONFIG_RTL8723A
 void rtl8723au_set_hal_ops(_adapter * padapter);
 #endif
@@ -33,11 +29,6 @@ void rtl8723au_set_hal_ops(_adapter * padapter);
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 void rtl8812au_set_hal_ops(_adapter * padapter);
 #endif
-
-#ifdef CONFIG_RTL8192E
-void rtl8192eu_set_hal_ops(_adapter * padapter);
-#endif
-
 
 #ifdef CONFIG_RTL8723B
 void rtl8723bu_set_hal_ops(_adapter * padapter);

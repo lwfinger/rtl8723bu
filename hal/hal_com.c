@@ -657,7 +657,7 @@ s32 c2h_evt_read(_adapter *adapter, u8 *buf)
 	if (buf == NULL)
 		goto exit;
 
-#if defined(CONFIG_RTL8192C) || defined(CONFIG_RTL8723A)
+#if defined(CONFIG_RTL8723A)
 
 	trigger = rtw_read8(adapter, REG_C2HEVT_CLEAR);
 
@@ -717,7 +717,7 @@ s32 c2h_evt_read_88xx(_adapter *adapter, u8 *buf)
 	if (buf == NULL)
 		goto exit;
 
-#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8192E) || defined(CONFIG_RTL8723B)
+#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8723B)
 
 	trigger = rtw_read8(adapter, REG_C2HEVT_CLEAR);
 

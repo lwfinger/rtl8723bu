@@ -112,7 +112,7 @@ struct mp_tx
 	_thread_hdl_ PktTxThread;
 };
 
-#if defined(CONFIG_RTL8192C) || defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) ||defined(CONFIG_RTL8192E) || defined(CONFIG_RTL8723B)
+#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8723B)
 
 #define MP_MAX_LINES		1000
 #define MP_MAX_LINES_BYTES	256
@@ -260,16 +260,10 @@ typedef struct _MPT_CONTEXT
 //#endif
 
 /* E-Fuse */
-#ifdef CONFIG_RTL8192C
-#define EFUSE_MAP_SIZE		128
-#endif
 #ifdef CONFIG_RTL8723A
 #define EFUSE_MAP_SIZE		256
 #endif
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
-#define EFUSE_MAP_SIZE		512
-#endif
-#ifdef CONFIG_RTL8192E
 #define EFUSE_MAP_SIZE		512
 #endif
 #ifdef CONFIG_RTL8723B

@@ -9396,9 +9396,6 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 	}
 	else if (strcmp(tmp[0], "mac") == 0)
 	{
-		#ifdef CONFIG_RTL8192C
-		addr = EEPROM_MAC_ADDR_92C;
-		#endif // CONFIG_RTL8192C
 		#ifdef CONFIG_RTL8723A
 			#ifdef CONFIG_SDIO_HCI
 			addr = EEPROM_MAC_ADDR_8723AS;
@@ -9411,17 +9408,6 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 			#endif
 		#endif // CONFIG_RTL8723A
 
-		#ifdef CONFIG_RTL8192E
-			#ifdef CONFIG_USB_HCI
-			addr = EEPROM_MAC_ADDR_8192EU;
-			#endif
-			#ifdef CONFIG_SDIO_HCI
-			addr = EEPROM_MAC_ADDR_8192ES;
-			#endif
-			#ifdef CONFIG_PCI_HCI
-			addr = EEPROM_MAC_ADDR_8192EE;
-			#endif
-		#endif
 		#ifdef CONFIG_RTL8723B
 		#ifdef CONFIG_SDIO_HCI
 		addr = EEPROM_MAC_ADDR_8723BS;
@@ -9465,25 +9451,14 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 	}
 	else if (strcmp(tmp[0], "vidpid") == 0)
 	{
-		#ifdef CONFIG_RTL8192C
-		addr = EEPROM_VID_92C;
-		#endif // CONFIG_RTL8192C
 		#ifdef CONFIG_RTL8723A
 			#ifdef CONFIG_USB_HCI
 			addr = EEPROM_VID_8723AU;
 			#endif
 		#endif // CONFIG_RTL8723A
-		#ifdef CONFIG_RTL8192E
-			#ifdef CONFIG_USB_HCI
-			addr = EEPROM_VID_8192EU;
-			#endif
-			#ifdef CONFIG_PCI_HCI
-			addr = EEPROM_VID_8192EE;
-			#endif
-		#endif // CONFIG_RTL8192E
 		#ifdef CONFIG_RTL8723B
 		addr = EEPROM_VID_8723BU;
-		#endif // CONFIG_RTL8192E
+		#endif
 		cnts = 4;
 
 		EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (PVOID)&max_available_size, _FALSE);
@@ -9997,9 +9972,6 @@ static int rtw_mp_efuse_set(struct net_device *dev,
 		}
 
 		//mac,00e04c871200
-		#ifdef CONFIG_RTL8192C
-		addr = EEPROM_MAC_ADDR_92C;
-		#endif
 		#ifdef CONFIG_RTL8723A
 		#ifdef CONFIG_SDIO_HCI
 		addr = EEPROM_MAC_ADDR_8723AS;
@@ -10011,17 +9983,6 @@ static int rtw_mp_efuse_set(struct net_device *dev,
 		addr = EEPROM_MAC_ADDR_8723AU;
 		#endif
 		#endif // CONFIG_RTL8723A
-		#ifdef CONFIG_RTL8192E
-			#ifdef CONFIG_USB_HCI
-			addr = EEPROM_MAC_ADDR_8192EU;
-			#endif
-			#ifdef CONFIG_SDIO_HCI
-			addr = EEPROM_MAC_ADDR_8192ES;
-			#endif
-			#ifdef CONFIG_PCI_HCI
-			addr = EEPROM_MAC_ADDR_8192EE;
-			#endif
-		#endif //#ifdef CONFIG_RTL8192E
 
 		#ifdef CONFIG_RTL8723B
 		#ifdef CONFIG_SDIO_HCI
@@ -10086,23 +10047,11 @@ static int rtw_mp_efuse_set(struct net_device *dev,
 		}
 
 		// pidvid,da0b7881
-		#ifdef CONFIG_RTL8192C
-		addr = EEPROM_VID_92C;
-		#endif // CONFIG_RTL8192C
 		#ifdef CONFIG_RTL8723A
 			#ifdef CONFIG_USB_HCI
 			addr = EEPROM_VID_8723AU;
 			#endif
 		#endif // CONFIG_RTL8723A
-
-		#ifdef CONFIG_RTL8192E
-			#ifdef CONFIG_USB_HCI
-			addr = EEPROM_VID_8192EU;
-			#endif
-			#ifdef CONFIG_PCI_HCI
-			addr = EEPROM_VID_8192EE;
-			#endif
-		#endif // CONFIG_RTL8192E
 
 		#ifdef CONFIG_RTL8723B
 		addr = EEPROM_VID_8723BU;
@@ -11597,17 +11546,11 @@ static int rtw_mp_thermal(struct net_device *dev,
 	u8 val;
 	u16 bwrite=1;
 
-	#ifdef CONFIG_RTL8192C
-			u16 addr=EEPROM_THERMAL_METER_92C;
-	#endif
 	#ifdef CONFIG_RTL8723A
 			u16 addr=EEPROM_THERMAL_METER_8723A;
 	#endif
 	#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 			u16 addr=EEPROM_THERMAL_METER_8812;
-	#endif
-	#ifdef CONFIG_RTL8192E
-			u16 addr=EEPROM_THERMAL_METER_8192E;
 	#endif
 	#ifdef CONFIG_RTL8723B
 			u16 addr=EEPROM_THERMAL_METER_8723B;

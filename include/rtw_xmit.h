@@ -145,22 +145,9 @@ do{\
 #define HWXMIT_ENTRY	4
 
 // For Buffer Descriptor ring architecture
-#ifdef BUF_DESC_ARCH
-#if defined (CONFIG_RTL8192E)
-#define TX_BUFFER_SEG_NUM	1 // 0:2 seg, 1: 4 seg, 2: 8 seg.
-#endif
-#endif
 
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)|| defined(CONFIG_RTL8723B)
 #define TXDESC_SIZE 40
-//8192EE_TODO
-#elif defined (CONFIG_RTL8192E) // this section is defined for buffer descriptor ring architecture
-	#ifdef CONFIG_PCI_HCI
-		#define TXDESC_SIZE ((TX_BUFFER_SEG_NUM ==0)?16: ((TX_BUFFER_SEG_NUM ==1)? 32:64) )
-		#define TX_WIFI_INFO_SIZE 40
-	#else  //USB or SDIO
-		#define TXDESC_SIZE 40
-	#endif
 //8192EE_TODO
 #else
 #define TXDESC_SIZE 32
@@ -185,11 +172,7 @@ do{\
 #endif
 
 #ifdef CONFIG_PCI_HCI
-#if defined(CONFIG_RTL8192E) // this section is defined for buffer descriptor ring architecture
-#define TXDESC_OFFSET TX_WIFI_INFO_SIZE
-#else
 #define TXDESC_OFFSET 0
-#endif
 #define TX_DESC_NEXT_DESC_OFFSET	(TXDESC_SIZE + 8)
 #endif //CONFIG_PCI_HCI
 
@@ -206,22 +189,7 @@ enum TXDESC_SC{
 #define TXDESC_40_BYTES
 #endif
 
-#if defined(CONFIG_RTL8192E) && defined(CONFIG_PCI_HCI) //8192ee
-//8192EE_TODO
-struct tx_desc
-{
-	unsigned int txdw0;
-	unsigned int txdw1;
-	unsigned int txdw2;
-	unsigned int txdw3;
-	unsigned int txdw4;
-	unsigned int txdw5;
-	unsigned int txdw6;
-	unsigned int txdw7;
-};
-#else
-struct tx_desc
-{
+struct tx_desc {
 	unsigned int txdw0;
 	unsigned int txdw1;
 	unsigned int txdw2;
@@ -250,7 +218,6 @@ struct tx_desc
 	unsigned int txdw15;
 #endif
 };
-#endif
 
 union txdesc {
 	struct tx_desc txdesc;

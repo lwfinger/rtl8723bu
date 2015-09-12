@@ -602,19 +602,6 @@ typedef struct hal_com_data
 	#endif
 #endif //endif CONFIG_RTL8723A
 
-
-#if defined(CONFIG_RTL8192C)
-
-	u8	BluetoothCoexist;
-
-	u8	EEPROMChnlAreaTxPwrCCK[2][3];
-	u8	EEPROMChnlAreaTxPwrHT40_1S[2][3];
-	u8	EEPROMChnlAreaTxPwrHT40_2SDiff[2][3];
-	u8	EEPROMPwrLimitHT20[3];
-	u8	EEPROMPwrLimitHT40[3];
-
-#endif //defined(CONFIG_RTL8192C)
-
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
 	char	para_file_buf[MAX_PARA_FILE_BUF_LEN];
 	char *mac_reg;
