@@ -227,46 +227,10 @@ static struct usb_device_id rtw_usb_id_tbl[] ={
 	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8186),.driver_info = RTL8188C_8192C},/* Intel-Xavi( Azwave) */
 #endif
 
-#ifdef CONFIG_RTL8192D
-	/*=== Realtek demoboard ===*/
-	/****** 8192DU ********/
-	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8193),.driver_info = RTL8192D},/* 8192DU-VC */
-	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8194),.driver_info = RTL8192D},/* 8192DU-VS */
-	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8111),.driver_info = RTL8192D},/* Realtek 5G dongle for WiFi Display */
-	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x0193),.driver_info = RTL8192D},/* 8192DE-VAU */
-	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8171),.driver_info = RTL8192D},/* 8192DU-VC */
-	/*=== Customer ID ===*/
-	/****** 8192DU-VC ********/
-	{USB_DEVICE(0x2019, 0xAB2C),.driver_info = RTL8192D},/* PCI - Abocm */
-	{USB_DEVICE(0x2019, 0x4903),.driver_info = RTL8192D},/* PCI - ETOP */
-	{USB_DEVICE(0x2019, 0x4904),.driver_info = RTL8192D},/* PCI - ETOP */
-	{USB_DEVICE(0x07B8, 0x8193),.driver_info = RTL8192D},/* Abocom - Abocom */
-	/****** 8192DU-VS ********/
-	{USB_DEVICE(0x20F4, 0x664B),.driver_info = RTL8192D},/* TRENDnet */
-	{USB_DEVICE(0x04DD, 0x954F),.driver_info = RTL8192D},  /* Sharp */
-	{USB_DEVICE(0x04DD, 0x96A6),.driver_info = RTL8192D},  /* Sharp */
-	{USB_DEVICE(0x050D, 0x110A),.driver_info = RTL8192D}, /* Belkin - Edimax */
-	{USB_DEVICE(0x050D, 0x1105),.driver_info = RTL8192D}, /* Belkin - Edimax */
-	{USB_DEVICE(0x050D, 0x120A),.driver_info = RTL8192D}, /* Belkin - Edimax */
-	{USB_DEVICE(0x1668, 0x8102),.driver_info = RTL8192D}, /*  -  */
-	{USB_DEVICE(0x0BDA, 0xE194),.driver_info = RTL8192D}, /*  - Edimax */
-	/****** 8192DU-WiFi Display Dongle ********/
-	{USB_DEVICE(0x2019, 0xAB2D),.driver_info = RTL8192D},/* Planex - Abocom ,5G dongle for WiFi Display */
-#endif
-
 #ifdef CONFIG_RTL8723A
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x8724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x1724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x0724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
-#endif
-
-#ifdef CONFIG_RTL8188E
-	/*=== Realtek demoboard ===*/
-	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8179),.driver_info = RTL8188E}, /* 8188EUS */
-	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x0179),.driver_info = RTL8188E}, /* 8188ETV */
-	/*=== Customer ID ===*/
-	/****** 8188EUS ********/
-	{USB_DEVICE(0x07B8, 0x8179),.driver_info = RTL8188E}, /* Abocom - Abocom */
 #endif
 
 #ifdef CONFIG_RTL8812A
@@ -676,19 +640,9 @@ static void rtw_decide_chip_type_by_usb_info(_adapter *padapter, const struct us
 		rtl8192cu_set_hw_type(padapter);
 	#endif
 
-	#ifdef CONFIG_RTL8192D
-	if(padapter->chip_type == RTL8192D)
-		rtl8192du_set_hw_type(padapter);
-	#endif
-
 	#ifdef CONFIG_RTL8723A
 	if(padapter->chip_type == RTL8723A)
 		rtl8723au_set_hw_type(padapter);
-	#endif
-
-	#ifdef CONFIG_RTL8188E
-	if(padapter->chip_type == RTL8188E)
-		rtl8188eu_set_hw_type(padapter);
 	#endif
 
 	#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
@@ -717,24 +671,9 @@ void rtw_set_hal_ops(_adapter *padapter)
 		rtl8192cu_set_hal_ops(padapter);
 	#endif
 
-	#ifdef CONFIG_RTL8192D
-	if(padapter->chip_type == RTL8192D)
-		rtl8192du_set_hal_ops(padapter);
-	#endif
-
 	#ifdef CONFIG_RTL8723A
 	if(padapter->chip_type == RTL8723A)
 		rtl8723au_set_hal_ops(padapter);
-	#endif
-
-	#ifdef CONFIG_RTL8188E
-	if(padapter->chip_type == RTL8188E)
-		rtl8188eu_set_hal_ops(padapter);
-	#endif
-
-	#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
-	if(padapter->chip_type == RTL8812 || padapter->chip_type == RTL8821)
-		rtl8812au_set_hal_ops(padapter);
 	#endif
 
 	#ifdef CONFIG_RTL8192E
@@ -754,19 +693,9 @@ void usb_set_intf_ops(_adapter *padapter,struct _io_ops *pops)
 		rtl8192cu_set_intf_ops(pops);
 	#endif
 
-	#ifdef CONFIG_RTL8192D
-	if(padapter->chip_type == RTL8192D)
-		rtl8192du_set_intf_ops(pops);
-	#endif
-
 	#ifdef CONFIG_RTL8723A
 	if(padapter->chip_type == RTL8723A)
 		rtl8723au_set_intf_ops(pops);
-	#endif
-
-	#ifdef CONFIG_RTL8188E
-	if(padapter->chip_type == RTL8188E)
-		rtl8188eu_set_intf_ops(pops);
 	#endif
 
 	#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)

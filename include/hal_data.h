@@ -118,7 +118,7 @@ typedef enum _RT_AMPDU_BRUST_MODE{
 //#define HP_THERMAL_NUM		8
 //###### duplicate code,will move to ODM #########
 
-#if defined(CONFIG_RTL8192D) || defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_BT_COEXIST)
 typedef enum _MACPHY_MODE_8192D{
 	SINGLEMAC_SINGLEPHY,	//SMSP
 	DUALMAC_DUALPHY,		//DMDP
@@ -223,26 +223,6 @@ struct dm_priv
 	u32	TXPowerTrackingCallbackCnt;	//cosa add for debug
 
 	u32	prv_traffic_idx; // edca turbo
-#ifdef CONFIG_RTL8192D
-	u8	ThermalValue_AVG[AVG_THERMAL_NUM];
-	u8	ThermalValue_AVG_index;
-	u8	ThermalValue_RxGain;
-	u8	ThermalValue_Crystal;
-	u8	bReloadtxpowerindex;
-
-	u32	RegD04_MP;
-
-	u8	RegC04_MP;
-	u8	Delta_IQK;
-	u8	Delta_LCK;
-	//u8   RSVD_7;
-
-	BOOLEAN	bDPKdone[2];
-	//u16 RSVD_8;
-
-	u32	RegA24;
-	u32	RegRF3C[2];	//pathA / pathB
-#endif
 //###### duplicate code,will move to ODM #########
 
 	// Add for Reading Initial Data Rate SEL Register 0x484 during watchdog. Using for fill tx desc. 2011.3.21 by Thomas
@@ -623,7 +603,7 @@ typedef struct hal_com_data
 #endif //endif CONFIG_RTL8723A
 
 
-#if defined(CONFIG_RTL8192C) ||defined(CONFIG_RTL8192D)
+#if defined(CONFIG_RTL8192C)
 
 	u8	BluetoothCoexist;
 
@@ -632,35 +612,8 @@ typedef struct hal_com_data
 	u8	EEPROMChnlAreaTxPwrHT40_2SDiff[2][3];
 	u8	EEPROMPwrLimitHT20[3];
 	u8	EEPROMPwrLimitHT40[3];
-	#ifdef CONFIG_RTL8192D
-	MACPHY_MODE_8192D	MacPhyMode92D;
-	BAND_TYPE	CurrentBandType92D;	//0:2.4G, 1:5G
-	BAND_TYPE	BandSet92D;
-	BOOLEAN       bMasterOfDMSP;
-	BOOLEAN       bSlaveOfDMSP;
 
-	IQK_MATRIX_REGS_SETTING IQKMatrixRegSetting[IQK_Matrix_Settings_NUM_92D];
-	#ifdef CONFIG_DUALMAC_CONCURRENT
-	BOOLEAN		bInModeSwitchProcess;
-	#endif
-	u8	AutoLoadStatusFor8192D;
-	u8	EEPROMC9;
-	u8	EEPROMCC;
-	u8	PAMode;
-	u8	InternalPA5G[2];	//pathA / pathB
-	BOOLEAN		bPhyValueInitReady;
-	BOOLEAN		bLoadIMRandIQKSettingFor2G;// True if IMR or IQK  have done  for 2.4G in scan progress
-	BOOLEAN		bNOPG;
-	BOOLEAN		bIsVS;
-	//Query RF by FW
-	BOOLEAN		bReadRFbyFW;
-	BOOLEAN		bEarlyModeEnable;
-	BOOLEAN		bSupportRemoteWakeUp;
-	BOOLEAN		bInSetPower;
-	u8	RTSInitRate;	 // 2010.11.24.by tynli.
-	#endif //CONFIG_RTL8192D
-
-#endif //defined(CONFIG_RTL8192C) ||defined(CONFIG_RTL8192D)
+#endif //defined(CONFIG_RTL8192C)
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
 	char	para_file_buf[MAX_PARA_FILE_BUF_LEN];

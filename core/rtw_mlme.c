@@ -3969,14 +3969,6 @@ unsigned int rtw_restructure_ht_ie(_adapter *padapter, u8 *in_ie, u8 *out_ie, ui
 	AMPDU_para [4:2]:Min MPDU Start Spacing
 	*/
 
-	/*
-	#if defined(CONFIG_RTL8188E )&& defined (CONFIG_SDIO_HCI)
-	ht_capie.ampdu_params_info = 2;
-	#else
-	ht_capie.ampdu_params_info = (IEEE80211_HT_CAP_AMPDU_FACTOR&0x03);
-	#endif
-	*/
-
 	if(padapter->driver_rx_ampdu_factor != 0xFF)
 		max_rx_ampdu_factor = (HT_CAP_AMPDU_FACTOR)padapter->driver_rx_ampdu_factor;
 	else

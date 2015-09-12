@@ -8928,11 +8928,7 @@ void issue_action_BA(_adapter *padapter, unsigned char *raddr, unsigned char act
 				} while (pmlmeinfo->dialogToken == 0);
 				pframe = rtw_set_fixed_ie(pframe, 1, &(pmlmeinfo->dialogToken), &(pattrib->pktlen));
 
-				#if defined(CONFIG_RTL8188E) && defined(CONFIG_SDIO_HCI)
-				BA_para_set = (0x0802 | ((status & 0xf) << 2)); //immediate ack & 16 buffer size
-				#else
 				BA_para_set = (0x1002 | ((status & 0xf) << 2)); //immediate ack & 64 buffer size
-				#endif
 
 				BA_para_set = cpu_to_le16(BA_para_set);
 				pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)(&(BA_para_set)), &(pattrib->pktlen));

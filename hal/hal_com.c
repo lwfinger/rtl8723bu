@@ -657,7 +657,7 @@ s32 c2h_evt_read(_adapter *adapter, u8 *buf)
 	if (buf == NULL)
 		goto exit;
 
-#if defined(CONFIG_RTL8192C) || defined(CONFIG_RTL8192D) || defined(CONFIG_RTL8723A) || defined (CONFIG_RTL8188E)
+#if defined(CONFIG_RTL8192C) || defined(CONFIG_RTL8723A)
 
 	trigger = rtw_read8(adapter, REG_C2HEVT_CLEAR);
 
@@ -2170,32 +2170,6 @@ void rtw_bb_rf_gain_offset(_adapter *padapter)
 		DBG_871X("Using the default RF gain.\n");
 	}
 
-#elif defined(CONFIG_RTL8188E)
-	if (value & BIT4) {
-		DBG_871X("8188ES Offset RF Gain.\n");
-		DBG_871X("8188ES Offset RF Gain. EEPROMRFGainVal=0x%x\n",
-				padapter->eeprompriv.EEPROMRFGainVal);
-
-		if (padapter->eeprompriv.EEPROMRFGainVal != 0xff) {
-			res = rtw_hal_read_rfreg(padapter, RF_PATH_A,
-					REG_RF_BB_GAIN_OFFSET, 0xffffffff);
-
-			DBG_871X("Offset RF Gain. reg 0x55=0x%x\n",res);
-			res &= 0xfff87fff;
-
-			res |= (padapter->eeprompriv.EEPROMRFGainVal & 0x0f) << 15;
-			DBG_871X("Offset RF Gain. res=0x%x\n",res);
-
-			rtw_hal_write_rfreg(padapter, RF_PATH_A,
-					REG_RF_BB_GAIN_OFFSET,
-					RF_GAIN_OFFSET_MASK, res);
-		} else {
-			DBG_871X("Offset RF Gain. EEPROMRFGainVal=0x%x == 0xff, didn't run Kfree\n",
-					padapter->eeprompriv.EEPROMRFGainVal);
-		}
-	} else {
-		DBG_871X("Using the default RF gain.\n");
-	}
 #else
 	if (!(value & 0x01)) {
 		//DBG_871X("Offset RF Gain.\n");
