@@ -11549,9 +11549,6 @@ static int rtw_mp_thermal(struct net_device *dev,
 	#ifdef CONFIG_RTL8723A
 			u16 addr=EEPROM_THERMAL_METER_8723A;
 	#endif
-	#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
-			u16 addr=EEPROM_THERMAL_METER_8812;
-	#endif
 	#ifdef CONFIG_RTL8723B
 			u16 addr=EEPROM_THERMAL_METER_8723B;
 	#endif

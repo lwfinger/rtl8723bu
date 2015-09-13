@@ -146,9 +146,8 @@ do{\
 
 // For Buffer Descriptor ring architecture
 
-#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)|| defined(CONFIG_RTL8723B)
+#if defined(CONFIG_RTL8723B)
 #define TXDESC_SIZE 40
-//8192EE_TODO
 #else
 #define TXDESC_SIZE 32
 #endif
@@ -183,11 +182,7 @@ enum TXDESC_SC{
 	SC_DUPLICATE=0x03
 };
 
-#ifdef CONFIG_PCI_HCI
-#define TXDESC_64_BYTES
-#elif defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8723B)
 #define TXDESC_40_BYTES
-#endif
 
 struct tx_desc {
 	unsigned int txdw0;

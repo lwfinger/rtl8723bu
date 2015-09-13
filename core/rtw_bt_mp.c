@@ -28,7 +28,7 @@
 #include <rtl8723b_hal.h>
 #endif
 
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8821A)
+#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 void MPh2c_timeout_handle(void *FunctionContext)
 {
 	PADAPTER pAdapter;

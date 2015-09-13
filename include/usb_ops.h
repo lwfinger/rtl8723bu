@@ -56,11 +56,6 @@ void rtl8192cu_recv_tasklet(void *priv);
 void rtl8192cu_xmit_tasklet(void *priv);
 #endif
 
-#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
-void rtl8812au_set_hw_type(_adapter *padapter);
-void rtl8812au_set_intf_ops(struct _io_ops *pops);
-#endif
-
 #ifdef CONFIG_RTL8723B
 void rtl8723bu_set_hw_type(_adapter *padapter);
 void rtl8723bu_set_intf_ops(struct _io_ops *pops);
