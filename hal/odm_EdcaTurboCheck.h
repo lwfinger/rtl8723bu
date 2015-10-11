@@ -18,8 +18,10 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODMEDCATURBOCHECK_H__
-#define    __ODMEDCATURBOCHECK_H__
+#ifndef __HAL_ODM_EDCATURBOCHECK_H__
+#define __HAL_ODM_EDCATURBOCHECK_H__
+
+#define EDCATURBO_VERSION	"1.0"
 
 typedef struct _EDCA_TURBO_
 {
@@ -35,16 +37,16 @@ typedef struct _EDCA_TURBO_
 #if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 static u4Byte edca_setting_UL[HT_IOT_PEER_MAX] =
 // UNKNOWN		REALTEK_90	REALTEK_92SE	BROADCOM		RALINK		ATHEROS		CISCO		MERU        MARVELL	92U_AP		SELF_AP(DownLink/Tx)
-{ 0x5e4322,		0xa44f,			0x5e4322,		0x5ea32b,		0x5ea422,	0x5ea322,	0x3ea430,	0x5ea42b, 0x5ea44f,	0x5e4322,	0x5e4322};
+{ 0x5e4322, 		0xa44f, 		0x5e4322,		0x5ea32b,  		0x5ea422, 	0x5ea322,	0x3ea430,	0x5ea42b, 0x5ea44f,	0x5e4322,	0x5e4322};
 
 
 static u4Byte edca_setting_DL[HT_IOT_PEER_MAX] =
 // UNKNOWN		REALTEK_90	REALTEK_92SE	BROADCOM		RALINK		ATHEROS		CISCO		MERU,       MARVELL	92U_AP		SELF_AP(UpLink/Rx)
-{ 0xa44f,		0x5ea44f,	0x5e4322,		0x5ea42b,		0xa44f,			0xa630,			0x5ea630,	0x5ea42b, 0xa44f,		0xa42b,		0xa42b};
+{ 0xa44f, 		0x5ea44f, 	0x5e4322, 		0x5ea42b, 		0xa44f, 		0xa630, 		0x5ea630,	0x5ea42b, 0xa44f,		0xa42b,		0xa42b};
 
 static u4Byte edca_setting_DL_GMode[HT_IOT_PEER_MAX] =
 // UNKNOWN		REALTEK_90	REALTEK_92SE	BROADCOM		RALINK		ATHEROS		CISCO		MERU,       MARVELL	92U_AP		SELF_AP
-{ 0x4322,		0xa44f,			0x5e4322,		0xa42b,				0x5e4322,	0x4322,			0xa42b,		0x5ea42b, 0xa44f,		0x5e4322,	0x5ea42b};
+{ 0x4322, 		0xa44f, 		0x5e4322,		0xa42b, 			0x5e4322, 	0x4322, 		0xa42b,		0x5ea42b, 0xa44f,		0x5e4322,	0x5ea42b};
 
 
 //============================================================
@@ -95,23 +97,23 @@ ODM_ChooseIotMainSTA(
 
 VOID
 odm_EdcaTurboCheck(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	);
 VOID
 ODM_EdcaTurboInit(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 );
 
 #if(DM_ODM_SUPPORT_TYPE==ODM_WIN)
 VOID
 odm_EdcaTurboCheckMP(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	);
 
 //check if edca turbo is disabled
 BOOLEAN
 odm_IsEdcaTurboDisable(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 );
 //choose edca paramter for special IOT case
 VOID
@@ -123,27 +125,27 @@ ODM_EdcaParaSelByIot(
 //check if it is UL or DL
 VOID
 odm_EdcaChooseTrafficIdx(
-	IN	PVOID		pDM_VOID,
-	IN	u8Byte				cur_tx_bytes,
-	IN	u8Byte				cur_rx_bytes,
-	IN	BOOLEAN			bBiasOnRx,
-	OUT BOOLEAN		*pbIsCurRDLState
+	IN 	PVOID	 	pDM_VOID,
+	IN	u8Byte  			cur_tx_bytes,
+	IN	u8Byte  			cur_rx_bytes,
+	IN	BOOLEAN 		bBiasOnRx,
+	OUT BOOLEAN 		*pbIsCurRDLState
 	);
 
 #elif (DM_ODM_SUPPORT_TYPE==ODM_CE)
 VOID
 odm_EdcaTurboCheckCE(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	);
 #else
 VOID
 odm_IotEngine(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	);
 
 VOID
 odm_EdcaParaInit(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	);
 #endif
 

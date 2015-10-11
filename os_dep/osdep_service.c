@@ -588,7 +588,7 @@ inline void *dbg_rtw_usb_buffer_alloc(struct usb_device *dev, size_t size, dma_a
 	void *p;
 
 	if(match_mstat_sniff_rules(flags, size))
-		DBG_871X("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, size);
+		DBG_871X("DBG_MEM_ALLOC %s:%d %s(%zu)\n", func, line, __FUNCTION__, size);
 
 	p = _rtw_usb_buffer_alloc(dev, size, dma);
 
@@ -605,7 +605,7 @@ inline void dbg_rtw_usb_buffer_free(struct usb_device *dev, size_t size, void *a
 {
 
 	if(match_mstat_sniff_rules(flags, size))
-		DBG_871X("DBG_MEM_ALLOC %s:%d %s(%d)\n", func, line, __FUNCTION__, size);
+		DBG_871X("DBG_MEM_ALLOC %s:%d %s(%zu)\n", func, line, __FUNCTION__, size);
 
 	_rtw_usb_buffer_free(dev, size, addr, dma);
 
@@ -619,7 +619,7 @@ inline void dbg_rtw_usb_buffer_free(struct usb_device *dev, size_t size, void *a
 
 #endif /* defined(DBG_MEM_ALLOC) */
 
-void* rtw_malloc2d(int h, int w, int size)
+void* rtw_malloc2d(int h, int w, size_t size)
 {
 	int j;
 
@@ -835,15 +835,26 @@ void rtw_sleep_schedulable(int ms)
 
 void rtw_msleep_os(int ms)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36))
+	if (ms < 20) {
+		unsigned long us = ms * 1000UL;
+		usleep_range(us, us + 1000UL);
+		return;
+	}
+#endif
 	msleep((unsigned int)ms);
 }
 
 void rtw_usleep_os(int us)
 {
-      if ( 1 < (us/1000) )
-                msleep(1);
-      else
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36))
+	usleep_range(us, us + 1);
+#else
+	if ( 1 < (us/1000) )
+		msleep(1);
+	else
 		msleep( (us/1000) + 1);
+	#endif
 }
 
 #ifdef DBG_DELAY_OS

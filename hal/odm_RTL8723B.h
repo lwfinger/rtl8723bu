@@ -20,17 +20,10 @@
 #ifndef	__ODM_RTL8723B_H__
 #define __ODM_RTL8723B_H__
 
-#define	DM_DIG_MIN_NIC_8723	0x1C
-
-VOID
-odm_DIG_8723(IN		PDM_ODM_T		pDM_Odm);
-
 s1Byte
 odm_CCKRSSI_8723B(
 	IN		u1Byte	LNA_idx,
 	IN		u1Byte	VGA_idx
 	);
-
-
 
 #endif

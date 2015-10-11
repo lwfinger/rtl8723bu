@@ -18,8 +18,8 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODM_REGDEFINE11N_H__
-#define __ODM_REGDEFINE11N_H__
+#ifndef __HAL_ODM_REGDEFINE11N_H__
+#define __HAL_ODM_REGDEFINE11N_H__
 
 
 //2 RF REG LIST
@@ -46,6 +46,7 @@
 #define	ODM_REG_TX_ANT_CTRL_11N			0x80C
 #define	ODM_REG_BB_PWR_SAV5_11N		0x818
 #define	ODM_REG_CCK_RPT_FORMAT_11N		0x824
+#define	ODM_REG_CCK_RPT_FORMAT_11N_B	0x82C
 #define	ODM_REG_RX_DEFUALT_A_11N		0x858
 #define	ODM_REG_RX_DEFUALT_B_11N		0x85A
 #define	ODM_REG_BB_PWR_SAV3_11N		0x85C
@@ -143,7 +144,7 @@
 #define	ODM_REG_TX_CCK_BBON_11N			0xE78
 #define	ODM_REG_OFDM_RFON_11N			0xE7C
 #define	ODM_REG_OFDM_BBON_11N			0xE80
-#define		ODM_REG_TX2RX_11N				0xE84
+#define	ODM_REG_TX2RX_11N				0xE84
 #define	ODM_REG_TX2TX_11N				0xE88
 #define	ODM_REG_RX_CCK_11N				0xE8C
 #define	ODM_REG_RX_OFDM_11N				0xED0

@@ -21,12 +21,11 @@
 //============================================================
 // include files
 //============================================================
-//#include "Mp_Precomp.h"
 #include "odm_precomp.h"
 
 VOID
 ODM_EdcaTurboInit(
-	IN	PVOID		pDM_VOID)
+	IN 	PVOID	 	pDM_VOID)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 #if ((DM_ODM_SUPPORT_TYPE == ODM_AP)||(DM_ODM_SUPPORT_TYPE==ODM_ADSL))
@@ -64,7 +63,7 @@ ODM_EdcaTurboInit(
 
 VOID
 odm_EdcaTurboCheck(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	//
@@ -115,7 +114,7 @@ odm_EdcaTurboCheck(
 
 VOID
 odm_EdcaTurboCheckCE(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -125,7 +124,7 @@ odm_EdcaTurboCheckCE(
 	u32	ICType=pDM_Odm->SupportICType;
 	u32	IOTPeer=0;
 	u8	WirelessMode=0xFF;                   //invalid value
-	u32	trafficIndex;
+	u32 	trafficIndex;
 	u32	edca_param;
 	u64	cur_tx_bytes = 0;
 	u64	cur_rx_bytes = 0;
@@ -296,7 +295,7 @@ odm_EdcaTurboCheckCE(
 #elif(DM_ODM_SUPPORT_TYPE==ODM_WIN)
 VOID
 odm_EdcaTurboCheckMP(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 
@@ -304,8 +303,8 @@ odm_EdcaTurboCheckMP(
 	PADAPTER		       Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 
-	PADAPTER			pDefaultAdapter = GetDefaultAdapter(Adapter);
-	PADAPTER			pExtAdapter = GetFirstExtAdapter(Adapter);//NULL;
+	PADAPTER 			pDefaultAdapter = GetDefaultAdapter(Adapter);
+	PADAPTER 			pExtAdapter = GetFirstExtAdapter(Adapter);//NULL;
 	PMGNT_INFO			pMgntInfo = &Adapter->MgntInfo;
 	PSTA_QOS			pStaQos = Adapter->MgntInfo.pStaQos;
 	//[Win7 Count Tx/Rx statistic for Extension Port] odm_CheckEdcaTurbo's Adapter is always Default. 2009.08.20, by Bohn
@@ -603,7 +602,7 @@ odm_EdcaTurboCheckMP(
 //check if edca turbo is disabled
 BOOLEAN
 odm_IsEdcaTurboDisable(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 )
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -641,7 +640,7 @@ odm_IsEdcaTurboDisable(
 //add iot case here: for MP/CE
 VOID
 ODM_EdcaParaSelByIot(
-	IN	PVOID		pDM_VOID,
+	IN 	PVOID	 	pDM_VOID,
 	OUT	u4Byte		*EDCA_BE_UL,
 	OUT u4Byte		*EDCA_BE_DL
 	)
@@ -656,7 +655,7 @@ ODM_EdcaParaSelByIot(
 	  u4Byte                         IOTPeerSubType=0;
 
 	PMGNT_INFO			pMgntInfo = &Adapter->MgntInfo;
-	u1Byte				TwoPortStatus = (u1Byte)TWO_PORT_STATUS__WITHOUT_ANY_ASSOCIATE;
+	u1Byte 				TwoPortStatus = (u1Byte)TWO_PORT_STATUS__WITHOUT_ANY_ASSOCIATE;
 
 	if(pDM_Odm->pWirelessMode!=NULL)
 		WirelessMode=*(pDM_Odm->pWirelessMode);
@@ -762,7 +761,7 @@ ODM_EdcaParaSelByIot(
 		}
 	}
 
-	if((ICType == ODM_RTL8192D)&&(IOTPeerSubType == HT_IOT_PEER_LINKSYS_E4200_V1)&&((WirelessMode==ODM_WM_N5G)))
+    	if((ICType == ODM_RTL8192D)&&(IOTPeerSubType == HT_IOT_PEER_LINKSYS_E4200_V1)&&((WirelessMode==ODM_WM_N5G)))
 	{
 		(*EDCA_BE_DL) = 0x432b;
 		(*EDCA_BE_UL) = 0x432b;
@@ -792,11 +791,11 @@ ODM_EdcaParaSelByIot(
 
 VOID
 odm_EdcaChooseTrafficIdx(
-	IN	PVOID		pDM_VOID,
-	IN	u8Byte				cur_tx_bytes,
-	IN	u8Byte				cur_rx_bytes,
-	IN	BOOLEAN			bBiasOnRx,
-	OUT BOOLEAN		*pbIsCurRDLState
+	IN 	PVOID	 	pDM_VOID,
+	IN	u8Byte  			cur_tx_bytes,
+	IN	u8Byte  			cur_rx_bytes,
+	IN	BOOLEAN 		bBiasOnRx,
+	OUT BOOLEAN 		*pbIsCurRDLState
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -840,7 +839,7 @@ odm_EdcaChooseTrafficIdx(
 #if((DM_ODM_SUPPORT_TYPE==ODM_AP)||(DM_ODM_SUPPORT_TYPE==ODM_ADSL))
 
 void odm_EdcaParaInit(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -888,7 +887,7 @@ void odm_EdcaParaInit(
 
 		 if(OPMODE & WIFI_AP_STATE)
 		 {
-			memcpy(EDCA, rtl_ap_EDCA, 2*sizeof(struct ParaRecord));
+		 	memcpy(EDCA, rtl_ap_EDCA, 2*sizeof(struct ParaRecord));
 
 			if(mode & (ODM_WM_A|ODM_WM_G|ODM_WM_N24G|ODM_WM_N5G))
 				memcpy(&EDCA[VI], &rtl_ap_EDCA[VI_AG], 2*sizeof(struct ParaRecord));
@@ -897,7 +896,7 @@ void odm_EdcaParaInit(
 		 }
 		 else
 		 {
-			memcpy(EDCA, rtl_sta_EDCA, 2*sizeof(struct ParaRecord));
+		 	memcpy(EDCA, rtl_sta_EDCA, 2*sizeof(struct ParaRecord));
 
 			if(mode & (ODM_WM_A|ODM_WM_G|ODM_WM_N24G|ODM_WM_N5G))
 				memcpy(&EDCA[VI], &rtl_sta_EDCA[VI_AG], 2*sizeof(struct ParaRecord));
@@ -958,7 +957,7 @@ void odm_EdcaParaInit(
 
 BOOLEAN
 ODM_ChooseIotMainSTA(
-	IN	PVOID		pDM_VOID,
+	IN 	PVOID	 	pDM_VOID,
 	IN	PSTA_INFO_T		pstat
 	)
 {
@@ -1008,7 +1007,7 @@ ODM_ChooseIotMainSTA(
 
 					priv->pshare->highTP_found_pstat = pstat;
 					bhighTP_found_pstat=TRUE;
-				}
+   				}
 			}
 #elif(DM_ODM_SUPPORT_TYPE==ODM_AP)
 		for(i=0; i<8; i++)
@@ -1045,7 +1044,7 @@ ODM_ChooseIotMainSTA(
 #ifdef WIFI_WMM
 VOID
 ODM_IotEdcaSwitch(
-	IN	PVOID		pDM_VOID,
+	IN 	PVOID	 	pDM_VOID,
 	IN	unsigned char		enable
 	)
 {
@@ -1165,13 +1164,13 @@ ODM_IotEdcaSwitch(
 
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_AP)
-	if (priv->pshare->rf_ft_var.wifi_beq_iot && priv->pshare->iot_mode_VI_exist) {
+ 	if (priv->pshare->rf_ft_var.wifi_beq_iot && priv->pshare->iot_mode_VI_exist) {
 #if defined(CONFIG_RTL_88E_SUPPORT) || defined(CONFIG_RTL_8812_SUPPORT)
 		if (GET_CHIP_VER(priv) == VERSION_8188E || GET_CHIP_VER(priv) == VERSION_8812E) {
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (6 << 8) | 0x4f;
 #else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (6 << 8) | 0x4f);
+		  	ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (6 << 8) | 0x4f);
 #endif
 		}
 		else
@@ -1180,7 +1179,7 @@ ODM_IotEdcaSwitch(
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (4 << 8) | 0x4f;
 #else
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (4 << 8) | 0x4f);
+	  	ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (4 << 8) | 0x4f);
 #endif
 		}
 	} else if(!enable)
@@ -1328,7 +1327,7 @@ ODM_IotEdcaSwitch(
 			 ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (BE_TXOP << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
 #endif
  #else
-		#if defined(CONFIG_RTL_8196D) || defined(CONFIG_RTL_8197DL) || defined(CONFIG_RTL_8196E) || (defined(CONFIG_RTL_8197D) && !defined(CONFIG_PORT0_EXT_GIGA))
+ 		#if defined(CONFIG_RTL_8196D) || defined(CONFIG_RTL_8197DL) || defined(CONFIG_RTL_8196E) || (defined(CONFIG_RTL_8197D) && !defined(CONFIG_PORT0_EXT_GIGA))
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (BE_TXOP*2 << 16) | (cw_max << 12) | (5 << 8) | (sifs_time + 3 * slot_time);
  #else
@@ -1371,7 +1370,7 @@ ODM_IotEdcaSwitch(
 
 VOID
 odm_IotEngine(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -1541,7 +1540,7 @@ odm_IotEngine(
 			   if (priv->pshare->iot_mode_enable)
 					switch_turbo++;
 				}
-		}
+         	}
 
 #if(defined(CLIENT_MODE) && (DM_ODM_SUPPORT_TYPE==ODM_AP))
         if ((OPMODE & WIFI_STATION_STATE) && (priv->pmib->dot11OperationEntry.wifi_specific))
@@ -1719,11 +1718,11 @@ odm_IotEngine(
 		}
 #endif
 
-#if defined(CONFIG_WLAN_HAL_8881A) || defined(CONFIG_WLAN_HAL_8192EE) || defined(CONFIG_RTL_8812_SUPPORT)
-	if (pDM_Odm->SupportICType == ODM_RTL8881A || pDM_Odm->SupportICType == ODM_RTL8192E || pDM_Odm->SupportICType == ODM_RTL8812) {
+#if defined(CONFIG_WLAN_HAL_8881A) || defined(CONFIG_WLAN_HAL_8192EE) || defined(CONFIG_RTL_8812_SUPPORT) || defined(CONFIG_WLAN_HAL_8814AE)
+	if (pDM_Odm->SupportICType == ODM_RTL8881A || pDM_Odm->SupportICType == ODM_RTL8192E || pDM_Odm->SupportICType == ODM_RTL8812 || pDM_Odm->SupportICType == ODM_RTL8814A) {
 		if (priv->assoc_num > 9)
-	{
-	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
+   	{
+       	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
 				if ((priv->swq_decision == 0)){
 				switch_turbo++;
 				if (priv->pshare->txop_enlarge == 0)
@@ -1746,15 +1745,15 @@ odm_IotEngine(
 			priv->pshare->txop_enlarge = 2;
 			switch_turbo--;
 		}
-		} else {
+	    	} else {
 			priv->swq_decision = 0;
     }
 	} else if(CONFIG_WLAN_NOT_HAL_EXIST)
 #endif
 		{
 		if (priv->assoc_num > 1)
-	{
-	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
+   	{
+       	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
 				if ((priv->swq_decision == 0)){
 				switch_turbo++;
 				if (priv->pshare->txop_enlarge == 0)
@@ -1912,3 +1911,4 @@ odm_IotEngine(
 #endif
 }
 #endif
+

@@ -44,9 +44,23 @@ CONFIG_CALIBRATE_TX_POWER_TO_MAX = n
 CONFIG_RTW_ADAPTIVITY_EN = auto
 CONFIG_RTW_ADAPTIVITY_MODE = normal
 CONFIG_SKIP_SIGNAL_SCALE_MAPPING = n
+CONFIG_QOS_OPTIMIZATION = n
+CONFIG_USE_USB_BUFFER_ALLOC_TX = n
+CONFIG_80211W = n
+CONFIG_REDUCE_TX_CPU_LOADING = n
+CONFIG_BR_EXT = y
+CONFIG_ANTENNA_DIVERSITY = n
+CONFIG_AP_MODE = y
+CONFIG_P2P = y
+CONFIG_P2P_IPS = y
+CONFIG_CONCURRENT_MODE = n
+CONFIG_TCP_CSUM_OFFLOAD_RX = n
+CONFIG_H2CLBK = n
+SUPPORT_HW_RFOFF_DETECTED = n
 ######################## Wake On Lan ##########################
 CONFIG_WOWLAN = n
 CONFIG_GPIO_WAKEUP = n
+CONFIG_WAKEUP_GPIO_IDX = default
 CONFIG_PNO_SUPPORT = n
 CONFIG_PNO_SET_DEBUG = n
 CONFIG_AP_WOWLAN = n
@@ -55,6 +69,7 @@ CONFIG_PLATFORM_I386_PC = y
 ###############################################################
 
 CONFIG_DRVEXT_MODULE = n
+CONFIG_DRVEXT_MODULE_WSC = n
 
 export TopDIR ?= $(shell pwd)
 
@@ -73,6 +88,7 @@ _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 			os_dep/mlme_linux.o \
 			os_dep/recv_linux.o \
 			os_dep/ioctl_cfg80211.o \
+			os_dep/rtw_cfgvendor.o \
 			os_dep/wifi_regd.o \
 			os_dep/rtw_android.o \
 			os_dep/rtw_proc.o
@@ -81,10 +97,11 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_com.o \
 			hal/hal_com_phycfg.o \
 			hal/hal_phy.o \
+			hal/hal_dm.o \
 			hal/hal_btcoex.o \
 			hal/hal_usb.o \
 			hal/hal_usb_led.o
-			
+
 _OUTSRC_FILES := hal/odm_debug.o	\
 		hal/odm_AntDiv.o\
 		hal/odm_interface.o\
@@ -96,10 +113,13 @@ _OUTSRC_FILES := hal/odm_debug.o	\
 		hal/odm_PathDiv.o\
 		hal/odm_RaInfo.o\
 		hal/odm_DynamicBBPowerSaving.o\
+		hal/odm_PowerTracking.o\
 		hal/odm_DynamicTxPower.o\
+		hal/odm_Adaptivity.o\
 		hal/odm_CfoTracking.o\
-		hal/odm_NoiseMonitor.o
-		
+		hal/odm_NoiseMonitor.o\
+		hal/odm_ACS.o
+
 EXTRA_CFLAGS += -I$(src)/platform
 _PLATFORM_FILES := platform/platform_ops.o
 
@@ -119,7 +139,7 @@ _OUTSRC_FILES += hal/HalBtc8188c2Ant.o \
 				hal/HalBtc8821a2Ant.o \
 				hal/HalBtc8821aCsr2Ant.o
 endif
-		
+
 
 ########### HAL_RTL8723B #################################
 
@@ -140,7 +160,7 @@ _HAL_INTFS_FILES +=	hal/$(RTL871X)_hal_init.o \
 			hal/$(RTL871X)_dm.o \
 			hal/$(RTL871X)_rxdesc.o \
 			hal/$(RTL871X)_cmd.o \
-			
+
 
 _HAL_INTFS_FILES +=	\
 			hal/usb_halinit.o \
@@ -164,8 +184,8 @@ _OUTSRC_FILES += hal/HalHWImg8723B_BB.o\
 			hal/odm_RTL8723B.o
 
 
-########### AUTO_CFG  #################################	
-		
+########### AUTO_CFG  #################################
+
 ifeq ($(CONFIG_AUTOCFG_CP), y)
 $(shell cp $(TopDIR)/autoconf_$(RTL871X)_usb_linux.h $(TopDIR)/include/autoconf.h)
 endif
@@ -206,11 +226,12 @@ ifeq ($(CONFIG_WAPI_SUPPORT), y)
 EXTRA_CFLAGS += -DCONFIG_WAPI_SUPPORT
 endif
 
-
 ifeq ($(CONFIG_EFUSE_CONFIG_FILE), y)
 EXTRA_CFLAGS += -DCONFIG_EFUSE_CONFIG_FILE
 ifeq ($(MODULE_NAME), 8189es)
 EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_8189e.map\"
+else ifeq ($(MODULE_NAME), 8723bs)
+EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_8723bs.map\"
 else
 EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_$(MODULE_NAME).map\"
 endif
@@ -227,6 +248,8 @@ endif
 
 ifeq ($(CONFIG_LOAD_PHY_PARA_FROM_FILE), y)
 EXTRA_CFLAGS += -DCONFIG_LOAD_PHY_PARA_FROM_FILE
+#EXTRA_CFLAGS += -DREALTEK_CONFIG_PATH=\"/lib/firmware/\"
+EXTRA_CFLAGS += -DREALTEK_CONFIG_PATH=\"\"
 endif
 
 ifeq ($(CONFIG_CALIBRATE_TX_POWER_BY_REGULATORY), y)
@@ -255,6 +278,18 @@ ifeq ($(CONFIG_SKIP_SIGNAL_SCALE_MAPPING), y)
 EXTRA_CFLAGS += -DCONFIG_SKIP_SIGNAL_SCALE_MAPPING
 endif
 
+ifeq ($(CONFIG_QOS_OPTIMIZATION), y)
+EXTRA_CFLAGS += -DCONFIG_QOS_OPTIMIZATION
+endif
+
+ifeq ($(CONFIG_USE_USB_BUFFER_ALLOC_TX), y)
+EXTRA_CFLAGS += -DCONFIG_USE_USB_BUFFER_ALLOC_TX
+endif
+
+ifeq ($(CONFIG_80211W), y)
+EXTRA_CFLAGS += -DCONFIG_IEEE80211W
+endif
+
 ifeq ($(CONFIG_WOWLAN), y)
 EXTRA_CFLAGS += -DCONFIG_WOWLAN
 endif
@@ -274,13 +309,63 @@ ifeq ($(CONFIG_GPIO_WAKEUP), y)
 EXTRA_CFLAGS += -DCONFIG_GPIO_WAKEUP
 endif
 
+ifneq ($(CONFIG_WAKEUP_GPIO_IDX), default)
+EXTRA_CFLAGS += -DWAKEUP_GPIO_IDX=$(CONFIG_WAKEUP_GPIO_IDX)
+endif
+
+ifeq ($(CONFIG_REDUCE_TX_CPU_LOADING), y)
+EXTRA_CFLAGS += -DCONFIG_REDUCE_TX_CPU_LOADING
+endif
+
+ifeq ($(CONFIG_BR_EXT), y)
+BR_NAME = br0
+EXTRA_CFLAGS += -DCONFIG_BR_EXT
+EXTRA_CFLAGS += '-DCONFIG_BR_EXT_BRNAME="'$(BR_NAME)'"'
+endif
+
+ifeq ($(CONFIG_ANTENNA_DIVERSITY), y)
+EXTRA_CFLAGS += -DCONFIG_ANTENNA_DIVERSITY
+endif
+
+ifeq ($(CONFIG_AP_MODE), y)
+EXTRA_CFLAGS += -DCONFIG_AP_MODE
+endif
+
+ifeq ($(CONFIG_P2P), y)
+EXTRA_CFLAGS += -DCONFIG_P2P
+ifeq ($(CONFIG_P2P_IPS), y)
+EXTRA_CFLAGS += -DCONFIG_P2P_IPS
+endif
+endif
+
+ifeq ($(CONFIG_CONCURRENT_MODE), y)
+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+endif
+
+ifeq ($(CONFIG_TCP_CSUM_OFFLOAD_RX), y)
+EXTRA_CFLAGS += -DCONFIG_TCP_CSUM_OFFLOAD_RX
+endif
+
+ifeq ($(CONFIG_H2CLBK), y)
+EXTRA_CFLAGS += -DCONFIG_H2CLBK
+endif
+
+ifeq ($(SUPPORT_HW_RFOFF_DETECTED), y)
+EXTRA_CFLAGS += -DSUPPORT_HW_RFOFF_DETECTED
+endif
+
+ifeq ($(CONFIG_DRVEXT_MODULE), y)
+EXTRA_CFLAGS += -DCONFIG_DRVEXT_MODULE
+ifeq ($(CONFIG_DRVEXT_MODULE_WSC), y)
+EXTRA_CFLAGS += -DCONFIG_DRVEXT_MODULE_WSC
+endif
+endif
+
 
 ifeq ($(CONFIG_PLATFORM_I386_PC), y)
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
-#EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
 EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211
 EXTRA_CFLAGS += -DRTW_USE_CFG80211_STA_EVENT # only enable when kernel >= 3.2
-EXTRA_CFLAGS += -DCONFIG_P2P_IPS
 SUBARCH := $(shell uname -m | sed -e s/i.86/i386/)
 ARCH ?= $(SUBARCH)
 CROSS_COMPILE ?=
@@ -331,7 +416,7 @@ $(MODULE_NAME)-$(CONFIG_INTEL_WIDI) += core/rtw_intel_widi.o
 
 $(MODULE_NAME)-$(CONFIG_WAPI_SUPPORT) += core/rtw_wapi.o	\
 					core/rtw_wapi_sms4.o
-					
+
 $(MODULE_NAME)-y += $(_OS_INTFS_FILES)
 $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 $(MODULE_NAME)-y += $(_OUTSRC_FILES)
@@ -374,7 +459,7 @@ config_r:
 .PHONY: modules clean
 
 clean:
-	cd hal ; rm -fr */*.mod.c */*.mod */*.o */.*.cmd */*.ko
+	cd hal ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd core ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd platform ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko

@@ -21,6 +21,9 @@
  #define _USB_HALINIT_C_
 
 #include <rtl8723b_hal.h>
+#ifdef CONFIG_WOWLAN
+#include "hal_com_h2c.h"
+#endif
 
 
 
@@ -180,6 +183,10 @@ static u8 _InitPowerOn_8723BU(PADAPTER padapter)
 	//DBG_8192C("%s: REG_PAD_CTRL1(0x%x)=0x%02X\n", __FUNCTION__, REG_PAD_CTRL1_8723B, rtw_read8(padapter, REG_PAD_CTRL1_8723B));
 #endif // CONFIG_BT_COEXIST
 
+#ifdef CONFIG_GPIO_WAKEUP
+	rtw_clear_hostwakeupgpio(padapter);
+#endif // CONFIG_GPIO_WAKEUP
+
 	return status;
 }
 
@@ -253,38 +260,6 @@ static u8 _LLTRead(
 //	MAC init functions
 //
 //---------------------------------------------------------------
-static VOID
-_SetMacID(
-	IN  PADAPTER Adapter, u8* MacID
-	)
-{
-	u32 i;
-	for(i=0 ; i< MAC_ADDR_LEN ; i++){
-#ifdef  CONFIG_CONCURRENT_MODE
-		if(Adapter->iface_type == IFACE_PORT1)
-			rtw_write32(Adapter, REG_MACID1+i, MacID[i]);
-		else
-#endif
-		rtw_write32(Adapter, REG_MACID+i, MacID[i]);
-	}
-}
-
-static VOID
-_SetBSSID(
-	IN  PADAPTER Adapter, u8* BSSID
-	)
-{
-	u32 i;
-	for(i=0 ; i< MAC_ADDR_LEN ; i++){
-#ifdef  CONFIG_CONCURRENT_MODE
-		if(Adapter->iface_type == IFACE_PORT1)
-			rtw_write32(Adapter, REG_BSSID1+i, BSSID[i]);
-		else
-#endif
-		rtw_write32(Adapter, REG_BSSID+i, BSSID[i]);
-	}
-}
-
 
 // Shall USB interface init this?
 static VOID
@@ -794,15 +769,8 @@ usb_AggSettingTxUpdate(
  *
  * Output/Return:	NONE
  *
- * Revised History:
- *	When		Who		Remark
- *	12/10/2010	MHC		Seperate to smaller function.
- *
  *---------------------------------------------------------------------------*/
-static VOID
-usb_AggSettingRxUpdate(
-	IN	PADAPTER			Adapter
-	)
+static void usb_AggSettingRxUpdate(PADAPTER padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	u8 aggctrl;
@@ -810,12 +778,12 @@ usb_AggSettingRxUpdate(
 	u32 agg_size;
 
 
-	pHalData = GET_HAL_DATA(Adapter);
+	pHalData = GET_HAL_DATA(padapter);
 
-	aggctrl = rtw_read8(Adapter, REG_TRXDMA_CTRL);
+	aggctrl = rtw_read8(padapter, REG_TRXDMA_CTRL);
 	aggctrl &= ~RXDMA_AGG_EN;
 
-	aggrx = rtw_read32(Adapter, REG_RXDMA_AGG_PG_TH);
+	aggrx = rtw_read32(padapter, REG_RXDMA_AGG_PG_TH);
 	aggrx &= ~BIT_USB_RXDMA_AGG_EN;
 	aggrx &= ~0xFF0F; // reset agg size and timeout
 
@@ -863,8 +831,8 @@ usb_AggSettingRxUpdate(
 	}
 #endif // CONFIG_USB_RX_AGGREGATION
 
-	rtw_write8(Adapter, REG_TRXDMA_CTRL, aggctrl);
-	rtw_write32(Adapter, REG_RXDMA_AGG_PG_TH, aggrx);
+	rtw_write8(padapter, REG_TRXDMA_CTRL, aggctrl);
+	rtw_write32(padapter, REG_RXDMA_AGG_PG_TH, aggrx);
 }
 
 static VOID
@@ -1515,21 +1483,9 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
 	// Init BT hw config.
 	rtw_btcoex_HAL_Initialize(padapter, _FALSE);
 #else
-	rtw_btcoex_HAL_Initialize(padapter, _TRUE);
-#endif
-
-#if 0
-	// 2010/05/20 MH We need to init timer after update setting. Otherwise, we can not get correct inf setting.
-	// 2010/05/18 MH For SE series only now. Init GPIO detect time
-	if(pDevice->RegUsbSS)
-	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, (" call GpioDetectTimerStart8192CU\n"));
-		GpioDetectTimerStart8192CU(Adapter);	// Disable temporarily
-	}
-
-	// 2010/08/23 MH According to Alfred's suggestion, we need to to prevent HW enter
-	// suspend mode automatically.
-	HwSuspendModeEnable92Cu(Adapter, _FALSE);
+	// impossible call this function without
+	// CONFIG_BT_COEXIST flag
+	// rtw_btcoex_HAL_Initialize(padapter, _TRUE);
 #endif
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
@@ -2826,26 +2782,7 @@ _func_enter_;
 
 _func_exit_;
 }
-#ifdef CONFIG_C2H_PACKET_EN
-void SetHwRegWithBuf8723B(PADAPTER padapter, u8 variable, u8 *pbuf, int len)
-{
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
-_func_enter_;
-
-	switch (variable)
-	{
-		case HW_VAR_C2H_HANDLE:
-			DBG_8192C("%s len=%d \n",__func__,len);
-			C2HPacketHandler_8723B(padapter, pbuf, len);
-			break;
-
-		default:
-			break;
-	}
-_func_exit_;
-}
-#endif
 //
 //	Description:
 //		Query setting of specified variable.
@@ -2966,6 +2903,8 @@ void rtl8723bu_set_hal_ops(_adapter * padapter)
 
 _func_enter_;
 
+	rtl8723b_set_hal_ops(pHalFunc);
+
 	pHalFunc->hal_init = &rtl8723bu_hal_init;
 	pHalFunc->hal_deinit = &rtl8723bu_hal_deinit;
 
@@ -2997,9 +2936,7 @@ _func_enter_;
 	pHalFunc->hal_xmit = &rtl8723bu_hal_xmit;
 	pHalFunc->mgnt_xmit = &rtl8723bu_mgnt_xmit;
 	pHalFunc->hal_xmitframe_enqueue = &rtl8723bu_hal_xmitframe_enqueue;
-#ifdef CONFIG_C2H_PACKET_EN
-	pHalFunc->SetHwRegHandlerWithBuf = &SetHwRegWithBuf8723B;
-#endif
+
 #ifdef CONFIG_HOSTAPD_MLME
 	pHalFunc->hostap_mgnt_xmit_entry = &rtl8723bu_hostap_mgnt_xmit_entry;
 #endif
@@ -3008,8 +2945,6 @@ _func_enter_;
 #ifdef CONFIG_XMIT_THREAD_MODE
 	pHalFunc->xmit_thread_handler = &rtl8723bu_xmit_buf_handler;
 #endif
-	rtl8723b_set_hal_ops(pHalFunc);
 
 _func_exit_;
-
 }

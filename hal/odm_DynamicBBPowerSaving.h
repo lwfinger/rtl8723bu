@@ -18,8 +18,10 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODMDYNAMICBBPOWERSAVING_H__
-#define    __ODMDYNAMICBBPOWERSAVING_H__
+#ifndef _HAL_ODM_DYNAMICBBPOWERSAVING_H__
+#define _HAL_ODM_DYNAMICBBPOWERSAVING_H__
+
+#define DYNAMIC_BBPWRSAV_VERSION	"1.0"
 
 typedef struct _Dynamic_Power_Saving_
 {

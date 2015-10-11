@@ -18,15 +18,17 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODMRAINFO_H__
-#define    __ODMRAINFO_H__
+#ifndef __HAL_ODM_RAINFO_H__
+#define __HAL_ODM_RAINFO_H__
+
+#define RAINFO_VERSION	"1.0"
 
 #define AP_InitRateAdaptiveState	ODM_RateAdaptiveStateApInit
 
-#define		DM_RATR_STA_INIT			0
-#define		DM_RATR_STA_HIGH			1
-#define			DM_RATR_STA_MIDDLE		2
-#define			DM_RATR_STA_LOW			3
+#define		DM_RATR_STA_INIT		0
+#define		DM_RATR_STA_HIGH		1
+#define		DM_RATR_STA_MIDDLE		2
+#define		DM_RATR_STA_LOW			3
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 #define		DM_RATR_STA_ULTRA_LOW	4
 #endif
@@ -39,7 +41,6 @@ typedef struct _Rate_Adaptive_Table_{
 	#endif
 }RA_T, *pRA_T;
 #endif
-
 
 typedef struct _ODM_RATE_ADAPTIVE
 {
@@ -64,16 +65,14 @@ typedef struct _ODM_RATE_ADAPTIVE
 
 } ODM_RATE_ADAPTIVE, *PODM_RATE_ADAPTIVE;
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 odm_RSSIMonitorInit(
 	IN		PVOID		pDM_VOID
 	);
-#endif
 
 VOID
 odm_RSSIMonitorCheck(
-	IN		PVOID		 pDM_VOID
+	IN	 	PVOID	 	 pDM_VOID
 	);
 
 #if(DM_ODM_SUPPORT_TYPE==ODM_WIN)
@@ -85,7 +84,7 @@ odm_RSSIDumpToRegister(
 
 VOID
 odm_RSSIMonitorCheckMP(
-	IN		PVOID		pDM_VOID
+	IN		PVOID	 	pDM_VOID
 	);
 
 VOID
@@ -132,25 +131,24 @@ ODM_RAStateCheck(
 	OUT		pu1Byte			pRATRState
 	);
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 odm_RefreshBasicRateMask(
 	IN	PVOID	pDM_VOID
 	);
-#endif
+
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 VOID
 ODM_DynamicARFBSelect(
 	IN		PVOID			pDM_VOID,
-	IN		u1Byte			rate,
-	IN	BOOLEAN			Collision_State
+	IN 		u1Byte			rate,
+	IN  	BOOLEAN			Collision_State
 	);
 
 VOID
 ODM_RateAdaptiveStateApInit(
 	IN	PVOID		PADAPTER_VOID,
-	IN	PRT_WLAN_STA	pEntry
+	IN	PRT_WLAN_STA  	pEntry
 	);
 #endif
 
@@ -159,8 +157,8 @@ u4Byte
 ODM_Get_Rate_Bitmap(
 	IN	PVOID		pDM_VOID,
 	IN	u4Byte		macid,
-	IN	u4Byte		ra_mask,
-	IN	u1Byte		rssi_level
+	IN	u4Byte 		ra_mask,
+	IN	u1Byte 		rssi_level
 	);
 #endif
 

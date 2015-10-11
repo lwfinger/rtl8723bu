@@ -18,8 +18,8 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODM_REGDEFINE11AC_H__
-#define __ODM_REGDEFINE11AC_H__
+#ifndef __HAL_ODM_REGDEFINE11AC_H__
+#define __HAL_ODM_REGDEFINE11AC_H__
 
 //2 RF REG LIST
 
@@ -50,6 +50,7 @@
 #define	ODM_REG_IGI_A_11AC				0xC50
 //PAGE E
 #define	ODM_REG_IGI_B_11AC				0xE50
+#define	ODM_REG_TRMUX_11AC_B			0xE08
 //PAGE F
 #define	ODM_REG_CCK_CCA_CNT_11AC		0xF08
 #define	ODM_REG_OFDM_FA_11AC			0xF48

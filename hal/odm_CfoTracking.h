@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -18,8 +18,10 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODMCFOTRACK_H__
-#define    __ODMCFOTRACK_H__
+#ifndef __HAL_ODM_CFOTRACK_H__
+#define __HAL_ODM_CFOTRACK_H__
+
+#define CFO_TRACKING_VERSION	"1.0"
 
 #define		CFO_TH_XTAL_HIGH			20			// kHz
 #define		CFO_TH_XTAL_LOW			10			// kHz
@@ -60,7 +62,7 @@ VOID
 ODM_ParsingCFO(
 	IN		PVOID					pDM_VOID,
 	IN		PVOID					pPktinfo_VOID,
-	IN	s1Byte*						pcfotail
+	IN     	s1Byte* 					pcfotail
 );
 
 #endif

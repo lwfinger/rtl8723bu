@@ -18,10 +18,10 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODMPATHDIV_H__
-#define    __ODMPATHDIV_H__
+#ifndef __HAL_ODM_PATHDIV_H__
+#define __HAL_ODM_PATHDIV_H__
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
+#define PATHDIV_VERSION	"1.0"
 
 VOID
 odm_PathDiversityInit(
@@ -33,12 +33,9 @@ odm_PathDiversity(
 	IN	PVOID	pDM_VOID
 	);
 
-#endif  //(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
-
-
 #if(DM_ODM_SUPPORT_TYPE & (ODM_WIN))
 
-//#define   PATHDIV_ENABLE	 1
+//#define   PATHDIV_ENABLE 	 1
 #define dm_PathDiv_RSSI_Check	ODM_PathDivChkPerPktRssi
 #define PathDivCheckBeforeLink8192C	ODM_PathDiversityBeforeLink92C
 
@@ -175,7 +172,7 @@ ODM_FillTXPathInTXDESC(
 
 VOID
 odm_PathDivInit_92D(
-	IN	PDM_ODM_T	pDM_Odm
+	IN	PDM_ODM_T 	pDM_Odm
 	);
 
 u1Byte

@@ -21,7 +21,6 @@
 //============================================================
 // include files
 //============================================================
-//#include "Mp_Precomp.h"
 #include "odm_precomp.h"
 
 //=================================================
@@ -44,7 +43,7 @@ s2Byte odm_InbandNoise_Monitor_NSeries(PDM_ODM_T	pDM_Odm,u8 bPauseDIG,u8 IGIValu
 	u1Byte				max_rf_path=0,rf_path;
 	u1Byte				reg_c50, reg_c58,valid_done=0;
 	struct noise_level		noise_data;
-	u32 start  = 0,		func_start=0,	func_end = 0;
+	u32 start  = 0, 	func_start=0,	func_end = 0;
 
 	func_start = ODM_GetCurrentTime(pDM_Odm);
 	pDM_Odm->noise_level.noise_all = 0;
@@ -100,7 +99,7 @@ s2Byte odm_InbandNoise_Monitor_NSeries(PDM_ODM_T	pDM_Odm,u8 bPauseDIG,u8 IGIValu
 
 		 for(rf_path = ODM_RF_PATH_A; rf_path < max_rf_path; rf_path++)
 		 {
-			noise_data.sval[rf_path] = (s1Byte)noise_data.value[rf_path];
+		 	noise_data.sval[rf_path] = (s1Byte)noise_data.value[rf_path];
 			noise_data.sval[rf_path] /= 2;
 		 }
 

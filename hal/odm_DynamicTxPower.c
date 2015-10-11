@@ -21,7 +21,6 @@
 //============================================================
 // include files
 //============================================================
-
 #include "odm_precomp.h"
 
 VOID
@@ -366,7 +365,6 @@ odm_DynamicTxPower_92C(
 #endif
 	{
 		if(	(pMgntInfo->bDynamicTxPowerEnable != TRUE) ||
-			(pHalData->DMFlag & HAL_DM_HIPWR_DISABLE) ||
 			pMgntInfo->IOTAction & HT_IOT_ACT_DISABLE_HIGH_POWER)
 		{
 			pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;
@@ -574,7 +572,6 @@ odm_DynamicTxPower_92D(
 
 	// If dynamic high power is disabled.
 	if( (pMgntInfo->bDynamicTxPowerEnable != TRUE) ||
-		(pHalData->DMFlag & HAL_DM_HIPWR_DISABLE) ||
 		pMgntInfo->IOTAction & HT_IOT_ACT_DISABLE_HIGH_POWER)
 	{
 		pHalData->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;

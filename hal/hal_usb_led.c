@@ -1238,7 +1238,6 @@ SwLedBlink9(
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("Blinktimes (%d): turn off\n", pLed->BlinkTimes));
 	}
 
-
 	switch(pLed->CurrLedState)
 	{
 		case RTW_LED_ON:
@@ -1286,7 +1285,7 @@ SwLedBlink9(
 				else if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)
 				{
 					pLed->bLedLinkBlinkInProgress = _TRUE;
-					pLed->CurrLedState = LED_BLINK_ALWAYS_ON;
+					pLed->CurrLedState = LED_BLINK_SLOWLY;
 
 					_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
 					RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("CurrLedState %d\n", pLed->CurrLedState));
@@ -1336,8 +1335,7 @@ SwLedBlink9(
 				}
 				else
 				{
-					pLed->bLedNoLinkBlinkInProgress = _TRUE;
-					pLed->CurrLedState = LED_BLINK_ALWAYS_ON;
+					pLed->CurrLedState = LED_BLINK_SLOWLY;
 					if( pLed->bLedOn )
 						pLed->BlinkingLedState = RTW_LED_OFF;
 					else
@@ -3980,7 +3978,7 @@ SwLedControlMode9(
 					if(LedAction == LED_CTL_LINK)
 					{
 						pLed->BlinkingLedState = RTW_LED_ON;
-						pLed->CurrLedState = LED_BLINK_ALWAYS_ON;
+						pLed->CurrLedState = LED_BLINK_SLOWLY;
 					}
 					else
 					{
@@ -4068,7 +4066,7 @@ SwLedControlMode9(
 			pLed2->CurrLedState = LED_BLINK_LINK_IN_PROCESS;
 			pLed2->bLedWPSBlinkInProgress = _TRUE;
 
-			_set_timer(&(pLed2->BlinkTimer), 0);
+			_set_timer(&(pLed2->BlinkTimer), 500);
 
 			break;
 

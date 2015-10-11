@@ -16,7 +16,7 @@
 // Global variables, these are static variables
 //============================================================
 static COEX_DM_8192D_2ANT	GLCoexDm8192d2Ant;
-static PCOEX_DM_8192D_2ANT	pCoexDm=&GLCoexDm8192d2Ant;
+static PCOEX_DM_8192D_2ANT 	pCoexDm=&GLCoexDm8192d2Ant;
 static COEX_STA_8192D_2ANT	GLCoexSta8192d2Ant;
 static PCOEX_STA_8192D_2ANT	pCoexSta=&GLCoexSta8192d2Ant;
 
@@ -264,10 +264,10 @@ halbtc8192d2ant_Balance(
 VOID
 halbtc8192d2ant_SetFwDiminishWifi(
 	IN	PBTC_COEXIST		pBtCoexist,
-	IN	BOOLEAN			bDacOn,
-	IN	BOOLEAN			bInterruptOn,
+	IN	BOOLEAN 		bDacOn,
+	IN	BOOLEAN 		bInterruptOn,
 	IN	u1Byte			fwDacSwingLvl,
-	IN	BOOLEAN			bNavOn
+	IN	BOOLEAN 		bNavOn
 	)
 {
 	u1Byte			H2C_Parameter[3] ={0};
@@ -757,7 +757,7 @@ halbtc8192d2ant_InitCoexDm(
 
 VOID
 halbtc8192d2ant_MonitorBtEnableDisable(
-	IN	PBTC_COEXIST		pBtCoexist,
+	IN 	PBTC_COEXIST		pBtCoexist,
 	IN	u4Byte			btActive
 	)
 {
@@ -804,14 +804,14 @@ halbtc8192d2ant_MonitorBtState(
 	IN	PBTC_COEXIST			pBtCoexist
 	)
 {
-	BOOLEAN			stateChange=FALSE;
+	BOOLEAN 		stateChange=FALSE;
 	u4Byte			BT_Polling, Ratio_Act, Ratio_STA;
 	u4Byte			BT_Active, BT_State;
 	u4Byte			regBTActive=0, regBTState=0, regBTPolling=0;
 	u4Byte			btBusyThresh=0;
 	u4Byte			fwVer=0;
 	static BOOLEAN	bBtBusyTraffic=FALSE;
-	BOOLEAN			bRejApAggPkt=FALSE;
+	BOOLEAN 		bRejApAggPkt=FALSE;
 
 	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_U4_WIFI_FW_VER, &fwVer);
 
@@ -952,7 +952,7 @@ halbtc8192d2ant_ActionA2dp(
 {
 	u1Byte			wifiRssiState, wifiRssiState1=BTC_RSSI_STATE_HIGH;
 	u4Byte			wifiBw, wifiTrafficDir;
-	BOOLEAN			bWifiBusy=FALSE;
+	BOOLEAN 		bWifiBusy=FALSE;
 
 	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_U4_WIFI_BW, &wifiBw);
 	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_WIFI_BUSY, &bWifiBusy);
@@ -1042,7 +1042,7 @@ halbtc8192d2ant_ActionPan(
 	IN	PBTC_COEXIST		pBtCoexist
 	)
 {
-	BOOLEAN		bBtHsOn=FALSE, bWifiBusy=FALSE;
+	BOOLEAN 	bBtHsOn=FALSE, bWifiBusy=FALSE;
 	u1Byte		wifiRssiState, wifiRssiState1;
 	u4Byte		wifiBw, wifiTrafficDir;
 	s4Byte		wifiRssi;
@@ -1203,7 +1203,7 @@ halbtc8192d2ant_ActionHid(
 {
 	u1Byte		wifiRssiState=BTC_RSSI_STATE_HIGH;
 	u4Byte		wifiTrafficDir;
-	BOOLEAN		bWifiBusy=FALSE;
+	BOOLEAN 	bWifiBusy=FALSE;
 
 	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_WIFI_BUSY, &bWifiBusy);
 	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_U4_WIFI_TRAFFIC_DIRECTION, &wifiTrafficDir);
@@ -1780,11 +1780,6 @@ EXhalbtc8192d2ant_DisplayCoexInfo(
 	pu1Byte				cliBuf=pBtCoexist->cliBuf;
 	u1Byte				u1Tmp[4], i, btInfoExt, psTdmaCase=0;
 	u4Byte				u4Tmp[4];
-	BOOLEAN				bRoam=FALSE, bScan=FALSE, bLink=FALSE, bWifiUnder5G=FALSE;
-	BOOLEAN				bBtHsOn=FALSE, bWifiBusy=FALSE;
-	s4Byte				wifiRssi=0, btHsRssi=0;
-	u4Byte				wifiBw, wifiTrafficDir;
-	u1Byte				wifiDot11Chnl, wifiHsChnl;
 
 	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n ============[BT Coexist info]============");
 	CL_PRINTF(cliBuf);
@@ -1803,34 +1798,12 @@ EXhalbtc8192d2ant_DisplayCoexInfo(
 		((pStackInfo->bProfileNotified)? "Yes":"No"), pStackInfo->hciVersion);
 	CL_PRINTF(cliBuf);
 
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_HS_OPERATION, &bBtHsOn);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_U1_WIFI_DOT11_CHNL, &wifiDot11Chnl);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_U1_WIFI_HS_CHNL, &wifiHsChnl);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d / %d(%d)", "Dot11 channel / HsChnl(HsMode)", \
-		wifiDot11Chnl, wifiHsChnl, bBtHsOn);
+	// wifi status
+	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s", "============[Wifi Status]============");
 	CL_PRINTF(cliBuf);
+	pBtCoexist->fBtcDispDbgMsg(pBtCoexist, BTC_DBG_DISP_WIFI_STATUS);
 
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_S4_WIFI_RSSI, &wifiRssi);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_S4_HS_RSSI, &btHsRssi);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d", "Wifi rssi/ HS rssi", \
-		wifiRssi, btHsRssi);
-	CL_PRINTF(cliBuf);
-
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_WIFI_SCAN, &bScan);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_WIFI_LINK, &bLink);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_WIFI_ROAM, &bRoam);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d ", "Wifi bLink/ bRoam/ bScan", \
-		bLink, bRoam, bScan);
-	CL_PRINTF(cliBuf);
-
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_WIFI_UNDER_5G, &bWifiUnder5G);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_U4_WIFI_BW, &wifiBw);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_WIFI_BUSY, &bWifiBusy);
-	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_U4_WIFI_TRAFFIC_DIRECTION, &wifiTrafficDir);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s / %s/ %s ", "Wifi status", \
-		(bWifiUnder5G? "5G":"2.4G"),
-		((BTC_WIFI_BW_LEGACY==wifiBw)? "Legacy": (((BTC_WIFI_BW_HT40==wifiBw)? "HT40":"HT20"))),
-		((!bWifiBusy)? "idle": ((BTC_WIFI_TRAFFIC_TX==wifiTrafficDir)? "uplink":"downlink")));
+	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s", "============[BT Status]============");
 	CL_PRINTF(cliBuf);
 
 	if(pStackInfo->bProfileNotified)
@@ -2056,3 +2029,4 @@ EXhalbtc8192d2ant_Periodical(
 }
 
 #endif
+

@@ -20,7 +20,6 @@
 #ifndef __HAL_DATA_H__
 #define __HAL_DATA_H__
 
-#if 1//def  CONFIG_SINGLE_IMG
 
 #include "../hal/odm_precomp.h"
 #ifdef CONFIG_BT_COEXIST
@@ -75,6 +74,22 @@ typedef	enum _INTERFACE_SELECT_USB{
 	INTF_SEL5_USB_Combo_MF	= 5,		// USB WiFi+BT Multi-Function Combo, i.e., Proprietary layout(AS-VAU) which is the same as SDIO card
 } INTERFACE_SELECT_USB, *PINTERFACE_SELECT_USB;
 
+#ifdef CONFIG_USB_HCI
+//should be sync with INTERFACE_SELECT_USB
+typedef	enum _BOARD_TYPE_8192CUSB{
+	BOARD_USB_DONGLE 			= 0,		// USB dongle
+	BOARD_USB_High_PA 		= 1,		// USB dongle with high power PA
+	BOARD_MINICARD		  	= 2,		// Minicard
+	BOARD_USB_SOLO 		 	= 3,		// USB solo-Slim module
+	BOARD_USB_COMBO			= 4,		// USB Combo-Slim module
+} BOARD_TYPE_8192CUSB, *PBOARD_TYPE_8192CUSB;
+
+#define	SUPPORT_HW_RADIO_DETECT(pHalData) \
+	(pHalData->BoardType == BOARD_MINICARD||\
+	pHalData->BoardType == BOARD_USB_SOLO||\
+	pHalData->BoardType == BOARD_USB_COMBO)
+#endif
+
 typedef enum _RT_AMPDU_BRUST_MODE{
 	RT_AMPDU_BRUST_NONE		= 0,
 	RT_AMPDU_BRUST_92D		= 1,
@@ -118,7 +133,7 @@ typedef enum _RT_AMPDU_BRUST_MODE{
 //#define HP_THERMAL_NUM		8
 //###### duplicate code,will move to ODM #########
 
-#if defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_RTL8192D) || defined(CONFIG_BT_COEXIST)
 typedef enum _MACPHY_MODE_8192D{
 	SINGLEMAC_SINGLEPHY,	//SMSP
 	DUALMAC_DUALPHY,		//DMDP
@@ -227,6 +242,7 @@ struct dm_priv
 
 	// Add for Reading Initial Data Rate SEL Register 0x484 during watchdog. Using for fill tx desc. 2011.3.21 by Thomas
 	u8	INIDATA_RATE[32];
+	_lock IQKSpinLock;
 };
 
 
@@ -443,7 +459,6 @@ typedef struct hal_com_data
 	u8	RegReg542;
 	u8	RegCR_1;
 	u8	Reg837;
-	u8	RegRFPathS1;
 	u16	RegRRSR;
 
 	u8	CurAntenna;
@@ -482,7 +497,7 @@ typedef struct hal_com_data
 
 	// Auto FSM to Turn On, include clock, isolation, power control for MAC only
 	u8	bMacPwrCtrlOn;
-
+	u8 	bDisableTXPowerTraining;
 	u8	RegIQKFWOffload;
 	struct submit_ctx	iqk_sctx;
 
@@ -628,6 +643,9 @@ typedef struct hal_com_data
 	s16 noise[ODM_MAX_CHANNEL_NUM];
 #endif
 
+	u8 macid_num;
+	u8 cam_entry_num;
+
 } HAL_DATA_COMMON, *PHAL_DATA_COMMON;
 
 
@@ -636,7 +654,6 @@ typedef struct hal_com_data HAL_DATA_TYPE, *PHAL_DATA_TYPE;
 #define GET_HAL_RFPATH_NUM(__pAdapter) (((HAL_DATA_TYPE *)((__pAdapter)->HalData))->NumTotalRFPath )
 #define RT_GetInterfaceSelection(_Adapter)	(GET_HAL_DATA(_Adapter)->InterfaceSel)
 #define GET_RF_TYPE(__pAdapter)		(GET_HAL_DATA(__pAdapter)->rf_type)
-#endif
 
 
 #endif //__HAL_DATA_H__
