@@ -430,12 +430,24 @@ void _rtw_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
 	_rtw_reg_notifier_apply(wiphy, request, reg);
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0))
+int rtw_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
+#else
+void rtw_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
+#endif
+{
+	_rtw_reg_notifier(wiphy, request);
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0))
+	return 0;
+#endif
+}
+
 void rtw_reg_notify_by_driver(_adapter *adapter)
 {
 	if ((adapter->rtw_wdev != NULL) && (adapter->rtw_wdev->wiphy)) {
 		struct regulatory_request request;
 		request.initiator = NL80211_REGDOM_SET_BY_DRIVER;
-		_rtw_reg_notifier(adapter->rtw_wdev->wiphy, &request);
+		rtw_reg_notifier(adapter->rtw_wdev->wiphy, &request);
 	}
 }
 
@@ -443,7 +455,7 @@ static void _rtw_regd_init_wiphy(struct rtw_regulatory *reg, struct wiphy *wiphy
 {
 	const struct ieee80211_regdomain *regd;
 
-	wiphy->reg_notifier = _rtw_reg_notifier;
+	wiphy->reg_notifier = rtw_reg_notifier;
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3,14,0))
 	wiphy->flags |= WIPHY_FLAG_CUSTOM_REGULATORY;
