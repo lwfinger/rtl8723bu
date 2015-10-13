@@ -203,17 +203,6 @@ ODM_PathDiversityBeforeLink92C(
 			pDM_PDTable->OFDMTXPath = 0x0;
 			pDM_PDTable->CCKTXPath = 0x0;
 		}
-#if 0
-
-		pDM_SWAT_Table->PreAntenna = pDM_SWAT_Table->CurAntenna;
-		pDM_SWAT_Table->CurAntenna = (pDM_SWAT_Table->CurAntenna==Antenna_A)?Antenna_B:Antenna_A;
-
-		RT_TRACE(COMP_INIT, DBG_LOUD,
-			("ODM_SwAntDivCheckBeforeLink: Change to Ant(%s) for testing.\n", (pDM_SWAT_Table->CurAntenna==Antenna_A)?"A":"B"));
-		//PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, 0x300, DM_SWAT_Table.CurAntenna);
-		pDM_SWAT_Table->SWAS_NoLink_BK_Reg860 = ((pDM_SWAT_Table->SWAS_NoLink_BK_Reg860 & 0xfffffcff) | (pDM_SWAT_Table->CurAntenna<<8));
-		PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, bMaskDWord, pDM_SWAT_Table->SWAS_NoLink_BK_Reg860);
-#endif
 
 		// Go back to scan function again.
 		RT_TRACE(COMP_INIT, DBG_LOUD, ("ODM_PathDiversityBeforeLink92C: Scan one more time\n"));

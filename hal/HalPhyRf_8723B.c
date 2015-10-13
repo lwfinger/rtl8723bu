@@ -173,46 +173,6 @@ void DoIQK_8723B(
 	u1Byte		Threshold
 	)
 {
-#if 0 // mark by Lucas@SD4 20140128, suggested by Allen@SD3
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-	PADAPTER		Adapter = pDM_Odm->Adapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-#endif
-
-	ODM_ResetIQKResult(pDM_Odm);
-
-#if(DM_ODM_SUPPORT_TYPE  & ODM_WIN)
-#if (DEV_BUS_TYPE == RT_PCI_INTERFACE)
-#if USE_WORKITEM
-	PlatformAcquireMutex(&pHalData->mxChnlBwControl);
-#else
-	PlatformAcquireSpinLock(Adapter, RT_CHANNEL_AND_BANDWIDTH_SPINLOCK);
-#endif
-#elif((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
-	PlatformAcquireMutex(&pHalData->mxChnlBwControl);
-#endif
-#endif
-
-
-	pDM_Odm->RFCalibrateInfo.ThermalValue_IQK= ThermalValue;
-#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
-	PHY_IQCalibrate_8723B(pDM_Odm, FALSE, FALSE);
-#else
-	PHY_IQCalibrate_8723B(Adapter, FALSE, FALSE);
-#endif
-
-#if(DM_ODM_SUPPORT_TYPE  & ODM_WIN)
-#if (DEV_BUS_TYPE == RT_PCI_INTERFACE)
-#if USE_WORKITEM
-	PlatformReleaseMutex(&pHalData->mxChnlBwControl);
-#else
-	PlatformReleaseSpinLock(Adapter, RT_CHANNEL_AND_BANDWIDTH_SPINLOCK);
-#endif
-#elif((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
-	PlatformReleaseMutex(&pHalData->mxChnlBwControl);
-#endif
-#endif
-#endif // #if 0
 }
 
 /*-----------------------------------------------------------------------------
@@ -1959,23 +1919,6 @@ if( pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3 )
 	_PHY_PathADDAOn8723B(pDM_Odm, ADDA_REG, TRUE, is2T);
 #endif
 
-//no serial mode
-#if 0
-	if(t==0)
-	{
-		pDM_Odm->RFCalibrateInfo.bRfPiEnable = (u1Byte)ODM_GetBBReg(pDM_Odm, rFPGA0_XA_HSSIParameter1, BIT(8));
-	}
-
-	if(!pDM_Odm->RFCalibrateInfo.bRfPiEnable){
-		// Switch BB to PI mode to do IQ Calibration.
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-		_PHY_PIModeSwitch8723B(pAdapter, TRUE);
-#else
-		_PHY_PIModeSwitch8723B(pDM_Odm, TRUE);
-#endif
-	}
-#endif
-
 	//save RF path for 8723B
 //	Path_SEL_BB = ODM_GetBBReg(pDM_Odm, 0x948, bMaskDWord);
 //	Path_SEL_RF = ODM_GetRFReg(pDM_Odm, ODM_RF_PATH_A, 0xb0, 0xfffff);
@@ -2000,28 +1943,6 @@ if( pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3 )
 //	ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, BIT10, 0x00);
 //	ODM_SetBBReg(pDM_Odm, rFPGA0_XB_RFInterfaceOE, BIT10, 0x00);
 
-
-//for 8723B
-#if 0
-	if(is2T)
-	{
-
-		ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_B, RF_AC, bMaskDWord, 0x10000);
-	}
-#endif
-
-
-//no APK
-#if 0
-	//Page B init
-	//AP or IQK
-	ODM_SetBBReg(pDM_Odm, rConfig_AntA, bMaskDWord, 0x0f600000);
-
-	if(is2T)
-	{
-		ODM_SetBBReg(pDM_Odm, rConfig_AntB, bMaskDWord, 0x0f600000);
-	}
-#endif
 
 //RX IQ calibration setting for 8723B D cut large current issue when leaving IPS
 
@@ -2061,15 +1982,6 @@ if( pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3 )
 				result[t][1] = (ODM_GetBBReg(pDM_Odm, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
 			break;
 		}
-#if 0
-		else if (i == (retryCount-1) && PathAOK == 0x01)	//Tx IQK OK
-		{
-			RT_DISP(FINIT, INIT_IQK, ("Path A IQK Only	Tx Success!!\n"));
-
-			result[t][0] = (ODM_GetBBReg(pDM_Odm, rTx_Power_Before_IQK_A, bMaskDWord)&0x3FF0000)>>16;
-			result[t][1] = (ODM_GetBBReg(pDM_Odm, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
-		}
-#endif
 	}
 #endif
 
@@ -2139,15 +2051,6 @@ if( pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3 )
 				result[t][5] = (ODM_GetBBReg(pDM_Odm, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
 			break;
 		}
-#if 0
-		else if (i == (retryCount-1) && PathAOK == 0x01)	//Tx IQK OK
-		{
-			RT_DISP(FINIT, INIT_IQK, ("Path B IQK Only	Tx Success!!\n"));
-
-			result[t][0] = (ODM_GetBBReg(pDM_Odm, rTx_Power_Before_IQK_B, bMaskDWord)&0x3FF0000)>>16;
-			result[t][1] = (ODM_GetBBReg(pDM_Odm, rTx_Power_After_IQK_B, bMaskDWord)&0x3FF0000)>>16;
-		}
-#endif
 	}
 #endif
 

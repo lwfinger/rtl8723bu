@@ -1044,16 +1044,12 @@ static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattr
 #ifdef CONFIG_WAPI_SUPPORT
 	if ( (pattrib->ether_type == 0x88B4) || (pattrib->ether_type == 0x0806) || (pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
 #else //!CONFIG_WAPI_SUPPORT
-#if 0
-	if ( (pattrib->ether_type == 0x0806) || (pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
-#else // only ICMP/DHCP packets is as SPECIAL_PACKET, and leave LPS when tx IMCP/DHCP packets.
-	//if ((pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
+	// only ICMP/DHCP packets is as SPECIAL_PACKET, and leave LPS when tx IMCP/DHCP packets.
 	if (pattrib->icmp_pkt==1)
 	{
 		rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_LEAVE, 1);
 	}
 	else if(pattrib->dhcp_pkt==1)
-#endif
 #endif
 	{
 		DBG_COUNTER(padapter->tx_logs.core_tx_upd_attrib_active);
@@ -3105,14 +3101,6 @@ _func_enter_;
 	if(pregpriv->wifi_spec==1)
 	{
 		int j, tmp, acirp_cnt[4];
-#if 0
-		if(flags<XMIT_QUEUE_ENTRY)
-		{
-			//priority exchange according to the completed xmitbuf flags.
-			inx[flags] = 0;
-			inx[0] = flags;
-		}
-#endif
 
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_PCI_HCI)
 		for(j=0; j<4; j++)
@@ -3599,24 +3587,6 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 				*((unsigned short *)(skb->data+MACADDRLEN*2+2)) = vlan_hdr;
 			}
 		}
-#if 0
-		else{
-			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_8021Q)) {
-				is_vlan_tag = 1;
-			}
-
-			if(is_vlan_tag){
-				if(ICMPV6_MCAST_MAC(skb->data) && ICMPV6_PROTO1A_VALN(skb->data)){
-                                        memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-				}
-			}else
-			{
-				if(ICMPV6_MCAST_MAC(skb->data) && ICMPV6_PROTO1A(skb->data)){
-                                        memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-				}
-			}
-		}
-#endif	// 0
 
 		// check if SA is equal to our MAC
 		if (memcmp(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN)) {

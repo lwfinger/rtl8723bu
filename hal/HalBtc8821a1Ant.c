@@ -420,17 +420,7 @@ halbtc8821a1ant_MonitorBtCtr(
 	u4Byte			regHPTx=0, regHPRx=0, regLPTx=0, regLPRx=0;
 	u1Byte			u1Tmp, u1Tmp1;
 	s4Byte			wifiRssi;
-#if 0
-	//to avoid 0x76e[3] = 1 (WLAN_Act control by PTA) during IPS
-	if (! (pBtCoexist->fBtcRead1Byte(pBtCoexist, 0x76e) & 0x8) )
-	{
-		pCoexSta->highPriorityTx = 65535;
-		pCoexSta->highPriorityRx = 65535;
-		pCoexSta->lowPriorityTx = 65535;
-		pCoexSta->lowPriorityRx = 65535;
-		return;
-	}
-#endif
+
 	regHPTxRx = 0x770;
 	regLPTxRx = 0x774;
 

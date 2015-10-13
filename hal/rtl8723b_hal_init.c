@@ -697,13 +697,6 @@ _CheckWLANFwPatchBTFwReady(
 	//---------------------------------------------------------
 	// Reset beacon setting to the initial value.
 	//---------------------------------------------------------
-#if 0//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	if(LLT_table_init(Adapter, FALSE, 0) == RT_STATUS_FAILURE)
-	{
-		dbgdump("Init self define for BT Fw patch LLT table fail.\n");
-		//return RT_STATUS_FAILURE;
-	}
-#endif
 	u1bTmp = rtw_read8(Adapter, REG_BCN_CTRL);
 	u1bTmp |= EN_BCN_FUNCTION;
 	u1bTmp &= ~DIS_TSF_UDT;
@@ -714,13 +707,8 @@ _CheckWLANFwPatchBTFwReady(
 	// prevent from setting 0x422[6] to 0 after download reserved page, or it will cause
 	// the beacon cannot be sent by HW.
 	// 2010.06.23. Added by tynli.
-#if 0//(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-	u1bTmp = PlatformEFIORead1Byte(Adapter, REG_FWHW_TXQ_CTRL+2);
-	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2, (u1bTmp|BIT6));
-#else
 	PlatformEFIOWrite1Byte(Adapter, REG_FWHW_TXQ_CTRL+2, (pHalData->RegFwHwTxQCtrl|BIT(6)));
 	pHalData->RegFwHwTxQCtrl |= BIT(6);
-#endif
 
 	// Clear CR[8] or beacon packet will not be send to TxBuf anymore.
 	u1bTmp = PlatformEFIORead1Byte(Adapter, REG_CR_8723B+1);
@@ -1889,13 +1877,6 @@ hal_EfuseGetCurrentSize_WiFi(
 	// switch bank back to bank 0 for later BT and wifi use.
 	hal_EfuseSwitchToBank(padapter, 0, bPseudoTest);
 
-#if 0 // for debug test
-	efuse_OneByteRead(padapter, 0x1FF, &efuse_data, bPseudoTest);
-	DBG_8192C(FUNC_ADPT_FMT ": efuse raw 0x1FF=0x%02X\n",
-		FUNC_ADPT_ARG(padapter), efuse_data);
-	efuse_data = 0xFF;
-#endif // for debug test
-
 	count = 0;
 	while (AVAILABLE_EFUSE_ADDR(efuse_addr))
 	{
@@ -2122,21 +2103,7 @@ hal_EfuseGetCurrentSize_BT(
 			break;// don't need to check next bank.
 		}
 	}
-#if 0
-	retU2 = ((bank-1)*EFUSE_BT_REAL_BANK_CONTENT_LEN) + efuse_addr;
-	if (bPseudoTest)
-	{
-#ifdef HAL_EFUSE_MEMORY
-		pEfuseHal->fakeBTEfuseUsedBytes = retU2;
-#else
-		fakeBTEfuseUsedBytes = retU2;
-#endif
-	}
-	else
-	{
-		rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BT_BYTES, (u8*)&retU2);
-	}
-#else
+
 	retU2 = ((bank-1)*EFUSE_BT_REAL_BANK_CONTENT_LEN)+efuse_addr;
 	if(bPseudoTest)
 	{
@@ -2148,7 +2115,6 @@ hal_EfuseGetCurrentSize_BT(
 		pEfuseHal->BTEfuseUsedBytes = retU2;
 		//RT_DISP(FEEPROM, EFUSE_PG, ("Hal_EfuseGetCurrentSize_BT92C(), already use %u bytes\n", pEfuseHal->BTEfuseUsedBytes));
 	}
-#endif
 
 	DBG_8192C("%s: CurrentSize=%d\n", __FUNCTION__, retU2);
 	return retU2;
@@ -2367,76 +2333,6 @@ hal_EfuseConstructPGPkt(
 	pTargetPkt->word_cnts = Efuse_CalculateWordCnts(pTargetPkt->word_en);
 }
 
-#if 0
-static u8
-wordEnMatched(
-	PPGPKT_STRUCT	pTargetPkt,
-	PPGPKT_STRUCT	pCurPkt,
-	u8				*pWden)
-{
-	u8	match_word_en = 0x0F;	// default all words are disabled
-	u8	i;
-
-	// check if the same words are enabled both target and current PG packet
-	if (((pTargetPkt->word_en & BIT(0)) == 0) &&
-		((pCurPkt->word_en & BIT(0)) == 0))
-	{
-		match_word_en &= ~BIT(0);				// enable word 0
-	}
-	if (((pTargetPkt->word_en & BIT(1)) == 0) &&
-		((pCurPkt->word_en & BIT(1)) == 0))
-	{
-		match_word_en &= ~BIT(1);				// enable word 1
-	}
-	if (((pTargetPkt->word_en & BIT(2)) == 0) &&
-		((pCurPkt->word_en & BIT(2)) == 0))
-	{
-		match_word_en &= ~BIT(2);				// enable word 2
-	}
-	if (((pTargetPkt->word_en & BIT(3)) == 0) &&
-		((pCurPkt->word_en & BIT(3)) == 0))
-	{
-		match_word_en &= ~BIT(3);				// enable word 3
-	}
-
-	*pWden = match_word_en;
-
-	if (match_word_en != 0xf)
-		return _TRUE;
-	else
-		return _FALSE;
-}
-
-static u8
-hal_EfuseCheckIfDatafollowed(
-	PADAPTER		pAdapter,
-	u8				word_cnts,
-	u16				startAddr,
-	u8				bPseudoTest)
-{
-	u8 bRet=_FALSE;
-	u8 i, efuse_data;
-
-	for (i=0; i<(word_cnts*2); i++)
-	{
-		if (efuse_OneByteRead(pAdapter, (startAddr+i) ,&efuse_data, bPseudoTest) == _FALSE)
-		{
-			DBG_8192C("%s: efuse_OneByteRead FAIL!!\n", __FUNCTION__);
-			bRet = _TRUE;
-			break;
-		}
-
-		if (efuse_data != 0xFF)
-		{
-			bRet = _TRUE;
-			break;
-		}
-	}
-
-	return bRet;
-}
-#endif
-
 static u8
 hal_EfusePartialWriteCheck(
 	PADAPTER		padapter,
@@ -2450,12 +2346,6 @@ hal_EfusePartialWriteCheck(
 	u8	bRet=_FALSE;
 	u16	startAddr=0, efuse_max_available_len=0, efuse_max=0;
 	u8	efuse_data=0;
-#if 0
-	u8	i, cur_header=0;
-	u8	new_wden=0, matched_wden=0, badworden=0;
-	PGPKT_STRUCT	curPkt;
-#endif
-
 
 	EFUSE_GetEfuseDefinition(padapter, efuseType, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, &efuse_max_available_len, bPseudoTest);
 	EFUSE_GetEfuseDefinition(padapter, efuseType, TYPE_EFUSE_CONTENT_LEN_BANK, &efuse_max, bPseudoTest);
@@ -3558,12 +3448,7 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 
 void _DisableRFAFEAndResetBB(PADAPTER padapter)
 {
-#if 0
-	if (IS_HARDWARE_TYPE_8192D(padapter))
-		_DisableRFAFEAndResetBB8192D(padapter);
-	else
-#endif
-		_DisableRFAFEAndResetBB8192C(padapter);
+	_DisableRFAFEAndResetBB8192C(padapter);
 }
 
 void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
@@ -3572,33 +3457,23 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 
 	if (IS_FW_81xxC(padapter) && (pHalData->FirmwareVersion <= 0x20))
 	{
-		#if 0
-/*****************************
-		f.	SYS_FUNC_EN 0x03[7:0]=0x54		// reset MAC register, DCORE
-		g.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
-******************************/
-	u32	value32 = 0;
-		rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x54);
-		rtw_write8(padapter, REG_MCUFWDL, 0);
-		#else
 		/*****************************
 		f.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
 		g.	SYS_FUNC_EN 0x02[10]= 0			// reset MCU register, (8051 reset)
 		h.	SYS_FUNC_EN 0x02[15-12]= 5		// reset MAC register, DCORE
 		i.     SYS_FUNC_EN 0x02[10]= 1			// enable MCU register, (8051 enable)
 		******************************/
-			u16 valu16 = 0;
-			rtw_write8(padapter, REG_MCUFWDL, 0);
+		u16 valu16 = 0;
+		rtw_write8(padapter, REG_MCUFWDL, 0);
 
-			valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
-			rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));//reset MCU ,8051
+		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));//reset MCU ,8051
 
-			valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN)&0x0FFF;
-			rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));//reset MAC
+		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN)&0x0FFF;
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));//reset MAC
 
-			valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
-			rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
-		#endif
+		valu16 = rtw_read16(padapter, REG_SYS_FUNC_EN);
+		rtw_write16(padapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
 	}
 	else
 	{
@@ -3691,12 +3566,7 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 
 void _ResetDigitalProcedure1(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 {
-#if 0
-	if(IS_HARDWARE_TYPE_8192D(padapter))
-		_ResetDigitalProcedure1_92D(padapter, bWithoutHWSM);
-	else
-#endif
-		_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
+	_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
 }
 
 void _ResetDigitalProcedure2(PADAPTER padapter)
@@ -3765,15 +3635,6 @@ void _DisableAnalog(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 	rtw_write16(padapter, REG_APS_FSMCO, value16);//0x4802
 
 	rtw_write8(padapter, REG_RSV_CTRL, 0x0e);
-
-#if 0
-	//tynli_test for suspend mode.
-	if(!bWithoutHWSM){
-		rtw_write8(padapter, 0xfe10, 0x19);
-	}
-#endif
-
-//	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable Analog Reg0x04:0x%04x.\n",value16));
 }
 
 // HW Auto state machine
@@ -5931,27 +5792,7 @@ s32 c2h_handler_8723b(PADAPTER padapter, u8 *buf)
 	{
 		case C2H_AP_RPT_RSP:
 			{
-//YJ,TODO,130407
-#if 0
-				u4Byte c2h_ap_keeplink = _TRUE;
-				if (c2hBuf[2] == 0 && c2hBuf[3] == 0)
-					c2h_ap_keeplink = _FALSE;
-				else
-					c2h_ap_keeplink = _TRUE;
-
-				if (_TRUE == pmlmeext->try_ap_c2h_wait) {
-					if (_FALSE == c2h_ap_keeplink) {
-						pmlmeext->try_ap_c2h_wait = _FALSE;
-						RT_TRACE(_module_hal_init_c_, _drv_err_,("fw tell us link is off\n"));
-						receive_disconnect(padapter, pmlmeinfo->network.MacAddress , 65535);
-					} else  {
-						RT_TRACE(_module_hal_init_c_, _drv_err_,("fw tell us link is on\n"));
-					}
-				} else {
-					RT_TRACE(_module_hal_init_c_, _drv_err_,("we don't need this C2H\n"));
-				}
-				pmlmeext->check_ap_processing = _FALSE;
-#endif
+				//YJ,TODO,130407
 			}
 			break;
 		case C2H_DBG:
@@ -6024,29 +5865,6 @@ static void process_c2h_event(PADAPTER padapter, PC2H_EVT_HDR pC2hEvent, u8 *c2h
 	switch (pC2hEvent->CmdID)
 	{
 		case C2H_AP_RPT_RSP:
-			#if 0
-			{
-
-				u4Byte c2h_ap_keeplink = _TRUE;
-				if (c2hBuf[2] == 0 && c2hBuf[3] == 0)
-					c2h_ap_keeplink = _FALSE;
-				else
-					c2h_ap_keeplink = _TRUE;
-
-				if (_TRUE == pmlmeext->try_ap_c2h_wait) {
-					if (_FALSE == c2h_ap_keeplink) {
-						pmlmeext->try_ap_c2h_wait = _FALSE;
-						RT_TRACE(_module_hal_init_c_, _drv_err_,("fw tell us link is off\n"));
-						receive_disconnect(padapter, pmlmeinfo->network.MacAddress , 65535);
-					} else	{
-						RT_TRACE(_module_hal_init_c_, _drv_err_,("fw tell us link is on\n"));
-					}
-				} else {
-					RT_TRACE(_module_hal_init_c_, _drv_err_,("we don't need this C2H\n"));
-				}
-				pmlmeext->check_ap_processing = _FALSE;
-			}
-			#endif
 			break;
 		case C2H_DBG:
 			{
@@ -6413,20 +6231,6 @@ _func_enter_;
 			break;
 
 		case HW_VAR_RESP_SIFS:
-#if 0
-			// SIFS for OFDM Data ACK
-			rtw_write8(padapter, REG_SIFS_CTX+1, val[0]);
-			// SIFS for OFDM consecutive tx like CTS data!
-			rtw_write8(padapter, REG_SIFS_TRX+1, val[1]);
-
-			rtw_write8(padapter, REG_SPEC_SIFS+1, val[0]);
-			rtw_write8(padapter, REG_MAC_SPEC_SIFS+1, val[0]);
-
-			// 20100719 Joseph: Revise SIFS setting due to Hardware register definition change.
-			rtw_write8(padapter, REG_R2T_SIFS+1, val[0]);
-			rtw_write8(padapter, REG_T2T_SIFS+1, val[0]);
-
-#else
 			//SIFS_Timer = 0x0a0a0808;
 			//RESP_SIFS for CCK
 			rtw_write8(padapter, REG_RESP_SIFS_CCK, val[0]); // SIFS_T2T_CCK (0x08)
@@ -6434,7 +6238,6 @@ _func_enter_;
 			//RESP_SIFS for OFDM
 			rtw_write8(padapter, REG_RESP_SIFS_OFDM, val[2]); //SIFS_T2T_OFDM (0x0a)
 			rtw_write8(padapter, REG_RESP_SIFS_OFDM+1, val[3]); //SIFS_R2T_OFDM(0x0a)
-#endif
 			break;
 
 		case HW_VAR_ACK_PREAMBLE:
@@ -6551,12 +6354,6 @@ _func_enter_;
 				rtw_write32(padapter, REG_AMPDU_MAX_LENGTH_8723B, AMPDULen);
 			}
 			break;
-
-#if 0
-		case HW_VAR_RXDMA_AGG_PG_TH:
-			rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, *val);
-			break;
-#endif
 
 		case HW_VAR_H2C_FW_PWRMODE:
 			{

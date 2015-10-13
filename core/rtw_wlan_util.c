@@ -1864,57 +1864,6 @@ void HTOnAssocRsp(_adapter *padapter)
 	rtw_hal_set_hwreg(padapter, HW_VAR_AMPDU_MIN_SPACE, (u8 *)(&min_MPDU_spacing));
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_AMPDU_FACTOR, (u8 *)(&max_AMPDU_len));
-
-#if 0 //move to rtw_update_ht_cap()
-	if ((pregpriv->bw_mode > 0) &&
-		(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info & BIT(1)) &&
-		(pmlmeinfo->HT_info.infos[0] & BIT(2)))
-	{
-		//switch to the 40M Hz mode accoring to the AP
-		pmlmeext->cur_bwmode = CHANNEL_WIDTH_40;
-		switch ((pmlmeinfo->HT_info.infos[0] & 0x3))
-		{
-			case EXTCHNL_OFFSET_UPPER:
-				pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_LOWER;
-				break;
-
-			case EXTCHNL_OFFSET_LOWER:
-				pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_UPPER;
-				break;
-
-			default:
-				pmlmeext->cur_ch_offset = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
-				break;
-		}
-
-		//SelectChannel(padapter, pmlmeext->cur_channel, pmlmeext->cur_ch_offset);
-	}
-#endif
-
-	//set_channel_bwmode(padapter, pmlmeext->cur_channel, pmlmeext->cur_ch_offset, pmlmeext->cur_bwmode);
-
-#if 0 //move to rtw_update_ht_cap()
-	//
-	// Config SM Power Save setting
-	//
-	pmlmeinfo->SM_PS = (pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info & 0x0C) >> 2;
-	if(pmlmeinfo->SM_PS == WLAN_HT_CAP_SM_PS_STATIC)
-	{
-		/*u8 i;
-		//update the MCS rates
-		for (i = 0; i < 16; i++)
-		{
-			pmlmeinfo->HT_caps.HT_cap_element.MCS_rate[i] &= MCS_rate_1R[i];
-		}*/
-		DBG_871X("%s(): WLAN_HT_CAP_SM_PS_STATIC\n",__FUNCTION__);
-	}
-
-	//
-	// Config current HT Protection mode.
-	//
-	pmlmeinfo->HT_protection = pmlmeinfo->HT_info.infos[1] & 0x3;
-#endif
-
 }
 
 void ERP_IE_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs pIE)
@@ -2936,29 +2885,6 @@ void update_wireless_mode(_adapter *padapter)
 void fire_write_MAC_cmd(_adapter *padapter, unsigned int addr, unsigned int value);
 void fire_write_MAC_cmd(_adapter *padapter, unsigned int addr, unsigned int value)
 {
-#if 0
-	struct cmd_obj					*ph2c;
-	struct reg_rw_parm			*pwriteMacPara;
-	struct cmd_priv					*pcmdpriv = &(padapter->cmdpriv);
-
-	if ((ph2c = (struct cmd_obj*)rtw_zmalloc(sizeof(struct cmd_obj))) == NULL)
-	{
-		return;
-	}
-
-	if ((pwriteMacPara = (struct reg_rw_parm*)rtw_malloc(sizeof(struct reg_rw_parm))) == NULL)
-	{
-		rtw_mfree((unsigned char *)ph2c, sizeof(struct cmd_obj));
-		return;
-	}
-
-	pwriteMacPara->rw = 1;
-	pwriteMacPara->addr = addr;
-	pwriteMacPara->value = value;
-
-	init_h2fwcmd_w_parm_no_rsp(ph2c, pwriteMacPara, GEN_CMD_CODE(_Write_MACREG));
-	rtw_enqueue_cmd(pcmdpriv, ph2c);
-#endif
 }
 
 void update_sta_basic_rate(struct sta_info *psta, u8 wireless_mode)
@@ -3435,108 +3361,6 @@ inline void rtw_macid_ctl_deinit(struct macid_ctl_t *macid_ctl)
 	_rtw_spinlock_free(&macid_ctl->lock);
 }
 
-#if 0
-unsigned int setup_beacon_frame(_adapter *padapter, unsigned char *beacon_frame)
-{
-	unsigned short				ATIMWindow;
-	unsigned char					*pframe;
-	struct tx_desc				*ptxdesc;
-	struct rtw_ieee80211_hdr	*pwlanhdr;
-	unsigned short				*fctrl;
-	unsigned int					rate_len, len = 0;
-	struct xmit_priv			*pxmitpriv = &(padapter->xmitpriv);
-	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
-	u8	bc_addr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
-	_rtw_memset(beacon_frame, 0, 256);
-
-	pframe = beacon_frame + TXDESC_SIZE;
-
-	pwlanhdr = (struct rtw_ieee80211_hdr *)pframe;
-
-	fctrl = &(pwlanhdr->frame_ctl);
-	*(fctrl) = 0;
-
-	_rtw_memcpy(pwlanhdr->addr1, bc_addr, ETH_ALEN);
-	_rtw_memcpy(pwlanhdr->addr2, myid(&(padapter->eeprompriv)), ETH_ALEN);
-	_rtw_memcpy(pwlanhdr->addr3, get_my_bssid(cur_network), ETH_ALEN);
-
-	SetFrameSubType(pframe, WIFI_BEACON);
-
-	pframe += sizeof(struct rtw_ieee80211_hdr_3addr);
-	len = sizeof(struct rtw_ieee80211_hdr_3addr);
-
-	//timestamp will be inserted by hardware
-	pframe += 8;
-	len += 8;
-
-	// beacon interval: 2 bytes
-	_rtw_memcpy(pframe, (unsigned char *)(rtw_get_beacon_interval_from_ie(cur_network->IEs)), 2);
-
-	pframe += 2;
-	len += 2;
-
-	// capability info: 2 bytes
-	_rtw_memcpy(pframe, (unsigned char *)(rtw_get_capability_from_ie(cur_network->IEs)), 2);
-
-	pframe += 2;
-	len += 2;
-
-	// SSID
-	pframe = rtw_set_ie(pframe, _SSID_IE_, cur_network->Ssid.SsidLength, cur_network->Ssid.Ssid, &len);
-
-	// supported rates...
-	rate_len = rtw_get_rateset_len(cur_network->SupportedRates);
-	pframe = rtw_set_ie(pframe, _SUPPORTEDRATES_IE_, ((rate_len > 8)? 8: rate_len), cur_network->SupportedRates, &len);
-
-	// DS parameter set
-	pframe = rtw_set_ie(pframe, _DSSET_IE_, 1, (unsigned char *)&(cur_network->Configuration.DSConfig), &len);
-
-	// IBSS Parameter Set...
-	//ATIMWindow = cur->Configuration.ATIMWindow;
-	ATIMWindow = 0;
-	pframe = rtw_set_ie(pframe, _IBSS_PARA_IE_, 2, (unsigned char *)(&ATIMWindow), &len);
-
-	//todo: ERP IE
-
-	// EXTERNDED SUPPORTED RATE
-	if (rate_len > 8)
-	{
-		pframe = rtw_set_ie(pframe, _EXT_SUPPORTEDRATES_IE_, (rate_len - 8), (cur_network->SupportedRates + 8), &len);
-	}
-
-	if ((len + TXDESC_SIZE) > 256)
-	{
-		//DBG_871X("marc: beacon frame too large\n");
-		return 0;
-	}
-
-	//fill the tx descriptor
-	ptxdesc = (struct tx_desc *)beacon_frame;
-
-	//offset 0
-	ptxdesc->txdw0 |= cpu_to_le32(len & 0x0000ffff);
-	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) & 0x00ff0000); //default = 32 bytes for TX Desc
-
-	//offset 4
-	ptxdesc->txdw1 |= cpu_to_le32((0x10 << QSEL_SHT) & 0x00001f00);
-
-	//offset 8
-	ptxdesc->txdw2 |= cpu_to_le32(BMC);
-	ptxdesc->txdw2 |= cpu_to_le32(BK);
-
-	//offset 16
-	ptxdesc->txdw4 = 0x80000000;
-
-	//offset 20
-	ptxdesc->txdw5 = 0x00000000; //1M
-
-	return (len + TXDESC_SIZE);
-}
-#endif
-
 static _adapter *pbuddy_padapter = NULL;
 
 int rtw_handle_dualmac(_adapter *adapter, bool init)
@@ -3548,15 +3372,6 @@ int rtw_handle_dualmac(_adapter *adapter, bool init)
 		goto exit;
 
 	if (init) {
-		#if 0
-		/* For SMSP on 92DU-VC, driver do not probe another Interface. */
-		if(dvobj->NumInterfaces == 2 && dvobj->InterfaceNumber != 0 &&
-			adapter->registrypriv.mac_phy_mode == 1) {
-			DBG_871X("%s(): Do not init another USB Interface because SMSP\n",__FUNCTION__);
-			status = _FAIL;
-			goto exit;
-		}
-		#endif
 
 		if (pbuddy_padapter == NULL) {
 			pbuddy_padapter = adapter;

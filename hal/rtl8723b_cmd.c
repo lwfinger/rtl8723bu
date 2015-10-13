@@ -417,18 +417,7 @@ static void ConstructARPResponse(
 	*pLength = 24;
 #endif
 
-//YJ,del,120503
-#if 0
-	//-------------------------------------------------------------------------
-	// Qos Header: leave space for it if necessary.
-	//-------------------------------------------------------------------------
-	if(pStaQos->CurrentQosMode > QOS_DISABLE)
-	{
-		SET_80211_HDR_QOS_EN(pARPRspPkt, 1);
-		PlatformZeroMemory(&(Buffer[*pLength]), sQoSCtlLng);
-		*pLength += sQoSCtlLng;
-	}
-#endif
+
 	//-------------------------------------------------------------------------
 	// Security Header: leave space for it if necessary.
 	//-------------------------------------------------------------------------
@@ -714,18 +703,7 @@ static void ConstructGTKResponse(
 	*pLength = 24;
 #endif //CONFIG_WAPI_SUPPORT
 
-//YJ,del,120503
-#if 0
-	//-------------------------------------------------------------------------
-	// Qos Header: leave space for it if necessary.
-	//-------------------------------------------------------------------------
-	if(pStaQos->CurrentQosMode > QOS_DISABLE)
-	{
-		SET_80211_HDR_QOS_EN(pGTKRspPkt, 1);
-		PlatformZeroMemory(&(Buffer[*pLength]), sQoSCtlLng);
-		*pLength += sQoSCtlLng;
-	}
-#endif //0
+
 	//-------------------------------------------------------------------------
 	// Security Header: leave space for it if necessary.
 	//-------------------------------------------------------------------------
@@ -1738,11 +1716,7 @@ _func_enter_;
 		issue_beacon(padapter, 0);
 #endif
 	}
-#if 0
-	else
 
-		dump_TX_FIFO(padapter);
-#endif
 	rtl8723b_set_FwAPWoWlanCtrl_Cmd(padapter, enable);
 	rtw_msleep_os(10);
 	rtl8723b_set_Fw_AP_Offload_Cmd(padapter, enable);
@@ -1886,27 +1860,6 @@ static void rtl8723b_set_FwRsvdPagePkt(PADAPTER padapter, BOOLEAN bDLFinished)
 
 	BufIndex += (CurtPktPageNum*PageSize);
 
-#if 0
-	//3 (4) probe response
-	RsvdPageLoc.LocProbeRsp = TotalPageNum;
-	ConstructProbeRsp(
-		padapter,
-		&ReservedPagePacket[BufIndex],
-		&ProbeRspLength,
-		get_my_bssid(&pmlmeinfo->network),
-		_FALSE);
-	rtl8723b_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], ProbeRspLength, _FALSE, _FALSE, _FALSE);
-
-	//DBG_871X("%s(): HW_VAR_SET_TX_CMD: PROBE RSP %p %d\n",
-	//	__FUNCTION__, &ReservedPagePacket[BufIndex-TxDescLen], (ProbeRspLength+TxDescLen));
-
-	CurtPktPageNum = (u8)PageNum_128(TxDescLen + ProbeRspLength);
-
-	TotalPageNum += CurtPktPageNum;
-
-	BufIndex += (CurtPktPageNum*PageSize);
-#endif
-
 	//3 (5) Qos null data
 	RsvdPageLoc.LocQosNull = TotalPageNum;
 	ConstructNullFunctionData(
@@ -2012,19 +1965,6 @@ static void rtl8723b_set_FwRsvdPagePkt(PADAPTER padapter, BOOLEAN bDLFinished)
 	_rtw_memcpy(ReservedPagePacket+BufIndex-TxDescLen, kck, RTW_KCK_LEN);
 	_rtw_memcpy(ReservedPagePacket+BufIndex-TxDescLen+RTW_KCK_LEN, kek, RTW_KEK_LEN);
 
-#if 0
-	{
-		int i;
-		printk("\ntoFW KCK: ");
-		for(i=0;i<16; i++)
-			printk(" %02x ", kck[i]);
-		printk("\ntoFW KEK: ");
-		for(i=0;i<16; i++)
-			printk(" %02x ", kek[i]);
-		printk("\n");
-	}
-#endif
-
 	//DBG_871X("%s(): HW_VAR_SET_TX_CMD: KEK KCK %p %d\n",
 	//	__FUNCTION__, &ReservedPagePacket[BufIndex-TxDescLen], (TxDescLen + RTW_KCK_LEN + RTW_KEK_LEN));
 
@@ -2043,18 +1983,6 @@ static void rtl8723b_set_FwRsvdPagePkt(PADAPTER padapter, BOOLEAN bDLFinished)
 		);
 
 	rtl8723b_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex-TxDescLen], GTKLegnth, _FALSE, _FALSE, _TRUE);
-#if 0
-	{
-		int gj;
-		printk("123GTK pkt=> \n");
-		for(gj=0; gj < GTKLegnth+TxDescLen; gj++) {
-			printk(" %02x ", ReservedPagePacket[BufIndex-TxDescLen+gj]);
-			if ((gj + 1)%16==0)
-				printk("\n");
-		}
-		printk(" <=end\n");
-	}
-#endif
 
 	//DBG_871X("%s(): HW_VAR_SET_TX_CMD: GTK RSP %p %d\n",
 	//	__FUNCTION__, &ReservedPagePacket[BufIndex-TxDescLen], (TxDescLen + GTKLegnth));
@@ -2552,13 +2480,6 @@ void rtl8723b_Add_RateATid(PADAPTER pAdapter, u32 bitmap, u8* arg, u8 rssi_level
 	DBG_871X("%s(): mac_id=%d raid=0x%x bw=%d mask=0x%x\n", __func__, mac_id, raid, bw, mask);
 	rtl8723b_set_FwMacIdConfig_cmd(pAdapter, mac_id, raid, bw, shortGI, mask);
 }
-
-#if 0
-void rtl8723b_fw_try_ap_cmd(PADAPTER padapter, u32 need_ack)
-{
-	rtl8723b_set_FwAPReqRPT_cmd(padapter, need_ack);
-}
-#endif
 
 #ifdef CONFIG_BT_COEXIST
 static void ConstructBtNullFunctionData(

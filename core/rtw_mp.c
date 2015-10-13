@@ -388,14 +388,6 @@ MPT_InitializeAdapter(
 	rtw_write32(pAdapter, REG_RCR, 0x70000101);
 #endif
 
-#if 0
-	// If EEPROM or EFUSE is empty,we assign as RF 2T2R for MP.
-	if (pHalData->AutoloadFailFlag == TRUE)
-	{
-		pHalData->RF_Type = RF_2T2R;
-	}
-#endif
-
 	//ledsetting = rtw_read32(pAdapter, REG_LEDCFG0);
 	//rtw_write32(pAdapter, REG_LEDCFG0, ledsetting & ~LED0DIS);
 
@@ -458,18 +450,6 @@ MPT_DeInitAdapter(
 	#if	defined(CONFIG_RTL8723B)
 	PHY_SetBBReg(pAdapter,0xA01, BIT0, 1); ///suggestion  by jerry for MP Rx.
 	#endif
-#if 0 // for Windows
-	PlatformFreeWorkItem( &(pMptCtx->MptWorkItem) );
-
-	while(pMptCtx->bMptWorkItemInProgress)
-	{
-		if(NdisWaitEvent(&(pMptCtx->MptWorkItemEvent), 50))
-		{
-			break;
-		}
-	}
-	NdisFreeSpinLock( &(pMptCtx->MptWorkItemSpinLock) );
-#endif
 }
 
 static u8 mpt_ProStartTest(PADAPTER padapter)
@@ -625,14 +605,7 @@ u32 mp_join(PADAPTER padapter,u8 mode)
 	}
 	pmppriv->prev_fw_state = get_fwstate(pmlmepriv);
 	pmlmepriv->fw_state = WIFI_MP_STATE;
-#if 0
-	if (pmppriv->mode == _LOOPBOOK_MODE_) {
-		set_fwstate(pmlmepriv, WIFI_MP_LPBK_STATE); //append txdesc
-		RT_TRACE(_module_mp_, _drv_notice_, ("+start mp in Lookback mode\n"));
-	} else {
-		RT_TRACE(_module_mp_, _drv_notice_, ("+start mp in normal mode\n"));
-	}
-#endif
+
 	set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
 
 	//3 2. create a new psta for mp driver
@@ -772,52 +745,7 @@ end_of_mp_stop_test:
 	}
 }
 /*---------------------------hal\rtl8192c\MPT_Phy.c---------------------------*/
-#if 0
-//#ifdef CONFIG_USB_HCI
-static VOID mpt_AdjustRFRegByRateByChan92CU(PADAPTER pAdapter, u8 RateIdx, u8 Channel, u8 BandWidthID)
-{
-	u8		eRFPath;
-	u32		rfReg0x26;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
-
-	if (RateIdx < MPT_RATE_6M) {	// CCK rate,for 88cu
-		rfReg0x26 = 0xf400;
-	}
-	else if ((RateIdx >= MPT_RATE_6M) && (RateIdx <= MPT_RATE_54M)) {// OFDM rate,for 88cu
-		if ((4 == Channel) || (8 == Channel) || (12 == Channel))
-			rfReg0x26 = 0xf000;
-		else if ((5 == Channel) || (7 == Channel) || (13 == Channel) || (14 == Channel))
-			rfReg0x26 = 0xf400;
-		else
-			rfReg0x26 = 0x4f200;
-	}
-	else if ((RateIdx >= MPT_RATE_MCS0) && (RateIdx <= MPT_RATE_MCS15)) {// MCS 20M ,for 88cu // MCS40M rate,for 88cu
-
-		if (CHANNEL_WIDTH_20 == BandWidthID) {
-			if ((4 == Channel) || (8 == Channel))
-				rfReg0x26 = 0xf000;
-			else if ((5 == Channel) || (7 == Channel) || (13 == Channel) || (14 == Channel))
-				rfReg0x26 = 0xf400;
-			else
-				rfReg0x26 = 0x4f200;
-		}
-		else{
-			if ((4 == Channel) || (8 == Channel))
-				rfReg0x26 = 0xf000;
-			else if ((5 == Channel) || (7 == Channel))
-				rfReg0x26 = 0xf400;
-			else
-				rfReg0x26 = 0x4f200;
-		}
-	}
-
-//	RT_TRACE(COMP_CMD, DBG_LOUD, ("\n mpt_AdjustRFRegByRateByChan92CU():Chan:%d Rate=%d rfReg0x26:0x%08x\n",Channel, RateIdx,rfReg0x26));
-	for (eRFPath = 0; eRFPath < pHalData->NumTotalRFPath; eRFPath++) {
-		write_rfreg(pAdapter, eRFPath, RF_SYN_G2, rfReg0x26);
-	}
-}
-#endif
 /*-----------------------------------------------------------------------------
  * Function:	mpt_SwitchRfSetting
  *
@@ -1461,100 +1389,6 @@ u32 mp_query_psd(PADAPTER pAdapter, u8 *data)
 	return strlen(data)+1;
 }
 
-
-#if 0
-void _rtw_mp_xmit_priv (struct xmit_priv *pxmitpriv)
-{
-	   int i,res;
-	  _adapter *padapter = pxmitpriv->adapter;
-	struct xmit_frame	*pxmitframe = (struct xmit_frame*) pxmitpriv->pxmit_frame_buf;
-	struct xmit_buf *pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmitbuf;
-
-	u32 max_xmit_extbuf_size = MAX_XMIT_EXTBUF_SZ;
-	u32 num_xmit_extbuf = NR_XMIT_EXTBUFF;
-	if(padapter->registrypriv.mp_mode ==0)
-	{
-		max_xmit_extbuf_size = MAX_XMIT_EXTBUF_SZ;
-		num_xmit_extbuf = NR_XMIT_EXTBUFF;
-	}
-	else
-	{
-			max_xmit_extbuf_size = 6000;
-			num_xmit_extbuf = 8;
-	}
-
-	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmit_extbuf;
-	for(i=0; i<num_xmit_extbuf; i++)
-	{
-		rtw_os_xmit_resource_free(padapter, pxmitbuf,(max_xmit_extbuf_size + XMITBUF_ALIGN_SZ), _FALSE);
-
-		pxmitbuf++;
-	}
-
-	if(pxmitpriv->pallocated_xmit_extbuf) {
-		rtw_vmfree(pxmitpriv->pallocated_xmit_extbuf, num_xmit_extbuf * sizeof(struct xmit_buf) + 4);
-	}
-
-	if(padapter->registrypriv.mp_mode ==0)
-	{
-			max_xmit_extbuf_size = 6000;
-			num_xmit_extbuf = 8;
-	}
-	else
-	{
-		max_xmit_extbuf_size = MAX_XMIT_EXTBUF_SZ;
-		num_xmit_extbuf = NR_XMIT_EXTBUFF;
-	}
-
-	// Init xmit extension buff
-	_rtw_init_queue(&pxmitpriv->free_xmit_extbuf_queue);
-
-	pxmitpriv->pallocated_xmit_extbuf = rtw_zvmalloc(num_xmit_extbuf * sizeof(struct xmit_buf) + 4);
-
-	if (pxmitpriv->pallocated_xmit_extbuf  == NULL){
-		RT_TRACE(_module_rtl871x_xmit_c_,_drv_err_,("alloc xmit_extbuf fail!\n"));
-		res= _FAIL;
-		goto exit;
-	}
-
-	pxmitpriv->pxmit_extbuf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(pxmitpriv->pallocated_xmit_extbuf), 4);
-
-	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmit_extbuf;
-
-	for (i = 0; i < num_xmit_extbuf; i++)
-	{
-		_rtw_init_listhead(&pxmitbuf->list);
-
-		pxmitbuf->priv_data = NULL;
-		pxmitbuf->padapter = padapter;
-		pxmitbuf->buf_tag = XMITBUF_MGNT;
-
-		if((res=rtw_os_xmit_resource_alloc(padapter, pxmitbuf,max_xmit_extbuf_size + XMITBUF_ALIGN_SZ, _TRUE)) == _FAIL) {
-			res= _FAIL;
-			goto exit;
-		}
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->phead = pxmitbuf->pbuf;
-		pxmitbuf->pend = pxmitbuf->pbuf + max_xmit_extbuf_size;
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-#endif
-
-		rtw_list_insert_tail(&pxmitbuf->list, &(pxmitpriv->free_xmit_extbuf_queue.queue));
-		#ifdef DBG_XMIT_BUF_EXT
-		pxmitbuf->no=i;
-		#endif
-		pxmitbuf++;
-
-	}
-
-	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
-
-exit:
-	;
-}
-#endif
 
 
 ULONG getPowerDiffByRate8188E(

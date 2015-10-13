@@ -1357,16 +1357,7 @@ odm_RxPhyStatusJaguarSeries_Parsing(
 								EVM = 100;
 						}
 					}
-#if 0
-					else
-					{
-						if (pPhyStaRpt->rxevm[i] == -128)
-						{
-							pPhyStaRpt->rxevm[i] = -25;
-						}
-						EVM = odm_EVMdbToPercentage( (pPhyStaRpt->rxevm[i] ));	//dbm
-					}
-#endif
+
 					EVMdbm = odm_EVMdbm_JaguarSeries(pPhyStaRpt->rxevm[i]);
 					//RT_DISP(FRX, RX_PHY_SQ, ("RXRATE=%x RXEVM=%x EVM=%s%d\n",
 					//pPktinfo->DataRate, pPhyStaRpt->rxevm[i], "%", EVM));
@@ -1682,19 +1673,6 @@ ODM_PhyStatusQuery_92CSeries(
 		// Select the packets to do RSSI checking for antenna switching.
 		if(pPktinfo->bPacketToSelf || pPktinfo->bPacketBeacon )
 		{
-				/*
-			#if 0//(DM_ODM_SUPPORT_TYPE == ODM_WIN)
-			dm_SWAW_RSSI_Check(
-				Adapter,
-				(tmppAdapter!=NULL)?(tmppAdapter==Adapter):TRUE,
-				bPacketMatchBSSID,
-				pEntry,
-				pRfd);
-			#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
-			// Select the packets to do RSSI checking for antenna switching.
-			//odm_SwAntDivRSSICheck8192C(padapter, precvframe->u.hdr.attrib.RxPWDBAll);
-			#endif
-				*/
 #if (RTL8192C_SUPPORT == 1)
 				ODM_SwAntDivChkPerPktRssi(pDM_Odm,pPktinfo->StationID,pPhyInfo);
 #endif

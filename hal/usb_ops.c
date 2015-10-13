@@ -58,15 +58,6 @@ void interrupt_handler_8723bu(_adapter *padapter,u16 pkt_len,u8 *pbuf)
 	#endif
 	{
 		struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-		#if 0
-		if(pHalData->IntArray[0] & IMR_BCNDMAINT0_88E)
-			DBG_8192C("%s: HISR_BCNERLY_INT\n", __func__);
-		if(pHalData->IntArray[0] & IMR_TBDOK_88E)
-			DBG_8192C("%s: HISR_TXBCNOK\n", __func__);
-		if(pHalData->IntArray[0] & IMR_TBDER_88E)
-			DBG_8192C("%s: HISR_TXBCNERR\n", __func__);
-		#endif
-
 
 		if(check_fwstate(pmlmepriv, WIFI_AP_STATE))
 	{

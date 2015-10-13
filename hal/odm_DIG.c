@@ -1346,14 +1346,6 @@ odm_DIGbyRSSI_LPS(
 	PDM_ODM_T					pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	PFALSE_ALARM_STATISTICS		pFalseAlmCnt = (PFALSE_ALARM_STATISTICS)PhyDM_Get_Structure( pDM_Odm, PHYDM_FALSEALMCNT);
 
-#if (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#if 0		//and 2.3.5 coding rule
-	struct mlme_priv	*pmlmepriv = &(pAdapter->mlmepriv);
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-#endif
-#endif
-
 	u1Byte	RSSI_Lower=DM_DIG_MIN_NIC;   //0x1E or 0x1C
 	u1Byte	CurrentIGI=pDM_Odm->RSSI_Min;
 
@@ -1409,15 +1401,6 @@ odm_FalseAlarmCounterStatistics(
 	PDM_ODM_T					pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	PFALSE_ALARM_STATISTICS 	FalseAlmCnt = (PFALSE_ALARM_STATISTICS)PhyDM_Get_Structure( pDM_Odm, PHYDM_FALSEALMCNT);
 	u4Byte 						ret_value;
-
-#if (DM_ODM_SUPPORT_TYPE == ODM_AP)
-//Mark there, and check this in odm_DMWatchDog
-#if 0 //(DM_ODM_SUPPORT_TYPE == ODM_AP)
-	prtl8192cd_priv priv		= pDM_Odm->priv;
-	if( (priv->auto_channel != 0) && (priv->auto_channel != 2) )
-		return;
-#endif
-#endif
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	if((pDM_Odm->SupportICType == ODM_RTL8192D) &&

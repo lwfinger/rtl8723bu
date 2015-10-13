@@ -1723,13 +1723,6 @@ halbtc8723b1ant_PsTdma(
 				//halbtc8723b1ant_SetAntPathDCut(pBtCoexist, FALSE, FALSE, FALSE, BTC_ANT_PATH_BT, BTC_WIFI_STAT_NORMAL);
 				//halbtc8723b1ant_SetAntPath(pBtCoexist, BTC_ANT_PATH_BT, FALSE, FALSE);
 				break;
-#if 0
-			case 9:   //Software control, Antenna at WiFi side
-				halbtc8723b1ant_SetFwPstdma(pBtCoexist, 0x0, 0x0, 0x0, 0x0, 0x0);
-				//halbtc8723b1ant_SetAntPathDCut(pBtCoexist, FALSE, FALSE, FALSE, BTC_ANT_PATH_WIFI, BTC_WIFI_STAT_NORMAL);
-				halbtc8723b1ant_SetAntPath(pBtCoexist, BTC_ANT_PATH_WIFI, FALSE, FALSE);
-				break;
-#endif
 		}
 	}
 	rssiAdjustVal =0;
@@ -3035,15 +3028,7 @@ halbtc8723b1ant_InitHwConfig(
 	BTC_PRINT(BTC_MSG_INTERFACE, INTF_INIT, ("[BTCoex], 1Ant Init HW Config!!\n"));
 
 	pPsdScan->bIsAntDetEnable = FALSE;
-#if 0//move to BTC_MEDIA_CONNECT
-	if(bBackUp)
-	{
-		pCoexDm->backupArfrCnt1 = pBtCoexist->fBtcRead4Byte(pBtCoexist, 0x430);
-		pCoexDm->backupArfrCnt2 = pBtCoexist->fBtcRead4Byte(pBtCoexist, 0x434);
-		pCoexDm->backupRetryLimit = pBtCoexist->fBtcRead2Byte(pBtCoexist, 0x42a);
-		pCoexDm->backupAmpduMaxTime = pBtCoexist->fBtcRead1Byte(pBtCoexist, 0x456);
-	}
-#endif
+
 	pBtCoexist->fBtcWrite1ByteBitMask(pBtCoexist, 0x550, 0x8, 0x1);  //enable TBTT nterrupt
 
 	// 0x790[5:0]=0x5
@@ -3064,18 +3049,6 @@ halbtc8723b1ant_InitHwConfig(
 		halbtc8723b1ant_SetAntPath(pBtCoexist, BTC_ANT_PATH_WIFI, FORCE_EXEC, TRUE, FALSE);
 	else
 		halbtc8723b1ant_SetAntPath(pBtCoexist, BTC_ANT_PATH_BT, FORCE_EXEC, TRUE, FALSE);
-
-#if 0
-	if(bWifiOnly)
-	{
-		halbtc8723b1ant_SetAntPathDCut(pBtCoexist, FALSE, FALSE, FALSE, BTC_ANT_PATH_WIFI, BTC_WIFI_STAT_INIT);
-		halbtc8723b1ant_PsTdma(pBtCoexist, FORCE_EXEC, FALSE, 8);
-	}
-	else
-		halbtc8723b1ant_SetAntPathDCut(pBtCoexist, FALSE, FALSE, FALSE, BTC_ANT_PATH_BT, BTC_WIFI_STAT_INIT);
-#endif
-
-
 
 	// PTA parameter
 	halbtc8723b1ant_CoexTableWithType(pBtCoexist, FORCE_EXEC, 0);

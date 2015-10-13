@@ -648,14 +648,6 @@ halbtc8723b2ant_ActionAlgorithm(
 			if( pBtLinkInfo->bHidExist &&
 				pBtLinkInfo->bA2dpExist )
 			{
-#if 0
-				if(pStackInfo->numOfHid >= 2)
-				{
-					BTC_PRINT(BTC_MSG_ALGORITHM, ALGO_TRACE, ("[BTCoex], HID*2 + A2DP\n"));
-					algorithm = BT_8723B_2ANT_COEX_ALGO_HID_A2DP_PANEDR;
-				}
-				else
-#endif
 				{
 					BTC_PRINT(BTC_MSG_ALGORITHM, ALGO_TRACE, ("[BTCoex], HID + A2DP\n"));
 					algorithm = BT_8723B_2ANT_COEX_ALGO_HID_A2DP;

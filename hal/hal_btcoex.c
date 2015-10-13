@@ -250,14 +250,6 @@ void halbtcoutsrc_NormalLps(PBTC_COEXIST pBtCoexist)
 		pBtCoexist->btInfo.bBtLpsOn = _FALSE;
 		rtw_btcoex_LPS_Leave(padapter);
 		pBtCoexist->btInfo.bBtCtrlLps = _FALSE;
-
-		// recover the LPS state to the original
-#if 0
-		padapter->HalFunc.UpdateLPSStatusHandler(
-			padapter,
-			pPSC->RegLeisurePsMode,
-			pPSC->RegPowerSaveMode);
-#endif
 	}
 }
 
@@ -513,33 +505,6 @@ u32 halbtcoutsrc_GetBtPatchVer(PBTC_COEXIST pBtCoexist)
 	u8 btFwVer = 0x0;
 	u8 cnt = 0;
 
-#if 0
-	if (!pBtCoexist->btInfo.btRealFwVer && cnt<=5)
-	{
-		if (halbtcoutsrc_IsHwMailboxExist(pBtCoexist))
-		{	// mailbox exists, through mailbox
-			if (NDBG_GetBtFwVersion(pBtCoexist->Adapter, &btRealFwVer, &btFwVer))
-			{
-				pBtCoexist->btInfo.btRealFwVer = btRealFwVer;
-				pBtCoexist->btInfo.btFwVer = btFwVer;
-			}
-			else
-			{
-				pBtCoexist->btInfo.btRealFwVer = 0x0;
-				pBtCoexist->btInfo.btFwVer = 0x0;
-			}
-		}
-		else	// no mailbox, query bt patch version through stack.
-		{
-			u1Byte	dataLen=2;
-			u1Byte	buf[4] = {0};
-			buf[0] = 0x0;	// OP_Code
-			buf[1] = 0x0;	// OP_Code_Length
-			BT_SendEventExtBtCoexControl(pBtCoexist->Adapter, _FALSE, dataLen, &buf[0]);
-		}
-		cnt++;
-	}
-#endif
 	return pBtCoexist->btInfo.btRealFwVer;
 }
 
@@ -632,19 +597,9 @@ u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 			break;
 
 		case BTC_GET_BL_WIFI_SCAN:
-#if 0
-			*pu8 = check_fwstate(&padapter->mlmepriv, WIFI_SITE_MONITOR);
-#ifdef CONFIG_CONCURRENT_MODE
-			if ((_FALSE == *pu8) && padapter->pbuddy_adapter)
-			{
-				*pu8 = check_fwstate(&padapter->pbuddy_adapter->mlmepriv, WIFI_SITE_MONITOR);
-			}
-#endif // CONFIG_CONCURRENT_MODE
-#else
 			/* Use the value of the new variable GLBtcWiFiInScanState to judge whether WiFi is in scan state or not, since the originally used flag
 				WIFI_SITE_MONITOR in fwstate may not be cleared in time */
 			*pu8 = GLBtcWiFiInScanState;
-#endif
 			break;
 
 		case BTC_GET_BL_WIFI_LINK:
@@ -872,11 +827,7 @@ u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
 
 		// the following are some action which will be triggered
 		case BTC_SET_ACT_GET_BT_RSSI:
-#if 0
-			BT_SendGetBtRssiEvent(padapter);
-#else
 			ret = _FALSE;
-#endif
 			break;
 
 		case BTC_SET_ACT_AGGREGATE_CTRL:
@@ -950,50 +901,14 @@ u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
 			break;
 
 		case BTC_SET_ACT_CTRL_BT_INFO:
-#if 0
-			{
-				u8 dataLen = *pU1Tmp;
-				u8 tmpBuf[20];
-				if (dataLen)
-				{
-					_rtw_memcpy(tmpBuf, pU1Tmp+1, dataLen);
-				}
-//				BT_SendEventExtBtInfoControl(padapter, dataLen, &tmpBuf[0]);
-			}
-#else
 			ret = _FALSE;
-#endif
 			break;
 
 		case BTC_SET_ACT_CTRL_BT_COEX:
-#if 0
-			{
-				u8 dataLen = *pU1Tmp;
-				u8 tmpBuf[20];
-				if (dataLen)
-				{
-					_rtw_memcpy(tmpBuf, pU1Tmp+1, dataLen);
-				}
-//				BT_SendEventExtBtCoexControl(padapter, _FALSE, dataLen, &tmpBuf[0]);
-			}
-#else
 			ret = _FALSE;
-#endif
 			break;
 		case BTC_SET_ACT_CTRL_8723B_ANT:
-#if 0
-			{
-				u1Byte	dataLen=*pU1Tmp;
-				u1Byte	tmpBuf[20];
-				if(dataLen)
-				{
-					PlatformMoveMemory(&tmpBuf[0], pU1Tmp+1, dataLen);
-				}
-				BT_Set8723bAnt(Adapter, dataLen, &tmpBuf[0]);
-			}
-#else
 			ret = _FALSE;
-#endif
 			break;
 		//=====================
 		default:
@@ -1048,102 +963,10 @@ u8 halbtcoutsrc_Under32K(PBTC_COEXIST pBtCoexist)
 
 void halbtcoutsrc_DisplayCoexStatistics(PBTC_COEXIST pBtCoexist)
 {
-#if 0
-	PADAPTER padapter = (PADAPTER)pBtCoexist->Adapter;
-	PBT_MGNT pBtMgnt = &padapter->MgntInfo.BtInfo.BtMgnt;
-	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
-	u8 *cliBuf = pBtCoexist->cliBuf;
-	u8 i;
-
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s", "============[Statistics]============");
-	CL_PRINTF(cliBuf);
-
-#if (H2C_USE_IO_THREAD != 1)
-	for(i=0; i<H2C_STATUS_MAX; i++)
-	{
-		if (pHalData->h2cStatistics[i])
-		{
-			CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = [%s] = %d", "H2C statistics", \
-				h2cStaString[i], pHalData->h2cStatistics[i]);
-			CL_PRINTF(cliBuf);
-		}
-	}
-#else
-		for(i=0; i<IO_STATUS_MAX; i++)
-		{
-			if(Adapter->ioComStr.ioH2cStatistics[i])
-			{
-				CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = [%s] = %d", "H2C statistics", \
-					ioStaString[i], Adapter->ioComStr.ioH2cStatistics[i]);
-				CL_PRINTF(cliBuf);
-			}
-		}
-#endif
-#if 0
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x", "lastHMEBoxNum", \
-		pHalData->LastHMEBoxNum);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x / 0x%x", "LastOkH2c/FirstFailH2c(fwNotRead)", \
-		pHalData->lastSuccessH2cEid, pHalData->firstFailedH2cEid);
-	CL_PRINTF(cliBuf);
-
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d/ %d/ %d", "c2hIsr/c2hIntr/clr1AF/noRdy/noBuf", \
-		pHalData->InterruptLog.nIMR_C2HCMD, DBG_Var.c2hInterruptCnt, DBG_Var.c2hClrReadC2hCnt,
-		DBG_Var.c2hNotReadyCnt, DBG_Var.c2hBufAlloFailCnt);
-	CL_PRINTF(cliBuf);
-
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d", "c2hPacket", \
-		DBG_Var.c2hPacketCnt);
-	CL_PRINTF(cliBuf);
-#endif
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d", "Periodical/ DbgCtrl", \
-		pBtCoexist->statistics.cntPeriodical, pBtCoexist->statistics.cntDbgCtrl);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d/ %d", "PowerOn/InitHw/InitCoexDm/RfStatus", \
-		pBtCoexist->statistics.cntPowerOn, pBtCoexist->statistics.cntInitHwConfig, pBtCoexist->statistics.cntInitCoexDm,
-		pBtCoexist->statistics.cntRfStatusNotify);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d/ %d/ %d", "Ips/Lps/Scan/Connect/Mstatus", \
-		pBtCoexist->statistics.cntIpsNotify, pBtCoexist->statistics.cntLpsNotify,
-		pBtCoexist->statistics.cntScanNotify, pBtCoexist->statistics.cntConnectNotify,
-		pBtCoexist->statistics.cntMediaStatusNotify);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d", "Special pkt/Bt info", \
-		pBtCoexist->statistics.cntSpecialPacketNotify, pBtCoexist->statistics.cntBtInfoNotify);
-	CL_PRINTF(cliBuf);
-#endif
 }
 
 void halbtcoutsrc_DisplayBtLinkInfo(PBTC_COEXIST pBtCoexist)
 {
-#if 0
-	PADAPTER padapter = (PADAPTER)pBtCoexist->Adapter;
-	PBT_MGNT pBtMgnt = &padapter->MgntInfo.BtInfo.BtMgnt;
-	u8 *cliBuf = pBtCoexist->cliBuf;
-	u8 i;
-
-
-	if (pBtCoexist->stackInfo.bProfileNotified)
-	{
-		for (i=0; i<pBtMgnt->ExtConfig.NumberOfACL; i++)
-		{
-			if (pBtMgnt->ExtConfig.HCIExtensionVer >= 1)
-			{
-				CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s/ %s/ %s", "Bt link type/spec/role", \
-					BtProfileString[pBtMgnt->ExtConfig.aclLink[i].BTProfile],
-					BtSpecString[pBtMgnt->ExtConfig.aclLink[i].BTCoreSpec],
-					BtLinkRoleString[pBtMgnt->ExtConfig.aclLink[i].linkRole]);
-				CL_PRINTF(cliBuf);				}
-			else
-			{
-				CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s/ %s", "Bt link type/spec", \
-					BtProfileString[pBtMgnt->ExtConfig.aclLink[i].BTProfile],
-					BtSpecString[pBtMgnt->ExtConfig.aclLink[i].BTCoreSpec]);
-				CL_PRINTF(cliBuf);
-			}
-		}
-	}
-#endif
 }
 
 void halbtcoutsrc_DisplayWifiStatus(PBTC_COEXIST pBtCoexist)
@@ -1480,12 +1303,6 @@ u8 EXhalbtcoutsrc_BindBtCoexWithAdapter(void *padapter)
 	pBtCoexist->btInfo.bIncreaseScanDevNum = _FALSE;
 	pBtCoexist->btInfo.bMiracastPlusBt = _FALSE;
 
-#if 0
-	chipType = HALBT_GetBtChipType(Adapter);
-	EXhalbtcoutsrc_SetChipType(chipType);
-	antNum = HALBT_GetPgAntNum(Adapter);
-	EXhalbtcoutsrc_SetAntNum(BT_COEX_ANT_TYPE_PG, antNum);
-#endif
 	// set default antenna position to main  port
 	pBtCoexist->boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
 
@@ -2206,39 +2023,6 @@ EXhalbtcoutsrc_RfStatusNotify(
 
 void EXhalbtcoutsrc_StackOperationNotify(PBTC_COEXIST pBtCoexist, u8 type)
 {
-#if 0
-	u8	stackOpType;
-
-	if (!halbtcoutsrc_IsBtCoexistAvailable(pBtCoexist))
-		return;
-	pBtCoexist->statistics.cntStackOperationNotify++;
-	if (pBtCoexist->bManualControl)
-		return;
-
-	if ((HCI_BT_OP_INQUIRY_START == type) ||
-		(HCI_BT_OP_PAGING_START == type) ||
-		(HCI_BT_OP_PAIRING_START == type))
-	{
-		stackOpType = BTC_STACK_OP_INQ_PAGE_PAIR_START;
-	}
-	else if ((HCI_BT_OP_INQUIRY_FINISH == type) ||
-		(HCI_BT_OP_PAGING_SUCCESS == type) ||
-		(HCI_BT_OP_PAGING_UNSUCCESS == type) ||
-		(HCI_BT_OP_PAIRING_FINISH == type) )
-	{
-		stackOpType = BTC_STACK_OP_INQ_PAGE_PAIR_FINISH;
-	}
-	else
-	{
-		stackOpType = BTC_STACK_OP_NONE;
-	}
-
-	if (IS_HARDWARE_TYPE_8723A(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723a2ant_StackOperationNotify(pBtCoexist, stackOpType);
-	}
-#endif
 }
 
 void EXhalbtcoutsrc_HaltNotify(PBTC_COEXIST pBtCoexist)
@@ -2470,93 +2254,8 @@ void EXhalbtcoutsrc_DbgControl(PBTC_COEXIST pBtCoexist, u8 opCode, u8 opLen, u8 
 //	halbtcoutsrc_NormalLowPower(pBtCoexist);
 }
 
-#if 0
-VOID
-EXhalbtcoutsrc_AntennaDetection(
-	IN	PBTC_COEXIST			pBtCoexist,
-	IN	u4Byte					centFreq,
-	IN	u4Byte					offset,
-	IN	u4Byte					span,
-	IN	u4Byte					seconds
-	)
-{
-	if(!halbtcoutsrc_IsBtCoexistAvailable(pBtCoexist))
-		return;
-
-	/* Need to refine the following power save operations to enable this function in the future */
-#if 0
-	IPSDisable(pBtCoexist->Adapter, FALSE, 0);
-	LeisurePSLeave(pBtCoexist->Adapter, LPS_DISABLE_BT_COEX);
-#endif
-
-	if(IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if(pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_AntennaDetection(pBtCoexist, centFreq, offset, span, seconds);
-	}
-
-	//IPSReturn(pBtCoexist->Adapter, 0xff);
-}
-#endif
-
 void EXhalbtcoutsrc_StackUpdateProfileInfo(void)
 {
-#if 0
-	PBTC_COEXIST pBtCoexist = &GLBtCoexist;
-	PADAPTER padapter = (PADAPTER)GLBtCoexist.padapter;
-	PBT_MGNT pBtMgnt = &padapter->MgntInfo.BtInfo.BtMgnt;
-	u8 i;
-
-	if (!halbtcoutsrc_IsBtCoexistAvailable(pBtCoexist))
-		return;
-
-	pBtCoexist->stackInfo.bProfileNotified = _TRUE;
-
-	pBtCoexist->stackInfo.numOfLink =
-		pBtMgnt->ExtConfig.NumberOfACL+pBtMgnt->ExtConfig.NumberOfSCO;
-
-	// reset first
-	pBtCoexist->stackInfo.bBtLinkExist = _FALSE;
-	pBtCoexist->stackInfo.bScoExist = _FALSE;
-	pBtCoexist->stackInfo.bAclExist = _FALSE;
-	pBtCoexist->stackInfo.bA2dpExist = _FALSE;
-	pBtCoexist->stackInfo.bHidExist = _FALSE;
-	pBtCoexist->stackInfo.numOfHid = 0;
-	pBtCoexist->stackInfo.bPanExist = _FALSE;
-
-	if (!pBtMgnt->ExtConfig.NumberOfACL)
-		pBtCoexist->stackInfo.minBtRssi = 0;
-
-	if (pBtCoexist->stackInfo.numOfLink)
-	{
-		pBtCoexist->stackInfo.bBtLinkExist = _TRUE;
-		if (pBtMgnt->ExtConfig.NumberOfSCO)
-			pBtCoexist->stackInfo.bScoExist = _TRUE;
-		if (pBtMgnt->ExtConfig.NumberOfACL)
-			pBtCoexist->stackInfo.bAclExist = _TRUE;
-	}
-
-	for (i=0; i<pBtMgnt->ExtConfig.NumberOfACL; i++)
-	{
-		if (BT_PROFILE_A2DP == pBtMgnt->ExtConfig.aclLink[i].BTProfile)
-		{
-			pBtCoexist->stackInfo.bA2dpExist = _TRUE;
-		}
-		else if (BT_PROFILE_PAN == pBtMgnt->ExtConfig.aclLink[i].BTProfile)
-		{
-			pBtCoexist->stackInfo.bPanExist = _TRUE;
-		}
-		else if (BT_PROFILE_HID == pBtMgnt->ExtConfig.aclLink[i].BTProfile)
-		{
-			pBtCoexist->stackInfo.bHidExist = _TRUE;
-			pBtCoexist->stackInfo.numOfHid++;
-		}
-		else
-		{
-			pBtCoexist->stackInfo.bUnknownAclExist = _TRUE;
-		}
-	}
-#endif
 }
 
 void EXhalbtcoutsrc_UpdateMinBtRssi(s8 btRssi)
@@ -2590,12 +2289,6 @@ void EXhalbtcoutsrc_SetBtPatchVersion(u16 btHciVersion, u16 btPatchVersion)
 	pBtCoexist->btInfo.btHciVer = btHciVersion;
 }
 
-#if 0
-void EXhalbtcoutsrc_SetBtExist(u8 bBtExist)
-{
-	GLBtCoexist.boardInfo.bBtExist = bBtExist;
-}
-#endif
 void EXhalbtcoutsrc_SetChipType(u8 chipType)
 {
 	switch(chipType)
@@ -2631,15 +2324,6 @@ void EXhalbtcoutsrc_SetAntNum(u8 type, u8 antNum)
 	{
 		GLBtCoexist.boardInfo.pgAntNum = antNum;
 		GLBtCoexist.boardInfo.btdmAntNum = antNum;
-#if 0
-		//The antenna position: Main (default) or Aux for pgAntNum=2 && btdmAntNum =1
-		//The antenna position should be determined by auto-detect mechanism
-		// The following is assumed to main, and those must be modified if y auto-detect mechanism is ready
-		if ((GLBtCoexist.boardInfo.pgAntNum == 2) && (GLBtCoexist.boardInfo.btdmAntNum == 1) )
-			GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
-		else
-			GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
-#endif
 	}
 	else if (BT_COEX_ANT_TYPE_ANTDIV == type)
 	{

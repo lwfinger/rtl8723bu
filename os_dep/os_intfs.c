@@ -1626,17 +1626,9 @@ _adapter *rtw_drv_add_vir_if(_adapter *primary_padapter,
 	padapter->isprimary = _FALSE;
 	padapter->adapter_type = MAX_ADAPTER;
 	padapter->pbuddy_adapter = primary_padapter;
-#if 0
-#ifndef CONFIG_HWPORT_SWAP	//Port0 -> Pri , Port1 -> Sec
-	padapter->iface_type = IFACE_PORT1;
-#else
-	padapter->iface_type = IFACE_PORT0;
-#endif  //CONFIG_HWPORT_SWAP
-#else
+
 	//extended virtual interfaces always are set to port0
 	padapter->iface_type = IFACE_PORT0;
-#endif
-	//
 	padapter->pnetdev = pnetdev;
 
 	/****** setup dvobj ******/

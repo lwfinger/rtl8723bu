@@ -3803,14 +3803,6 @@ EXhalbtc8821aCsr2ant_InitHwConfig(
 		pCoexDm->backupAmpduMaxNum = pBtCoexist->fBtcRead2Byte(pBtCoexist, 0x4ca);
 	}
 
-	#if 0 /* REMOVE */
-	// 0x790[5:0]=0x5
-	u1Tmp = pBtCoexist->fBtcRead1Byte(pBtCoexist, 0x790);
-	u1Tmp &= 0xc0;
-	u1Tmp |= 0x5;
-	pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x790, u1Tmp);
-	#endif
-
 	//Antenna config
 	halbtc8821aCsr2ant_SetAntPath(pBtCoexist, BTC_ANT_WIFI_AT_MAIN, TRUE, FALSE);
 
@@ -3820,10 +3812,6 @@ EXhalbtc8821aCsr2ant_InitHwConfig(
 	// Enable counter statistics
 	pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x76e, 0xc); //0x76e[3] =1, WLAN_Act control by PTA
 	pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x778, 0x3);
-
-	#if 0 /* REMOVE */
-	pBtCoexist->fBtcWrite1ByteBitMask(pBtCoexist, 0x40, 0x20, 0x1);
-	#endif
 }
 
 VOID
@@ -4115,18 +4103,6 @@ EXhalbtc8821aCsr2ant_MediaStatusNotify(
 		else
 			H2C_Parameter[2] = 0x20;
 	}
-
-	#if 0 /* REMOVE */
-	pCoexDm->wifiChnlInfo[0] = H2C_Parameter[0];
-	pCoexDm->wifiChnlInfo[1] = H2C_Parameter[1];
-	pCoexDm->wifiChnlInfo[2] = H2C_Parameter[2];
-
-	BTC_PRINT(BTC_MSG_ALGORITHM, ALGO_TRACE_FW_EXEC, ("[BTCoex], FW write 0x66=0x%x\n",
-		H2C_Parameter[0]<<16|H2C_Parameter[1]<<8|H2C_Parameter[2]));
-
-	rtw_warn_on(_BTCOEX_CSR);
-	pBtCoexist->fBtcFillH2c(pBtCoexist, 0x66, 3, H2C_Parameter);
-	#endif
 }
 
 VOID
@@ -4188,57 +4164,6 @@ EXhalbtc8821aCsr2ant_BtInfoNotify(
 
 		pCoexSta->btInfoExt =
 			pCoexSta->btInfoC2h[rspSource][4];
-
-		#if 0 /* REMOVE */
-		// Here we need to resend some wifi info to BT
-		// because bt is reset and loss of the info.
-		if( (pCoexSta->btInfoExt & BIT1) )
-		{
-
-			if(bWifiConnected)
-			{
-				EXhalbtc8821aCsr2ant_MediaStatusNotify(pBtCoexist, BTC_MEDIA_CONNECT);
-			}
-			else
-			{
-				EXhalbtc8821aCsr2ant_MediaStatusNotify(pBtCoexist, BTC_MEDIA_DISCONNECT);
-			}
-		}
-		#endif
-
-		#if 0 /* REMOVE */
-		if(!pBtCoexist->bManualControl && !bWifiUnder5G)
-		{
-			if( (pCoexSta->btInfoExt&BIT3) )
-			{
-				if(bWifiConnected)
-				{
-					BTC_PRINT(BTC_MSG_ALGORITHM, ALGO_TRACE, ("[BTCoex], BT ext info bit3 check, set BT NOT to ignore Wlan active!!\n"));
-					halbtc8821aCsr2ant_IgnoreWlanAct(pBtCoexist, FORCE_EXEC, FALSE);
-				}
-			}
-			else
-			{
-				// BT already NOT ignore Wlan active, do nothing here.
-				if(!bWifiConnected)
-				{
-					BTC_PRINT(BTC_MSG_ALGORITHM, ALGO_TRACE, ("[BTCoex], BT ext info bit3 check, set BT to ignore Wlan active!!\n"));
-					halbtc8821aCsr2ant_IgnoreWlanAct(pBtCoexist, FORCE_EXEC, TRUE);
-				}
-			}
-		}
-		#endif
-
-		#if 0 /* REMOVE */
-		if( (pCoexSta->btInfoExt & BIT4) )
-		{
-			// BT auto report already enabled, do nothing
-		}
-		else
-		{
-			halbtc8821aCsr2ant_BtAutoReport(pBtCoexist, FORCE_EXEC, TRUE);
-		}
-		#endif
 	}
 
 	pBtCoexist->fBtcGet(pBtCoexist, BTC_GET_BL_HS_OPERATION, &bBtHsOn);

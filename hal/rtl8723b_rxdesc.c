@@ -196,23 +196,7 @@ void rtl8723b_query_rx_phy_status(union recv_frame *precvframe, struct phy_stat 
 	pkt_info.bPacketToSelf = pkt_info.bPacketMatchBSSID && (_rtw_memcmp(get_ra(wlanhdr), myid(&padapter->eeprompriv), ETH_ALEN));
 
 	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID && (GetFrameSubType(wlanhdr) == WIFI_BEACON);
-/*
-	if(pkt_info.bPacketBeacon){
-		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){
-			sa = padapter->mlmepriv.cur_network.network.MacAddress;
-		#if 0
-			{
-				DBG_871X("==> rx beacon from AP[%02x:%02x:%02x:%02x:%02x:%02x]\n",
-					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);
-			}
-		#endif
-		}
-		//to do Ad-hoc
-	}
-	else{
-		sa = get_sa(wlanhdr);
-	}
-*/
+
 	sa = get_ta(wlanhdr);
 
 	pkt_info.StationID = 0xFF;

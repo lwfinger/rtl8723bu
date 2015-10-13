@@ -551,13 +551,6 @@ static void rtw_os_ksocket_send(_adapter *padapter, union recv_frame *precv_fram
 				//DBG_871X("0x%x\n", *(skb->data+ETH_HLEN+6+i));
 
 			DBG_871X("eth, RC-end\n");
-
-#if 0
-			//send_sz = ksocket_send(padapter->ksock_send, &padapter->kaddr_send, (skb->data+ETH_HLEN+2), len);
-			rtw_recv_ksocket_send_cmd(padapter, (skb->data+ETH_HLEN+2), len);
-
-			//DBG_871X("ksocket_send size=%d\n", send_sz);
-#endif
 		}
 
 	}

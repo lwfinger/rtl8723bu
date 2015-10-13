@@ -493,22 +493,7 @@ odm_DynamicTxPower_92C(
 
 		if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)	// Default port
 		{
-		#if 0
-			//todo: AP Mode
-			if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == _TRUE) ||
-			       (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == _TRUE))
-			{
-				UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-				//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Client PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-			}
-			else
-			{
-				UndecoratedSmoothedPWDB = pdmpriv->UndecoratedSmoothedPWDB;
-				//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("STA Default Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-			}
-		#else
-		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-		#endif
+			UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
 		}
 		else // associated entry pwdb
 		{
@@ -753,22 +738,7 @@ odm_DynamicTxPower_92D(
 
 	if(check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)	// Default port
 	{
-	#if 0
-		//todo: AP Mode
-		if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == _TRUE) ||
-	       (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == _TRUE))
-		{
-			UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("AP Client PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-		}
-		else
-		{
-			UndecoratedSmoothedPWDB = pdmpriv->UndecoratedSmoothedPWDB;
-			//ODM_RT_TRACE(pDM_Odm,COMP_HIPWR, DBG_LOUD, ("STA Default Port PWDB = 0x%x \n", UndecoratedSmoothedPWDB));
-		}
-	#else
-	UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
-	#endif
+		UndecoratedSmoothedPWDB = pdmpriv->EntryMinUndecoratedSmoothedPWDB;
 	}
 	else // associated entry pwdb
 	{

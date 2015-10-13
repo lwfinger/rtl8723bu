@@ -1404,20 +1404,6 @@ odm_IotEngine(
 	if ((GET_ROOT(priv)->up_time % 2) == 0)
 		priv->pshare->highTP_found_pstat==NULL;
 
-#if 0
-	phead = &priv->asoc_list;
-	plist = phead->next;
-	while(plist != phead)	{
-		pstat = list_entry(plist, struct stat_info, asoc_list);
-
-		if(ODM_ChooseIotMainSTA(pDM_Odm, pstat));              //find the correct station
-			break;
-		if (plist == plist->next)                                          //the last plist
-			break;
-		plist = plist->next;
-	};
-#endif
-
 	//find highTP STA
 	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++) {
 		pstat = pDM_Odm->pODM_StaInfo[i];
@@ -1466,17 +1452,6 @@ odm_IotEngine(
 				 (priv->pshare->phw->BK_pkt_count < 50))) {
 				priv->pshare->iot_mode_enable++;
 				switch_turbo++;
-//#ifdef CONFIG_WLAN_HAL_8881A
-#if 0
-				if (GET_CHIP_VER(priv) == VERSION_8881A) {
-					if (get_bonding_type_8881A()==BOND_8881AB) {
-						RTL_W32(0x460, 0x03086666);
-					}
-					else {
-						RTL_W32(0x460, 0x0320ffff);
-					}
-				}
-#endif //CONFIG_WLAN_HAL_8881A
 			}
 		}
 

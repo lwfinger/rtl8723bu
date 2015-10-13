@@ -551,13 +551,7 @@ MPTBT_FwC2hBtMpCtrl(
 	{
 		case EXT_C2H_WIFI_FW_ACTIVE_RSP:
 			DBG_8192C("[MPT], EXT_C2H_WIFI_FW_ACTIVE_RSP\n");
-#if 0
-			DBG_8192C("[MPT], pExtC2h->buf hex: \n");
-			for (i=0; i<(length-3); i++)
-			{
-				DBG_8192C(" 0x%x ", pExtC2h->buf[i]);
-			}
-#endif
+
 			if ((_FALSE == pMptCtx->bMPh2c_timeout)
 				&& (_FALSE == pMptCtx->MptH2cRspEvent))
 			{

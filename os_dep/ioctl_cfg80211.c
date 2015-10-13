@@ -456,41 +456,6 @@ struct cfg80211_bss *rtw_cfg80211_inform_bss(_adapter *padapter, struct wlan_net
 				{
 					if(psr !=NULL)
 						*psr = 0; //clear sr
-
-#if 0
-					WLAN_BSSID_EX  *pselect_network = &pnetwork->network;
-					struct cfg80211_bss *pselect_bss = NULL;
-					struct ieee80211_channel *notify_channel = NULL;
-					u32 freq;
-
-					DBG_871X("%s, got sr, but ssid mismatch, to remove this bss\n", __func__);
-
-					if (pselect_network->Configuration.DSConfig <= RTW_CH_MAX_2G_CHANNEL)
-						freq = rtw_ieee80211_channel_to_frequency(pselect_network->Configuration.DSConfig, IEEE80211_BAND_2GHZ);
-					else
-						freq = rtw_ieee80211_channel_to_frequency(pselect_network->Configuration.DSConfig, IEEE80211_BAND_5GHZ);
-
-					notify_channel = ieee80211_get_channel(wiphy, freq);
-					pselect_bss = cfg80211_get_bss(wiphy, NULL/*notify_channel*/,
-								pselect_network->MacAddress, pselect_network->Ssid.Ssid,
-								pselect_network->Ssid.SsidLength, 0/*WLAN_CAPABILITY_ESS*/,
-								0/*WLAN_CAPABILITY_ESS*/);
-
-					if(pselect_bss)
-					{
-						DBG_871X("%s, got bss for cfg80211 for unlinking bss\n", __func__);
-
-						cfg80211_unlink_bss(wiphy, pselect_bss);
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
-						cfg80211_put_bss(wiphy, pselect_bss);
-#else
-						cfg80211_put_bss(pselect_bss);
-#endif
-
-					}
-
-					goto exit;
-#endif
 				}
 			}
 		}
@@ -524,17 +489,6 @@ struct cfg80211_bss *rtw_cfg80211_inform_bss(_adapter *padapter, struct wlan_net
 	} else {
 		notify_signal = 100*translate_percentage_to_dbm(pnetwork->network.PhyInfo.SignalStrength);//dbm
 	}
-
-	#if 0
-	DBG_8192C("bssid: "MAC_FMT"\n", MAC_ARG(pnetwork->network.MacAddress));
-	DBG_8192C("Channel: %d(%d)\n", channel, freq);
-	DBG_8192C("Capability: %X\n", notify_capability);
-	DBG_8192C("Beacon interval: %d\n", notify_interval);
-	DBG_8192C("Signal: %d\n", notify_signal);
-	DBG_8192C("notify_timestamp: %llu\n", notify_timestamp);
-	#endif
-
-	//pbuf = buf;
 
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pbuf;
 	fctrl = &(pwlanhdr->frame_ctl);
@@ -1632,25 +1586,6 @@ static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev,
 				void (*callback)(void *cookie,
 						 struct key_params*))
 {
-#if 0
-	struct iwm_priv *iwm = ndev_to_iwm(ndev);
-	struct iwm_key *key = &iwm->keys[key_index];
-	struct key_params params;
-
-	IWM_DBG_WEXT(iwm, DBG, "Getting key %d\n", key_index);
-
-	memset(&params, 0, sizeof(params));
-
-	params.cipher = key->cipher;
-	params.key_len = key->key_len;
-	params.seq_len = key->seq_len;
-	params.seq = key->seq;
-	params.key = key->key;
-
-	callback(cookie, &params);
-
-	return key->key_len ? 0 : -ENOENT;
-#endif
 	DBG_871X(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
 	return 0;
 }
@@ -2463,40 +2398,9 @@ exit:
 
 static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy, u32 changed)
 {
-#if 0
-	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
-
-	if (changed & WIPHY_PARAM_RTS_THRESHOLD &&
-	    (iwm->conf.rts_threshold != wiphy->rts_threshold)) {
-		int ret;
-
-		iwm->conf.rts_threshold = wiphy->rts_threshold;
-
-		ret = iwm_umac_set_config_fix(iwm, UMAC_PARAM_TBL_CFG_FIX,
-					     CFG_RTS_THRESHOLD,
-					     iwm->conf.rts_threshold);
-		if (ret < 0)
-			return ret;
-	}
-
-	if (changed & WIPHY_PARAM_FRAG_THRESHOLD &&
-	    (iwm->conf.frag_threshold != wiphy->frag_threshold)) {
-		int ret;
-
-		iwm->conf.frag_threshold = wiphy->frag_threshold;
-
-		ret = iwm_umac_set_config_fix(iwm, UMAC_PARAM_TBL_FA_CFG_FIX,
-					     CFG_FRAG_THRESHOLD,
-					     iwm->conf.frag_threshold);
-		if (ret < 0)
-			return ret;
-	}
-#endif
 	DBG_8192C("%s\n", __func__);
 	return 0;
 }
-
-
 
 static int rtw_cfg80211_set_wpa_version(struct security_priv *psecuritypriv, u32 wpa_version)
 {
@@ -3288,32 +3192,6 @@ static int cfg80211_rtw_set_txpower(struct wiphy *wiphy,
 	enum tx_power_setting type, int dbm)
 #endif
 {
-#if 0
-	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
-	int ret;
-
-	switch (type) {
-	case NL80211_TX_POWER_AUTOMATIC:
-		return 0;
-	case NL80211_TX_POWER_FIXED:
-		if (mbm < 0 || (mbm % 100))
-			return -EOPNOTSUPP;
-
-		if (!test_bit(IWM_STATUS_READY, &iwm->status))
-			return 0;
-
-		ret = iwm_umac_set_config_fix(iwm, UMAC_PARAM_TBL_CFG_FIX,
-					      CFG_TX_PWR_LIMIT_USR,
-					      MBM_TO_DBM(mbm) * 2);
-		if (ret < 0)
-			return ret;
-
-		return iwm_tx_power_trigger(iwm);
-	default:
-		IWM_ERR(iwm, "Unsupported power type: %d\n", type);
-		return -EOPNOTSUPP;
-	}
-#endif
 	DBG_8192C("%s\n", __func__);
 	return 0;
 }
@@ -4971,18 +4849,6 @@ static s32 cfg80211_rtw_cancel_remain_on_channel(struct wiphy *wiphy,
 		pcfg80211_wdinfo->not_indic_ro_ch_exp = _FALSE;
 	}
 
-	#if 0
-	//	Disable P2P Listen State
-	if(!rtw_p2p_chk_role(pwdinfo, P2P_ROLE_CLIENT) && !rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
-	{
-		if(!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
-		{
-			rtw_p2p_set_state(pwdinfo, P2P_STATE_NONE);
-			_rtw_memset(pwdinfo, 0x00, sizeof(struct wifidirect_info));
-		}
-	}
-	else
-	#endif
 	{
 		rtw_p2p_set_state(pwdinfo, rtw_p2p_pre_state(pwdinfo));
 #ifdef CONFIG_DEBUG_CFG80211
@@ -5372,22 +5238,6 @@ static int cfg80211_rtw_tdls_mgmt(struct wiphy *wiphy,
 	_rtw_memcpy(txmgmt.buf, (void*)buf, txmgmt.len);
 	txmgmt.external_support = _TRUE;
 
-//TDLS: Debug purpose
-#if 0
-	DBG_871X("%s %d\n", __FUNCTION__, __LINE__);
-	DBG_871X("peer:"MAC_FMT" ", MAC_ARG(txmgmt.peer));
-	DBG_871X("action code:%d ", txmgmt.action_code);
-	DBG_871X("dialog:%d ", txmgmt.dialog_token);
-	DBG_871X("status code:%d\n", txmgmt.status_code);
-	if( txmgmt.len > 0 )
-	{
-		int i=0;
-		for(;i < len; i++)
-			DBG_871X("%02x ", *(txmgmt.buf+i));
-			DBG_871X("\n len:%d\n", txmgmt.len);
-	}
-#endif
-
 	switch(txmgmt.action_code) {
 		case TDLS_SETUP_REQUEST:
 			issue_tdls_setup_req(padapter, &txmgmt, _TRUE);
@@ -5432,15 +5282,7 @@ static int cfg80211_rtw_tdls_oper(struct wiphy *wiphy,
 	_rtw_memset(&txmgmt, 0x00, sizeof(struct tdls_txmgmt));
 	if(peer)
 		_rtw_memcpy(txmgmt.peer, peer, ETH_ALEN);
-#if 0
-	CFG80211_TDLS_DISCOVERY_REQ,
-	CFG80211_TDLS_SETUP,
-	CFG80211_TDLS_TEARDOWN,
-	CFG80211_TDLS_ENABLE_LINK,
-	CFG80211_TDLS_DISABLE_LINK,
-	CFG80211_TDLS_ENABLE,
-	CFG80211_TDLS_DISABLE
-#endif
+
 	switch(oper) {
 		case NL80211_TDLS_DISCOVERY_REQ:
 			issue_tdls_dis_req(padapter, &txmgmt);

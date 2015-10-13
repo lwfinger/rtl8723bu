@@ -1805,16 +1805,6 @@ static uint rtw_p2p_attr_remove(u8 *ie, uint ielen_ori, u8 attr_id)
 			u8 *next_attr = target_attr+target_attr_len;
 			uint remain_len = ielen-(next_attr-ie);
 			//dump_ies(RTW_DBGDUMP, ie, ielen);
-			#if 0
-			DBG_871X("[%d] ie:%p, ielen:%u\n"
-				"target_attr:%p, target_attr_len:%u\n"
-				"next_attr:%p, remain_len:%u\n"
-				, index++
-				, ie, ielen
-				, target_attr, target_attr_len
-				, next_attr, remain_len
-			);
-			#endif
 
 			_rtw_memset(target_attr, 0, target_attr_len);
 			_rtw_memcpy(target_attr, next_attr, remain_len);

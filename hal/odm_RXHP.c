@@ -700,16 +700,7 @@ odm_PSD_Monitor(
 			}
 		}
 	}
-#if 0
-	else
-	{
-		if((curRxOkCnt+curTxOkCnt) > 1000)
-		{
-			PSD_skip_start = (wlan_channel-1)*5 -Is40MHz*10;
-			PSD_skip_stop = PSD_skip_start + (1+Is40MHz)*20;
-		}
-	}
-#endif  //Reove RXHP Issue
+
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_PSD,DBG_LOUD,("PSD: Skip tone from %d to %d \n", PSD_skip_start, PSD_skip_stop));
 
  	for (n=0;n<80;n++)

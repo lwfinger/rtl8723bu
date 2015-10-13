@@ -2834,29 +2834,7 @@ halbtc8812a2ant_TdmaDurationAdjustForWifiRssiLow(
 	u1Byte			retryCount=0, btInfoExt;
 
 	BTC_PRINT(BTC_MSG_ALGORITHM, ALGO_TRACE_FW, ("[BTCoex], halbtc8812a2ant_TdmaDurationAdjustForWifiRssiLow()\n"));
-#if 0
-	if( (BT_8812A_2ANT_WIFI_STATUS_NON_CONNECTED_ASSO_AUTH_SCAN == wifiStatus) ||
-		(BT_8812A_2ANT_WIFI_STATUS_CONNECTED_SCAN == wifiStatus) ||
-		(BT_8812A_2ANT_WIFI_STATUS_CONNECTED_SPECIAL_PKT == wifiStatus) )
-	{
-		if( pCoexDm->curPsTdma != 81 &&
-			pCoexDm->curPsTdma != 82 &&
-			pCoexDm->curPsTdma != 83 &&
-			pCoexDm->curPsTdma != 84 )
-		{
-			halbtc8812a2ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 82);
-			pCoexDm->psTdmaDuAdjType = 82;
 
-			up = 0;
-			dn = 0;
-			m = 1;
-			n= 3;
-			result = 0;
-			WaitCount = 0;
-		}
-		return;
-	}
-#endif
 	pCoexDm->bAutoTdmaAdjust = FALSE;
 
 	if(!pCoexDm->bAutoTdmaAdjustLowRssi)

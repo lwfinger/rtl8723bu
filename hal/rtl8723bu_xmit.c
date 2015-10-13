@@ -175,21 +175,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 	_adapter			*padapter = pxmitframe->padapter;
 	struct tx_desc	*ptxdesc = (struct tx_desc *)pmem;
-#if 0
-	uint	qsel;
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
-	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	sint	bmcst = IS_MCAST(pattrib->ra);
-#ifdef CONFIG_P2P
-	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
-#endif //CONFIG_P2P
-#endif
 #ifndef CONFIG_USE_USB_BUFFER_ALLOC_TX
 	if((_FALSE == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0))
 	{

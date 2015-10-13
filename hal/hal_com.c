@@ -2015,14 +2015,6 @@ _func_enter_;
 		rtw_hal_check_pno_enabled(padapter);
 #endif //CONFIG_PNO_SUPPORT
 	} else {
-#if 0
-		{
-			u32 PageSize = 0;
-			rtw_hal_get_def_var(adapter, HAL_DEF_TX_PAGE_SIZE, (u8 *)&PageSize);
-			dump_TX_FIFO(padapter, 4, PageSize);
-		}
-#endif
-
 		rtw_hal_set_remote_wake_ctrl_cmd(padapter, enable);
 		rtw_hal_set_wowlan_ctrl_cmd(padapter, enable);
 	}
@@ -2236,22 +2228,7 @@ static void rtw_hal_construct_P2PBeacon(_adapter *padapter, u8 *pframe, u32 *pLe
 			pframe += (cur_network->IELength+len_diff);
 			pktlen += (cur_network->IELength+len_diff);
 		}
-#if 0
-		{
-			u8 *wps_ie;
-			uint wps_ielen;
-			u8 sr = 0;
-			wps_ie = rtw_get_wps_ie(pmgntframe->buf_addr+TXDESC_OFFSET+sizeof (struct rtw_ieee80211_hdr_3addr)+_BEACON_IE_OFFSET_,
-				pattrib->pktlen-sizeof (struct rtw_ieee80211_hdr_3addr)-_BEACON_IE_OFFSET_, NULL, &wps_ielen);
-			if (wps_ie && wps_ielen>0) {
-				rtw_get_wps_attr_content(wps_ie,  wps_ielen, WPS_ATTR_SELECTED_REGISTRAR, (u8*)(&sr), NULL);
-			}
-			if (sr != 0)
-				set_fwstate(pmlmepriv, WIFI_UNDER_WPS);
-			else
-				_clr_fwstate_(pmlmepriv, WIFI_UNDER_WPS);
-		}
-#endif
+
 #ifdef CONFIG_P2P
 		if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_GO))
 		{
@@ -2361,18 +2338,6 @@ _issue_bcn:
 //#endif //#if defined (CONFIG_AP_MODE) && defined (CONFIG_NATIVEAP_MLME)
 
 	*pLength = pktlen;
-#if 0
-	// printf dbg msg
-	dbgbufLen = pktlen;
-	DBG_871X("======> DBG MSG FOR CONSTRAUCT P2P BEACON\n");
-
-	for(index=0;index<dbgbufLen;index++)
-		printk("%x ",*(dbgbuf+index));
-
-	printk("\n");
-	DBG_871X("<====== DBG MSG FOR CONSTRAUCT P2P BEACON\n");
-
-#endif
 }
 
 static int get_reg_classes_full_count(struct p2p_channels channel_list) {
@@ -2714,18 +2679,6 @@ static void rtw_hal_construct_P2PProbeRsp(_adapter *padapter, u8 *pframe, u32 *p
 #endif //CONFIG_WFD
 
 	*pLength = pktlen;
-
-#if 0
-	// printf dbg msg
-	dbgbufLen = pktlen;
-	DBG_871X("======> DBG MSG FOR CONSTRAUCT P2P Probe Rsp\n");
-
-	for(index=0;index<dbgbufLen;index++)
-		printk("%x ",*(dbgbuf+index));
-
-	printk("\n");
-	DBG_871X("<====== DBG MSG FOR CONSTRAUCT P2P Probe Rsp\n");
-#endif
 }
 static void rtw_hal_construct_P2PNegoRsp(_adapter *padapter, u8 *pframe, u32 *pLength)
 {
@@ -3170,17 +3123,6 @@ static void rtw_hal_construct_P2PNegoRsp(_adapter *padapter, u8 *pframe, u32 *pL
 #endif //CONFIG_WFD
 
 	*pLength = pktlen;
-#if 0
-	// printf dbg msg
-	dbgbufLen = pktlen;
-	DBG_871X("======> DBG MSG FOR CONSTRAUCT Nego Rsp\n");
-
-	for(index=0;index<dbgbufLen;index++)
-		printk("%x ",*(dbgbuf+index));
-
-	printk("\n");
-	DBG_871X("<====== DBG MSG FOR CONSTRAUCT Nego Rsp\n");
-#endif
 }
 
 static void rtw_hal_construct_P2PInviteRsp(_adapter * padapter, u8 * pframe, u32 * pLength)
@@ -3288,158 +3230,6 @@ static void rtw_hal_construct_P2PInviteRsp(_adapter * padapter, u8 * pframe, u32
 	p2pie[ p2pielen++ ] = 200;	//	2 seconds needed to be the P2P Client
 
 	// due to defult value is FAIL INFO UNAVAILABLE, so the following IE is not needed
-#if 0
-	if( status_code == P2P_STATUS_SUCCESS )
-	{
-		if( rtw_p2p_chk_role( pwdinfo, P2P_ROLE_GO ) )
-		{
-			//	The P2P Invitation request frame asks this Wi-Fi device to be the P2P GO
-			//	In this case, the P2P Invitation response frame should carry the two more P2P attributes.
-			//	First one is operating channel attribute.
-			//	Second one is P2P Group BSSID attribute.
-
-			//	Operating Channel
-			//	Type:
-			p2pie[ p2pielen++ ] = P2P_ATTR_OPERATING_CH;
-
-			//	Length:
-			*(u16*) ( p2pie + p2pielen ) = cpu_to_le16( 0x0005 );
-			p2pielen += 2;
-
-			//	Value:
-			//	Country String
-			p2pie[ p2pielen++ ] = 'X';
-			p2pie[ p2pielen++ ] = 'X';
-
-			//	The third byte should be set to 0x04.
-			//	Described in the "Operating Channel Attribute" section.
-			p2pie[ p2pielen++ ] = 0x04;
-
-			//	Operating Class
-			p2pie[ p2pielen++ ] = 0x51;	//	Copy from SD7
-
-			//	Channel Number
-			p2pie[ p2pielen++ ] = pwdinfo->operating_channel;	//	operating channel number
-
-
-			//	P2P Group BSSID
-			//	Type:
-			p2pie[ p2pielen++ ] = P2P_ATTR_GROUP_BSSID;
-
-			//	Length:
-			*(u16*) ( p2pie + p2pielen ) = cpu_to_le16( ETH_ALEN );
-			p2pielen += 2;
-
-			//	Value:
-			//	P2P Device Address for GO
-			_rtw_memcpy( p2pie + p2pielen, myid( &padapter->eeprompriv ), ETH_ALEN );
-			p2pielen += ETH_ALEN;
-
-		}
-
-		//	Channel List
-		//	Type:
-		p2pie[ p2pielen++ ] = P2P_ATTR_CH_LIST;
-
-		//	Length:
-		// Country String(3)
-		// + ( Operating Class (1) + Number of Channels(1) ) * Operation Classes (?)
-		// + number of channels in all classes
-		len_channellist_attr = 3
-			+ (1 + 1) * (u16)pmlmeext->channel_list.reg_classes
-			+ get_reg_classes_full_count(pmlmeext->channel_list);
-
-#ifdef CONFIG_CONCURRENT_MODE
-		if ( check_buddy_fwstate(padapter, _FW_LINKED ) )
-		{
-			*(u16*) ( p2pie + p2pielen ) = cpu_to_le16( 5 + 1 );
-		}
-		else
-		{
-			*(u16*) ( p2pie + p2pielen ) = cpu_to_le16( len_channellist_attr );
-		}
-#else
-
-		*(u16*) ( p2pie + p2pielen ) = cpu_to_le16( len_channellist_attr );
-
-#endif
-		p2pielen += 2;
-
-		//	Value:
-		//	Country String
-		p2pie[ p2pielen++ ] = 'X';
-		p2pie[ p2pielen++ ] = 'X';
-
-		//	The third byte should be set to 0x04.
-		//	Described in the "Operating Channel Attribute" section.
-		p2pie[ p2pielen++ ] = 0x04;
-
-		//	Channel Entry List
-#ifdef CONFIG_CONCURRENT_MODE
-		if ( check_buddy_fwstate(padapter, _FW_LINKED ) )
-		{
-			_adapter *pbuddy_adapter = padapter->pbuddy_adapter;
-			struct mlme_ext_priv	*pbuddy_mlmeext = &pbuddy_adapter->mlmeextpriv;
-
-			//	Operating Class
-			if ( pbuddy_mlmeext->cur_channel > 14 )
-			{
-				if ( pbuddy_mlmeext->cur_channel >= 149 )
-				{
-					p2pie[ p2pielen++ ] = 0x7c;
-				}
-				else
-				{
-					p2pie[ p2pielen++ ] = 0x73;
-				}
-			}
-			else
-			{
-				p2pie[ p2pielen++ ] = 0x51;
-			}
-
-			//	Number of Channels
-			//	Just support 1 channel and this channel is AP's channel
-			p2pie[ p2pielen++ ] = 1;
-
-			//	Channel List
-			p2pie[ p2pielen++ ] = pbuddy_mlmeext->cur_channel;
-		}
-		else
-		{
-			int i, j;
-			for (j = 0; j < pmlmeext->channel_list.reg_classes; j++) {
-				//	Operating Class
-				p2pie[p2pielen++] = pmlmeext->channel_list.reg_class[j].reg_class;
-
-				//	Number of Channels
-				p2pie[p2pielen++] = pmlmeext->channel_list.reg_class[j].channels;
-
-				//	Channel List
-				for (i = 0; i < pmlmeext->channel_list.reg_class[j].channels; i++) {
-					p2pie[p2pielen++] = pmlmeext->channel_list.reg_class[j].channel[i];
-				}
-			}
-		}
-#else // CONFIG_CONCURRENT_MODE
-		{
-			int i, j;
-			for (j = 0; j < pmlmeext->channel_list.reg_classes; j++) {
-				//	Operating Class
-				p2pie[p2pielen++] = pmlmeext->channel_list.reg_class[j].reg_class;
-
-				//	Number of Channels
-				p2pie[p2pielen++] = pmlmeext->channel_list.reg_class[j].channels;
-
-				//	Channel List
-				for (i = 0; i < pmlmeext->channel_list.reg_class[j].channels; i++) {
-					p2pie[p2pielen++] = pmlmeext->channel_list.reg_class[j].channel[i];
-				}
-			}
-		}
-#endif // CONFIG_CONCURRENT_MODE
-	}
-#endif
 
 	pframe = rtw_set_ie(pframe, _VENDOR_SPECIFIC_IE_, p2pielen, (unsigned char *) p2pie, &pktlen );
 
@@ -3450,18 +3240,6 @@ static void rtw_hal_construct_P2PInviteRsp(_adapter * padapter, u8 * pframe, u32
 #endif //CONFIG_WFD
 
 	*pLength = pktlen;
-
-#if 0
-	// printf dbg msg
-	dbgbufLen = pktlen;
-	DBG_871X("======> DBG MSG FOR CONSTRAUCT Invite Rsp\n");
-
-	for(index=0;index<dbgbufLen;index++)
-		printk("%x ",*(dbgbuf+index));
-
-	printk("\n");
-	DBG_871X("<====== DBG MSG FOR CONSTRAUCT Invite Rsp\n");
-#endif
 }
 
 
@@ -3524,20 +3302,6 @@ static void rtw_hal_construct_P2PProvisionDisRsp(_adapter * padapter, u8 * pfram
 	RTW_PUT_BE32(wpsie, WPSOUI);
 	wpsielen += 4;
 
-#if 0
-	//	WPS version
-	//	Type:
-	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( WPS_ATTR_VER1 );
-	wpsielen += 2;
-
-	//	Length:
-	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( 0x0001 );
-	wpsielen += 2;
-
-	//	Value:
-	wpsie[wpsielen++] = WPS_VERSION_1;	//	Version 1.0
-#endif
-
 	//	Config Method
 	//	Type:
 	//*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( WPS_ATTR_CONF_METHOD );
@@ -3563,18 +3327,6 @@ static void rtw_hal_construct_P2PProvisionDisRsp(_adapter * padapter, u8 * pfram
 #endif //CONFIG_WFD
 
 	*pLength = pktlen;
-
-	// printf dbg msg
-#if 0
-	dbgbufLen = pktlen;
-	DBG_871X("======> DBG MSG FOR CONSTRAUCT  ProvisionDis Rsp\n");
-
-	for(index=0;index<dbgbufLen;index++)
-		printk("%x ",*(dbgbuf+index));
-
-	printk("\n");
-	DBG_871X("<====== DBG MSG FOR CONSTRAUCT ProvisionDis Rsp\n");
-#endif
 }
 
 u8 rtw_hal_set_FwP2PRsvdPage_cmd(_adapter* adapter, PRSVDPAGE_LOC rsvdpageloc)
@@ -4550,18 +4302,6 @@ void rtw_hal_set_fw_rsvd_page(_adapter* adapter, bool finished)
 				kck, RTW_KCK_LEN);
 		_rtw_memcpy(ReservedPagePacket+BufIndex-TxDescLen+RTW_KCK_LEN,
 				kek, RTW_KEK_LEN);
-#if 0
-		{
-			int i;
-			printk("\ntoFW KCK: ");
-			for(i=0;i<16; i++)
-				printk(" %02x ", kck[i]);
-			printk("\ntoFW KEK: ");
-			for(i=0;i<16; i++)
-				printk(" %02x ", kek[i]);
-			printk("\n");
-		}
-#endif
 
 		//DBG_871X("%s(): HW_VAR_SET_TX_CMD: KEK KCK %p %d\n",
 		//	__FUNCTION__, &ReservedPagePacket[BufIndex-TxDescLen],
@@ -4583,18 +4323,6 @@ void rtw_hal_set_fw_rsvd_page(_adapter* adapter, bool finished)
 		rtw_hal_fill_fake_txdesc(adapter,
 				&ReservedPagePacket[BufIndex-TxDescLen],
 				GTKLegnth, _FALSE, _FALSE, _TRUE);
-#if 0
-		{
-			int gj;
-			printk("123GTK pkt=> \n");
-			for(gj=0; gj < GTKLegnth+TxDescLen; gj++) {
-				printk(" %02x ", ReservedPagePacket[BufIndex-TxDescLen+gj]);
-				if ((gj + 1)%16==0)
-					printk("\n");
-			}
-			printk(" <=end\n");
-		}
-#endif
 
 		//DBG_871X("%s(): HW_VAR_SET_TX_CMD: GTK RSP %p %d\n",
 		//	__FUNCTION__, &ReservedPagePacket[BufIndex-TxDescLen],
