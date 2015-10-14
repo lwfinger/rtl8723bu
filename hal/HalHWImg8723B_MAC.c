@@ -20,7 +20,6 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723B_SUPPORT == 1)
 
 static BOOLEAN
 CheckPositive(
@@ -288,5 +287,3 @@ ODM_GetVersion_MP_8723B_MAC_REG(void)
 {
 	return 12;
 }
-
-#endif // end of HWIMG_SUPPORT

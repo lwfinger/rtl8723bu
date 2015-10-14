@@ -291,18 +291,7 @@
 void rtl8723b_update_txdesc(PADAPTER padapter, struct xmit_frame *pxmitframe, u8 *pmem);
 void rtl8723b_fill_fake_txdesc(PADAPTER padapter, u8 *pDesc, u32 BufferLen, u8 IsPsPoll, u8 IsBTQosNull, u8 bDataFrame);
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-s32 rtl8723bs_init_xmit_priv(PADAPTER padapter);
-void rtl8723bs_free_xmit_priv(PADAPTER padapter);
-s32 rtl8723bs_hal_xmit(PADAPTER padapter, struct xmit_frame *pxmitframe);
-s32 rtl8723bs_mgnt_xmit(PADAPTER padapter, struct xmit_frame *pmgntframe);
-s32	rtl8723bs_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe);
-s32 rtl8723bs_xmit_buf_handler(PADAPTER padapter);
-thread_return rtl8723bs_xmit_thread(thread_context context);
-#define hal_xmit_handler rtl8723bs_xmit_buf_handler
-#endif
 
-#ifdef CONFIG_USB_HCI
 s32 rtl8723bu_xmit_buf_handler(PADAPTER padapter);
 #define hal_xmit_handler rtl8723bu_xmit_buf_handler
 
@@ -316,18 +305,7 @@ s32	 rtl8723bu_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmi
 void rtl8723bu_xmit_tasklet(void *priv);
 s32 rtl8723bu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf);
 void _dbg_dump_tx_info(_adapter	*padapter,int frame_tag,struct tx_desc *ptxdesc);
-#endif
 
-#ifdef CONFIG_PCI_HCI
-s32 rtl8723be_init_xmit_priv(PADAPTER padapter);
-void rtl8723be_free_xmit_priv(PADAPTER padapter);
-struct xmit_buf *rtl8723be_dequeue_xmitbuf(struct rtw_tx_ring *ring);
-void	rtl8723be_xmitframe_resume(_adapter *padapter);
-s32 rtl8723be_hal_xmit(PADAPTER padapter, struct xmit_frame *pxmitframe);
-s32 rtl8723be_mgnt_xmit(PADAPTER padapter, struct xmit_frame *pmgntframe);
-s32	rtl8723be_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe);
-void rtl8723be_xmit_tasklet(void *priv);
-#endif
 
 u8	BWMapping_8723B(PADAPTER Adapter, struct pkt_attrib *pattrib);
 u8	SCMapping_8723B(PADAPTER Adapter, struct pkt_attrib	*pattrib);

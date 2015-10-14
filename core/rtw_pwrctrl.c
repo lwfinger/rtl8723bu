@@ -533,9 +533,7 @@ _func_enter_;
 	{
 		if ( (pwrpriv->rpwm == pslv)
 #ifdef CONFIG_LPS_LCLK
-#ifndef CONFIG_RTL8723A
 			|| ((pwrpriv->rpwm >= PS_STATE_S2)&&(pslv >= PS_STATE_S2))
-#endif
 #endif
 			)
 		{
@@ -614,11 +612,7 @@ _func_enter_;
 			rtw_hal_get_hwreg(padapter, HW_VAR_CPWM, &cpwm_now);
 			if ((cpwm_orig ^ cpwm_now) & 0x80)
 			{
-#ifdef CONFIG_RTL8723A
-				pwrpriv->cpwm = PS_STATE(cpwm_now);
-#else // !CONFIG_RTL8723A
 				pwrpriv->cpwm = PS_STATE_S4;
-#endif // !CONFIG_RTL8723A
 				pwrpriv->cpwm_tog = cpwm_now & PS_TOGGLE;
 #ifdef DBG_CHECK_FW_PS_STATE
 				DBG_871X("%s: polling cpwm OK! poll_cnt=%d, cpwm_orig=%02x, cpwm_now=%02x , 0x100=0x%x\n"
@@ -1052,20 +1046,6 @@ _func_enter_;
 				val8 = rtw_btcoex_LpsVal(padapter);
 				if (val8 & BIT(4))
 					pslv = PS_STATE_S2;
-
-#ifdef CONFIG_RTL8723A
-				val8 = rtw_btcoex_RpwmVal(padapter);
-				switch (val8)
-				{
-					case 0x4:
-						pslv = PS_STATE_S3;
-						break;
-
-					case 0xC:
-						pslv = PS_STATE_S4;
-						break;
-				}
-#endif // CONFIG_RTL8723A
 			}
 #endif // CONFIG_BT_COEXIST
 
@@ -1290,11 +1270,7 @@ _func_enter_;
 			rtw_hal_get_hwreg(Adapter, HW_VAR_CPWM, &cpwm_now);
 			if ((cpwm_orig ^ cpwm_now) & 0x80)
 			{
-#ifdef CONFIG_RTL8723A
-				pwrpriv->cpwm = PS_STATE(cpwm_now);
-#else // !CONFIG_RTL8723A
 				pwrpriv->cpwm = PS_STATE_S4;
-#endif // !CONFIG_RTL8723A
 				pwrpriv->cpwm_tog = cpwm_now & PS_TOGGLE;
 #ifdef DBG_CHECK_FW_PS_STATE
 				DBG_871X("%s: polling cpwm OK! cpwm_orig=%02x, cpwm_now=%02x, 0x100=0x%x \n"
@@ -1350,12 +1326,12 @@ _func_enter_;
 			else
 			#endif
 			{
-#if defined(CONFIG_FWLPS_IN_IPS) || defined(CONFIG_SWLPS_IN_IPS) || (defined(CONFIG_PLATFORM_SPRD) && defined(CONFIG_RTL8188E))
+#if defined(CONFIG_FWLPS_IN_IPS) || defined(CONFIG_SWLPS_IN_IPS)
 #ifdef CONFIG_IPS
 				if(_FALSE == ips_leave(pri_padapter))
 					DBG_871X("======> ips_leave fail.............\n");
 #endif
-#endif // CONFIG_FWLPS_IN_IPS || CONFIG_SWLPS_IN_IPS || (CONFIG_PLATFORM_SPRD && CONFIG_RTL8188E)
+#endif // CONFIG_FWLPS_IN_IPS || CONFIG_SWLPS_IN_IPS
 			}
 		}
 	}
@@ -1432,12 +1408,12 @@ _func_enter_;
 			else
 			#endif
 			{
-#if defined(CONFIG_FWLPS_IN_IPS) || defined(CONFIG_SWLPS_IN_IPS) || (defined(CONFIG_PLATFORM_SPRD) && defined(CONFIG_RTL8188E))
+#if defined(CONFIG_FWLPS_IN_IPS) || defined(CONFIG_SWLPS_IN_IPS)
 #ifdef CONFIG_IPS
 				if(_FALSE == ips_leave(Adapter))
 					DBG_871X("======> ips_leave fail.............\n");
 #endif
-#endif // CONFIG_FWLPS_IN_IPS || CONFIG_SWLPS_IN_IPS || (CONFIG_PLATFORM_SPRD && CONFIG_RTL8188E)
+#endif // CONFIG_FWLPS_IN_IPS || CONFIG_SWLPS_IN_IPS
 			}
 		}
 	}
@@ -1468,9 +1444,7 @@ _func_enter_;
 
 		if ((padapter->bSurpriseRemoved == _TRUE)
 			|| (padapter->hw_init_completed == _FALSE)
-#ifdef CONFIG_USB_HCI
 			|| (padapter->bDriverStopped== _TRUE)
-#endif
 			|| (pwrpriv->pwr_mode == PS_MODE_ACTIVE)
 			)
 		{
@@ -1667,24 +1641,6 @@ _func_enter_;
 	pwrctrl = adapter_to_pwrctl(padapter);
 	pslv = PS_STATE_S2;
 
-#if defined(CONFIG_RTL8723A) && defined(CONFIG_BT_COEXIST)
-	if (rtw_btcoex_IsBtControlLps(padapter) == _TRUE)
-	{
-		u8 btcoex_rpwm;
-		btcoex_rpwm = rtw_btcoex_RpwmVal(padapter);
-		switch (btcoex_rpwm)
-		{
-			case 0x4:
-				pslv = PS_STATE_S3;
-				break;
-
-			case 0xC:
-				pslv = PS_STATE_S4;
-				break;
-		}
-	}
-#endif // CONFIG_RTL8723A & CONFIG_BT_COEXIST
-
 	_enter_pwrlock(&pwrctrl->lock);
 
 	register_task_alive(pwrctrl, task);
@@ -1748,20 +1704,6 @@ _func_enter_;
 		val8 = rtw_btcoex_LpsVal(padapter);
 		if (val8 & BIT(4))
 			pslv = PS_STATE_S2;
-
-#ifdef CONFIG_RTL8723A
-		val8 = rtw_btcoex_RpwmVal(padapter);
-		switch (val8)
-		{
-			case 0x4:
-				pslv = PS_STATE_S3;
-				break;
-
-			case 0xC:
-				pslv = PS_STATE_S4;
-				break;
-		}
-#endif // CONFIG_RTL8723A
 	}
 #endif // CONFIG_BT_COEXIST
 
@@ -1812,24 +1754,6 @@ _func_enter_;
 	res = _SUCCESS;
 	pwrctrl = adapter_to_pwrctl(padapter);
 	pslv = PS_STATE_S2;
-
-#if defined(CONFIG_RTL8723A) && defined(CONFIG_BT_COEXIST)
-	if (rtw_btcoex_IsBtControlLps(padapter) == _TRUE)
-	{
-		u8 btcoex_rpwm;
-		btcoex_rpwm = rtw_btcoex_RpwmVal(padapter);
-		switch (btcoex_rpwm)
-		{
-			case 0x4:
-				pslv = PS_STATE_S3;
-				break;
-
-			case 0xC:
-				pslv = PS_STATE_S4;
-				break;
-		}
-	}
-#endif // CONFIG_RTL8723A & CONFIG_BT_COEXIST
 
 	_enter_pwrlock(&pwrctrl->lock);
 
@@ -1889,24 +1813,6 @@ _func_enter_;
 	res = _SUCCESS;
 	pwrctrl = adapter_to_pwrctl(padapter);
 	pslv = PS_STATE_S2;
-
-#if defined(CONFIG_RTL8723A) && defined(CONFIG_BT_COEXIST)
-	if (rtw_btcoex_IsBtControlLps(padapter) == _TRUE)
-	{
-		u8 btcoex_rpwm;
-		btcoex_rpwm = rtw_btcoex_RpwmVal(padapter);
-		switch (btcoex_rpwm)
-		{
-			case 0x4:
-				pslv = PS_STATE_S3;
-				break;
-
-			case 0xC:
-				pslv = PS_STATE_S4;
-				break;
-		}
-	}
-#endif // CONFIG_RTL8723A & CONFIG_BT_COEXIST
 
 	_enter_pwrlock(&pwrctrl->lock);
 
@@ -2030,20 +1936,6 @@ _func_enter_;
 		val8 = rtw_btcoex_LpsVal(padapter);
 		if (val8 & BIT(4))
 			pslv = PS_STATE_S2;
-
-#ifdef CONFIG_RTL8723A
-		val8 = rtw_btcoex_RpwmVal(padapter);
-		switch (val8)
-		{
-			case 0x4:
-				pslv = PS_STATE_S3;
-				break;
-
-			case 0xC:
-				pslv = PS_STATE_S4;
-				break;
-		}
-#endif // CONFIG_RTL8723A
 	}
 #endif // CONFIG_BT_COEXIST
 
@@ -2110,20 +2002,6 @@ _func_enter_;
 		val8 = rtw_btcoex_LpsVal(padapter);
 		if (val8 & BIT(4))
 			pslv = PS_STATE_S2;
-
-#ifdef CONFIG_RTL8723A
-		val8 = rtw_btcoex_RpwmVal(padapter);
-		switch (val8)
-		{
-			case 0x4:
-				pslv = PS_STATE_S3;
-				break;
-
-			case 0xC:
-				pslv = PS_STATE_S4;
-				break;
-		}
-#endif // CONFIG_RTL8723A
 	}
 #endif // CONFIG_BT_COEXIST
 
@@ -2452,9 +2330,8 @@ void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv)
 #endif //CONFIG_HAS_EARLYSUSPEND
 
 #ifdef CONFIG_ANDROID_POWER
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 extern int rtw_resume_process(PADAPTER padapter);
-#endif
+
 static void rtw_early_suspend(android_early_suspend_t *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);
@@ -2471,10 +2348,8 @@ static void rtw_late_resume(android_early_suspend_t *h)
 
 	DBG_871X("%s\n",__FUNCTION__);
 	if(pwrpriv->do_late_resume) {
-		#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 		rtw_set_do_late_resume(pwrpriv, _FALSE);
 		rtw_resume_process(adapter);
-		#endif
 	}
 }
 
@@ -2621,7 +2496,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 
 	if(rf_off == pwrpriv->rf_pwrstate )
 	{
-#ifdef CONFIG_USB_HCI
 #ifdef CONFIG_AUTOSUSPEND
 		 if(pwrpriv->brfoffbyhw==_TRUE)
 		{
@@ -2640,7 +2514,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 			}
 		}
 		else
-#endif
 #endif
 		{
 #ifdef CONFIG_IPS

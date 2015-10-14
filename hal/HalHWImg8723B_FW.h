@@ -18,7 +18,6 @@
 *
 ******************************************************************************/
 
-#if (RTL8723B_SUPPORT == 1)
 #ifndef __INC_MP_FW_HW_IMG_8723B_H
 #define __INC_MP_FW_HW_IMG_8723B_H
 
@@ -79,4 +78,3 @@ ODM_ReadFirmware_MP_8723B_FW_MP(
 );
 
 #endif
-#endif // end of HWIMG_SUPPORT

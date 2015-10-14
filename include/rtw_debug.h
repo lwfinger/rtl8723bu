@@ -310,10 +310,6 @@ extern void rtl871x_cedbg(const char *fmt, ...);
 void dump_drv_version(void *sel);
 void dump_log_level(void *sel);
 
-#ifdef CONFIG_SDIO_HCI
-void sd_f0_reg_dump(void *sel, _adapter *adapter);
-#endif /* CONFIG_SDIO_HCI */
-
 void mac_reg_dump(void *sel, _adapter *adapter);
 void bb_reg_dump(void *sel, _adapter *adapter);
 void rf_reg_dump(void *sel, _adapter *adapter);
@@ -431,11 +427,6 @@ ssize_t proc_set_odm_adaptivity(struct file *file, const char __user *buffer, si
 int proc_get_rx_logs(struct seq_file *m, void *v);
 int proc_get_tx_logs(struct seq_file *m, void *v);
 int proc_get_int_logs(struct seq_file *m, void *v);
-#endif
-
-#ifdef CONFIG_PCI_HCI
-int proc_get_rx_ring(struct seq_file *m, void *v);
-int proc_get_tx_ring(struct seq_file *m, void *v);
 #endif
 
 #ifdef CONFIG_P2P_WOWLAN

@@ -163,7 +163,6 @@ void sreset_restore_network_station(_adapter *padapter)
 
 	{
 		u8 threshold;
-		#ifdef CONFIG_USB_HCI
 		// TH=1 => means that invalidate usb rx aggregation
 		// TH=0 => means that validate usb rx aggregation, use init value.
 		if(mlmepriv->htpriv.ht_option) {
@@ -176,7 +175,6 @@ void sreset_restore_network_station(_adapter *padapter)
 			threshold = 1;
 			rtw_hal_set_hwreg(padapter, HW_VAR_RXDMA_AGG_PG_TH, (u8 *)(&threshold));
 		}
-		#endif
 	}
 
 	rtw_hal_set_hwreg(padapter, HW_VAR_DO_IQK, NULL);

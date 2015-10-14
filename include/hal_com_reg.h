@@ -1680,12 +1680,8 @@ Current IOREG MAP
 #define SDIO_TX_FREE_PG_QUEUE			4	// The number of Tx FIFO free page
 #define SDIO_TX_FIFO_PAGE_SZ			128
 
-#ifdef CONFIG_SDIO_HCI
-	#define MAX_TX_AGG_PACKET_NUMBER	0x8
-#else
 	#define MAX_TX_AGG_PACKET_NUMBER	0xFF
 	#define MAX_TX_AGG_PACKET_NUMBER_8812	64
-#endif
 
 //-----------------------------------------------------
 //
@@ -1753,12 +1749,7 @@ Current IOREG MAP
 #define LAST_ENTRY_OF_TX_PKT_BUFFER_DUAL_MAC	127
 
 #define POLLING_LLT_THRESHOLD				20
-#if defined(CONFIG_RTL8723B) && defined(CONFIG_PCI_HCI)
-#define POLLING_READY_TIMEOUT_COUNT		6000
-#else
 #define POLLING_READY_TIMEOUT_COUNT		1000
-#endif
-
 
 // GPIO BIT
 #define	HAL_8192C_HW_GPIO_WPS_BIT	BIT2

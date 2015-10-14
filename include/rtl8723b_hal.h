@@ -332,9 +332,4 @@ u8 HwRateToMRate8723B(u8	 rate);
 void Hal_ReadRFGainOffset(PADAPTER pAdapter,u8* hwinfo,BOOLEAN AutoLoadFail);
 #endif //CONFIG_RF_GAIN_OFFSET
 
-#ifdef CONFIG_PCI_HCI
-BOOLEAN	InterruptRecognized8723BE(PADAPTER Adapter);
-VOID	UpdateInterruptMask8723BE(PADAPTER Adapter, u32 AddMSR, u32 AddMSR1, u32 RemoveMSR, u32 RemoveMSR1);
-#endif
-
 #endif

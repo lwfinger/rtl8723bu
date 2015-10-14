@@ -20,8 +20,6 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723B_SUPPORT == 1)
-
 void
 odm_ConfigRFReg_8723B(
 	IN	PDM_ODM_T				pDM_Odm,
@@ -229,5 +227,3 @@ odm_ConfigBB_TXPWR_LMT_8723B(
 			Bandwidth, RateSection, RfPath, Channel, PowerLimit);
 #endif
 }
-
-#endif

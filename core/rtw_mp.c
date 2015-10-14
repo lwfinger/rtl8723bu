@@ -21,9 +21,7 @@
 
 #include <drv_types.h>
 #include "../hal/odm_precomp.h"
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 #include <rtw_bt_mp.h>
-#endif
 
 
 #ifdef CONFIG_MP_INCLUDED
@@ -311,7 +309,6 @@ void mpt_InitHWConfig(PADAPTER Adapter)
 	}
 }
 
-#ifdef CONFIG_RTL8723B
 static void PHY_IQCalibrate(PADAPTER padapter, u8 bReCovery)
 {
 	PHAL_DATA_TYPE pHalData;
@@ -327,7 +324,6 @@ static void PHY_IQCalibrate(PADAPTER padapter, u8 bReCovery)
 
 #define PHY_LCCalibrate(a)	PHY_LCCalibrate_8723B(&(GET_HAL_DATA(a)->odmpriv))
 #define PHY_SetRFPathSwitch(a,b)	PHY_SetRFPathSwitch_8723B(a,b)
-#endif
 
 s32
 MPT_InitializeAdapter(
@@ -346,18 +342,12 @@ MPT_InitializeAdapter(
 	pMptCtx->bMptIndexEven = _TRUE;	//default gain index is -6.0db
 	pMptCtx->h2cReqNum = 0x0;
 	//init for BT MP
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8821A)
 	pMptCtx->bMPh2c_timeout = _FALSE;
 	pMptCtx->MptH2cRspEvent = _FALSE;
 	pMptCtx->MptBtC2hEvent = _FALSE;
 	_rtw_init_sema(&pMptCtx->MPh2c_Sema, 0);
 	_init_timer( &pMptCtx->MPh2c_timeout_timer, pAdapter->pnetdev, MPh2c_timeout_handle, pAdapter );
-#endif
 
-#ifdef CONFIG_RTL8723A
-	rtl8723a_InitAntenna_Selection(pAdapter);
-#endif //CONFIG_RTL8723A
-#ifdef CONFIG_RTL8723B
 	rtl8723b_InitAntenna_Selection(pAdapter);
 	if (IS_HARDWARE_TYPE_8723B(pAdapter))
 	{
@@ -371,7 +361,6 @@ MPT_InitializeAdapter(
 		else
 					PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, bRFRegOffsetMask, 0x6B04E);
 	}
-#endif
 
 	pMptCtx->bMptWorkItemInProgress = _FALSE;
 	pMptCtx->CurrMptAct = NULL;
@@ -443,13 +432,9 @@ MPT_DeInitAdapter(
 	PMPT_CONTEXT		pMptCtx = &pAdapter->mppriv.MptCtx;
 
 	pMptCtx->bMptDrvUnload = _TRUE;
-	#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 	_rtw_free_sema(&(pMptCtx->MPh2c_Sema));
 	_cancel_timer_ex( &pMptCtx->MPh2c_timeout_timer);
-	#endif
-	#if	defined(CONFIG_RTL8723B)
 	PHY_SetBBReg(pAdapter,0xA01, BIT0, 1); ///suggestion  by jerry for MP Rx.
-	#endif
 }
 
 static u8 mpt_ProStartTest(PADAPTER padapter)
@@ -484,22 +469,16 @@ void GetPowerTracking(PADAPTER padapter, u8 *enable)
 
 static void disable_dm(PADAPTER padapter)
 {
-#ifndef CONFIG_RTL8723A
 	u8 v8;
-#endif
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
 
 	//3 1. disable firmware dynamic mechanism
 	// disable Power Training, Rate Adaptive
-#ifdef CONFIG_RTL8723A
-	SetBcnCtrlReg(padapter, 0, EN_BCN_FUNCTION);
-#else
 	v8 = rtw_read8(padapter, REG_BCN_CTRL);
 	v8 &= ~EN_BCN_FUNCTION;
 	rtw_write8(padapter, REG_BCN_CTRL, v8);
-#endif
 
 	//3 2. disable driver dynamic mechanism
 	// disable Dynamic Initial Gain
@@ -665,9 +644,7 @@ s32 mp_start_test(PADAPTER padapter)
 
 	//3 disable dynamic mechanism
 	disable_dm(padapter);
-#ifdef CONFIG_RTL8723B
 	rtl8723b_InitHalDm(padapter);
-#endif
 
 	//3 0. update mp_priv
 
@@ -739,9 +716,7 @@ end_of_mp_stop_test:
 
 		_exit_critical_bh(&pmlmepriv->lock, &irqL);
 
-#ifdef CONFIG_RTL8723B
 		rtl8723b_InitHalDm(padapter);
-#endif
 	}
 }
 /*---------------------------hal\rtl8192c\MPT_Phy.c---------------------------*/
@@ -946,11 +921,8 @@ void PhySetTxPowerLevel(PADAPTER pAdapter)
 
 	if (pmp_priv->bSetTxPower==0) // for NO manually set power index
 	{
-#if defined(CONFIG_RTL8723B)
 		PHY_SetTxPowerLevel8723B(pAdapter,pmp_priv->channel);
-#endif
-	mpt_ProQueryCalTxPower(pAdapter,pmp_priv->antenna_tx);
-
+		mpt_ProQueryCalTxPower(pAdapter,pmp_priv->antenna_tx);
 	}
 }
 
@@ -1053,7 +1025,6 @@ void fill_txdesc_for_mp(PADAPTER padapter, u8 *ptxdesc)
 	_rtw_memcpy(ptxdesc, pmp_priv->tx.desc, TXDESC_SIZE);
 }
 
-#if defined(CONFIG_RTL8723B)
 void fill_tx_desc_8723b(PADAPTER padapter)
 {
 	struct mp_priv *pmp_priv = &padapter->mppriv;
@@ -1084,7 +1055,6 @@ void fill_tx_desc_8723b(PADAPTER padapter)
 	SET_TX_DESC_DATA_RATE_FB_LIMIT_8723B(ptxdesc, 0x1F);
 	SET_TX_DESC_RTS_RATE_FB_LIMIT_8723B(ptxdesc, 0xF);
 }
-#endif
 
 static void Rtw_MPSetMacTxEDCA(PADAPTER padapter)
 {
@@ -1155,11 +1125,8 @@ void SetPacketTx(PADAPTER padapter)
 	pkt_end = pkt_start + pkt_size;
 
 	//3 3. init TX descriptor
-#if defined(CONFIG_RTL8723B)
 	if(IS_HARDWARE_TYPE_8723B(padapter))
 		fill_tx_desc_8723b(padapter);
-#endif
-
 
 	//3 4. make wlan header, make_wlanhdr()
 	hdr = (struct rtw_ieee80211_hdr *)pkt_start;
@@ -1223,10 +1190,10 @@ void SetPacketRx(PADAPTER pAdapter, u8 bStartRx)
 	type = _HW_STATE_AP_;
 	if(bStartRx)
 	{
-#ifdef CONFIG_RTL8723B
+
 		PHY_SetMacReg(pAdapter, 0xe70, BIT23|BIT22, 0x3);// Power on adc  (in RX_WAIT_CCA state)
 		write_bbreg(pAdapter, 0xa01, BIT0, bDisable);// improve Rx performance by jerry
-#endif
+
 		if(	pmppriv->bSetRxBssid == _TRUE ){
 			//pHalData->ReceiveConfig = RCR_APM | RCR_AM | RCR_AB |RCR_CBSSID_DATA| RCR_CBSSID_BCN| RCR_APP_ICV | RCR_AMF | RCR_HTC_LOC_CTRL | RCR_APP_MIC | RCR_APP_PHYST_RXFF;
 			pHalData->ReceiveConfig = RCR_AAP | RCR_APM | RCR_AM | RCR_AB |RCR_AMF | RCR_APP_ICV | RCR_AMF | RCR_HTC_LOC_CTRL | RCR_APP_MIC | RCR_APP_PHYST_RXFF  ;
@@ -1250,10 +1217,9 @@ void SetPacketRx(PADAPTER pAdapter, u8 bStartRx)
 	}
 	else
 	{
-#ifdef CONFIG_RTL8723B
 		PHY_SetMacReg(pAdapter, 0xe70, BIT23|BIT22, 0x00);// Power off adc  (in RX_WAIT_CCA state)
 		write_bbreg(pAdapter, 0xa01, BIT0, bEnable);// improve Rx performance by jerry
-#endif
+
 		rtw_write32(pAdapter, REG_RCR, 0);
 	}
 }
@@ -1826,14 +1792,12 @@ ULONG mpt_ProQueryCalTxPower(PADAPTER pAdapter, u8 RfPath)
 	ULONG			TxPower = 1, PwrGroup=0, PowerDiffByRate=0;
 	u1Byte			limit = 0, rate = 0;
 
-	#if defined(CONFIG_RTL8723B)
 	if( IS_HARDWARE_TYPE_8723B(pAdapter) )
 	{
 		rate = MptToMgntRate(pAdapter->mppriv.rateidx);
 		TxPower = PHY_GetTxPowerIndex_8723B(pAdapter, RfPath, rate,
 										pHalData->CurrentChannelBW, pHalData->CurrentChannel);
 	}
-	#endif
 
 	DBG_8192C("txPower=%d ,CurrentChannelBW=%d ,CurrentChannel=%d ,rate =%d\n",TxPower,pHalData->CurrentChannelBW, pHalData->CurrentChannel,rate);
 

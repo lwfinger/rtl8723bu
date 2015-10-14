@@ -26,23 +26,6 @@ ODM_BOARD_TYPE_E boardType(u8 InterfaceSel)
 {
     ODM_BOARD_TYPE_E        board	= ODM_BOARD_DEFAULT;
 
-#ifdef CONFIG_PCI_HCI
-	INTERFACE_SELECT_PCIE   pcie 	= (INTERFACE_SELECT_PCIE)InterfaceSel;
-	switch (pcie)
-	{
-        case INTF_SEL0_SOLO_MINICARD:
-            board |= ODM_BOARD_MINICARD;
-            break;
-        case INTF_SEL1_BT_COMBO_MINICARD:
-            board |= ODM_BOARD_BT;
-			board |= ODM_BOARD_MINICARD;
-            break;
-        default:
-            board = ODM_BOARD_DEFAULT;
-            break;
-	}
-
-#elif defined(CONFIG_USB_HCI)
 	INTERFACE_SELECT_USB    usb 	= (INTERFACE_SELECT_USB)InterfaceSel;
 	switch (usb)
 	{
@@ -65,9 +48,6 @@ ODM_BOARD_TYPE_E boardType(u8 InterfaceSel)
 	        board = ODM_BOARD_DEFAULT;
 	        break;
 	}
-
-#endif
-	//DBG_871X("===> boardType(): (pHalData->InterfaceSel, pDM_Odm->BoardType) = (%d, %d)\n", InterfaceSel, board);
 
 	return board;
 }
@@ -137,14 +117,12 @@ void Init_ODM_ComInfo(_adapter *adapter)
 			odm_board_type |= ODM_BOARD_BT;
 
 	} else {
-		#ifdef CONFIG_USB_HCI
 		if (pHalData->InterfaceSel == INTF_SEL1_USB_High_Power
 			|| pHalData->BoardType == BOARD_USB_High_PA	/* This is legacy code for hal_data.BoardType */
 		) {
 			ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA, 1);
 			ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA, 1);
 		} else
-		#endif
 		{
 			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_PA, pHalData->ExternalPA_2G);
 			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_LNA, pHalData->ExternalLNA_2G);

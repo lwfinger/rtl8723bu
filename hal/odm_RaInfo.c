@@ -441,19 +441,6 @@ odm_RSSIMonitorCheckCE(
 	if(pDM_Odm->bLinked != _TRUE)
 		return;
 
-	#if((RTL8812A_SUPPORT==1)||(RTL8821A_SUPPORT==1))
-	if((pDM_Odm->SupportICType == ODM_RTL8812)||(pDM_Odm->SupportICType == ODM_RTL8821))
-	{
-		u64	curTxOkCnt = pdvobjpriv->traffic_stat.cur_tx_bytes;
-		u64	curRxOkCnt = pdvobjpriv->traffic_stat.cur_rx_bytes;
-
-		if(curRxOkCnt >(curTxOkCnt*6))
-			UL_DL_STATE = 1;
-		else
-			UL_DL_STATE = 0;
-	}
-	#endif
-
 	FirstConnect = (pDM_Odm->bLinked) && (pRA_Table->firstconnect == FALSE);
 	pRA_Table->firstconnect = pDM_Odm->bLinked;
 
@@ -519,51 +506,8 @@ odm_RSSIMonitorCheckCE(
 		{
 			if(PWDB_rssi[i] != (0)){
 				if(pHalData->fw_ractrl == _TRUE)// Report every sta's RSSI to FW
-				{
-					#if(RTL8192D_SUPPORT==1)
-					if(pDM_Odm->SupportICType == ODM_RTL8192D){
-						FillH2CCmd92D(Adapter, H2C_RSSI_REPORT, 3, (u8 *)(&PWDB_rssi[i]));
-					}
-					#endif
-
-					#if((RTL8192C_SUPPORT==1)||(RTL8723A_SUPPORT==1))
-					if((pDM_Odm->SupportICType == ODM_RTL8192C)||(pDM_Odm->SupportICType == ODM_RTL8723A)){
-						rtl8192c_set_rssi_cmd(Adapter, (u8*)&PWDB_rssi[i]);
-					}
-					#endif
-
-					#if((RTL8812A_SUPPORT==1)||(RTL8821A_SUPPORT==1))
-					if((pDM_Odm->SupportICType == ODM_RTL8812)||(pDM_Odm->SupportICType == ODM_RTL8821)){
-						PWDB_rssi[i] |= (UL_DL_STATE << 24);
-						rtl8812_set_rssi_cmd(Adapter, (u8 *)(&PWDB_rssi[i]));
-					}
-					#endif
-					#if(RTL8192E_SUPPORT==1)
-					if(pDM_Odm->SupportICType == ODM_RTL8192E){
-						rtl8192e_set_rssi_cmd(Adapter, (u8 *)(&PWDB_rssi[i]));
-					}
-					#endif
-					#if(RTL8723B_SUPPORT==1)
-					if(pDM_Odm->SupportICType == ODM_RTL8723B){
+					if(pDM_Odm->SupportICType == ODM_RTL8723B)
 						rtl8723b_set_rssi_cmd(Adapter, (u8 *)(&PWDB_rssi[i]));
-					}
-					#endif
-
-					#if(RTL8188E_SUPPORT==1)
-					if(pDM_Odm->SupportICType == ODM_RTL8188E){
-						rtl8188e_set_rssi_cmd(Adapter, (u8 *)(&PWDB_rssi[i]));
-					}
-					#endif
-
-				}
-				else{
-					#if((RTL8188E_SUPPORT==1)&&(RATE_ADAPTIVE_SUPPORT == 1))
-					if(pDM_Odm->SupportICType == ODM_RTL8188E){
-						ODM_RA_SetRSSI_8188E(
-						&(pHalData->odmpriv), (PWDB_rssi[i]&0xFF), (u8)((PWDB_rssi[i]>>16) & 0xFF));
-					}
-					#endif
-				}
 			}
 		}
 	}
@@ -590,9 +534,6 @@ odm_RSSIMonitorCheckCE(
 
 	FindMinimumRSSI(Adapter);//get pdmpriv->MinUndecoratedPWDBForDM
 
-	#if(RTL8192D_SUPPORT==1)
-	FindMinimumRSSI_Dmsp(Adapter);
-	#endif
 	pDM_Odm->RSSI_Min = pdmpriv->MinUndecoratedPWDBForDM;
 	//ODM_CmnInfoUpdate(&pHalData->odmpriv ,ODM_CMNINFO_RSSI_MIN, pdmpriv->MinUndecoratedPWDBForDM);
 #endif//if (DM_ODM_SUPPORT_TYPE == ODM_CE)
@@ -979,28 +920,6 @@ odm_RefreshRateAdaptiveMaskCE(
 			if(IS_MCAST( pstat->hwaddr))
 				continue;
 
-			#if((RTL8812A_SUPPORT==1)||(RTL8821A_SUPPORT==1))
-			if((pDM_Odm->SupportICType == ODM_RTL8812)||(pDM_Odm->SupportICType == ODM_RTL8821))
-			{
-				if(pstat->rssi_stat.UndecoratedSmoothedPWDB < pRA->LdpcThres)
-				{
-					pRA->bUseLdpc = TRUE;
-					pRA->bLowerRtsRate = TRUE;
-					if((pDM_Odm->SupportICType == ODM_RTL8821) && (pDM_Odm->CutVersion == ODM_CUT_A))
-						Set_RA_LDPC_8812(pstat, TRUE);
-					//DbgPrint("RSSI=%d, bUseLdpc = TRUE\n", pHalData->UndecoratedSmoothedPWDB);
-				}
-				else if(pstat->rssi_stat.UndecoratedSmoothedPWDB > (pRA->LdpcThres-5))
-				{
-					pRA->bUseLdpc = FALSE;
-					pRA->bLowerRtsRate = FALSE;
-					if((pDM_Odm->SupportICType == ODM_RTL8821) && (pDM_Odm->CutVersion == ODM_CUT_A))
-						Set_RA_LDPC_8812(pstat, FALSE);
-					//DbgPrint("RSSI=%d, bUseLdpc = FALSE\n", pHalData->UndecoratedSmoothedPWDB);
-				}
-			}
-			#endif
-
 			if( TRUE == ODM_RAStateCheck(pDM_Odm, pstat->rssi_stat.UndecoratedSmoothedPWDB, FALSE , &pstat->rssi_level) )
 			{
 				ODM_RT_TRACE(pDM_Odm, ODM_COMP_RA_MASK, ODM_DBG_LOUD, ("RSSI:%d, RSSI_LEVEL:%d\n", pstat->rssi_stat.UndecoratedSmoothedPWDB, pstat->rssi_level));
@@ -1051,37 +970,7 @@ odm_RefreshRateAdaptiveMaskAPADSL(
 				ODM_PRINT_ADDR(pDM_Odm, ODM_COMP_RA_MASK, ODM_DBG_LOUD, ("Target STA addr : "), pstat->hwaddr);
 				ODM_RT_TRACE(pDM_Odm, ODM_COMP_RA_MASK, ODM_DBG_LOUD, ("RSSI:%d, RSSI_LEVEL:%d\n", pstat->rssi, pstat->rssi_level));
 
-#if defined(CONFIG_PCI_HCI)
-#ifdef CONFIG_WLAN_HAL
-				if (IS_HAL_CHIP(priv)) {
-#ifdef WDS
-					if(!(pstat->state & WIFI_WDS))//if WDS donot setting
-#endif
-						GET_HAL_INTERFACE(priv)->UpdateHalRAMaskHandler(priv, pstat, pstat->rssi_level);
-				} else
-#endif
-#ifdef CONFIG_RTL_8812_SUPPORT
-				if(GET_CHIP_VER(priv)== VERSION_8812E) {
-					UpdateHalRAMask8812(priv, pstat, 3);
-				} else
-#endif
-#ifdef CONFIG_RTL_88E_SUPPORT
-				if (GET_CHIP_VER(priv)==VERSION_8188E) {
-#ifdef TXREPORT
-#ifdef CONFIG_AP_MODE
-					add_RATid(priv, pstat);
-#endif // CONFIG_AP_MODE
-#endif // TXREPORT
-				} else
-#endif
-				{
-#if defined(CONFIG_RTL_92D_SUPPORT) || defined(CONFIG_RTL_92C_SUPPORT)
-					add_update_RATid(priv, pstat);
-#endif
-				}
-#elif defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 				update_STA_RATid(priv, pstat);
-#endif
 			}
 		}
 	}

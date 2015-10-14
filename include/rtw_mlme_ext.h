@@ -39,11 +39,7 @@
 #define REASSOC_LIMIT	(4)
 #define READDBA_LIMIT	(2)
 
-#ifdef CONFIG_GSPI_HCI
-	#define ROAMING_LIMIT	5
-#else
-	#define ROAMING_LIMIT	8
-#endif
+#define ROAMING_LIMIT	8
 //#define	IOCMD_REG0		0x10250370
 //#define	IOCMD_REG1		0x10250374
 //#define	IOCMD_REG2		0x10250378

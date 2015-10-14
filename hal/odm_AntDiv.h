@@ -87,7 +87,6 @@ odm_AntselStatistics(
 	IN		u4Byte			RxPWDBAll
 );
 
-#if (RTL8723B_SUPPORT == 1)||(RTL8821A_SUPPORT == 1)
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 VOID
 ODM_SW_AntDiv_Callback(
@@ -129,26 +128,7 @@ odm_S0S1_SwAntDivByCtrlFrame_ProcessRSSI(
 	);
 
 #endif  //#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-#endif
 
-#if(RTL8188E_SUPPORT == 1  || RTL8192E_SUPPORT == 1)
-#if ( !(DM_ODM_SUPPORT_TYPE == ODM_CE))
-VOID
-odm_FastAntTraining(
-	IN		PDM_ODM_T		pDM_Odm
-);
-
-VOID
-odm_FastAntTrainingCallback(
-	IN		PDM_ODM_T		pDM_Odm
-);
-
-VOID
-odm_FastAntTrainingWorkItemCallback(
-	IN		PDM_ODM_T		pDM_Odm
-);
-#endif
-#endif
 
 VOID
 ODM_AntDivInit(

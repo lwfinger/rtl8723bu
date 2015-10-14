@@ -645,19 +645,11 @@ ODM_FillH2CCmd(
 
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				FillH2CCmd(Adapter, H2C_RSSI_REPORT, CmdLen, pCmdBuffer);
-#else
-	#if((RTL8812A_SUPPORT==1) ||(RTL8821A_SUPPORT==1))
-				FillH2CCmd_8812(Adapter, H2C_8812_RSSI_REPORT, CmdLen, pCmdBuffer);
-	#endif
 #endif
 				break;
 			case ODM_H2C_IQ_CALIBRATION:
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				FillH2CCmd(Adapter, H2C_IQ_CALIBRATION, CmdLen, pCmdBuffer);
-#else
-	#if((RTL8812A_SUPPORT==1) ||(RTL8821A_SUPPORT==1))
-				FillH2CCmd_8812(Adapter, H2C_8812_IQ_CALIBRATION, CmdLen, pCmdBuffer);
-	#endif
 #endif
 				break;
 			default:
@@ -672,10 +664,6 @@ ODM_FillH2CCmd(
 			case ODM_H2C_RSSI_REPORT:
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				FillH2CCmd(Adapter, H2C_RSSI_REPORT, CmdLen, pCmdBuffer);
-#else
-	#if(RTL8192E_SUPPORT==1)
-				FillH2CCmd_8192E(Adapter, H2C_8192E_RSSI_REPORT, CmdLen, pCmdBuffer);
-	#endif
 #endif
 				break;
 			default:
@@ -690,20 +678,16 @@ ODM_FillH2CCmd(
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				FillH2CCmd(Adapter, H2C_RSSI_REPORT, CmdLen, pCmdBuffer);
 #else
-	#if(RTL8723B_SUPPORT==1)
 				FillH2CCmd8723B(Adapter, H2C_8723B_RSSI_SETTING, CmdLen, pCmdBuffer);
-	#endif
 #endif
 				break;
 			case ODM_H2C_WIFI_CALIBRATION:
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				FillH2CCmd(Adapter, H2C_WIFI_CALIBRATION, CmdLen, pCmdBuffer);
 #else
-	#if(RTL8723B_SUPPORT==1)
 				FillH2CCmd8723B(Adapter, H2C_8723B_BT_WLAN_CALIBRATION, CmdLen, pCmdBuffer);
-	#endif
 #endif
-			   	break;
+				break;
 			default:
 				break;
 		}
@@ -718,10 +702,6 @@ ODM_FillH2CCmd(
 				if(!pDM_Odm->RaSupport88E){
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 					FillH2CCmd88E(Adapter, H2C_88E_RSSI_REPORT, CmdLen, pCmdBuffer);
-#else
-	#if(RTL8188E_SUPPORT==1)
-					FillH2CCmd_88E(Adapter, H2C_RSSI_REPORT, CmdLen, pCmdBuffer);
-	#endif
 #endif
 				}
 				break;
@@ -735,9 +715,6 @@ ODM_FillH2CCmd(
 		switch(ElementID)
 		{
 			case ODM_H2C_RSSI_REPORT:
-	#if(RTL8723A_SUPPORT==1)
-				FillH2CCmd(Adapter, RSSI_SETTING_EID, CmdLen, pCmdBuffer);
-	#endif
 				break;
 			default:
 				break;
@@ -748,9 +725,6 @@ ODM_FillH2CCmd(
 		switch(ElementID)
 		{
 			case ODM_H2C_RSSI_REPORT:
-	#if(RTL8192D_SUPPORT==1)
-			FillH2CCmd92D(Adapter, H2C_RSSI_REPORT, CmdLen, pCmdBuffer);
-	#endif
 				break;
 			default:
 				break;
@@ -764,10 +738,6 @@ ODM_FillH2CCmd(
 			case ODM_H2C_RSSI_REPORT:
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 				FillH2CCmd92C(Adapter, H2C_RSSI_REPORT, CmdLen, pCmdBuffer);
-#else
-	#if(RTL8192C_SUPPORT==1)
-				rtl8192c_FillH2CCmd(Adapter, RSSI_SETTING_EID, CmdLen, pCmdBuffer);
-	#endif
 #endif
 				break;
 			default:

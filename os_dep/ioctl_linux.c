@@ -26,14 +26,7 @@
 #include "../hal/odm_precomp.h"
 //#endif
 
-#if defined(CONFIG_RTL8723A)
-#include "rtl8723a_hal.h"
 #include <rtw_bt_mp.h>
-#endif
-
-#if defined(CONFIG_RTL8723B)
-#include <rtw_bt_mp.h>
-#endif
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27))
 #define  iwe_stream_add_event(a, b, c, d, e)  iwe_stream_add_event(b, c, d, e)
@@ -6966,9 +6959,8 @@ static int rtw_dbg_port(struct net_device *dev,
 							pxmitpriv->free_xmitbuf_cnt, pxmitpriv->free_xmitframe_cnt,
 							pxmitpriv->free_xmit_extbuf_cnt, pxmitpriv->free_xframe_ext_cnt,
 							precvpriv->free_recvframe_cnt);
-						#ifdef CONFIG_USB_HCI
+
 						DBG_871X("rx_urb_pending_cn=%d\n", ATOMIC_READ(&(precvpriv->rx_pending_cnt)));
-						#endif
 					}
 					break;
 				case 0x09:
@@ -9264,17 +9256,7 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 	}
 	else if (strcmp(tmp[0], "mac") == 0)
 	{
-		#ifdef CONFIG_RTL8723B
-		#ifdef CONFIG_SDIO_HCI
-		addr = EEPROM_MAC_ADDR_8723BS;
-		#endif
-		#ifdef CONFIG_GSPI_HCI
-		addr = EEPROM_MAC_ADDR_8723BS;
-		#endif
-		#ifdef CONFIG_USB_HCI
 		addr = EEPROM_MAC_ADDR_8723BU;
-		#endif
-		#endif // CONFIG_RTL8723B
 		cnts = 6;
 
 		EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (PVOID)&max_available_size, _FALSE);
@@ -9307,9 +9289,7 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 	}
 	else if (strcmp(tmp[0], "vidpid") == 0)
 	{
-		#ifdef CONFIG_RTL8723B
 		addr = EEPROM_VID_8723BU;
-		#endif
 		cnts = 4;
 
 		EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (PVOID)&max_available_size, _FALSE);
@@ -9824,17 +9804,7 @@ static int rtw_mp_efuse_set(struct net_device *dev,
 
 		//mac,00e04c871200
 
-		#ifdef CONFIG_RTL8723B
-		#ifdef CONFIG_SDIO_HCI
-		addr = EEPROM_MAC_ADDR_8723BS;
-		#endif
-		#ifdef CONFIG_GSPI_HCI
-		addr = EEPROM_MAC_ADDR_8723BS;
-		#endif
-		#ifdef CONFIG_USB_HCI
 		addr = EEPROM_MAC_ADDR_8723BU;
-		#endif
-		#endif // CONFIG_RTL8723B
 
 		cnts = strlen(tmp[1]);
 		if (cnts%2)
@@ -9888,9 +9858,7 @@ static int rtw_mp_efuse_set(struct net_device *dev,
 
 		// pidvid,da0b7881
 
-		#ifdef CONFIG_RTL8723B
 		addr = EEPROM_VID_8723BU;
-		#endif
 
 		cnts = strlen(tmp[1]);
 		if (cnts%2)
@@ -10627,21 +10595,18 @@ static int rtw_mp_start(struct net_device *dev,
 		MPT_PwrCtlDM(padapter,0);
 	}
 	padapter->mppriv.bmac_filter = _FALSE;
-#ifdef CONFIG_RTL8723B
-#ifdef CONFIG_USB_HCI
+
 	rtw_write32(padapter, 0x765, 0x0000);
 	rtw_write32(padapter, 0x948, 0x0280);
-#else
-	rtw_write32(padapter, 0x765, 0x0000);
-	rtw_write32(padapter, 0x948, 0x0000);
-#endif
+
 #ifdef CONFIG_FOR_RTL8723BS_VQ0
 	rtw_write32(padapter, 0x765, 0x0000);
 	rtw_write32(padapter, 0x948, 0x0280);
 #endif
+
 	rtw_write8(padapter, 0x66, 0x27); //Open BT uart Log
 	rtw_write8(padapter, 0xc50, 0x20); //for RX init Gain
-#endif
+
 	ODM_Write_DIG(&pHalData->odmpriv,0x20);
 
 	return 0;
@@ -11393,9 +11358,7 @@ static int rtw_mp_thermal(struct net_device *dev,
 	u8 val;
 	int bwrite=1;
 
-	#ifdef CONFIG_RTL8723B
-			u16 addr=EEPROM_THERMAL_METER_8723B;
-	#endif
+	u16 addr=EEPROM_THERMAL_METER_8723B;
 	u16 cnt=1;
 	u16 max_available_size=0;
 	PADAPTER padapter = rtw_netdev_priv(dev);
@@ -11649,7 +11612,6 @@ static int rtw_mp_getver(struct net_device *dev,
 	return 0;
 }
 
-#if (defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B))
 /* update Tx AGC offset */
 static int rtw_mp_SetBT(struct net_device *dev,
 			struct iw_request_info *info,
@@ -11796,11 +11758,8 @@ static int rtw_mp_SetBT(struct net_device *dev,
 #endif
 		DBG_871X(" rtl8723a_FirmwareDownload!\n");
 
-#ifdef CONFIG_RTL8723A
-		status = rtl8723a_FirmwareDownload(padapter);
-#elif defined(CONFIG_RTL8723B)
 		status = rtl8723b_FirmwareDownload(padapter, _FALSE);
-#endif
+
 		DBG_871X("Wait for FirmwareDownloadBT fw boot!\n");
 		rtw_msleep_os(1000);
 #ifdef CONFIG_BT_COEXIST
@@ -12001,11 +11960,7 @@ todo:
 			if ((pMptCtx->mptOutBuf[i]==0x00) && (pMptCtx->mptOutBuf[i+1]==0x00))
 				goto exit;
 
-#ifdef CONFIG_RTL8723A
-			sprintf(extra, "%s %d ", extra, (pMptCtx->mptOutBuf[i]& 0x3f));
-#else
 			sprintf(extra, "%s %d ", extra, (pMptCtx->mptOutBuf[i]& 0x1f));
-#endif
 		}
 	}
 	else
@@ -12022,8 +11977,6 @@ exit:
 
 	return status;
 }
-
-#endif //#ifdef CONFIG_RTL8723A
 
 static int rtw_mp_set(struct net_device *dev,
 			struct iw_request_info *info,
@@ -12248,13 +12201,10 @@ static int rtw_mp_get(struct net_device *dev,
 			DBG_871X("mp_get MP_GETVER \n");
 			rtw_mp_getver(dev,info,wdata,extra);
 			break;
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 	case MP_SetBT:
 			DBG_871X("set MP_SetBT \n");
 			rtw_mp_SetBT(dev,info,wdata,extra);
 			break;
-#endif
-
 	}
 
 	rtw_msleep_os(10); //delay 5ms for sending pkt before exit adb shell operation
@@ -13026,18 +12976,10 @@ static int rtw_widi_set_probe_request(struct net_device *dev,
 
 #ifdef CONFIG_MAC_LOOPBACK_DRIVER
 
-#ifdef CONFIG_RTL8723A
-extern void rtl8723a_cal_txdesc_chksum(struct tx_desc *ptxdesc);
-#define cal_txdesc_chksum rtl8723a_cal_txdesc_chksum
-extern void rtl8723a_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf);
-#define fill_default_txdesc rtl8723a_fill_default_txdesc
-#endif
-#if defined(CONFIG_RTL8723B)
 extern void rtl8723b_cal_txdesc_chksum(struct tx_desc *ptxdesc);
 #define cal_txdesc_chksum rtl8723b_cal_txdesc_chksum
 extern void rtl8723b_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf);
 #define fill_default_txdesc rtl8723b_fill_default_txdesc
-#endif // CONFIG_RTL8723B
 
 static s32 initLoopback(PADAPTER padapter)
 {
@@ -13249,16 +13191,6 @@ static struct xmit_frame* createloopbackpkt(PADAPTER padapter, u32 size)
 	desc->txdw5 = cpu_to_le32(desc->txdw5);
 	desc->txdw6 = cpu_to_le32(desc->txdw6);
 	desc->txdw7 = cpu_to_le32(desc->txdw7);
-#ifdef CONFIG_PCI_HCI
-	desc->txdw8 = cpu_to_le32(desc->txdw8);
-	desc->txdw9 = cpu_to_le32(desc->txdw9);
-	desc->txdw10 = cpu_to_le32(desc->txdw10);
-	desc->txdw11 = cpu_to_le32(desc->txdw11);
-	desc->txdw12 = cpu_to_le32(desc->txdw12);
-	desc->txdw13 = cpu_to_le32(desc->txdw13);
-	desc->txdw14 = cpu_to_le32(desc->txdw14);
-	desc->txdw15 = cpu_to_le32(desc->txdw15);
-#endif
 
 	cal_txdesc_chksum(desc);
 
@@ -13888,11 +13820,8 @@ static const struct iw_priv_args rtw_private_args[] = {
 		{ MP_PwrCtlDM, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "mp_pwrctldm" },
 		{ MP_GET_TXPOWER_INX, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "mp_get_txpower" },
 		{ MP_GETVER, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "mp_priv_ver" },
-
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 		{ MP_SetBT, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "mp_setbt" },
-        { MP_DISABLE_BT_COEXIST, IW_PRIV_TYPE_CHAR | 1024, 0, "mp_disa_btcoex"},
-#endif
+		{ MP_DISABLE_BT_COEXIST, IW_PRIV_TYPE_CHAR | 1024, 0, "mp_disa_btcoex"},
 		{ CTA_TEST, IW_PRIV_TYPE_CHAR | 1024, 0, "cta_test"},
 #endif
 #ifdef CONFIG_WOWLAN

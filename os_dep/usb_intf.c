@@ -22,10 +22,6 @@
 #include <drv_types.h>
 #include <platform_ops.h>
 
-#ifndef CONFIG_USB_HCI
-#error "CONFIG_USB_HCI shall be on!\n"
-#endif
-
 #ifdef CONFIG_80211N_HT
 extern int rtw_ht_enable;
 extern int rtw_bw_mode;
@@ -134,17 +130,9 @@ static void rtw_dev_shutdown(struct device *dev)
 /* DID_USB_v916_20130116 */
 static struct usb_device_id rtw_usb_id_tbl[] ={
 
-#ifdef CONFIG_RTL8723A
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x8724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x1724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x0724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
-#endif
-
-#ifdef CONFIG_RTL8723B
 	//*=== Realtek demoboard ===*/
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xB720,0xff,0xff,0xff),.driver_info = RTL8723B}, /* 8723BU 1*1 */
 	//{USB_DEVICE(USB_VENDER_ID_REALTEK, 0xB720),.driver_info = RTL8723B}, /* 8723BU */
-#endif
 	{}	/* Terminating entry */
 };
 
@@ -453,10 +441,8 @@ static void rtw_decide_chip_type_by_usb_info(_adapter *padapter, const struct us
 {
 	padapter->chip_type = pdid->driver_info;
 
-	#ifdef CONFIG_RTL8723B
 	if(padapter->chip_type == RTL8723B)
 		rtl8723bu_set_hw_type(padapter);
-	#endif
 
 }
 void rtw_set_hal_ops(_adapter *padapter)
@@ -464,18 +450,14 @@ void rtw_set_hal_ops(_adapter *padapter)
 	//alloc memory for HAL DATA
 	rtw_hal_data_init(padapter);
 
-	#ifdef CONFIG_RTL8723B
 	if(padapter->chip_type == RTL8723B)
 		rtl8723bu_set_hal_ops(padapter);
-	#endif
 }
 
 void usb_set_intf_ops(_adapter *padapter,struct _io_ops *pops)
 {
-	#ifdef CONFIG_RTL8723B
 	if(padapter->chip_type == RTL8723B)
 		rtl8723bu_set_intf_ops(pops);
-	#endif
 }
 
 

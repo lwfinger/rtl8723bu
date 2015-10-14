@@ -279,18 +279,14 @@ typedef struct _SW_Antenna_Switch_
 	u1Byte		Train_time;
 	u1Byte		Train_time_flag;
 	RT_TIMER	SwAntennaSwitchTimer;
-#if (RTL8723B_SUPPORT == 1)||(RTL8821A_SUPPORT == 1)
 	RT_TIMER	SwAntennaSwitchTimer_8723B;
 	u4Byte		PktCnt_SWAntDivByCtrlFrame;
 	BOOLEAN		bSWAntDivByCtrlFrame;
-#endif
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	#if USE_WORKITEM
+#if USE_WORKITEM
 	RT_WORK_ITEM			SwAntennaSwitchWorkitem;
-#if (RTL8723B_SUPPORT == 1)||(RTL8821A_SUPPORT == 1)
 	RT_WORK_ITEM			SwAntennaSwitchWorkitem_8723B;
-	#endif
 #endif
 #endif
 
@@ -683,14 +679,8 @@ typedef enum tag_ODM_Support_IC_Type_Definition
 
 #else
 
-#if((RTL8192C_SUPPORT == 1) || (RTL8192D_SUPPORT == 1) || (RTL8723A_SUPPORT == 1) || (RTL8188E_SUPPORT == 1) ||\
-(RTL8723B_SUPPORT == 1) || (RTL8192E_SUPPORT == 1) || (RTL8195A_SUPPORT == 1))
 #define ODM_IC_11N_SERIES_SUPPORT			1
 #define ODM_IC_11AC_SERIES_SUPPORT		0
-#else
-#define ODM_IC_11N_SERIES_SUPPORT			0
-#define ODM_IC_11AC_SERIES_SUPPORT		1
-#endif
 
 #ifdef CONFIG_BT_COEXIST
 #define ODM_CONFIG_BT_COEXIST				1

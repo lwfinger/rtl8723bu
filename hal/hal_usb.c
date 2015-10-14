@@ -91,61 +91,11 @@ int usb_async_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 
 
 
-#ifdef CONFIG_RTL8192D
-/*	This function only works in 92DU chip.		*/
-void usb_read_reg_rf_byfw(struct intf_hdl *pintfhdl,
-				u16 byteCount,
-				u32 registerIndex,
-				PVOID buffer)
-{
-	u16	wPage = 0x0000, offset;
-	u32	BufferLengthRead;
-	PADAPTER	Adapter = pintfhdl->padapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	u8	RFPath=0,nPHY=0;
-
-	RFPath =(u8) ((registerIndex&0xff0000)>>16);
-
-	if (pHalData->interfaceIndex!=0)
-	{
-		nPHY = 1; //MAC1
-		if(registerIndex&MAC1_ACCESS_PHY0)// MAC1 need to access PHY0
-			nPHY = 0;
-	}
-	else
-	{
-		if(registerIndex&MAC0_ACCESS_PHY1)
-			nPHY = 1;
-	}
-	registerIndex &= 0xFF;
-	wPage = ((nPHY<<7)|(RFPath<<5)|8)<<8;
-	offset = (u16)registerIndex;
-
-	//
-	// IN a vendor request to read back MAC register.
-	//
-	usbctrl_vendorreq(pintfhdl, 0x05, offset, wPage, buffer, byteCount, 0x01);
-
-}
-#endif
-
 /*
 	92DU chip needs to remask "value" parameter,  this function only works in 92DU chip.
 */
 static inline void usb_value_remask(struct intf_hdl *pintfhdl, u16 *value)
 {
-#ifdef CONFIG_RTL8192D
-	_adapter	*padapter = pintfhdl->padapter;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
-	if ((IS_HARDWARE_TYPE_8192DU(padapter)) && (pHalData->interfaceIndex!=0))
-	{
-		if(*value<0x1000)
-			*value|=0x4000;
-		else if ((*value&MAC1_ACCESS_PHY0) && !(*value&0x8000))   // MAC1 need to access PHY0
-			*value &= 0xFFF;
-	}
-#endif
 }
 
 u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
@@ -218,16 +168,10 @@ u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 4;
-#ifdef CONFIG_RTL8192D
-	if ((IS_HARDWARE_TYPE_8192DU(pintfhdl->padapter)) && ((addr&0xff000000)>>24 == 0x66)) {
-		usb_read_reg_rf_byfw(pintfhdl, len, addr, &data);
-	} else
-#endif
-	{
-		usb_value_remask(pintfhdl, &wvalue);
-		usbctrl_vendorreq(pintfhdl, request, wvalue, index,
-						&data, len, requesttype);
-	}
+
+	usb_value_remask(pintfhdl, &wvalue);
+	usbctrl_vendorreq(pintfhdl, request, wvalue, index,
+					&data, len, requesttype);
 
 	_func_exit_;
 

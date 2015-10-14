@@ -1579,9 +1579,6 @@ NDIS_STATUS oid_rt_set_power_down_hdl(struct oid_par_priv *poid_par_priv)
 #endif
 	u8		bpwrup;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	PADAPTER	padapter = (PADAPTER)(poid_par_priv->adapter_context);
-#endif
 
 _func_enter_;
 
@@ -1597,9 +1594,7 @@ _func_enter_;
 
 	bpwrup = *(u8 *)poid_par_priv->information_buf;
 	//CALL  the power_down function
-#if defined(CONFIG_RTL8712) //Linux MP insmod unknown symbol
-	dev_power_down(padapter,bpwrup);
-#endif
+
 	_irqlevel_changed_(&oldirql, RAISE);
 
 	//DEBUG_ERR(("\n <=== Query OID_RT_PRO_READ_REGISTER.

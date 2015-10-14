@@ -20,7 +20,6 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723B_SUPPORT==1)
 
 #ifdef CONFIG_MP_INCLUDED
 
@@ -1832,5 +1831,3 @@ const u32 Rtl8723B_PHYREG_Array_MP[Rtl8723B_PHYREG_Array_MPLength] = {
 };
 
 #endif //CONFIG_MP_INCLUDED
-
-#endif

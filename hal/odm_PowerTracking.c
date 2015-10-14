@@ -382,20 +382,9 @@ getSwingIndex(
 		pSwingTable = OFDMSwingTable_New;
 		swingTableSize = OFDM_TABLE_SIZE;
 	} else {
-#if ((RTL8812A_SUPPORT==1)||(RTL8821A_SUPPORT==1))
-		if (pDM_Odm->SupportICType == ODM_RTL8812 || pDM_Odm->SupportICType == ODM_RTL8821)
-		{
-			bbSwing = PHY_GetTxBBSwing_8812A(Adapter, pHalData->CurrentBandType, ODM_RF_PATH_A);
-			pSwingTable = TxScalingTable_Jaguar;
-			swingTableSize = TXSCALE_TABLE_SIZE;
-		}
-		else
-#endif
-		{
-			bbSwing = 0;
-			pSwingTable = OFDMSwingTable;
-			swingTableSize = OFDM_TABLE_SIZE;
-		}
+		bbSwing = 0;
+		pSwingTable = OFDMSwingTable;
+		swingTableSize = OFDM_TABLE_SIZE;
 	}
 
 	for (i = 0; i < swingTableSize; ++i) {
@@ -459,15 +448,6 @@ odm_TXPowerTrackingThermalMeterInit(
 		//MSG_8192C("pdmpriv->TxPowerTrackControl = %d\n", pdmpriv->TxPowerTrackControl);
 	}
 
-#elif (DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-	#ifdef RTL8188E_SUPPORT
-	{
-		pDM_Odm->RFCalibrateInfo.bTXPowerTracking = _TRUE;
-		pDM_Odm->RFCalibrateInfo.TXPowercount = 0;
-		pDM_Odm->RFCalibrateInfo.bTXPowerTrackingInit = _FALSE;
-		pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = _TRUE;
-	}
-	#endif
 #endif
 
 	//pDM_Odm->RFCalibrateInfo.TxPowerTrackControl = TRUE;
@@ -543,24 +523,7 @@ odm_TXPowerTrackingCheckCE(
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
-	#if( (RTL8192C_SUPPORT==1) ||  (RTL8723A_SUPPORT==1) )
-	if(IS_HARDWARE_TYPE_8192C(Adapter)){
-		rtl8192c_odm_CheckTXPowerTracking(Adapter);
-		return;
-	}
-	#endif
 
-	#if (RTL8192D_SUPPORT==1)
-	if(IS_HARDWARE_TYPE_8192D(Adapter)){
-		#if (RTL8192D_EASY_SMART_CONCURRENT == 1)
-		if(!Adapter->bSlaveOfDMSP)
-		#endif
-			rtl8192d_odm_CheckTXPowerTracking(Adapter);
-		return;
-	}
-	#endif
-
-	#if(((RTL8188E_SUPPORT==1) ||  (RTL8812A_SUPPORT==1) ||  (RTL8821A_SUPPORT==1) ||  (RTL8192E_SUPPORT==1)  ||  (RTL8723B_SUPPORT==1)  ))
 	if(!(pDM_Odm->SupportAbility & ODM_RF_TX_PWR_TRACK))
 	{
 		return;
@@ -585,7 +548,6 @@ odm_TXPowerTrackingCheckCE(
 		ODM_TXPowerTrackingCallback_ThermalMeter(Adapter);
 		pDM_Odm->RFCalibrateInfo.TM_Trigger = 0;
 	}
-	#endif
 #endif
 }
 

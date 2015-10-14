@@ -39,7 +39,6 @@ void rtl8723b_sreset_xmit_status_check(_adapter *padapter)
 		rtw_hal_sreset_reset(padapter);
 	}
 
-#ifdef CONFIG_USB_HCI
 	//total xmit irp = 4
 	//DBG_8192C("==>%s free_xmitbuf_cnt(%d),txirp_cnt(%d)\n",__FUNCTION__,pxmitpriv->free_xmitbuf_cnt,pxmitpriv->txirp_cnt);
 	//if(pxmitpriv->txirp_cnt == NR_XMITBUFF+1)
@@ -70,7 +69,6 @@ void rtl8723b_sreset_xmit_status_check(_adapter *padapter)
 			}
 		}
 	}
-#endif // #ifdef CONFIG_USB_HCI
 
 	if (psrtpriv->dbg_trigger_point == SRESET_TGP_XMIT_STATUS) {
 		psrtpriv->dbg_trigger_point = SRESET_TGP_NULL;

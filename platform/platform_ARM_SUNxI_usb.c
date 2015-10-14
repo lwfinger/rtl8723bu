@@ -53,7 +53,6 @@ int platform_wifi_power_on(void)
 	int ret = 0;
 
 #ifdef CONFIG_PLATFORM_ARM_SUNxI
-#ifndef CONFIG_RTL8723A
 	{
 		/* ----------get usb_wifi_usbc_num------------- */
 		ret = script_parser_fetch("usb_wifi_para", "usb_wifi_usbc_num", (int *)&usb_wifi_host, 64);
@@ -65,7 +64,6 @@ int platform_wifi_power_on(void)
 		DBG_8192C("sw_usb_enable_hcd: usbc_num = %d\n", usb_wifi_host);
 		sw_usb_enable_hcd(usb_wifi_host);
 	}
-#endif //CONFIG_RTL8723A
 #endif //CONFIG_PLATFORM_ARM_SUNxI
 
 #if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
@@ -82,10 +80,6 @@ int platform_wifi_power_on(void)
 		printk("sw_usb_enable_hcd: usbc_num = %d\n", item.val);
 		wifi_pm_power(1);
 		mdelay(10);
-	
-		#if !(defined(CONFIG_RTL8723A)) && !(defined(CONFIG_RTL8723B))
-		sw_usb_enable_hcd(item.val);
-		#endif
 	}
 #endif //defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
 
@@ -103,10 +97,6 @@ int platform_wifi_power_on(void)
 		printk("sw_usb_enable_hcd: usbc_num = %d\n", item.val);
 		wifi_pm_power(1);
 		mdelay(10);
-	
-		#if !(defined(CONFIG_RTL8723A)) && !(defined(CONFIG_RTL8723B))
-		sunxi_usb_enable_hcd(item.val);
-		#endif
 	}
 #endif //CONFIG_PLATFORM_ARM_SUN8I
 
@@ -118,23 +108,15 @@ void platform_wifi_power_off(void)
 {
 
 #ifdef CONFIG_PLATFORM_ARM_SUNxI
-#ifndef CONFIG_RTL8723A
 	DBG_8192C("sw_usb_disable_hcd: usbc_num = %d\n", usb_wifi_host);
 	sw_usb_disable_hcd(usb_wifi_host);
-#endif //ifndef CONFIG_RTL8723A
 #endif	//CONFIG_PLATFORM_ARM_SUNxI
 
 #if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
-	#if !(defined(CONFIG_RTL8723A)) && !(defined(CONFIG_RTL8723B))
-	sw_usb_disable_hcd(item.val);
-	#endif
 	wifi_pm_power(0);
 #endif //defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
 
 #if defined(CONFIG_PLATFORM_ARM_SUN8I)
-	#if !(defined(CONFIG_RTL8723A)) && !(defined(CONFIG_RTL8723B))
-	sunxi_usb_disable_hcd(item.val);
-	#endif
 	wifi_pm_power(0);
 #endif //defined(CONFIG_PLATFORM_ARM_SUN8I) 
 

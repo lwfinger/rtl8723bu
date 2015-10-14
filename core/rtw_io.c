@@ -51,17 +51,11 @@ jackson@realtek.com.tw
 
 #include <drv_types.h>
 
-#ifdef CONFIG_SDIO_HCI
-#define rtw_le16_to_cpu(val)		val
-#define rtw_le32_to_cpu(val)		val
-#define rtw_cpu_to_le16(val)		val
-#define rtw_cpu_to_le32(val)		val
-#else
+
 #define rtw_le16_to_cpu(val)		le16_to_cpu(val)
 #define rtw_le32_to_cpu(val)		le32_to_cpu(val)
 #define rtw_cpu_to_le16(val)		cpu_to_le16(val)
 #define rtw_cpu_to_le32(val)		cpu_to_le32(val)
-#endif
 
 
 u8 _rtw_read8(_adapter *adapter, u32 addr)
@@ -174,27 +168,6 @@ int _rtw_writeN(_adapter *adapter, u32 addr ,u32 length , u8 *pdata)
 	return RTW_STATUS_CODE(ret);
 }
 
-#ifdef CONFIG_SDIO_HCI
-u8 _rtw_sd_f0_read8(_adapter *adapter, u32 addr)
-{
-	u8 r_val = 0x00;
-	struct io_priv *pio_priv = &adapter->iopriv;
-	struct intf_hdl *pintfhdl = &(pio_priv->intf);
-	u8 (*_sd_f0_read8)(struct intf_hdl *pintfhdl, u32 addr);
-
-	_func_enter_;
-	_sd_f0_read8 = pintfhdl->io_ops._sd_f0_read8;
-
-	if (_sd_f0_read8)
-		r_val = _sd_f0_read8(pintfhdl, addr);
-	else
-		DBG_871X_LEVEL(_drv_warning_, FUNC_ADPT_FMT" _sd_f0_read8 callback is NULL\n", FUNC_ADPT_ARG(adapter));
-
-	_func_exit_;
-	return r_val;
-}
-#endif /* CONFIG_SDIO_HCI */
-
 int _rtw_write8_async(_adapter *adapter, u32 addr, u8 val)
 {
 	//struct	io_queue	*pio_queue = (struct io_queue *)adapter->pio_queue;
@@ -210,6 +183,7 @@ int _rtw_write8_async(_adapter *adapter, u32 addr, u8 val)
 
 	return RTW_STATUS_CODE(ret);
 }
+
 int _rtw_write16_async(_adapter *adapter, u32 addr, u16 val)
 {
 	//struct	io_queue	*pio_queue = (struct io_queue *)adapter->pio_queue;

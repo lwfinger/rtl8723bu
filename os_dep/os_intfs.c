@@ -174,11 +174,7 @@ int rtw_hwpwrp_detect = 1;
 int rtw_hwpwrp_detect = 0; //HW power  ping detect 0:disable , 1:enable
 #endif
 
-#ifdef CONFIG_USB_HCI
 int rtw_hw_wps_pbc = 1;
-#else
-int rtw_hw_wps_pbc = 0;
-#endif
 
 #ifdef CONFIG_TX_MCAST2UNI
 int rtw_mc2u_disable = 0;
@@ -364,13 +360,8 @@ int rtw_tx_pwr_by_rate = 1;
 int rtw_tx_pwr_lmt_enable = 0;
 int rtw_tx_pwr_by_rate = 1;
 #else //eFuse: Regulatory selection=2
-#ifdef CONFIG_PCI_HCI
-int rtw_tx_pwr_lmt_enable = 2; // 2- Depend on efuse
-int rtw_tx_pwr_by_rate = 2;// 2- Depend on efuse
-#else // USB & SDIO
 int rtw_tx_pwr_lmt_enable = 0;
 int rtw_tx_pwr_by_rate = 0;
-#endif
 #endif
 
 module_param(rtw_tx_pwr_lmt_enable, int, 0644);
@@ -930,15 +921,9 @@ u32 rtw_start_drv_threads(_adapter *padapter)
 
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("+rtw_start_drv_threads\n"));
 #ifdef CONFIG_XMIT_THREAD_MODE
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	if(padapter->adapter_type == PRIMARY_ADAPTER){
-#endif
 	padapter->xmitThread = kthread_run(rtw_xmit_thread, padapter, "RTW_XMIT_THREAD");
 	if(IS_ERR(padapter->xmitThread))
 		_status = _FAIL;
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	}
-#endif		// CONFIG_SDIO_HCI+CONFIG_CONCURRENT_MODE
 #endif
 
 #ifdef CONFIG_RECV_THREAD_MODE
@@ -991,10 +976,6 @@ void rtw_stop_drv_threads (_adapter *padapter)
 
 #ifdef CONFIG_XMIT_THREAD_MODE
 	// Below is to termindate tx_thread...
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	// Only wake-up primary adapter
-	if(padapter->adapter_type == PRIMARY_ADAPTER)
-#endif  //SDIO_HCI + CONCURRENT
 	{
 	_rtw_up_sema(&padapter->xmitpriv.xmit_sema);
 	_rtw_down_sema(&padapter->xmitpriv.terminate_xmitthread_sema);
@@ -3134,28 +3115,6 @@ int rtw_suspend_wow(_adapter *padapter)
 		}
 		#endif // CONFIG_CONCURRENT_MODE
 
-		//#ifdef CONFIG_LPS
-		//rtw_set_ps_mode(padapter, PS_MODE_ACTIVE, 0, 0, "WOWLAN");
-		//#endif
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		// 2. disable interrupt
-		if (padapter->intf_stop) {
-			padapter->intf_stop(padapter);
-		}
-
-
-		#ifdef CONFIG_CONCURRENT_MODE
-		if (rtw_buddy_adapter_up(padapter)) { //free buddy adapter's resource
-			padapter->pbuddy_adapter->intf_stop(padapter->pbuddy_adapter);
-		}
-		#endif
-
-		// 2.1 clean interupt
-		if (padapter->HalFunc.clear_interrupt)
-			padapter->HalFunc.clear_interrupt(padapter);
-#endif //CONFIG_SDIO_HCI
-
 		// 2.2 free irq
 		//sdio_free_irq(adapter_to_dvobj(padapter));
 		if(padapter->intf_free_irq)
@@ -3266,25 +3225,6 @@ int rtw_suspend_ap_wow(_adapter *padapter)
 		padapter->pbuddy_adapter->bDriverStopped = _FALSE;	//for 32k command
 	}
 	#endif // CONFIG_CONCURRENT_MODE
-
-	//#ifdef CONFIG_LPS
-	//rtw_set_ps_mode(padapter, PS_MODE_ACTIVE, 0, 0, "WOWLAN");
-	//#endif
-
-#ifdef CONFIG_SDIO_HCI
-	// 2. disable interrupt
-	rtw_hal_disable_interrupt(padapter); // It need wait for leaving 32K.
-
-	#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_buddy_adapter_up(padapter)) { //free buddy adapter's resource
-		padapter->pbuddy_adapter->intf_stop(padapter->pbuddy_adapter);
-	}
-	#endif
-
-	// 2.1 clean interupt
-	if (padapter->HalFunc.clear_interrupt)
-		padapter->HalFunc.clear_interrupt(padapter);
-#endif //CONFIG_SDIO_HCI
 
 	// 2.2 free irq
 	//sdio_free_irq(adapter_to_dvobj(padapter));
@@ -3572,21 +3512,6 @@ _func_enter_;
 #endif //CONFIG_LPS
 
 		pwrpriv->bFwCurrentInPSMode = _FALSE;
-
-#ifdef CONFIG_SDIO_HCI
-		if (padapter->intf_stop) {
-			padapter->intf_stop(padapter);
-		}
-
-		#ifdef CONFIG_CONCURRENT_MODE
-		if (rtw_buddy_adapter_up(padapter)) { //free buddy adapter's resource
-			padapter->pbuddy_adapter->intf_stop(padapter->pbuddy_adapter);
-		}
-		#endif
-
-		if (padapter->HalFunc.clear_interrupt)
-			padapter->HalFunc.clear_interrupt(padapter);
-#endif //CONFIG_SDIO_HCI
 
 		//if (sdio_alloc_irq(adapter_to_dvobj(padapter)) != _SUCCESS) {
 		if((padapter->intf_alloc_irq) && (padapter->intf_alloc_irq(adapter_to_dvobj(padapter)) != _SUCCESS)){

@@ -26,12 +26,6 @@
 #include <hal_btcoex.h>
 #endif
 
-#ifdef CONFIG_SDIO_HCI
-#include <hal_sdio.h>
-#endif
-#ifdef CONFIG_GSPI_HCI
-#include <hal_gspi.h>
-#endif
 //
 // <Roger_Notes> For RTL8723 WiFi/BT/GPS multi-function configuration. 2010.10.06.
 //
@@ -74,7 +68,6 @@ typedef	enum _INTERFACE_SELECT_USB{
 	INTF_SEL5_USB_Combo_MF	= 5,		// USB WiFi+BT Multi-Function Combo, i.e., Proprietary layout(AS-VAU) which is the same as SDIO card
 } INTERFACE_SELECT_USB, *PINTERFACE_SELECT_USB;
 
-#ifdef CONFIG_USB_HCI
 //should be sync with INTERFACE_SELECT_USB
 typedef	enum _BOARD_TYPE_8192CUSB{
 	BOARD_USB_DONGLE 			= 0,		// USB dongle
@@ -88,7 +81,6 @@ typedef	enum _BOARD_TYPE_8192CUSB{
 	(pHalData->BoardType == BOARD_MINICARD||\
 	pHalData->BoardType == BOARD_USB_SOLO||\
 	pHalData->BoardType == BOARD_USB_COMBO)
-#endif
 
 typedef enum _RT_AMPDU_BRUST_MODE{
 	RT_AMPDU_BRUST_NONE		= 0,
@@ -133,7 +125,7 @@ typedef enum _RT_AMPDU_BRUST_MODE{
 //#define HP_THERMAL_NUM		8
 //###### duplicate code,will move to ODM #########
 
-#if defined(CONFIG_RTL8192D) || defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_BT_COEXIST)
 typedef enum _MACPHY_MODE_8192D{
 	SINGLEMAC_SINGLEPHY,	//SMSP
 	DUALMAC_DUALPHY,		//DMDP
@@ -289,14 +281,8 @@ typedef struct hal_com_data
 	//
 	u16	EEPROMVID;
 	u16	EEPROMSVID;
-#ifdef CONFIG_USB_HCI
 	u16	EEPROMPID;
 	u16	EEPROMSDID;
-#endif
-#ifdef CONFIG_PCI_HCI
-	u16	EEPROMDID;
-	u16	EEPROMSMID;
-#endif
 
 	u8	EEPROMCustomerID;
 	u8	EEPROMSubCustomerID;
@@ -503,40 +489,6 @@ typedef struct hal_com_data
 
 	RT_AMPDU_BRUST		AMPDUBurstMode; //92C maybe not use, but for compile successfully
 
-#if defined (CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	//
-	// For SDIO Interface HAL related
-	//
-
-	//
-	// SDIO ISR Related
-	//
-//	u32			IntrMask[1];
-//	u32			IntrMaskToSet[1];
-//	LOG_INTERRUPT		InterruptLog;
-	u32			sdio_himr;
-	u32			sdio_hisr;
-
-	//
-	// SDIO Tx FIFO related.
-	//
-	// HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg
-	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
-	_lock		SdioTxFIFOFreePageLock;
-	u8			SdioTxOQTMaxFreeSpace;
-	u8			SdioTxOQTFreeSpace;
-
-
-	//
-	// SDIO Rx FIFO related.
-	//
-	u8			SdioRxFIFOCnt;
-	u16			SdioRxFIFOSize;
-
-	u32			sdio_tx_max_len[SDIO_MAX_TX_QUEUE];// H, N, L, used for sdio tx aggregation max length per queue
-#endif //CONFIG_SDIO_HCI
-
-#ifdef CONFIG_USB_HCI
 	u32	UsbBulkOutSize;
 	BOOLEAN		bSupportUSB3;
 
@@ -562,38 +514,6 @@ typedef struct hal_com_data
 	u8	RegAcUsbDmaSize;
 	u8	RegAcUsbDmaTime;
 	#endif//CONFIG_USB_RX_AGGREGATION
-#endif //CONFIG_USB_HCI
-
-
-#ifdef CONFIG_PCI_HCI
-	//
-	// EEPROM setting.
-	//
-	u16	EEPROMChannelPlan;
-
-	u8	EEPROMTSSI[2];
-	u8	EEPROMBoardType;
-	u32	TransmitConfig;
-
-	u32	IntrMaskToSet[2];
-	u32	IntArray[2];
-	u32	IntrMask[2];
-	u32	SysIntArray[1];
-	u32	SysIntrMask[1];
-	u32	IntrMaskReg[2];
-	u32	IntrMaskDefault[2];
-
-	BOOLEAN	 bL1OffSupport;
-	BOOLEAN bSupportBackDoor;
-
-	u8	bDefaultAntenna;
-	//u8	bIQKInitialized;
-
-	u8	bInterruptMigration;
-	u8	bDisableTxInt;
-
-	u16	RxTag;
-#endif //CONFIG_PCI_HCI
 
 	struct dm_priv	dmpriv;
 	DM_ODM_T		odmpriv;
@@ -604,18 +524,11 @@ typedef struct hal_com_data
 #ifdef CONFIG_BT_COEXIST
 	// For bluetooth co-existance
 	BT_COEXIST		bt_coexist;
-#ifdef CONFIG_RTL8723A
-	u8				bAntennaDetected;
-#endif // CONFIG_RTL8723A
 #endif // CONFIG_BT_COEXIST
 
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
-	#ifndef CONFIG_PCI_HCI	// mutual exclusive with PCI -- so they're SDIO and GSPI
 	// Interrupt relatd register information.
 	u32			SysIntrStatus;
 	u32			SysIntrMask;
-	#endif
-#endif //endif CONFIG_RTL8723A
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
 	char	para_file_buf[MAX_PARA_FILE_BUF_LEN];

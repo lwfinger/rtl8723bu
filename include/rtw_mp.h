@@ -38,8 +38,6 @@ struct mp_xmit_frame
 
 	_adapter *padapter;
 
-#ifdef CONFIG_USB_HCI
-
 	//insert urb, irp, and irpcnt info below...
 	//max frag_cnt = 8
 
@@ -51,7 +49,6 @@ struct mp_xmit_frame
 	sint last[8];
 	uint irpcnt;
 	uint fragcnt;
-#endif /* CONFIG_USB_HCI */
 
 	uint mem[(MAX_MP_XMITBUF_SZ >> 2)];
 };
@@ -80,8 +77,6 @@ struct mp_tx
 	u32 buf_size, write_size;
 	_thread_hdl_ PktTxThread;
 };
-
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 
 #define MP_MAX_LINES		1000
 #define MP_MAX_LINES_BYTES	256
@@ -225,17 +220,9 @@ typedef struct _MPT_CONTEXT
     u1Byte          mptOutBuf[100];
 
 }MPT_CONTEXT, *PMPT_CONTEXT;
-#endif
-//#endif
 
 /* E-Fuse */
-#ifdef CONFIG_RTL8723A
-#define EFUSE_MAP_SIZE		256
-#endif
-#ifdef CONFIG_RTL8723B
 #define EFUSE_MAP_SIZE		512
-#endif
-
 #define EFUSE_MAX_SIZE		512
 /* end of E-Fuse */
 
@@ -548,13 +535,8 @@ typedef enum	_MPT_TXPWR_DEF{
 
 #ifdef CONFIG_RF_GAIN_OFFSET
 
-#if defined(CONFIG_RTL8723B)
 	#define		REG_RF_BB_GAIN_OFFSET	0x7f
 	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#else
-	#define		REG_RF_BB_GAIN_OFFSET	0x55
-	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#endif	//CONFIG_RTL8723A
 
 #endif //CONFIG_RF_GAIN_OFFSET
 

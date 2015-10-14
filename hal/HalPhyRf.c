@@ -42,28 +42,8 @@ void ConfigureTxpowerTrack(
 	OUT	PTXPWRTRACK_CFG	pConfig
 	)
 {
-#if RTL8192E_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8192E)
-		ConfigureTxpowerTrack_8192E(pConfig);
-#endif
-#if RTL8821A_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8821)
-		ConfigureTxpowerTrack_8821A(pConfig);
-#endif
-#if RTL8812A_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8812)
-		ConfigureTxpowerTrack_8812A(pConfig);
-#endif
-#if RTL8188E_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8188E)
-		ConfigureTxpowerTrack_8188E(pConfig);
-#endif
-
-#if RTL8723B_SUPPORT
 	if(pDM_Odm->SupportICType==ODM_RTL8723B)
 		ConfigureTxpowerTrack_8723B(pConfig);
-#endif
-
 }
 
 //======================================================================
@@ -448,15 +428,6 @@ ODM_TXPowerTrackingCallback_ThermalMeter(
 		pDM_Odm->RFCalibrateInfo.ThermalValue = ThermalValue;         //Record last Power Tracking Thermal Value
 
 	}
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-#if (RTL8723B_SUPPORT == 0)
-	// Delta temperature is equal to or larger than 20 centigrade (When threshold is 8).
-	if ((delta_IQK >= c.Threshold_IQK)) {
-		if ( ! pDM_Odm->RFCalibrateInfo.bIQKInProgress)
-			(*c.DoIQK)(pDM_Odm, delta_IQK, ThermalValue, 8);
-	}
-#endif
-#endif
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_TX_PWR_TRACK, ODM_DBG_LOUD,("<===ODM_TXPowerTrackingCallback_ThermalMeter\n"));
 

@@ -777,14 +777,7 @@ PHY_BBConfig8723B(
 	rtw_write16(Adapter, REG_SYS_FUNC_EN, (u16)(RegVal|BIT13|BIT0|BIT1));
 
 	// switch ant to BT
-#ifdef CONFIG_USB_HCI
 	rtw_write32(Adapter, 0x948, 0x0);	// USB use Antenna S0
-#else
-	if (pHalData->ant_path == ODM_RF_PATH_A)
-		rtw_write32(Adapter, 0x948, 0x280);
-	else
-		rtw_write32(Adapter, 0x948, 0x0);
-#endif
 
 	rtw_write8(Adapter, REG_RF_CTRL, RF_EN|RF_RSTB|RF_SDMRSTB);
 

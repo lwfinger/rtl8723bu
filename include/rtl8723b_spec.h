@@ -210,9 +210,7 @@
 //-----------------------------------------------------
 #ifdef CONFIG_RF_GAIN_OFFSET
 
-#ifdef CONFIG_RTL8723B
 #define EEPROM_RF_GAIN_OFFSET			0xC1
-#endif
 
 #define EEPROM_RF_GAIN_VAL				0x1F6
 #endif //CONFIG_RF_GAIN_OFFSET
@@ -269,14 +267,6 @@
 #define	IMR_TXFOVW_8723B					BIT9			// Transmit FIFO Overflow
 #define	IMR_RXFOVW_8723B					BIT8			// Receive FIFO Overflow
 
-#ifdef CONFIG_PCI_HCI
-//#define IMR_RX_MASK		(IMR_ROK_8723B|IMR_RDU_8723B|IMR_RXFOVW_8723B)
-#define IMR_TX_MASK			(IMR_VODOK_8723B|IMR_VIDOK_8723B|IMR_BEDOK_8723B|IMR_BKDOK_8723B|IMR_MGNTDOK_8723B|IMR_HIGHDOK_8723B)
-
-#define RT_BCN_INT_MASKS	(IMR_BCNDMAINT0_8723B | IMR_TXBCN0OK_8723B | IMR_TXBCN0ERR_8723B | IMR_BCNDERR0_8723B)
-
-#define RT_AC_INT_MASKS	(IMR_VIDOK_8723B | IMR_VODOK_8723B | IMR_BEDOK_8723B|IMR_BKDOK_8723B)
-#endif
 
 //========================================================
 // General definitions

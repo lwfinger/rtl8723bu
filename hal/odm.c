@@ -273,11 +273,6 @@ odm_HWSetting(
 	IN		PDM_ODM_T		pDM_Odm
 	)
 {
-#if (RTL8821A_SUPPORT == 1)
-	if(pDM_Odm->SupportICType & ODM_RTL8821)
-		odm_HWSetting_8821A(pDM_Odm);
-#endif
-
 }
 
 //
@@ -311,42 +306,9 @@ ODM_DMInit(
 		odm_DynamicBBPowerSavingInit(pDM_Odm);
 		odm_DynamicTxPowerInit(pDM_Odm);
 
-#if (RTL8188E_SUPPORT == 1)
-		if(pDM_Odm->SupportICType==ODM_RTL8188E)
-		{
-			odm_PrimaryCCA_Init(pDM_Odm);
-			ODM_RAInfo_Init_all(pDM_Odm);
-		}
-#endif
-
 #if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
-
-	#if (RTL8723B_SUPPORT == 1)
 		if(pDM_Odm->SupportICType == ODM_RTL8723B)
 			odm_SwAntDetectInit(pDM_Odm);
-	#endif
-
-	#if (RTL8192E_SUPPORT == 1)
-		if(pDM_Odm->SupportICType==ODM_RTL8192E)
-			odm_PrimaryCCA_Check_Init(pDM_Odm);
-	#endif
-
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	#if (RTL8723A_SUPPORT == 1)
-		if(pDM_Odm->SupportICType == ODM_RTL8723A)
-			odm_PSDMonitorInit(pDM_Odm);
-	#endif
-
-	#if (RTL8192D_SUPPORT == 1)
-		if(pDM_Odm->SupportICType==ODM_RTL8192D)
-			odm_PathDivInit_92D(pDM_Odm);
-	#endif
-
-	#if ((RTL8192C_SUPPORT == 1) || (RTL8192D_SUPPORT == 1))
-		if(pDM_Odm->SupportICType & (ODM_RTL8192C|ODM_RTL8192D))
-			odm_RXHPInit(pDM_Odm);
-	#endif
-#endif
 #endif
 
 	}
@@ -414,30 +376,6 @@ ODM_DMWatchdog(
 #endif
 	if(pDM_Odm->SupportICType & ODM_IC_11N_SERIES)
 	{
-#if (RTL8192D_SUPPORT == 1)
-	        if(pDM_Odm->SupportICType==ODM_RTL8192D)
-			ODM_DynamicEarlyMode(pDM_Odm);
-#endif
-
-#if (RTL8188E_SUPPORT == 1)
-	        if(pDM_Odm->SupportICType==ODM_RTL8188E)
-	                odm_DynamicPrimaryCCA(pDM_Odm);
-#endif
-
-#if( DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
-
-	#if (RTL8192E_SUPPORT == 1)
-		if(pDM_Odm->SupportICType==ODM_RTL8192E)
-			odm_DynamicPrimaryCCA_Check(pDM_Odm);
-	#endif
-
-#if( DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	#if ((RTL8192C_SUPPORT == 1) || (RTL8192D_SUPPORT == 1))
-		if(pDM_Odm->SupportICType & (ODM_RTL8192C|ODM_RTL8192D))
-			odm_RXHP(pDM_Odm);
-	#endif
-#endif
-#endif
 	}
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
@@ -894,17 +832,6 @@ ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm )
 		(RT_WORKITEM_CALL_BACK)ODM_UpdateInitRateWorkItemCallback,
 		(PVOID)pAdapter,
 		"RaRptWorkitem");
-
-#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-#if (RTL8188E_SUPPORT == 1)
-	ODM_InitializeWorkItem(
-		pDM_Odm,
-		&(pDM_Odm->FastAntTrainingWorkitem),
-		(RT_WORKITEM_CALL_BACK)odm_FastAntTrainingWorkItemCallback,
-		(PVOID)pAdapter,
-		"FastAntTrainingWorkitem");
-#endif
-#endif
 	ODM_InitializeWorkItem(
 		pDM_Odm,
 		&(pDM_Odm->DM_RXHP_Table.PSDTimeWorkitem),
@@ -1105,28 +1032,6 @@ odm_IQCalibrate(
 		return;
 	else if(IS_HARDWARE_TYPE_8812AU(Adapter))
 		return;
-#if (RTL8821A_SUPPORT == 1)
-	if(pDM_Odm->bLinked)
-	{
-		if((*pDM_Odm->pChannel != pDM_Odm->preChannel) && (!*pDM_Odm->pbScanInProcess))
-		{
-			pDM_Odm->preChannel = *pDM_Odm->pChannel;
-			pDM_Odm->LinkedInterval = 0;
-		}
-
-		if(pDM_Odm->LinkedInterval < 3)
-			pDM_Odm->LinkedInterval++;
-
-		if(pDM_Odm->LinkedInterval == 2)
-		{
-			// Mark out IQK flow to prevent tx stuck. by Maddest 20130306
-			// Open it verified by James 20130715
-			PHY_IQCalibrate_8821A(pDM_Odm, FALSE);
-		}
-	}
-	else
-		pDM_Odm->LinkedInterval = 0;
-#endif
 }
 
 
@@ -1184,9 +1089,6 @@ odm_AntennaDiversityInit(
 
 	if(pDM_Odm->SupportICType & (ODM_OLD_IC_ANTDIV_SUPPORT))
 	{
-		#if (RTL8192C_SUPPORT==1)
-		ODM_OldIC_AntDiv_Init(pDM_Odm);
-		#endif
 	}
 	else
 	{
@@ -1207,9 +1109,6 @@ odm_AntennaDiversity(
 
 	if(pDM_Odm->SupportICType & (ODM_OLD_IC_ANTDIV_SUPPORT))
 	{
-		#if (RTL8192C_SUPPORT==1)
-		ODM_OldIC_AntDiv(pDM_Odm);
-		#endif
 	}
 	else
 	{
@@ -1226,9 +1125,7 @@ odm_SwAntDetectInit(
 	)
 {
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-#if (RTL8723B_SUPPORT == 1)
 	pDM_SWAT_Table->SWAS_NoLink_BK_Reg92c = ODM_Read4Byte(pDM_Odm, rDPDT_control);
-#endif
 	pDM_SWAT_Table->PreAntenna = MAIN_ANT;
 	pDM_SWAT_Table->CurAntenna = MAIN_ANT;
 	pDM_SWAT_Table->SWAS_NoLink_State = 0;
@@ -1485,8 +1382,7 @@ ODM_SingleDualAntennaDetection(
 	CurrentChannel = ODM_GetRFReg(pDM_Odm, ODM_RF_PATH_A, ODM_CHANNEL, bRFRegOffsetMask);
 	RfLoopReg = ODM_GetRFReg(pDM_Odm, ODM_RF_PATH_A, 0x00, bRFRegOffsetMask);
 	if(!(pDM_Odm->SupportICType == ODM_RTL8723B))
-	ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, Antenna_A);  // change to Antenna A
-#if (RTL8723B_SUPPORT == 1)
+		ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, Antenna_A);  // change to Antenna A
 	else
 	{
 		Reg92c = ODM_GetBBReg(pDM_Odm, 0x92c, bMaskDWord);
@@ -1497,7 +1393,7 @@ ODM_SingleDualAntennaDetection(
 		ODM_SetBBReg(pDM_Odm, rS0S1_PathSwitch, 0x3ff, 0x000);
 		ODM_SetBBReg(pDM_Odm, AGC_table_select, BIT31, 0x0);
 	}
-#endif
+
 	ODM_StallExecution(10);
 
 	//Store A Path Register 88c, c08, 874, c50
@@ -1586,10 +1482,8 @@ ODM_SingleDualAntennaDetection(
 	 // change to Antenna B
 	if(pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8192C))
 		ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, Antenna_B);
-#if (RTL8723B_SUPPORT == 1)
 	else if(pDM_Odm->SupportICType == ODM_RTL8723B)
 		ODM_SetBBReg(pDM_Odm, rDPDT_control, 0x3, 0x2);
-#endif
 
 	ODM_StallExecution(10);
 
@@ -1605,10 +1499,8 @@ ODM_SingleDualAntennaDetection(
 	// change to open case
 	if(pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8192C))
 		ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, 0);  // change to Antenna A
-#if (RTL8723B_SUPPORT == 1)
 	else if(pDM_Odm->SupportICType == ODM_RTL8723B)
 		ODM_SetBBReg(pDM_Odm, rDPDT_control, 0x3, 0x0);
-#endif
 
 	ODM_StallExecution(10);
 
@@ -1627,7 +1519,6 @@ ODM_SingleDualAntennaDetection(
 	//1 Return to antanna A
 	if(pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8192C))
 		ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, Antenna_A);  // change to Antenna A
-#if (RTL8723B_SUPPORT == 1)
 	else if(pDM_Odm->SupportICType == ODM_RTL8723B)
 	{
 		// external DPDT
@@ -1637,7 +1528,7 @@ ODM_SingleDualAntennaDetection(
 		ODM_SetBBReg(pDM_Odm, rS0S1_PathSwitch, bMaskDWord, Reg948);
 		ODM_SetBBReg(pDM_Odm, AGC_table_select, bMaskDWord, Regb2c);
 	}
-#endif
+
 	ODM_SetBBReg(pDM_Odm, rFPGA0_AnalogParameter4, bMaskDWord, Reg88c);
 	ODM_SetBBReg(pDM_Odm, rOFDM0_TRMuxPar, bMaskDWord, Regc08);
 	ODM_SetBBReg(pDM_Odm, rFPGA0_XCD_RFInterfaceSW, bMaskDWord, Reg874);

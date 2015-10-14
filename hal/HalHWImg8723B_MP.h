@@ -18,7 +18,6 @@
 *
 ******************************************************************************/
 
-#if (RTL8723B_SUPPORT==1)
 #ifndef __INC_MP_HW_IMG_8723B_H
 #define __INC_MP_HW_IMG_8723B_H
 
@@ -33,5 +32,4 @@ extern const u8 Rtl8723BFwMPImgArray[Rtl8723BMPImgArrayLength];
 extern const u32 Rtl8723B_PHYREG_Array_MP[Rtl8723B_PHYREG_Array_MPLength];
 #endif //CONFIG_MP_INCLUDED
 
-#endif
 #endif

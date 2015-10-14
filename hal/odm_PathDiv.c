@@ -42,10 +42,6 @@ odm_PathDiversityInit(
 		return;
 	}
 
-	#if RTL8812A_SUPPORT
-	if(pDM_Odm->SupportICType & ODM_RTL8812)
-		ODM_PathDiversityInit_8812A(pDM_Odm);
-	#endif
 #endif
 }
 
@@ -62,11 +58,6 @@ odm_PathDiversity(
 		return;
 	}
 
-#if RTL8812A_SUPPORT
-
-	if(pDM_Odm->SupportICType & ODM_RTL8812)
-		ODM_PathDiversity_8812A(pDM_Odm);
-#endif
 #endif  //(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 }
 

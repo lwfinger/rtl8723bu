@@ -71,26 +71,6 @@ void dump_log_level(void *sel)
 	DBG_871X_SEL_NL(sel, "log_level:%d\n", GlobalDebugLevel);
 }
 
-#ifdef CONFIG_SDIO_HCI
-void sd_f0_reg_dump(void *sel, _adapter *adapter)
-{
-	int i;
-
-	for(i=0x0;i<=0xff;i++)
-	{
-		if(i%16==0)
-			DBG_871X_SEL_NL(sel, "0x%02x ",i);
-
-		DBG_871X_SEL(sel, "%02x ", rtw_sd_f0_read8(adapter, i));
-
-		if(i%16==15)
-			DBG_871X_SEL(sel, "\n");
-		else if(i%8==7)
-			DBG_871X_SEL(sel, "\t");
-	}
-}
-#endif /* CONFIG_SDIO_HCI */
-
 void mac_reg_dump(void *sel, _adapter *adapter)
 {
 	int i, j = 1;
@@ -653,9 +633,7 @@ int proc_get_trx_info(struct seq_file *m, void *v)
 		DBG_871X_SEL_NL(m, "%d, hwq.accnt=%d\n", i, phwxmit->accnt);
 	}
 
-#ifdef CONFIG_USB_HCI
 	DBG_871X_SEL_NL(m, "rx_urb_pending_cn=%d\n", ATOMIC_READ(&(precvpriv->rx_pending_cnt)));
-#endif
 
 	return 0;
 }
@@ -1843,92 +1821,6 @@ ssize_t proc_set_sreset(struct file *file, const char __user *buffer, size_t cou
 
 }
 #endif /* DBG_CONFIG_ERROR_DETECT */
-
-#ifdef CONFIG_PCI_HCI
-
-int proc_get_rx_ring(struct seq_file *m, void *v)
-{
-	_irqL irqL;
-	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *) rtw_netdev_priv(dev);
-	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
-	struct recv_priv *precvpriv = &padapter->recvpriv;
-	struct rtw_rx_ring *rx_ring = &precvpriv->rx_ring[RX_MPDU_QUEUE];
-	int i, j;
-
-	DBG_871X_SEL_NL(m, "rx ring (%p)\n", rx_ring);
-	DBG_871X_SEL_NL(m, "  dma: 0x%08x\n", (int) rx_ring->dma);
-	DBG_871X_SEL_NL(m, "  idx: %d\n", rx_ring->idx);
-
-	_enter_critical(&pdvobjpriv->irq_th_lock, &irqL);
-	for (i=0; i<precvpriv->rxringcount; i++)
-	{
-		struct recv_stat *entry = &rx_ring->desc[i];
-		struct sk_buff *skb = rx_ring->rx_buf[i];
-
-		DBG_871X_SEL_NL(m, "  desc[%03d]: %p, rx_buf[%03d]: 0x%08x\n",
-			i, entry, i, cpu_to_le32(*((dma_addr_t *)skb->cb)));
-
-		for (j=0; j<sizeof(*entry)/4; j++)
-		{
-			if ((j % 4) == 0)
-				DBG_871X_SEL_NL(m, "  0x%03x", j);
-
-			DBG_871X_SEL_NL(m, " 0x%08x ", ((int *) entry)[j]);
-
-			if ((j % 4) == 3)
-				DBG_871X_SEL_NL(m, "\n");
-		}
-	}
-	_exit_critical(&pdvobjpriv->irq_th_lock, &irqL);
-
-	return 0;
-}
-
-int proc_get_tx_ring(struct seq_file *m, void *v)
-{
-	_irqL irqL;
-	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *) rtw_netdev_priv(dev);
-	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
-	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-	int i, j, k;
-
-	_enter_critical(&pdvobjpriv->irq_th_lock, &irqL);
-	for (i = 0; i < PCI_MAX_TX_QUEUE_COUNT; i++)
-	{
-		struct rtw_tx_ring *tx_ring = &pxmitpriv->tx_ring[i];
-
-		DBG_871X_SEL_NL(m, "tx ring[%d] (%p)\n", i, tx_ring);
-		DBG_871X_SEL_NL(m, "  dma: 0x%08x\n", (int) tx_ring->dma);
-		DBG_871X_SEL_NL(m, "  idx: %d\n", tx_ring->idx);
-		DBG_871X_SEL_NL(m, "  entries: %d\n", tx_ring->entries);
-//		DBG_871X_SEL_NL(m, "  queue: %d\n", tx_ring->queue);
-		DBG_871X_SEL_NL(m, "  qlen: %d\n", tx_ring->qlen);
-
-		for (j=0; j < pxmitpriv->txringcount[i]; j++)
-		{
-			struct tx_desc *entry = &tx_ring->desc[j];
-
-			DBG_871X_SEL_NL(m, "  desc[%03d]: %p\n", j, entry);
-			for (k=0; k < sizeof(*entry)/4; k++)
-			{
-				if ((k % 4) == 0)
-					DBG_871X_SEL_NL(m, "  0x%03x", k);
-
-				DBG_871X_SEL_NL(m, " 0x%08x ", ((int *) entry)[k]);
-
-				if ((k % 4) == 3)
-					DBG_871X_SEL_NL(m, "\n");
-			}
-		}
-	}
-	_exit_critical(&pdvobjpriv->irq_th_lock, &irqL);
-
-	return 0;
-}
-
-#endif
 
 #ifdef CONFIG_P2P_WOWLAN
 int proc_get_p2p_wowlan_info(struct seq_file *m, void *v)

@@ -24,8 +24,6 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723B_SUPPORT == 1)
-
  s1Byte
 odm_CCKRSSI_8723B(
 	IN		u1Byte	LNA_idx,
@@ -58,5 +56,3 @@ odm_CCKRSSI_8723B(
 	}
 	return	rx_pwr_all;
 }
-
-#endif		// end if RTL8723B
