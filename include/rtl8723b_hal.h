@@ -317,7 +317,9 @@ void rtl8723bs_cancle_checkbthang_workqueue(_adapter * adapter);
 void rtl8723bs_hal_check_bt_hang(_adapter * adapter);
 #endif
 
+#ifdef CONFIG_MP_INCLUDED
 int FirmwareDownloadBT(IN PADAPTER Adapter, PRT_MP_FIRMWARE pFirmware);
+#endif
 
 void CCX_FwC2HTxRpt_8723b(PADAPTER padapter, u8 *pdata, u8 len);
 #ifdef CONFIG_FW_C2H_DEBUG

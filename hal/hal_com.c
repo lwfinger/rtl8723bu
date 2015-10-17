@@ -21,8 +21,8 @@
 
 #include <drv_types.h>
 #include "hal_com_h2c.h"
-
 #include "hal_data.h"
+#include "rtw_mp.h"
 
 //#define CONFIG_GTK_OL_DBG
 
