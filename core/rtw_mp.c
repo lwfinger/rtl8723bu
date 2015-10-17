@@ -284,29 +284,26 @@ static VOID PHY_SetRFPathSwitch_default(
 
 void mpt_InitHWConfig(PADAPTER Adapter)
 {
-	if (IS_HARDWARE_TYPE_8723B(Adapter))
-	{
-		// TODO: <20130114, Kordan> The following setting is only for DPDT and Fixed board type.
-		// TODO:  A better solution is configure it according EFUSE during the run-time.
+	// TODO: <20130114, Kordan> The following setting is only for DPDT and Fixed board type.
+	// TODO:  A better solution is configure it according EFUSE during the run-time.
 
-		PHY_SetMacReg(Adapter, 0x64, BIT20, 0x0);		   //0x66[4]=0
-		PHY_SetMacReg(Adapter, 0x64, BIT24, 0x0);		   //0x66[8]=0
-		PHY_SetMacReg(Adapter, 0x40, BIT4, 0x0);		   //0x40[4]=0
-		PHY_SetMacReg(Adapter, 0x40, BIT3, 0x1);		   //0x40[3]=1
-		PHY_SetMacReg(Adapter, 0x4C, BIT24, 0x1);		   //0x4C[24:23]=10
-		PHY_SetMacReg(Adapter, 0x4C, BIT23, 0x0);		   //0x4C[24:23]=10
-		PHY_SetBBReg(Adapter, 0x944, BIT1|BIT0, 0x3);	  //0x944[1:0]=11
-		PHY_SetBBReg(Adapter, 0x930, bMaskByte0, 0x77);   //0x930[7:0]=77
-		PHY_SetMacReg(Adapter, 0x38, BIT11, 0x1);		   //0x38[11]=1
+	PHY_SetMacReg(Adapter, 0x64, BIT20, 0x0);		   //0x66[4]=0
+	PHY_SetMacReg(Adapter, 0x64, BIT24, 0x0);		   //0x66[8]=0
+	PHY_SetMacReg(Adapter, 0x40, BIT4, 0x0);		   //0x40[4]=0
+	PHY_SetMacReg(Adapter, 0x40, BIT3, 0x1);		   //0x40[3]=1
+	PHY_SetMacReg(Adapter, 0x4C, BIT24, 0x1);		   //0x4C[24:23]=10
+	PHY_SetMacReg(Adapter, 0x4C, BIT23, 0x0);		   //0x4C[24:23]=10
+	PHY_SetBBReg(Adapter, 0x944, BIT1|BIT0, 0x3);	  //0x944[1:0]=11
+	PHY_SetBBReg(Adapter, 0x930, bMaskByte0, 0x77);   //0x930[7:0]=77
+	PHY_SetMacReg(Adapter, 0x38, BIT11, 0x1);		   //0x38[11]=1
 
-		// TODO: <20130206, Kordan> The default setting is wrong, hard-coded here.
-		PHY_SetMacReg(Adapter, 0x778, 0x3, 0x3);					// Turn off hardware PTA control (Asked by Scott)
-		PHY_SetMacReg(Adapter, 0x64, bMaskDWord, 0x36000000);	 //Fix BT S0/S1
-		PHY_SetMacReg(Adapter, 0x948, bMaskDWord, 0x0);			   //Fix BT can't Tx
+	// TODO: <20130206, Kordan> The default setting is wrong, hard-coded here.
+	PHY_SetMacReg(Adapter, 0x778, 0x3, 0x3);					// Turn off hardware PTA control (Asked by Scott)
+	PHY_SetMacReg(Adapter, 0x64, bMaskDWord, 0x36000000);	 //Fix BT S0/S1
+	PHY_SetMacReg(Adapter, 0x948, bMaskDWord, 0x0);			   //Fix BT can't Tx
 
-		// <20130522, Kordan> Turn off equalizer to improve Rx sensitivity. (Asked by EEChou)
-		PHY_SetBBReg(Adapter, 0xA00, BIT8, 0x0);			//0xA01[0] = 0
-	}
+	// <20130522, Kordan> Turn off equalizer to improve Rx sensitivity. (Asked by EEChou)
+	PHY_SetBBReg(Adapter, 0xA00, BIT8, 0x0);			//0xA01[0] = 0
 }
 
 static void PHY_IQCalibrate(PADAPTER padapter, u8 bReCovery)
@@ -349,18 +346,16 @@ MPT_InitializeAdapter(
 	_init_timer( &pMptCtx->MPh2c_timeout_timer, pAdapter->pnetdev, MPh2c_timeout_handle, pAdapter );
 
 	rtl8723b_InitAntenna_Selection(pAdapter);
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-	{
-		mpt_InitHWConfig(pAdapter);
-		// <20130522, Kordan> Turn off equalizer to improve Rx sensitivity. (Asked by EEChou)
-		PHY_SetBBReg(pAdapter, 0xA00, BIT8, 0x0);		//0xA01[0] = 0
-		PHY_SetRFPathSwitch(pAdapter, 1/*pHalData->bDefaultAntenna*/); //default use Main
-		//<20130522, Kordan> 0x51 and 0x71 should be set immediately after path switched, or they might be overwritten.
-		if ((pHalData->PackageType == PACKAGE_TFBGA79) || (pHalData->PackageType == PACKAGE_TFBGA90))
-					PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, bRFRegOffsetMask, 0x6B10E);
-		else
-					PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, bRFRegOffsetMask, 0x6B04E);
-	}
+
+	mpt_InitHWConfig(pAdapter);
+	// <20130522, Kordan> Turn off equalizer to improve Rx sensitivity. (Asked by EEChou)
+	PHY_SetBBReg(pAdapter, 0xA00, BIT8, 0x0);		//0xA01[0] = 0
+	PHY_SetRFPathSwitch(pAdapter, 1/*pHalData->bDefaultAntenna*/); //default use Main
+	//<20130522, Kordan> 0x51 and 0x71 should be set immediately after path switched, or they might be overwritten.
+	if ((pHalData->PackageType == PACKAGE_TFBGA79) || (pHalData->PackageType == PACKAGE_TFBGA90))
+				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, bRFRegOffsetMask, 0x6B10E);
+	else
+				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, bRFRegOffsetMask, 0x6B04E);
 
 	pMptCtx->bMptWorkItemInProgress = _FALSE;
 	pMptCtx->CurrMptAct = NULL;
@@ -380,15 +375,8 @@ MPT_InitializeAdapter(
 	//ledsetting = rtw_read32(pAdapter, REG_LEDCFG0);
 	//rtw_write32(pAdapter, REG_LEDCFG0, ledsetting & ~LED0DIS);
 
-	if(IS_HARDWARE_TYPE_8192DU(pAdapter))
-	{
-		rtw_write32(pAdapter, REG_LEDCFG0, 0x8888);
-	}
-	else
-	{
-		//rtw_write32(pAdapter, REG_LEDCFG0, 0x08080);
-		ledsetting = rtw_read32(pAdapter, REG_LEDCFG0);
-	}
+	//rtw_write32(pAdapter, REG_LEDCFG0, 0x08080);
+	ledsetting = rtw_read32(pAdapter, REG_LEDCFG0);
 
 	PHY_LCCalibrate(pAdapter);
 	PHY_IQCalibrate(pAdapter, _FALSE);
@@ -1125,8 +1113,7 @@ void SetPacketTx(PADAPTER padapter)
 	pkt_end = pkt_start + pkt_size;
 
 	//3 3. init TX descriptor
-	if(IS_HARDWARE_TYPE_8723B(padapter))
-		fill_tx_desc_8723b(padapter);
+	fill_tx_desc_8723b(padapter);
 
 	//3 4. make wlan header, make_wlanhdr()
 	hdr = (struct rtw_ieee80211_hdr *)pkt_start;
@@ -1792,12 +1779,9 @@ ULONG mpt_ProQueryCalTxPower(PADAPTER pAdapter, u8 RfPath)
 	ULONG			TxPower = 1, PwrGroup=0, PowerDiffByRate=0;
 	u1Byte			limit = 0, rate = 0;
 
-	if( IS_HARDWARE_TYPE_8723B(pAdapter) )
-	{
-		rate = MptToMgntRate(pAdapter->mppriv.rateidx);
-		TxPower = PHY_GetTxPowerIndex_8723B(pAdapter, RfPath, rate,
-										pHalData->CurrentChannelBW, pHalData->CurrentChannel);
-	}
+	rate = MptToMgntRate(pAdapter->mppriv.rateidx);
+	TxPower = PHY_GetTxPowerIndex_8723B(pAdapter, RfPath, rate,
+					pHalData->CurrentChannelBW, pHalData->CurrentChannel);
 
 	DBG_8192C("txPower=%d ,CurrentChannelBW=%d ,CurrentChannel=%d ,rate =%d\n",TxPower,pHalData->CurrentChannelBW, pHalData->CurrentChannel,rate);
 
@@ -1815,30 +1799,7 @@ void Hal_ProSetCrystalCap (PADAPTER pAdapter , u32 CrystalCap)
 
 	CrystalCap = CrystalCap & 0x3F;
 
-	if(IS_HARDWARE_TYPE_8192D(pAdapter))
-	{
-		PHY_SetBBReg(pAdapter, REG_AFE_XTAL_CTRL, 0xF0, CrystalCap & 0x0F);
-		PHY_SetBBReg(pAdapter, REG_AFE_PLL_CTRL, 0xF0000000, (CrystalCap & 0xF0) >> 4);
-	}
-	else if(IS_HARDWARE_TYPE_8188E(pAdapter))
-	{
-		// write 0x24[16:11] = 0x24[22:17] = CrystalCap
-		PHY_SetBBReg(pAdapter, REG_AFE_XTAL_CTRL, 0x7FF800, (CrystalCap | (CrystalCap << 6)));
-	}
-	else if(IS_HARDWARE_TYPE_8812(pAdapter))
-	{
-		// write 0x2C[30:25] = 0x2C[24:19] = CrystalCap
-		PHY_SetBBReg(pAdapter, REG_MAC_PHY_CTRL, 0x7FF80000, (CrystalCap | (CrystalCap << 6)));
-	}
-	else if(IS_HARDWARE_TYPE_8821(pAdapter) || IS_HARDWARE_TYPE_8192E(pAdapter) ||
-		    IS_HARDWARE_TYPE_8723B(pAdapter))
-	{
-		// write 0x2C[23:18] = 0x2C[17:12] = CrystalCap
-		PHY_SetBBReg(pAdapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));
-	}
-	else
-	{
-		PHY_SetBBReg(pAdapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));
-	}
+	// write 0x2C[23:18] = 0x2C[17:12] = CrystalCap
+	PHY_SetBBReg(pAdapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));
 }
 #endif

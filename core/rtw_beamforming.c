@@ -265,10 +265,7 @@ void	beamforming_get_ndpa_frame(PADAPTER	 Adapter, union recv_frame *precv_frame
 
 	//DBG_871X("beamforming_get_ndpa_frame\n");
 
-	if(IS_HARDWARE_TYPE_8812(Adapter) == _FALSE)
-		return;
-	else if(GetFrameSubType(pframe) != WIFI_NDPA)
-		return;
+	return;
 
 	ta = GetAddr2Ptr(pframe);
 	// Remove signaling TA.

@@ -522,10 +522,6 @@ odm_PSD_Monitor(
 
 	ODM_SetBBReg(pDM_Odm, 0x818, BIT28, 0x0);
 	//1 Fix initial gain
-	//if (IS_HARDWARE_TYPE_8723AE(Adapter))
-	//RSSI_BT = pHalData->RSSI_BT;
-       //else if((IS_HARDWARE_TYPE_8192C(Adapter))||(IS_HARDWARE_TYPE_8192D(Adapter)))      // Add by Gary
-       //    RSSI_BT = RSSI_BT_new;
 
 	if((pDM_Odm->SupportICType==ODM_RTL8723A)&(pDM_Odm->SupportInterface==ODM_ITRF_PCIE))
 	RSSI_BT=pDM_Odm->RSSI_BT;		//need to check C2H to pDM_Odm RSSI BT
@@ -589,13 +585,6 @@ odm_PSD_Monitor(
 	SSBT = RSSI_BT  * 2 +0x3E;
 
 
-	//if(IS_HARDWARE_TYPE_8723AE(Adapter))
-	//	SSBT = RSSI_BT  * 2 +0x3E;
-	//else if((IS_HARDWARE_TYPE_8192C(Adapter))||(IS_HARDWARE_TYPE_8192D(Adapter)))   // Add by Gary
-	//{
-	//	RSSI_BT = initial_gain_psd;
-	//	SSBT = RSSI_BT;
-	//}
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_PSD, DBG_LOUD,("PSD: SSBT= %d\n", SSBT));
 	ODM_RT_TRACE(	pDM_Odm,ODM_COMP_PSD, DBG_LOUD,("PSD: initial gain= 0x%x\n", initial_gain_psd));
 	//DbgPrint("PSD: SSBT= %d", SSBT);
@@ -825,18 +814,6 @@ odm_PSD_Monitor(
 	}
     }
 }
-/*
-//Neil for Get BT RSSI
-// Be Triggered by BT C2H CMD
-VOID
-ODM_PSDGetRSSI(
-	IN	u1Byte	RSSI_BT)
-{
-
-
-}
-
-*/
 
 VOID
 ODM_PSDMonitor(
@@ -845,8 +822,6 @@ ODM_PSDMonitor(
 {
 	PDM_ODM_T				pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
-	//if(IS_HARDWARE_TYPE_8723AE(Adapter))
 
 	if(pDM_Odm->SupportICType == ODM_RTL8723A)   //may need to add other IC type
 	{

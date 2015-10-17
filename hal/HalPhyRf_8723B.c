@@ -2711,9 +2711,8 @@ phy_APCalibrate_8723B(
 		ODM_SetRFReg(pDM_Odm, (ODM_RF_RADIO_PATH_E)path, 0x4, bMaskDWord,
 			((APK_result[path][1] << 15) | (APK_result[path][1] << 10) | (0x02 << 5) | 0x05));
 #if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-		if(!IS_HARDWARE_TYPE_8723A(pAdapter))
-			ODM_SetRFReg(pDM_Odm, (ODM_RF_RADIO_PATH_E)path, RF_BS_PA_APSET_G9_G11, bMaskDWord,
-			((0x08 << 15) | (0x08 << 10) | (0x08 << 5) | 0x08));
+		ODM_SetRFReg(pDM_Odm, (ODM_RF_RADIO_PATH_E)path, RF_BS_PA_APSET_G9_G11, bMaskDWord,
+		((0x08 << 15) | (0x08 << 10) | (0x08 << 5) | 0x08));
 #endif
 	}
 

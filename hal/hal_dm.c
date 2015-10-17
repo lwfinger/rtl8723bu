@@ -95,41 +95,24 @@ void Init_ODM_ComInfo(_adapter *adapter)
 	//1 ======= BoardType: ODM_CMNINFO_BOARD_TYPE =======
 	u8 odm_board_type = ODM_BOARD_DEFAULT;
 
-	if (!IS_HARDWARE_TYPE_OLDER_THAN_8723A(adapter))
-	{
-		if (pHalData->ExternalLNA_2G != 0) {
-			odm_board_type |= ODM_BOARD_EXT_LNA;
-			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_LNA, 1);
-		}
-		if (pHalData->ExternalLNA_5G != 0) {
-			odm_board_type |= ODM_BOARD_EXT_LNA_5G;
-			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_5G_EXT_LNA, 1);
-		}
-		if (pHalData->ExternalPA_2G != 0) {
-			odm_board_type |= ODM_BOARD_EXT_PA;
-			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_PA, 1);
-		}
-		if (pHalData->ExternalPA_5G != 0) {
-			odm_board_type |= ODM_BOARD_EXT_PA_5G;
-			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_5G_EXT_PA, 1);
-		}
-		if (pHalData->EEPROMBluetoothCoexist)
-			odm_board_type |= ODM_BOARD_BT;
-
-	} else {
-		if (pHalData->InterfaceSel == INTF_SEL1_USB_High_Power
-			|| pHalData->BoardType == BOARD_USB_High_PA	/* This is legacy code for hal_data.BoardType */
-		) {
-			ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA, 1);
-			ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA, 1);
-		} else
-		{
-			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_PA, pHalData->ExternalPA_2G);
-			ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_LNA, pHalData->ExternalLNA_2G);
-		}
-
-		odm_board_type = boardType(pHalData->InterfaceSel);
+	if (pHalData->ExternalLNA_2G != 0) {
+		odm_board_type |= ODM_BOARD_EXT_LNA;
+		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_LNA, 1);
 	}
+	if (pHalData->ExternalLNA_5G != 0) {
+		odm_board_type |= ODM_BOARD_EXT_LNA_5G;
+		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_5G_EXT_LNA, 1);
+	}
+	if (pHalData->ExternalPA_2G != 0) {
+		odm_board_type |= ODM_BOARD_EXT_PA;
+		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_EXT_PA, 1);
+	}
+	if (pHalData->ExternalPA_5G != 0) {
+		odm_board_type |= ODM_BOARD_EXT_PA_5G;
+		ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_5G_EXT_PA, 1);
+	}
+	if (pHalData->EEPROMBluetoothCoexist)
+		odm_board_type |= ODM_BOARD_BT;
 
 	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_BOARD_TYPE, odm_board_type);
 	//1 ============== End of BoardType ==============

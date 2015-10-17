@@ -1625,7 +1625,6 @@ _adapter *rtw_drv_add_vir_if(_adapter *primary_padapter,
 	//set interface_type/chip_type/HardwareType
 	padapter->interface_type = primary_padapter->interface_type;
 	padapter->chip_type = primary_padapter->chip_type;
-	padapter->HardwareType = primary_padapter->HardwareType;
 
 	//step 2. hook HalFunc, allocate HalData
 	//hal_set_hal_ops(padapter);
@@ -2017,7 +2016,6 @@ _adapter *rtw_drv_if2_init(_adapter *primary_padapter,
 	//set interface_type/chip_type/HardwareType
 	padapter->interface_type = primary_padapter->interface_type;
 	padapter->chip_type = primary_padapter->chip_type;
-	padapter->HardwareType = primary_padapter->HardwareType;
 
 	//step 2. hook HalFunc, allocate HalData
 	//hal_set_hal_ops(padapter);

@@ -920,13 +920,6 @@ PHY_InitTxPowerByRate(
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	u8	band = 0, rfPath = 0, TxNum = 0, rate = 0, i = 0, j = 0;
 
-	if ( IS_HARDWARE_TYPE_8188E( pAdapter ) || IS_HARDWARE_TYPE_8723A( pAdapter ) )
-	{
-		for ( i = 0; i < MAX_PG_GROUP; ++i )
-			for ( j = 0; j < 16; ++j )
-				pHalData->MCSTxPowerLevelOriginalOffset[i][j] = 0;
-	}
-	else
 	{
 		for ( band = BAND_ON_2_4G; band <= BAND_ON_5G; ++band )
 				for ( rfPath = 0; rfPath < TX_PWR_BY_RATE_NUM_RF; ++rfPath )
@@ -1721,22 +1714,8 @@ PHY_SetTxPowerLevelByPath(
 		PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, OFDM );
 		PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS0_MCS7 );
 
-		if ( IS_HARDWARE_TYPE_JAGUAR( Adapter ) || IS_HARDWARE_TYPE_8813A( Adapter ) )
-			PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, VHT_1SSMCS0_1SSMCS9 );
-
 		if ( pHalData->NumTotalRFPath >= 2 )
-		{
 			PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS8_MCS15 );
-
-			if ( IS_HARDWARE_TYPE_JAGUAR( Adapter ) || IS_HARDWARE_TYPE_8813A( Adapter ) )
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, VHT_2SSMCS0_2SSMCS9 );
-
-			if ( IS_HARDWARE_TYPE_8813A( Adapter ) )
-			{
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS16_MCS23 );
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, VHT_3SSMCS0_3SSMCS9 );
-			}
-		}
 	}
 }
 
@@ -2144,56 +2123,6 @@ PHY_ConvertTxPowerLimitToPowerIndex(
 			}
 		}
 	}
-
-	if ( IS_HARDWARE_TYPE_JAGUAR( Adapter ) || IS_HARDWARE_TYPE_8813A( Adapter ) )
-	{
-		for ( regulation = 0; regulation < MAX_REGULATION_NUM; ++regulation )
-		{
-			for ( bw = 0; bw < MAX_5G_BANDWITH_NUM; ++bw )
-			{
-				for ( channel = 0; channel < CHANNEL_MAX_NUMBER_5G; ++channel )
-				{
-					for ( rateSection = 0; rateSection < MAX_RATE_SECTION_NUM; ++rateSection )
-					{
-						tempPwrLmt = pHalData->TxPwrLimit_5G[regulation][bw][rateSection][channel][ODM_RF_PATH_A];
-
-						for ( rfPath = ODM_RF_PATH_A; rfPath < MAX_RF_PATH_NUM; ++rfPath )
-						{
-							if ( pHalData->odmpriv.PhyRegPgValueType == PHY_REG_PG_EXACT_VALUE )
-							{
-								if ( rateSection == 9 ) // VHT 4SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_4TX, VHT_4SSMCS0_4SSMCS9);
-								else if ( rateSection == 8 ) // VHT 3SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_3TX, VHT_3SSMCS0_3SSMCS9 );
-								else if ( rateSection == 7 ) // VHT 2SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_2TX, VHT_2SSMCS0_2SSMCS9 );
-								else if ( rateSection == 6 ) // VHT 1SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_1TX, VHT_1SSMCS0_1SSMCS9 );
-								else if ( rateSection == 5 ) // HT 4T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_4TX, HT_MCS24_MCS31 );
-								else if ( rateSection == 4 ) // HT 3T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_3TX, HT_MCS16_MCS23 );
-								else if ( rateSection == 3 ) // HT 2T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_2TX, HT_MCS8_MCS15 );
-								else if ( rateSection == 2 ) // HT 1T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_1TX, HT_MCS0_MCS7 );
-								else if ( rateSection == 1 ) // OFDM
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_1TX, OFDM );
-							}
-							else
-								BW40PwrBasedBm5G = Adapter->registrypriv.RegPowerBase * 2;
-
-							if ( tempPwrLmt != MAX_POWER_INDEX ) {
-								tempValue = tempPwrLmt - BW40PwrBasedBm5G;
-								pHalData->TxPwrLimit_5G[regulation][bw][rateSection][channel][rfPath] = tempValue;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	//DBG_871X("<===== PHY_ConvertTxPowerLimitToPowerIndex()\n" );
 }
 
 VOID
@@ -2340,8 +2269,7 @@ PHY_GetTxPowerIndex(
 {
 	u8	txPower = 0x3E;
 
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		txPower = PHY_GetTxPowerIndex_8723B(pAdapter, RFPath, Rate, BandWidth, Channel);
+	txPower = PHY_GetTxPowerIndex_8723B(pAdapter, RFPath, Rate, BandWidth, Channel);
 
 	return txPower;
 }
@@ -2354,8 +2282,7 @@ PHY_SetTxPowerIndex(
 	IN	u8				Rate
 	)
 {
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		PHY_SetTxPowerIndex_8723B( pAdapter, PowerIndex, RFPath, Rate );
+	PHY_SetTxPowerIndex_8723B( pAdapter, PowerIndex, RFPath, Rate );
 }
 
 VOID

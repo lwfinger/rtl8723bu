@@ -1021,17 +1021,12 @@ odm_IQCalibrate(
 		IN	PDM_ODM_T	pDM_Odm
 		)
 {
+#if( DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
 
-#if( DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	if(*pDM_Odm->pIsFcsModeEnable)
 		return;
 #endif
-
-	if(!IS_HARDWARE_TYPE_JAGUAR(Adapter))
-		return;
-	else if(IS_HARDWARE_TYPE_8812AU(Adapter))
-		return;
 }
 
 
@@ -1051,24 +1046,6 @@ VOID
 odm_SwAntDivInit_NIC_8723A(
 	IN	PDM_ODM_T		pDM_Odm)
 {
-	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-	PADAPTER		Adapter = pDM_Odm->Adapter;
-
-	u1Byte 			btAntNum=BT_GetPgAntNum(Adapter);
-
-	if(IS_HARDWARE_TYPE_8723A(Adapter))
-	{
-		pDM_SWAT_Table->ANTA_ON =TRUE;
-
-		// Set default antenna B status by PG
-		if(btAntNum == 2)
-			pDM_SWAT_Table->ANTB_ON = TRUE;
-		else if(btAntNum == 1)
-			pDM_SWAT_Table->ANTB_ON = FALSE;
-		else
-			pDM_SWAT_Table->ANTB_ON = TRUE;
-	}
-
 }
 
 #endif //end #ifMP
@@ -1861,32 +1838,8 @@ ODM_UpdateInitRate(
 		#if USE_WORKITEM
 		PlatformScheduleWorkItem(&pDM_Odm->RaRptWorkitem);
 		#else
-		if(pDM_Odm->SupportICType == ODM_RTL8821)
-		{
-			ODM_TxPwrTrackSetPwr8821A(pDM_Odm, MIX_MODE, ODM_RF_PATH_A, 0);
-		}
-		else if(pDM_Odm->SupportICType == ODM_RTL8812)
-		{
-			for (p = ODM_RF_PATH_A; p < MAX_PATH_NUM_8812A; p++)
-			{
-				ODM_TxPwrTrackSetPwr8812A(pDM_Odm, MIX_MODE, p, 0);
-			}
-		}
-		else if(pDM_Odm->SupportICType == ODM_RTL8723B)
-		{
+		if(pDM_Odm->SupportICType == ODM_RTL8723B)
 			ODM_TxPwrTrackSetPwr_8723B(pDM_Odm, MIX_MODE, ODM_RF_PATH_A, 0);
-		}
-		else if(pDM_Odm->SupportICType == ODM_RTL8192E)
-		{
-			for (p = ODM_RF_PATH_A; p < MAX_PATH_NUM_8192E; p++)
-			{
-				ODM_TxPwrTrackSetPwr92E(pDM_Odm, MIX_MODE, p, 0);
-			}
-		}
-		else if(pDM_Odm->SupportICType == ODM_RTL8188E)
-		{
-			ODM_TxPwrTrackSetPwr88E(pDM_Odm, MIX_MODE, ODM_RF_PATH_A, 0);
-		}
 		#endif
 	#else
 		PlatformScheduleWorkItem(&pDM_Odm->RaRptWorkitem);
@@ -1970,8 +1923,6 @@ ODM_AsocEntry_Init(
 		}
 
 		TotalAssocEntryNum+= index;
-		if(IS_HARDWARE_TYPE_8188E((pDM_Odm->Adapter)))
-			pLoopAdapter->RASupport = TRUE;
 		pLoopAdapter = GetNextExtAdapter(pLoopAdapter);
 	}
 #endif

@@ -502,6 +502,5 @@ void rtl8723bu_set_intf_ops(struct _io_ops	*pops)
 }
 void rtl8723bu_set_hw_type(_adapter *padapter)
 {
-	padapter->HardwareType = HARDWARE_TYPE_RTL8723BU;
 	DBG_871X("CHIP TYPE: RTL8723BU\n");
 }

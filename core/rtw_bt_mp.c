@@ -1074,25 +1074,6 @@ mptbt_BtSetGeneral(
 				calVal = pBtReq->pParamStart[1];
 			break;
 		case BT_GSET_UPDATE_BT_PATCH:
-			if(IS_HARDWARE_TYPE_8723AE(Adapter) && Adapter->bFWReady)
-			{
-				u1Byte i;
-				DBG_8192C ("[MPT], write regs for load patch\n");
-				//BTFwPatch8723A(Adapter);
-				PlatformEFIOWrite1Byte(Adapter, 0xCC, 0x2d);
-				rtw_msleep_os(50);
-				PlatformEFIOWrite4Byte(Adapter, 0x68, 0xa005000c);
-				rtw_msleep_os(50);
-				PlatformEFIOWrite4Byte(Adapter, 0x68, 0xb005000c);
-				rtw_msleep_os(50);
-				PlatformEFIOWrite1Byte(Adapter, 0xCC, 0x29);
-				for(i=0; i<12; i++)
-				rtw_msleep_os(100);
-//#if (DEV_BUS_TYPE == RT_PCI_INTERFACE)
-//				BTFwPatch8723A(Adapter);
-//#endif
-				DBG_8192C("[MPT], load BT FW Patch finished!!!\n");
-			}
 			break;
 		default:
 			{

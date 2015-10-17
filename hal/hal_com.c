@@ -725,30 +725,16 @@ exit:
 	return ret;
 }
 
-
 u8  rtw_hal_networktype_to_raid(_adapter *adapter, struct sta_info *psta)
 {
-	if(IS_NEW_GENERATION_IC(adapter)){
-		return networktype_to_raid_ex(adapter,psta);
-	}
-	else{
-		return networktype_to_raid(adapter,psta);
-	}
-
+	return networktype_to_raid_ex(adapter,psta);
 }
+
 u8 rtw_get_mgntframe_raid(_adapter *adapter,unsigned char network_type)
 {
 
 	u8 raid;
-	if(IS_NEW_GENERATION_IC(adapter)){
-
-		raid = (network_type & WIRELESS_11B)	?RATEID_IDX_B
-											:RATEID_IDX_G;
-	}
-	else{
-		raid = (network_type & WIRELESS_11B)	?RATR_INX_WIRELESS_B
-											:RATR_INX_WIRELESS_G;
-	}
+	raid = (network_type & WIRELESS_11B) ? RATEID_IDX_B : RATEID_IDX_G;
 	return raid;
 }
 
@@ -1702,8 +1688,6 @@ u8 rtw_hal_set_wowlan_ctrl_cmd(_adapter *adapter, u8 enable)
 		magic_pkt = enable;
 
 	if (psecpriv->dot11PrivacyAlgrthm == _WEP40_ || psecpriv->dot11PrivacyAlgrthm == _WEP104_)
-		hw_unicast = 1;
-	else if (IS_HARDWARE_TYPE_8192E(adapter))
 		hw_unicast = 1;
 	else
 		hw_unicast = 0;
@@ -4790,8 +4774,7 @@ _func_enter_;
 				if (psecuritypriv->dot11PrivacyAlgrthm == _AES_)
 					rtw_hal_fw_sync_cam_id(adapter);
 #endif
-				if (IS_HARDWARE_TYPE_8723B(adapter))
-					rtw_hal_backup_rate(adapter);
+				rtw_hal_backup_rate(adapter);
 
 				if (pHalFunc->hal_set_wowlan_fw != NULL)
 					pHalFunc->hal_set_wowlan_fw(adapter, _TRUE);
@@ -4813,9 +4796,6 @@ _func_enter_;
 				}
 
 				rtw_msleep_os(2);
-
-				if (IS_HARDWARE_TYPE_8188E(adapter))
-					rtw_hal_disable_tx_report(adapter);
 
 				//RX DMA stop
 				res = rtw_hal_pause_rx_dma(adapter);
@@ -4884,9 +4864,6 @@ _func_enter_;
 					DBG_871X("[Error]%s: disable WOW cmd fail\n!!", __func__);
 					rtw_hal_force_enable_rxdma(adapter);
 				}
-
-				if (IS_HARDWARE_TYPE_8188E(adapter))
-					rtw_hal_enable_tx_report(adapter);
 
 				rtw_hal_update_tx_iv(adapter);
 
@@ -5957,24 +5934,6 @@ void rtw_bb_rf_gain_offset(_adapter *padapter)
 //To avoid RX affect TX throughput
 void dm_DynamicUsbTxAgg(_adapter *padapter, u8 from_timer)
 {
-	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
-	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-#ifdef CONFIG_USB_RX_AGGREGATION
-	if(IS_HARDWARE_TYPE_8821U(padapter) )//|| IS_HARDWARE_TYPE_8192EU(padapter))
-	{
-		//This AGG_PH_TH only for UsbRxAggMode == USB_RX_AGG_USB
-		if((pHalData->UsbRxAggMode == USB_RX_AGG_USB) && (check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE))
-		{
-			if(pdvobjpriv->traffic_stat.cur_tx_tp > 2 && pdvobjpriv->traffic_stat.cur_rx_tp < 30)
-				rtw_write16(padapter, REG_RXDMA_AGG_PG_TH,0x1003);
-			else
-				rtw_write16(padapter, REG_RXDMA_AGG_PG_TH,0x2005); //dmc agg th 20K
-
-			//DBG_871X("TX_TP=%u, RX_TP=%u \n", pdvobjpriv->traffic_stat.cur_tx_tp, pdvobjpriv->traffic_stat.cur_rx_tp);
-		}
-	}
-#endif
 }
 
 //bus-agg check for SoftAP mode
@@ -6073,14 +6032,6 @@ int  rtw_hal_set_gpio_output_value(_adapter* adapter, u8 gpio_num, BOOLEAN isHig
 {
 	u8 direction = 0;
 	u8 res = -1;
-	if (IS_HARDWARE_TYPE_8188E(adapter)){
-		/* Check GPIO is 4~7 */
-		if( gpio_num > 7 || gpio_num < 4)
-		{
-			DBG_871X("%s The gpio number does not included 4~7.\n",__FUNCTION__);
-			return -1;
-		}
-	}
 
 	rtw_ps_deny(adapter, PS_DENY_IOCTL);
 
@@ -6112,14 +6063,6 @@ int  rtw_hal_set_gpio_output_value(_adapter* adapter, u8 gpio_num, BOOLEAN isHig
 
 int rtw_hal_config_gpio(_adapter* adapter, u8 gpio_num, BOOLEAN isOutput)
 {
-	if (IS_HARDWARE_TYPE_8188E(adapter)){
-		if( gpio_num > 7 || gpio_num < 4)
-		{
-			DBG_871X("%s The gpio number does not included 4~7.\n",__FUNCTION__);
-			return -1;
-		}
-	}
-
 	DBG_871X("%s gpio_num =%d direction=%d\n",__FUNCTION__,gpio_num,isOutput);
 
 	rtw_ps_deny(adapter, PS_DENY_IOCTL);
