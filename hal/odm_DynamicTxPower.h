@@ -18,8 +18,10 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODMDYNAMICTXPOWER_H__
-#define    __ODMDYNAMICTXPOWER_H__
+#ifndef __HAL_ODM_DYNAMICTXPOWER_H__
+#define __HAL_ODM_DYNAMICTXPOWER_H__
+
+#define DYNAMIC_TXPWR_VERSION	"1.0"
 
 #define		TX_POWER_NEAR_FIELD_THRESH_LVL2	74
 #define		TX_POWER_NEAR_FIELD_THRESH_LVL1	67

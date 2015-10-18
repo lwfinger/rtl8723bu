@@ -21,12 +21,11 @@
 //============================================================
 // include files
 //============================================================
-//#include "Mp_Precomp.h"
 #include "odm_precomp.h"
 
 VOID
 ODM_EdcaTurboInit(
-	IN	PVOID		pDM_VOID)
+	IN 	PVOID	 	pDM_VOID)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 #if ((DM_ODM_SUPPORT_TYPE == ODM_AP)||(DM_ODM_SUPPORT_TYPE==ODM_ADSL))
@@ -64,7 +63,7 @@ ODM_EdcaTurboInit(
 
 VOID
 odm_EdcaTurboCheck(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	//
@@ -115,7 +114,7 @@ odm_EdcaTurboCheck(
 
 VOID
 odm_EdcaTurboCheckCE(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -125,7 +124,7 @@ odm_EdcaTurboCheckCE(
 	u32	ICType=pDM_Odm->SupportICType;
 	u32	IOTPeer=0;
 	u8	WirelessMode=0xFF;                   //invalid value
-	u32	trafficIndex;
+	u32 	trafficIndex;
 	u32	edca_param;
 	u64	cur_tx_bytes = 0;
 	u64	cur_rx_bytes = 0;
@@ -296,7 +295,7 @@ odm_EdcaTurboCheckCE(
 #elif(DM_ODM_SUPPORT_TYPE==ODM_WIN)
 VOID
 odm_EdcaTurboCheckMP(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 
@@ -304,8 +303,8 @@ odm_EdcaTurboCheckMP(
 	PADAPTER		       Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 
-	PADAPTER			pDefaultAdapter = GetDefaultAdapter(Adapter);
-	PADAPTER			pExtAdapter = GetFirstExtAdapter(Adapter);//NULL;
+	PADAPTER 			pDefaultAdapter = GetDefaultAdapter(Adapter);
+	PADAPTER 			pExtAdapter = GetFirstExtAdapter(Adapter);//NULL;
 	PMGNT_INFO			pMgntInfo = &Adapter->MgntInfo;
 	PSTA_QOS			pStaQos = Adapter->MgntInfo.pStaQos;
 	//[Win7 Count Tx/Rx statistic for Extension Port] odm_CheckEdcaTurbo's Adapter is always Default. 2009.08.20, by Bohn
@@ -404,177 +403,7 @@ odm_EdcaTurboCheckMP(
 
 //modify by Guo.Mingzhi 2011-12-29
 			EDCA_BE=((*pbIsCurRDLState)==TRUE)?EDCA_BE_DL:EDCA_BE_UL;
-			if(IS_HARDWARE_TYPE_8821U(Adapter))
-			{
-				if(pMgntInfo->RegTxDutyEnable)
-				{
-					//2013.01.23 LukeLee: debug for 8811AU thermal issue (reduce Tx duty cycle)
-					if(!pMgntInfo->ForcedDataRate) //auto rate
-					{
-						if(pDM_Odm->TxRate != 0xFF)
-							TxRate = Adapter->HalFunc.GetHwRateFromMRateHandler(pDM_Odm->TxRate);
-					}
-					else //force rate
-					{
-						TxRate = (u1Byte) pMgntInfo->ForcedDataRate;
-					}
-
-					value64 = (curRxOkCnt<<2);
-					if(curTxOkCnt < value64) //Downlink
-						ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-					else //Uplink
-					{
-						//DbgPrint("pDM_Odm->RFCalibrateInfo.ThermalValue = 0x%X\n", pDM_Odm->RFCalibrateInfo.ThermalValue);
-						//if(pDM_Odm->RFCalibrateInfo.ThermalValue < pHalData->EEPROMThermalMeter)
-						if((pDM_Odm->RFCalibrateInfo.ThermalValue < 0x2c) || (*pDM_Odm->pBandType == BAND_ON_2_4G))
-							ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-						else
-						{
-							switch (TxRate)
-							{
-								case MGN_VHT1SS_MCS6:
-								case MGN_VHT1SS_MCS5:
-								case MGN_MCS6:
-								case MGN_MCS5:
-								case MGN_48M:
-								case MGN_54M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0x1ea42b);
-								break;
-								case MGN_VHT1SS_MCS4:
-								case MGN_MCS4:
-								case MGN_36M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa42b);
-								break;
-								case MGN_VHT1SS_MCS3:
-								case MGN_MCS3:
-								case MGN_24M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa47f);
-								break;
-								case MGN_VHT1SS_MCS2:
-								case MGN_MCS2:
-								case MGN_18M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa57f);
-								break;
-								case MGN_VHT1SS_MCS1:
-								case MGN_MCS1:
-								case MGN_9M:
-								case MGN_12M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa77f);
-								break;
-								case MGN_VHT1SS_MCS0:
-								case MGN_MCS0:
-								case MGN_6M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa87f);
-								break;
-								default:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-								break;
-							}
-						}
-					}
-				}
-				else
-				{
-					ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-				}
-
-			}
-			else if (IS_HARDWARE_TYPE_8812AU(Adapter)){
-				if(pMgntInfo->RegTxDutyEnable)
-				{
-					//2013.07.26 Wilson: debug for 8812AU thermal issue (reduce Tx duty cycle)
-					// it;s the same issue as 8811AU
-					if(!pMgntInfo->ForcedDataRate) //auto rate
-					{
-						if(pDM_Odm->TxRate != 0xFF)
-							TxRate = Adapter->HalFunc.GetHwRateFromMRateHandler(pDM_Odm->TxRate);
-					}
-					else //force rate
-					{
-						TxRate = (u1Byte) pMgntInfo->ForcedDataRate;
-					}
-
-					value64 = (curRxOkCnt<<2);
-					if(curTxOkCnt < value64) //Downlink
-						ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-					else //Uplink
-					{
-						//DbgPrint("pDM_Odm->RFCalibrateInfo.ThermalValue = 0x%X\n", pDM_Odm->RFCalibrateInfo.ThermalValue);
-						//if(pDM_Odm->RFCalibrateInfo.ThermalValue < pHalData->EEPROMThermalMeter)
-						if((pDM_Odm->RFCalibrateInfo.ThermalValue < 0x2c) || (*pDM_Odm->pBandType == BAND_ON_2_4G))
-							ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-						else
-						{
-							switch (TxRate)
-							{
-								case MGN_VHT2SS_MCS9:
-								case MGN_VHT1SS_MCS9:
-								case MGN_VHT1SS_MCS8:
-								case MGN_MCS15:
-								case MGN_MCS7:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0x1ea44f);
-								case MGN_VHT2SS_MCS8:
-								case MGN_VHT1SS_MCS7:
-								case MGN_MCS14:
-								case MGN_MCS6:
-								case MGN_54M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa44f);
-								case MGN_VHT2SS_MCS7:
-								case MGN_VHT2SS_MCS6:
-								case MGN_VHT1SS_MCS6:
-								case MGN_VHT1SS_MCS5:
-								case MGN_MCS13:
-								case MGN_MCS5:
-								case MGN_48M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa630);
-								break;
-								case MGN_VHT2SS_MCS5:
-								case MGN_VHT2SS_MCS4:
-								case MGN_VHT1SS_MCS4:
-								case MGN_VHT1SS_MCS3:
-								case MGN_MCS12:
-								case MGN_MCS4:
-								case MGN_MCS3:
-								case MGN_36M:
-								case MGN_24M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa730);
-								break;
-								case MGN_VHT2SS_MCS3:
-								case MGN_VHT2SS_MCS2:
-								case MGN_VHT2SS_MCS1:
-								case MGN_VHT1SS_MCS2:
-								case MGN_VHT1SS_MCS1:
-								case MGN_MCS11:
-								case MGN_MCS10:
-								case MGN_MCS9:
-								case MGN_MCS2:
-								case MGN_MCS1:
-								case MGN_18M:
-								case MGN_12M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa830);
-								break;
-								case MGN_VHT2SS_MCS0:
-								case MGN_VHT1SS_MCS0:
-								case MGN_MCS0:
-								case MGN_MCS8:
-								case MGN_9M:
-								case MGN_6M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa87f);
-								break;
-								default:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-								break;
-							}
-						}
-					}
-				}
-				else
-				{
-					ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-				}
-			}
-			else
-				ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
+			ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
 
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("EDCA Turbo on: EDCA_BE:0x%lx\n",EDCA_BE));
 
@@ -603,7 +432,7 @@ odm_EdcaTurboCheckMP(
 //check if edca turbo is disabled
 BOOLEAN
 odm_IsEdcaTurboDisable(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 )
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -641,7 +470,7 @@ odm_IsEdcaTurboDisable(
 //add iot case here: for MP/CE
 VOID
 ODM_EdcaParaSelByIot(
-	IN	PVOID		pDM_VOID,
+	IN 	PVOID	 	pDM_VOID,
 	OUT	u4Byte		*EDCA_BE_UL,
 	OUT u4Byte		*EDCA_BE_DL
 	)
@@ -656,7 +485,7 @@ ODM_EdcaParaSelByIot(
 	  u4Byte                         IOTPeerSubType=0;
 
 	PMGNT_INFO			pMgntInfo = &Adapter->MgntInfo;
-	u1Byte				TwoPortStatus = (u1Byte)TWO_PORT_STATUS__WITHOUT_ANY_ASSOCIATE;
+	u1Byte 				TwoPortStatus = (u1Byte)TWO_PORT_STATUS__WITHOUT_ANY_ASSOCIATE;
 
 	if(pDM_Odm->pWirelessMode!=NULL)
 		WirelessMode=*(pDM_Odm->pWirelessMode);
@@ -762,7 +591,7 @@ ODM_EdcaParaSelByIot(
 		}
 	}
 
-	if((ICType == ODM_RTL8192D)&&(IOTPeerSubType == HT_IOT_PEER_LINKSYS_E4200_V1)&&((WirelessMode==ODM_WM_N5G)))
+    	if((ICType == ODM_RTL8192D)&&(IOTPeerSubType == HT_IOT_PEER_LINKSYS_E4200_V1)&&((WirelessMode==ODM_WM_N5G)))
 	{
 		(*EDCA_BE_DL) = 0x432b;
 		(*EDCA_BE_UL) = 0x432b;
@@ -792,11 +621,11 @@ ODM_EdcaParaSelByIot(
 
 VOID
 odm_EdcaChooseTrafficIdx(
-	IN	PVOID		pDM_VOID,
-	IN	u8Byte				cur_tx_bytes,
-	IN	u8Byte				cur_rx_bytes,
-	IN	BOOLEAN			bBiasOnRx,
-	OUT BOOLEAN		*pbIsCurRDLState
+	IN 	PVOID	 	pDM_VOID,
+	IN	u8Byte  			cur_tx_bytes,
+	IN	u8Byte  			cur_rx_bytes,
+	IN	BOOLEAN 		bBiasOnRx,
+	OUT BOOLEAN 		*pbIsCurRDLState
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -840,7 +669,7 @@ odm_EdcaChooseTrafficIdx(
 #if((DM_ODM_SUPPORT_TYPE==ODM_AP)||(DM_ODM_SUPPORT_TYPE==ODM_ADSL))
 
 void odm_EdcaParaInit(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -888,7 +717,7 @@ void odm_EdcaParaInit(
 
 		 if(OPMODE & WIFI_AP_STATE)
 		 {
-			memcpy(EDCA, rtl_ap_EDCA, 2*sizeof(struct ParaRecord));
+		 	memcpy(EDCA, rtl_ap_EDCA, 2*sizeof(struct ParaRecord));
 
 			if(mode & (ODM_WM_A|ODM_WM_G|ODM_WM_N24G|ODM_WM_N5G))
 				memcpy(&EDCA[VI], &rtl_ap_EDCA[VI_AG], 2*sizeof(struct ParaRecord));
@@ -897,7 +726,7 @@ void odm_EdcaParaInit(
 		 }
 		 else
 		 {
-			memcpy(EDCA, rtl_sta_EDCA, 2*sizeof(struct ParaRecord));
+		 	memcpy(EDCA, rtl_sta_EDCA, 2*sizeof(struct ParaRecord));
 
 			if(mode & (ODM_WM_A|ODM_WM_G|ODM_WM_N24G|ODM_WM_N5G))
 				memcpy(&EDCA[VI], &rtl_sta_EDCA[VI_AG], 2*sizeof(struct ParaRecord));
@@ -958,7 +787,7 @@ void odm_EdcaParaInit(
 
 BOOLEAN
 ODM_ChooseIotMainSTA(
-	IN	PVOID		pDM_VOID,
+	IN 	PVOID	 	pDM_VOID,
 	IN	PSTA_INFO_T		pstat
 	)
 {
@@ -1008,7 +837,7 @@ ODM_ChooseIotMainSTA(
 
 					priv->pshare->highTP_found_pstat = pstat;
 					bhighTP_found_pstat=TRUE;
-				}
+   				}
 			}
 #elif(DM_ODM_SUPPORT_TYPE==ODM_AP)
 		for(i=0; i<8; i++)
@@ -1045,7 +874,7 @@ ODM_ChooseIotMainSTA(
 #ifdef WIFI_WMM
 VOID
 ODM_IotEdcaSwitch(
-	IN	PVOID		pDM_VOID,
+	IN 	PVOID	 	pDM_VOID,
 	IN	unsigned char		enable
 	)
 {
@@ -1054,10 +883,8 @@ ODM_IotEdcaSwitch(
 	int   mode=priv->pmib->dot11BssType.net_work_type;
 	unsigned int slot_time = 20, sifs_time = 10, BE_TXOP = 47, VI_TXOP = 94;
 	unsigned int vi_cw_max = 4, vi_cw_min = 3, vi_aifs;
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	u32 be_edca, vi_edca;
 	u16 disable_cfe;
-#endif
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_AP)
 	if (!(!priv->pmib->dot11OperationEntry.wifi_specific ||
@@ -1090,10 +917,8 @@ ODM_IotEdcaSwitch(
 		VI_TXOP = 188;
 	}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	vi_edca = -1;
 	disable_cfe = -1;
-#endif
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_ADSL)
 	if (priv->pshare->iot_mode_VO_exist) {
@@ -1108,11 +933,7 @@ ODM_IotEdcaSwitch(
 	}
 	vi_aifs = (sifs_time + ((OPMODE & WIFI_AP_STATE)?1:2) * slot_time);
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	vi_edca = ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs;
-#else
-	ODM_Write4Byte(pDM_Odm, ODM_EDCA_VI_PARAM, ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs);
-#endif
 
 #elif (DM_ODM_SUPPORT_TYPE==ODM_AP)
 	if ((OPMODE & WIFI_AP_STATE) && priv->pmib->dot11OperationEntry.wifi_specific) {
@@ -1136,22 +957,13 @@ ODM_IotEdcaSwitch(
 			vi_aifs = (sifs_time + ((OPMODE & WIFI_AP_STATE)?1:2) * slot_time);
 		}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 		vi_edca = ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)
 			| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs;
-#else
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_VI_PARAM, ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)
-			| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs);
-#endif
 
 	#ifdef WMM_BEBK_PRI
 	#ifdef CONFIG_RTL_88E_SUPPORT
 		if ((GET_CHIP_VER(priv) == VERSION_8188E) && priv->pshare->iot_mode_BK_exist) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (6 << 8) | 0x4f;
-#else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BK_PARAM, (10 << 12) | (6 << 8) | 0x4f);
-#endif
 		}
 	#endif
 	#endif
@@ -1165,40 +977,24 @@ ODM_IotEdcaSwitch(
 
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_AP)
-	if (priv->pshare->rf_ft_var.wifi_beq_iot && priv->pshare->iot_mode_VI_exist) {
+ 	if (priv->pshare->rf_ft_var.wifi_beq_iot && priv->pshare->iot_mode_VI_exist) {
 #if defined(CONFIG_RTL_88E_SUPPORT) || defined(CONFIG_RTL_8812_SUPPORT)
 		if (GET_CHIP_VER(priv) == VERSION_8188E || GET_CHIP_VER(priv) == VERSION_8812E) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (6 << 8) | 0x4f;
-#else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (6 << 8) | 0x4f);
-#endif
 		}
 		else
 #endif
 		{
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (4 << 8) | 0x4f;
-#else
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (4 << 8) | 0x4f);
-#endif
 		}
 	} else if(!enable)
 #elif(DM_ODM_SUPPORT_TYPE==ODM_ADSL)
 	if(!enable)                                 //if iot is disable ,maintain original BEQ PARAM
 #endif
 	{
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 		be_edca = (((OPMODE & WIFI_AP_STATE)?6:10) << 12) | (4 << 8)
 			| (sifs_time + 3 * slot_time);
 		disable_cfe = 1;
-#else
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (((OPMODE & WIFI_AP_STATE)?6:10) << 12) | (4 << 8)
-			| (sifs_time + 3 * slot_time));
-#endif
-#ifdef CONFIG_PCI_HCI
-//		ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) | (DIS_TXOP_CFE));
-#endif
 	}
 	else
 	{
@@ -1237,141 +1033,68 @@ ODM_IotEdcaSwitch(
 				// is intel client, use a different edca value
 				//ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop<< 16) | (cw_max<< 12) | (4 << 8) | 0x1f);
 				if (pDM_Odm->RFType==ODM_1T1R) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) | (5 << 12) | (3 << 8) | 0x1f;
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) | (5 << 12) | (3 << 8) | 0x1f);
-#endif
 				}
 				else {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) | (8 << 12) | (5 << 8) | 0x1f;
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) | (8 << 12) | (5 << 8) | 0x1f);
-#endif
 				}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 				disable_cfe = 0;
-#endif
-#ifdef CONFIG_PCI_HCI
-//				ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) & ~(DIS_TXOP_CFE));
-#endif
+
 				priv->pshare->txop_enlarge = 2;
 			}
 #if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 	#ifndef LOW_TP_TXOP
 			 else if (priv->pshare->txop_enlarge == 0xd) {
 				// is intel ralink, use a different edca value
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 				be_edca = (txop << 16) | (6 << 12) | (5 << 8) | 0x2b;
-#else
-				ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) | (6 << 12) | (5 << 8) | 0x2b);
-#endif
 				priv->pshare->txop_enlarge = 2;
 			}
 	#endif
 #endif
 			else
 			{
-//				if (txop == 0) {
-//#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
-//					disable_cfe = 1;
-//#endif
-//#ifdef CONFIG_PCI_HCI
-//					ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) | (DIS_TXOP_CFE));
-//#endif
-//				}
-
 				if (pDM_Odm->RFType==ODM_2T2R) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time);
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) |
-						(cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
-#endif
 				}
 				else
 				#if(DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined LOW_TP_TXOP)
 				{
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) |
 						(((priv->pshare->BE_cwmax_enhance) ? 10 : 5) << 12) | (3 << 8) | (sifs_time + 2 * slot_time);
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) |
-						(((priv->pshare->BE_cwmax_enhance) ? 10 : 5) << 12) | (3 << 8) | (sifs_time + 2 * slot_time));
-#endif
 				}
 				#else
 				{
 					PSTA_INFO_T		pstat = priv->pshare->highTP_found_pstat;
 					if ((GET_CHIP_VER(priv)==VERSION_8881A) && pstat && (pstat->IOTPeer == HT_IOT_PEER_HTC))
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, 0x642b);
-					else {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
-					be_edca = (txop << 16) | (5 << 12) | (3 << 8) | (sifs_time + 2 * slot_time);
-				#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) |
-						(5 << 12) | (3 << 8) | (sifs_time + 2 * slot_time));
-#endif
-					}
+						ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, 0x642b);
+					else
+						be_edca = (txop << 16) | (5 << 12) | (3 << 8) | (sifs_time + 2 * slot_time);
 				}
 				#endif
 			}
 		}
-              else
-              {
- #if((DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined LOW_TP_TXOP))
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
+		else
+		{
+#if((DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined LOW_TP_TXOP))
 			 be_edca = (BE_TXOP << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time);
 #else
-			 ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (BE_TXOP << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
-#endif
- #else
-		#if defined(CONFIG_RTL_8196D) || defined(CONFIG_RTL_8197DL) || defined(CONFIG_RTL_8196E) || (defined(CONFIG_RTL_8197D) && !defined(CONFIG_PORT0_EXT_GIGA))
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
+ 		#if defined(CONFIG_RTL_8196D) || defined(CONFIG_RTL_8197DL) || defined(CONFIG_RTL_8196E) || (defined(CONFIG_RTL_8197D) && !defined(CONFIG_PORT0_EXT_GIGA))
 			be_edca = (BE_TXOP*2 << 16) | (cw_max << 12) | (5 << 8) | (sifs_time + 3 * slot_time);
- #else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM,  (BE_TXOP*2 << 16) | (cw_max << 12) | (5 << 8) | (sifs_time + 3 * slot_time));
-#endif
 		#else
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (BE_TXOP*2 << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time);
-		#else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM,  (BE_TXOP*2 << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
 		#endif
-		#endif
-/*
-		if (priv->pshare->txop_enlarge == 0xe) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
-			disable_cfe = 0;
 #endif
-	#ifdef CONFIG_PCI_HCI
-			ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) & ~(DIS_TXOP_CFE));
-	#endif
-		} else {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
-			disable_cfe = 1;
-#endif
-	#ifdef CONFIG_PCI_HCI
-			ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) | (DIS_TXOP_CFE));
-	#endif
 		}
-*/
- #endif
-              }
-
 	}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	notify_IOT_EDCA_switch(priv, be_edca, vi_edca, disable_cfe);
-#endif
 }
 #endif
 
 VOID
 odm_IotEngine(
-	IN	PVOID		pDM_VOID
+	IN 	PVOID	 	pDM_VOID
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
@@ -1404,20 +1127,6 @@ odm_IotEngine(
 //////////////////////////////////////////////////////
 	if ((GET_ROOT(priv)->up_time % 2) == 0)
 		priv->pshare->highTP_found_pstat==NULL;
-
-#if 0
-	phead = &priv->asoc_list;
-	plist = phead->next;
-	while(plist != phead)	{
-		pstat = list_entry(plist, struct stat_info, asoc_list);
-
-		if(ODM_ChooseIotMainSTA(pDM_Odm, pstat));              //find the correct station
-			break;
-		if (plist == plist->next)                                          //the last plist
-			break;
-		plist = plist->next;
-	};
-#endif
 
 	//find highTP STA
 	for(i=0; i<ODM_ASSOCIATE_ENTRY_NUM; i++) {
@@ -1467,17 +1176,6 @@ odm_IotEngine(
 				 (priv->pshare->phw->BK_pkt_count < 50))) {
 				priv->pshare->iot_mode_enable++;
 				switch_turbo++;
-//#ifdef CONFIG_WLAN_HAL_8881A
-#if 0
-				if (GET_CHIP_VER(priv) == VERSION_8881A) {
-					if (get_bonding_type_8881A()==BOND_8881AB) {
-						RTL_W32(0x460, 0x03086666);
-					}
-					else {
-						RTL_W32(0x460, 0x0320ffff);
-					}
-				}
-#endif //CONFIG_WLAN_HAL_8881A
 			}
 		}
 
@@ -1541,7 +1239,7 @@ odm_IotEngine(
 			   if (priv->pshare->iot_mode_enable)
 					switch_turbo++;
 				}
-		}
+         	}
 
 #if(defined(CLIENT_MODE) && (DM_ODM_SUPPORT_TYPE==ODM_AP))
         if ((OPMODE & WIFI_STATION_STATE) && (priv->pmib->dot11OperationEntry.wifi_specific))
@@ -1719,11 +1417,11 @@ odm_IotEngine(
 		}
 #endif
 
-#if defined(CONFIG_WLAN_HAL_8881A) || defined(CONFIG_WLAN_HAL_8192EE) || defined(CONFIG_RTL_8812_SUPPORT)
-	if (pDM_Odm->SupportICType == ODM_RTL8881A || pDM_Odm->SupportICType == ODM_RTL8192E || pDM_Odm->SupportICType == ODM_RTL8812) {
+#if defined(CONFIG_WLAN_HAL_8881A) || defined(CONFIG_WLAN_HAL_8192EE) || defined(CONFIG_RTL_8812_SUPPORT) || defined(CONFIG_WLAN_HAL_8814AE)
+	if (pDM_Odm->SupportICType == ODM_RTL8881A || pDM_Odm->SupportICType == ODM_RTL8192E || pDM_Odm->SupportICType == ODM_RTL8812 || pDM_Odm->SupportICType == ODM_RTL8814A) {
 		if (priv->assoc_num > 9)
-	{
-	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
+   	{
+       	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
 				if ((priv->swq_decision == 0)){
 				switch_turbo++;
 				if (priv->pshare->txop_enlarge == 0)
@@ -1746,15 +1444,15 @@ odm_IotEngine(
 			priv->pshare->txop_enlarge = 2;
 			switch_turbo--;
 		}
-		} else {
+	    	} else {
 			priv->swq_decision = 0;
     }
 	} else if(CONFIG_WLAN_NOT_HAL_EXIST)
 #endif
 		{
 		if (priv->assoc_num > 1)
-	{
-	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
+   	{
+       	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
 				if ((priv->swq_decision == 0)){
 				switch_turbo++;
 				if (priv->pshare->txop_enlarge == 0)
@@ -1912,3 +1610,4 @@ odm_IotEngine(
 #endif
 }
 #endif
+

@@ -50,7 +50,7 @@ struct xmit_frame	*rtw_IOL_accquire_xmit_frame(ADAPTER *adapter)
 
 	pattrib = &xmit_frame->attrib;
 	update_mgntframe_attrib(adapter, pattrib);
-	pattrib->qsel = 0x10;//Beacon
+	pattrib->qsel = QSLT_BEACON;//Beacon
 	pattrib->subtype = WIFI_BEACON;
 	pattrib->pktlen = pattrib->last_txcmdsz = 0;
 
@@ -62,7 +62,7 @@ struct xmit_frame	*rtw_IOL_accquire_xmit_frame(ADAPTER *adapter)
 	else {
 		pattrib = &xmit_frame->attrib;
 		update_mgntframe_attrib(adapter, pattrib);
-		pattrib->qsel = 0x10;
+		pattrib->qsel = QSLT_BEACON;
 		pattrib->pktlen = pattrib->last_txcmdsz = 0;
 	}
 #endif
@@ -102,10 +102,8 @@ bool rtw_IOL_applied(ADAPTER *adapter)
 	if(1 == adapter->registrypriv.fw_iol)
 		return _TRUE;
 
-#ifdef CONFIG_USB_HCI
 	if((2 == adapter->registrypriv.fw_iol) && (IS_FULL_SPEED_USB(adapter)))
 		return _TRUE;
-#endif
 
 	return _FALSE;
 }

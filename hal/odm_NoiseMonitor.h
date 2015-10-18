@@ -17,8 +17,8 @@
  *
  *
  *****************************************************************************/
-#ifndef	__ODMNOISEMONITOR_H__
-#define __ODMNOISEMONITOR_H__
+#ifndef __HAL_ODM_NOISEMONITOR_H__
+#define __HAL_ODM_NOISEMONITOR_H__
 
 #define	ODM_MAX_CHANNEL_NUM					38//14+24
 struct noise_level

@@ -18,7 +18,6 @@
  *
  ******************************************************************************/
 
-//#include "Mp_Precomp.h"
 #include "odm_precomp.h"
 
 
@@ -43,28 +42,8 @@ void ConfigureTxpowerTrack(
 	OUT	PTXPWRTRACK_CFG	pConfig
 	)
 {
-#if RTL8192E_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8192E)
-		ConfigureTxpowerTrack_8192E(pConfig);
-#endif
-#if RTL8821A_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8821)
-		ConfigureTxpowerTrack_8821A(pConfig);
-#endif
-#if RTL8812A_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8812)
-		ConfigureTxpowerTrack_8812A(pConfig);
-#endif
-#if RTL8188E_SUPPORT
-	if(pDM_Odm->SupportICType==ODM_RTL8188E)
-		ConfigureTxpowerTrack_8188E(pConfig);
-#endif
-
-#if RTL8723B_SUPPORT
 	if(pDM_Odm->SupportICType==ODM_RTL8723B)
 		ConfigureTxpowerTrack_8723B(pConfig);
-#endif
-
 }
 
 //======================================================================
@@ -161,7 +140,7 @@ ODM_TXPowerTrackingCallback_ThermalMeter(
 #endif
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
-	if ( *(pDM_Odm->mp_mode) == 1)
+	if (pDM_Odm->mp_mode == TRUE)
 #endif
 		// <Kordan> RFCalibrateInfo.RegA24 will be initialized when ODM HW configuring, but MP configures with para files.
 		pDM_Odm->RFCalibrateInfo.RegA24 = 0x090e1317;
@@ -449,15 +428,6 @@ ODM_TXPowerTrackingCallback_ThermalMeter(
 		pDM_Odm->RFCalibrateInfo.ThermalValue = ThermalValue;         //Record last Power Tracking Thermal Value
 
 	}
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-#if (RTL8723B_SUPPORT == 0)
-	// Delta temperature is equal to or larger than 20 centigrade (When threshold is 8).
-	if ((delta_IQK >= c.Threshold_IQK)) {
-		if ( ! pDM_Odm->RFCalibrateInfo.bIQKInProgress)
-			(*c.DoIQK)(pDM_Odm, delta_IQK, ThermalValue, 8);
-	}
-#endif
-#endif
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_TX_PWR_TRACK, ODM_DBG_LOUD,("<===ODM_TXPowerTrackingCallback_ThermalMeter\n"));
 
@@ -480,8 +450,7 @@ ODM_ResetIQKResult(
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN || DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
 
-	if (!IS_HARDWARE_TYPE_8192D(Adapter))
-		return;
+	return;
 #endif
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,("PHY_ResetIQKResult:: settings regs %d default regs %d\n", (u4Byte)(sizeof(pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting)/sizeof(IQK_MATRIX_REGS_SETTING)), IQK_Matrix_Settings_NUM));
 	//0xe94, 0xe9c, 0xea4, 0xeac, 0xeb4, 0xebc, 0xec4, 0xecc

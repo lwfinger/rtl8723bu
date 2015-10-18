@@ -236,7 +236,7 @@
 #define EEPROM_MAC_ADDR_88EU					0xD7
 #define EEPROM_VID_88EU						0xD0
 #define EEPROM_PID_88EU						0xD2
-#define EEPROM_USB_OPTIONAL_FUNCTION0		0xD4 //92EU is the same
+#define EEPROM_USB_OPTIONAL_FUNCTION0		0xD4 //8192EU, 8812AU is the same
 #define EEPROM_USB_OPTIONAL_FUNCTION0_8811AU 0x104
 
 // RTL88ES
@@ -508,11 +508,7 @@
 #define EEPROM_Default_internalPA_SP3T_C9	0xAA
 #define EEPROM_Default_internalPA_SP3T_CC	0xAF
 #define EEPROM_Default_internalPA_SPDT_C9	0xAA
-#ifdef CONFIG_PCI_HCI
-#define EEPROM_Default_internalPA_SPDT_CC	0xA0
-#else
 #define EEPROM_Default_internalPA_SPDT_CC	0xFA
-#endif
 #define EEPROM_Default_PAType						0
 #define EEPROM_Default_LNAType						0
 

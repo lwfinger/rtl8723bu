@@ -276,19 +276,7 @@ void Hal_MPT_CCKTxPowerAdjustbyIndex(PADAPTER pAdapter, BOOLEAN beven)
 
 	if (!IS_92C_SERIAL(pHalData->VersionID))
 		return;
-#if 0
-	while(PlatformAtomicExchange(&Adapter->IntrCCKRefCount, TRUE) == TRUE)
-	{
-		PlatformSleepUs(100);
-		TimeOut--;
-		if(TimeOut <= 0)
-		{
-			RTPRINT(FINIT, INIT_TxPower,
-			 ("!!!MPT_CCKTxPowerAdjustbyIndex Wait for check CCK gain index too long!!!\n" ));
-			break;
-		}
-	}
-#endif
+
 	if (beven && !pMptCtx->bMptIndexEven)	//odd->even
 	{
 		Action = 2;
@@ -365,12 +353,6 @@ void Hal_MPT_CCKTxPowerAdjustbyIndex(PADAPTER pAdapter, BOOLEAN beven)
 			rtw_write8(pAdapter, 0xa29, CCKSwingTable_Ch14[CCK_index][7]);
 		}
 	}
-#if 0
-	RTPRINT(FINIT, INIT_TxPower,
-	("MPT_CCKTxPowerAdjustbyIndex 0xa20=%x\n", PlatformEFIORead4Byte(Adapter, 0xa20)));
-
-	PlatformAtomicExchange(&Adapter->IntrCCKRefCount, FALSE);
-#endif
 }
 /*---------------------------hal\rtl8192c\MPT_HelperFunc.c---------------------------*/
 
@@ -382,12 +364,6 @@ void Hal_MPT_CCKTxPowerAdjustbyIndex(PADAPTER pAdapter, BOOLEAN beven)
  */
 void Hal_SetChannel(PADAPTER pAdapter)
 {
-#if 0
-	struct mp_priv *pmp = &pAdapter->mppriv;
-
-//	SelectChannel(pAdapter, pmp->channel);
-	set_channel_bwmode(pAdapter, pmp->channel, pmp->channel_offset, pmp->bandwidth);
-#else
 	u8		eRFPath;
 
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -399,12 +375,7 @@ void Hal_SetChannel(PADAPTER pAdapter)
 
 	// set RF channel register
 	for (eRFPath = 0; eRFPath < pHalData->NumTotalRFPath; eRFPath++)
-	{
-      if(IS_HARDWARE_TYPE_8192D(pAdapter))
-			_write_rfreg(pAdapter, (RF_PATH)eRFPath, rRfChannel, 0xFF, channel);
-		else
 		_write_rfreg(pAdapter, eRFPath, rRfChannel, 0x3FF, channel);
-	}
 	Hal_mpt_SwitchRfSetting(pAdapter);
 
 	SelectChannel(pAdapter, channel);
@@ -417,8 +388,6 @@ void Hal_SetChannel(PADAPTER pAdapter)
 		pHalData->dmpriv.bCCKinCH14 = _FALSE;
 		Hal_MPT_CCKTxPowerAdjust(pAdapter, pHalData->dmpriv.bCCKinCH14);
 	}
-
-#endif
 }
 
 /*
@@ -537,13 +506,6 @@ mpt_SetTxPower(
 	IN	pu1Byte			pTxPower
 	)
 {
-	if (IS_HARDWARE_TYPE_JAGUAR(pAdapter))
-	{
-		//mpt_SetTxPower_8812(pAdapter, Rate, pTxPower);
-		return;
-	}
-
-
 	switch (Rate)
 	{
 		case MPT_CCK:
@@ -618,23 +580,10 @@ void Hal_SetTxPower(PADAPTER pAdapter)
 
 		if (pHalData->rf_chip < RF_TYPE_MAX)
 		{
-			if (IS_HARDWARE_TYPE_JAGUAR(pAdapter))
-	{
-
-				DBG_8192C("===> MPT_ProSetTxPower: Jaguar\n");
-				/*
-					mpt_SetTxPower_8812(pAdapter, MPT_CCK, pMptCtx->TxPwrLevel);
-					mpt_SetTxPower_8812(pAdapter, MPT_OFDM, pMptCtx->TxPwrLevel);
-					mpt_SetTxPower_8812(pAdapter, MPT_VHT_OFDM, pMptCtx->TxPwrLevel);
-					*/
-			}
-			else
-			{
-				DBG_8192C("===> MPT_ProSetTxPower: Others\n");
-				mpt_SetTxPower(pAdapter, MPT_CCK, pMptCtx->TxPwrLevel);
-				Hal_MPT_CCKTxPowerAdjustbyIndex(pAdapter, pMptCtx->TxPwrLevel[path]%2 == 0);
-				mpt_SetTxPower(pAdapter, MPT_OFDM, pMptCtx->TxPwrLevel);
-			}
+			DBG_8192C("===> MPT_ProSetTxPower: Others\n");
+			mpt_SetTxPower(pAdapter, MPT_CCK, pMptCtx->TxPwrLevel);
+			Hal_MPT_CCKTxPowerAdjustbyIndex(pAdapter, pMptCtx->TxPwrLevel[path]%2 == 0);
+			mpt_SetTxPower(pAdapter, MPT_OFDM, pMptCtx->TxPwrLevel);
 		}
 		else
 		{
@@ -647,18 +596,6 @@ void Hal_SetTxPower(PADAPTER pAdapter)
 
 void Hal_SetTxAGCOffset(PADAPTER pAdapter, u32 ulTxAGCOffset)
 {
-#if 0
-	u32 TxAGCOffset_B, TxAGCOffset_C, TxAGCOffset_D,tmpAGC;
-
-
-	TxAGCOffset_B = (ulTxAGCOffset&0x000000ff);
-	TxAGCOffset_C = ((ulTxAGCOffset&0x0000ff00)>>8);
-	TxAGCOffset_D = ((ulTxAGCOffset&0x00ff0000)>>16);
-
-	tmpAGC = (TxAGCOffset_D<<8 | TxAGCOffset_C<<4 | TxAGCOffset_B);
-	write_bbreg(pAdapter, rFPGA0_TxGainStage,
-			(bXBTxAGC|bXCTxAGC|bXDTxAGC), tmpAGC);
-#endif
 }
 
 void Hal_SetDataRate(PADAPTER pAdapter)
@@ -669,8 +606,8 @@ void Hal_SetDataRate(PADAPTER pAdapter)
 
 	DataRate=MptToMgntRate(pAdapter->mppriv.rateidx);
 
-		if(!IS_HARDWARE_TYPE_8723A(pAdapter))
-	        Hal_mpt_SwitchRfSetting(pAdapter);
+		Hal_mpt_SwitchRfSetting(pAdapter);
+
 		if (IS_CCK_RATE(DataRate))
 		{
 			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
@@ -685,16 +622,6 @@ void Hal_SetDataRate(PADAPTER pAdapter)
 			else // S0
 				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0xE);
 		}
-
-	// <20130913, Kordan> 8723BS TFBGA uses the default setting.
-	if ((IS_HARDWARE_TYPE_8723BS(pAdapter) &&
-		  ((pHalData->PackageType == PACKAGE_TFBGA79) || (pHalData->PackageType == PACKAGE_TFBGA90))))
-	{
-		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
-			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, 0xF, 0xE);
-		else // S0
-			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0xE);
-	}
 }
 
 #define RF_PATH_AB	22
@@ -842,17 +769,9 @@ u8 Hal_ReadRFThermalMeter(PADAPTER pAdapter)
 
 void Hal_GetThermalMeter(PADAPTER pAdapter, u8 *value)
 {
-#if 0
-	fw_cmd(pAdapter, IOCMD_GET_THERMAL_METER);
-	rtw_msleep_os(1000);
-	fw_cmd_data(pAdapter, value, 1);
-	*value &= 0xFF;
-#else
-
 	Hal_TriggerRFThermalMeter(pAdapter);
 	rtw_msleep_os(1000);
 	*value = Hal_ReadRFThermalMeter(pAdapter);
-#endif
 }
 
 void Hal_SetSingleCarrierTx(PADAPTER pAdapter, u8 bStart)
@@ -874,18 +793,12 @@ void Hal_SetSingleCarrierTx(PADAPTER pAdapter, u8 bStart)
 		PHY_SetBBReg(pAdapter, rCCK0_System, bCCKScramble, 1);
 
 		// 4. Turn On Continue Tx and turn off the other test modes.
-		//if (IS_HARDWARE_TYPE_JAGUAR(pAdapter))
-			//PHY_SetBBReg(pAdapter, rSingleTone_ContTx_Jaguar, BIT18|BIT17|BIT16, OFDM_SingleCarrier);
-		//else
 		PHY_SetBBReg(pAdapter, rOFDM1_LSTF, BIT30|BIT29|BIT28, OFDM_SingleCarrier);
 	}
 	else// Stop Single Carrier.
 	{
 		// Stop Single Carrier.
 		// Turn off all test modes.
-		//if (IS_HARDWARE_TYPE_JAGUAR(pAdapter))
-		//	PHY_SetBBReg(pAdapter, rSingleTone_ContTx_Jaguar, BIT18|BIT17|BIT16, OFDM_ALL_OFF);
-		//else
 		PHY_SetBBReg(pAdapter, rOFDM1_LSTF, BIT30|BIT29|BIT28, OFDM_ALL_OFF);
 	    //Delay 10 ms
 		rtw_msleep_os(10);
@@ -928,81 +841,14 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 	{
 
 		// <20120326, Kordan> To amplify the power of tone for Xtal calibration. (asked by Edlu)
-		if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		 {
-			reg58 = PHY_QueryRFReg(pAdapter, rfPath, LNA_Low_Gain_3, bRFRegOffsetMask);
-			if (rfPath == ODM_RF_PATH_A)
-				pMptCtx->backup0x58_RF_A = reg58;
-			else
-				pMptCtx->backup0x58_RF_B = reg58;
-
-			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, LNA_Low_Gain_3, BIT1, 0x1); // RF LO enabled
-			PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bCCKEn, 0x0);
-			PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bOFDMEn, 0x0);
-
-
+		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x1); // RF LO enabled
+		} else {
+			// S0/S1 both use PATH A to configure
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x1); // RF LO enabled
 		}
-		else if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		{ // USB need to do RF LO disable first, PCIE isn't required to follow this order.
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x1); // RF LO disabled
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC, 0xF0000, 0x2); // Tx mode
-		}
-		else if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		{
-			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x1); // RF LO enabled
-			} else {
-				// S0/S1 both use PATH A to configure
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x1); // RF LO enabled
-			}
-		}
-		else if (IS_HARDWARE_TYPE_JAGUAR(pAdapter))
-		{
-			/*
-			u1Byte p = ODM_RF_PATH_A;
-
-			regRF0x0 = PHY_QueryRFReg(pAdapter, ODM_RF_PATH_A, RF_AC_Jaguar, bRFRegOffsetMask);
-			reg0xCB0 = PHY_QueryBBReg(pAdapter, rA_RFE_Pinmux_Jaguar, bMaskDWord);
-			reg0xEB0 = PHY_QueryBBReg(pAdapter, rB_RFE_Pinmux_Jaguar, bMaskDWord);
-			reg0xCB4 = PHY_QueryBBReg(pAdapter, rA_RFE_Pinmux_Jaguar+4, bMaskDWord);
-			reg0xEB4 = PHY_QueryBBReg(pAdapter, rB_RFE_Pinmux_Jaguar+4, bMaskDWord);
-
-			PHY_SetBBReg(pAdapter, rOFDMCCKEN_Jaguar, BIT29|BIT28, 0x0); // Disable CCK and OFDM
-
-			if (pMptCtx->MptRfPath == RF_PATH_AB) {
-				for (p = ODM_RF_PATH_A; p <= ODM_RF_PATH_B; ++p) {
-					PHY_SetRFReg(pAdapter, p, RF_AC_Jaguar, 0xF0000, 0x2); // Tx mode: RF0x00[19:16]=4'b0010
-					PHY_SetRFReg(pAdapter, p, RF_AC_Jaguar, 0x1F, 0x0); // Lowest RF gain index: RF_0x0[4:0] = 0
-					PHY_SetRFReg(pAdapter, p, LNA_Low_Gain_3, BIT1, 0x1); // RF LO enabled
-				}
-			} else {
-				PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC_Jaguar, 0xF0000, 0x2); // Tx mode: RF0x00[19:16]=4'b0010
-				PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC_Jaguar, 0x1F, 0x0); // Lowest RF gain index: RF_0x0[4:0] = 0
-				PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x1); // RF LO enabled
-			}
-
-
-			PHY_SetBBReg(pAdapter, rA_RFE_Pinmux_Jaguar, 0xFF00F0, 0x77007);  // 0xCB0[[23:16, 7:4] = 0x77007
-			PHY_SetBBReg(pAdapter, rB_RFE_Pinmux_Jaguar, 0xFF00F0, 0x77007);  // 0xCB0[[23:16, 7:4] = 0x77007
-
-			if (pHalData->ExternalPA_5G) {
-
-				PHY_SetBBReg(pAdapter, rA_RFE_Pinmux_Jaguar+4, 0xFF00000, 0x12); // 0xCB4[23:16] = 0x12
-				PHY_SetBBReg(pAdapter, rB_RFE_Pinmux_Jaguar+4, 0xFF00000, 0x12); // 0xEB4[23:16] = 0x12
-			} else if (pHalData->ExternalPA_2G) {
-				PHY_SetBBReg(pAdapter, rA_RFE_Pinmux_Jaguar+4, 0xFF00000, 0x11); // 0xCB4[23:16] = 0x11
-				PHY_SetBBReg(pAdapter, rB_RFE_Pinmux_Jaguar+4, 0xFF00000, 0x11); // 0xEB4[23:16] = 0x11
-			}
-			*/
-		}
-		else
-		{
-			// Turn On SingleTone and turn off the other test modes.
-			PHY_SetBBReg(pAdapter, rOFDM1_LSTF, BIT30|BIT29|BIT28, OFDM_SingleTone);
-		}
-
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
@@ -1011,57 +857,13 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 	else// Stop Single Tone.
 	{
 	// Stop Single Tone.
-		if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		{
-            PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, LNA_Low_Gain_3, bRFRegOffsetMask, pMptCtx->backup0x58_RF_A);
-
-		PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bCCKEn, 0x1);
-		PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bOFDMEn, 0x1);
-		}
-		else if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		{
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC, 0xF0000, 0x3); // Tx mode
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x0); // RF LO disabled
-		}
-		else if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		{
-			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x0); // RF LO disabled
-			} else {
-				// S0/S1 both use PATH A to configure
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x0); // RF LO disabled
-			}
-		}
-        else if (IS_HARDWARE_TYPE_JAGUAR(pAdapter))
-		{
-			/*
-			u1Byte p = ODM_RF_PATH_A;
-
-			PHY_SetBBReg(pAdapter, rOFDMCCKEN_Jaguar, BIT29|BIT28, 0x3); // Disable CCK and OFDM
-
-			if (pMptCtx->MptRfPath == RF_PATH_AB) {
-				for (p = ODM_RF_PATH_A; p <= ODM_RF_PATH_B; ++p) {
-					PHY_SetRFReg(pAdapter, p, RF_AC_Jaguar, bRFRegOffsetMask, regRF0x0);
-					PHY_SetRFReg(pAdapter, p, LNA_Low_Gain_3, BIT1, 0x0); // RF LO disabled
-				}
+		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x0); // RF LO disabled
 		} else {
-				PHY_SetRFReg(pAdapter, p, RF_AC_Jaguar, bRFRegOffsetMask, regRF0x0);
-				PHY_SetRFReg(pAdapter, p, LNA_Low_Gain_3, BIT1, 0x0); // RF LO disabled
-			}
-			PHY_SetBBReg(pAdapter, rA_RFE_Pinmux_Jaguar, bMaskDWord, reg0xCB0);
-			PHY_SetBBReg(pAdapter, rB_RFE_Pinmux_Jaguar, bMaskDWord, reg0xEB0);
-			PHY_SetBBReg(pAdapter, rA_RFE_Pinmux_Jaguar+4, bMaskDWord, reg0xCB4);
-			PHY_SetBBReg(pAdapter, rB_RFE_Pinmux_Jaguar+4, bMaskDWord, reg0xEB4);
-			*/
-	    }
-		else
-		{
-			// Turn off all test modes.
-			/*
-			PHY_SetBBReg(pAdapter, rSingleTone_ContTx_Jaguar, BIT18|BIT17|BIT16, OFDM_ALL_OFF);
-			*/
+			// S0/S1 both use PATH A to configure
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x0); // RF LO disabled
 		}
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
@@ -1136,33 +938,11 @@ void Hal_SetCCKContinuousTx(PADAPTER pAdapter, u8 bStart)
 			write_bbreg(pAdapter, rFPGA0_RFMOD, bCCKEn, bEnable);//set CCK block on
 
 		//Turn Off All Test Mode
-		//if (IS_HARDWARE_TYPE_JAGUAR(pAdapter))
-			//PHY_SetBBReg(pAdapter, rSingleTone_ContTx_Jaguar, BIT18|BIT17|BIT16, OFDM_ALL_OFF);
-		//else
-			PHY_SetBBReg(pAdapter, rOFDM1_LSTF, BIT30|BIT29|BIT28, OFDM_ALL_OFF);
+		PHY_SetBBReg(pAdapter, rOFDM1_LSTF, BIT30|BIT29|BIT28, OFDM_ALL_OFF);
+
 		//Set CCK Tx Test Rate
-		#if 0
-		switch(pAdapter->mppriv.rateidx)
-		{
-			case 2:
-				cckrate = 0;
-				break;
-			case 4:
-				cckrate = 1;
-				break;
-			case 11:
-				cckrate = 2;
-				break;
-			case 22:
-				cckrate = 3;
-				break;
-			default:
-				cckrate = 0;
-				break;
-		}
-		#else
 		cckrate  = pAdapter->mppriv.rateidx;
-		#endif
+
 		write_bbreg(pAdapter, rCCK0_System, bCCKTxRate, cckrate);
 		write_bbreg(pAdapter, rCCK0_System, bCCKBBMode, 0x2);	//transmit mode
 		write_bbreg(pAdapter, rCCK0_System, bCCKScramble, bEnable);	//turn on scramble setting
@@ -1235,13 +1015,6 @@ void Hal_SetOFDMContinuousTx(PADAPTER pAdapter, u8 bStart)
 
 void Hal_SetContinuousTx(PADAPTER pAdapter, u8 bStart)
 {
-#if 0
-	// ADC turn off [bit24-21] adc port0 ~ port1
-	if (bStart) {
-		write_bbreg(pAdapter, rRx_Wait_CCCA, read_bbreg(pAdapter, rRx_Wait_CCCA) & 0xFE1FFFFF);
-		rtw_usleep_os(100);
-	}
-#endif
 	RT_TRACE(_module_mp_, _drv_info_,
 		 ("SetContinuousTx: rate:%d\n", pAdapter->mppriv.rateidx));
 
@@ -1258,12 +1031,6 @@ void Hal_SetContinuousTx(PADAPTER pAdapter, u8 bStart)
 	{
 		Hal_SetOFDMContinuousTx(pAdapter, bStart);
 	}
-#if 0
-	// ADC turn on [bit24-21] adc port0 ~ port1
-	if (!bStart) {
-		write_bbreg(pAdapter, rRx_Wait_CCCA, read_bbreg(pAdapter, rRx_Wait_CCCA) | 0x01E00000);
-	}
-#endif
 }
 
 

@@ -21,6 +21,9 @@
  #define _USB_HALINIT_C_
 
 #include <rtl8723b_hal.h>
+#ifdef CONFIG_WOWLAN
+#include "hal_com_h2c.h"
+#endif
 
 
 
@@ -180,6 +183,10 @@ static u8 _InitPowerOn_8723BU(PADAPTER padapter)
 	//DBG_8192C("%s: REG_PAD_CTRL1(0x%x)=0x%02X\n", __FUNCTION__, REG_PAD_CTRL1_8723B, rtw_read8(padapter, REG_PAD_CTRL1_8723B));
 #endif // CONFIG_BT_COEXIST
 
+#ifdef CONFIG_GPIO_WAKEUP
+	rtw_clear_hostwakeupgpio(padapter);
+#endif // CONFIG_GPIO_WAKEUP
+
 	return status;
 }
 
@@ -253,38 +260,6 @@ static u8 _LLTRead(
 //	MAC init functions
 //
 //---------------------------------------------------------------
-static VOID
-_SetMacID(
-	IN  PADAPTER Adapter, u8* MacID
-	)
-{
-	u32 i;
-	for(i=0 ; i< MAC_ADDR_LEN ; i++){
-#ifdef  CONFIG_CONCURRENT_MODE
-		if(Adapter->iface_type == IFACE_PORT1)
-			rtw_write32(Adapter, REG_MACID1+i, MacID[i]);
-		else
-#endif
-		rtw_write32(Adapter, REG_MACID+i, MacID[i]);
-	}
-}
-
-static VOID
-_SetBSSID(
-	IN  PADAPTER Adapter, u8* BSSID
-	)
-{
-	u32 i;
-	for(i=0 ; i< MAC_ADDR_LEN ; i++){
-#ifdef  CONFIG_CONCURRENT_MODE
-		if(Adapter->iface_type == IFACE_PORT1)
-			rtw_write32(Adapter, REG_BSSID1+i, BSSID[i]);
-		else
-#endif
-		rtw_write32(Adapter, REG_BSSID+i, BSSID[i]);
-	}
-}
-
 
 // Shall USB interface init this?
 static VOID
@@ -535,11 +510,8 @@ _InitNetworkType(
 	value32 = rtw_read32(Adapter, REG_CR);
 
 	// TODO: use the other function to set network type
-#if 0//RTL8191C_FPGA_NETWORKTYPE_ADHOC
-	value32 = (value32 & ~MASK_NETTYPE) | _NETTYPE(NT_LINK_AD_HOC);
-#else
 	value32 = (value32 & ~MASK_NETTYPE) | _NETTYPE(NT_LINK_AP);
-#endif
+
 	rtw_write32(Adapter, REG_CR, value32);
 //	RASSERT(pIoBase->rtw_read8(REG_CR + 2) == 0x2);
 }
@@ -794,15 +766,8 @@ usb_AggSettingTxUpdate(
  *
  * Output/Return:	NONE
  *
- * Revised History:
- *	When		Who		Remark
- *	12/10/2010	MHC		Seperate to smaller function.
- *
  *---------------------------------------------------------------------------*/
-static VOID
-usb_AggSettingRxUpdate(
-	IN	PADAPTER			Adapter
-	)
+static void usb_AggSettingRxUpdate(PADAPTER padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	u8 aggctrl;
@@ -810,12 +775,12 @@ usb_AggSettingRxUpdate(
 	u32 agg_size;
 
 
-	pHalData = GET_HAL_DATA(Adapter);
+	pHalData = GET_HAL_DATA(padapter);
 
-	aggctrl = rtw_read8(Adapter, REG_TRXDMA_CTRL);
+	aggctrl = rtw_read8(padapter, REG_TRXDMA_CTRL);
 	aggctrl &= ~RXDMA_AGG_EN;
 
-	aggrx = rtw_read32(Adapter, REG_RXDMA_AGG_PG_TH);
+	aggrx = rtw_read32(padapter, REG_RXDMA_AGG_PG_TH);
 	aggrx &= ~BIT_USB_RXDMA_AGG_EN;
 	aggrx &= ~0xFF0F; // reset agg size and timeout
 
@@ -863,8 +828,8 @@ usb_AggSettingRxUpdate(
 	}
 #endif // CONFIG_USB_RX_AGGREGATION
 
-	rtw_write8(Adapter, REG_TRXDMA_CTRL, aggctrl);
-	rtw_write32(Adapter, REG_RXDMA_AGG_PG_TH, aggrx);
+	rtw_write8(padapter, REG_TRXDMA_CTRL, aggctrl);
+	rtw_write32(padapter, REG_RXDMA_AGG_PG_TH, aggrx);
 }
 
 static VOID
@@ -904,13 +869,6 @@ PHY_InitAntennaSelection8723B(
 
 static VOID _InitAdhocWorkaroundParams(IN PADAPTER Adapter)
 {
-#ifdef RTL8192CU_ADHOC_WORKAROUND_SETTING
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	pHalData->RegBcnCtrlVal = rtw_read8(Adapter, REG_BCN_CTRL);
-	pHalData->RegTxPause = rtw_read8(Adapter, REG_TXPAUSE);
-	pHalData->RegFwHwTxQCtrl = rtw_read8(Adapter, REG_FWHW_TXQ_CTRL+2);
-	pHalData->RegReg542 = rtw_read8(Adapter, REG_TBTT_PROHIBIT+2);
-#endif
 }
 
 // Set CCK and OFDM Block "ON"
@@ -973,39 +931,6 @@ HalDetectSelectiveSuspendMode(
 	IN PADAPTER				Adapter
 	)
 {
-#if 0   //amyma
-	u8	tmpvalue;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(Adapter);
-
-	// If support HW radio detect, we need to enable WOL ability, otherwise, we
-	// can not use FW to notify host the power state switch.
-
-	EFUSE_ShadowRead(Adapter, 1, EEPROM_USB_OPTIONAL1, (u32 *)&tmpvalue);
-
-	DBG_8192C("HalDetectSelectiveSuspendMode(): SS ");
-	if(tmpvalue & BIT1)
-	{
-		DBG_8192C("Enable\n");
-	}
-	else
-	{
-		DBG_8192C("Disable\n");
-		pdvobjpriv->RegUsbSS = _FALSE;
-	}
-
-	// 2010/09/01 MH According to Dongle Selective Suspend INF. We can switch SS mode.
-	if (pdvobjpriv->RegUsbSS && !SUPPORT_HW_RADIO_DETECT(pHalData))
-	{
-		//PMGNT_INFO				pMgntInfo = &(Adapter->MgntInfo);
-
-		//if (!pMgntInfo->bRegDongleSS)
-		//{
-		//	RT_TRACE(COMP_INIT, DBG_LOUD, ("Dongle disable SS\n"));
-			pdvobjpriv->RegUsbSS = _FALSE;
-		//}
-	}
-#endif
 }	// HalDetectSelectiveSuspendMode
 /*-----------------------------------------------------------------------------
  * Function:	HwSuspendModeEnable92Cu()
@@ -1515,21 +1440,9 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
 	// Init BT hw config.
 	rtw_btcoex_HAL_Initialize(padapter, _FALSE);
 #else
-	rtw_btcoex_HAL_Initialize(padapter, _TRUE);
-#endif
-
-#if 0
-	// 2010/05/20 MH We need to init timer after update setting. Otherwise, we can not get correct inf setting.
-	// 2010/05/18 MH For SE series only now. Init GPIO detect time
-	if(pDevice->RegUsbSS)
-	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, (" call GpioDetectTimerStart8192CU\n"));
-		GpioDetectTimerStart8192CU(Adapter);	// Disable temporarily
-	}
-
-	// 2010/08/23 MH According to Alfred's suggestion, we need to to prevent HW enter
-	// suspend mode automatically.
-	HwSuspendModeEnable92Cu(Adapter, _FALSE);
+	// impossible call this function without
+	// CONFIG_BT_COEXIST flag
+	// rtw_btcoex_HAL_Initialize(padapter, _TRUE);
 #endif
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
@@ -1744,46 +1657,34 @@ _ResetDigitalProcedure1(
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(Adapter);
 
 	if(pHalData->FirmwareVersion <=  0x20){
-		#if 0
-		/*****************************
-		f.	SYS_FUNC_EN 0x03[7:0]=0x54		// reset MAC register, DCORE
-		g.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
-		******************************/
-		u4Byte	value32 = 0;
-		PlatformIOWrite1Byte(Adapter, REG_SYS_FUNC_EN+1, 0x54);
-		PlatformIOWrite1Byte(Adapter, REG_MCUFWDL, 0);
-		#else
 		/*****************************
 		f.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
 		g.	SYS_FUNC_EN 0x02[10]= 0			// reset MCU register, (8051 reset)
 		h.	SYS_FUNC_EN 0x02[15-12]= 5		// reset MAC register, DCORE
 		i.     SYS_FUNC_EN 0x02[10]= 1			// enable MCU register, (8051 enable)
 		******************************/
-			u16 valu16 = 0;
-			rtw_write8(Adapter, REG_MCUFWDL, 0);
+		u16 valu16 = 0;
+		rtw_write8(Adapter, REG_MCUFWDL, 0);
 
-			valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
-			rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));//reset MCU ,8051
+		valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
+		rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 & (~FEN_CPUEN)));//reset MCU ,8051
 
-			valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN)&0x0FFF;
-			rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));//reset MAC
+		valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN)&0x0FFF;
+		rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 |(FEN_HWPDN|FEN_ELDR)));//reset MAC
 
-			#ifdef DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE
-			{
-				u8 val;
-				if( (val=rtw_read8(Adapter, REG_MCUFWDL)))
-					DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
-			}
-			#endif
-
-
-			valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
-			rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
-
-
+		#ifdef DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE
+		{
+			u8 val;
+			if( (val=rtw_read8(Adapter, REG_MCUFWDL)))
+				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
+		}
 		#endif
+
+		valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
+		rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
 	}
-	else{
+	else
+	{
 		u8 retry_cnts = 0;
 
 		if(rtw_read8(Adapter, REG_MCUFWDL) & BIT1)
@@ -1933,15 +1834,6 @@ i.	APS_FSMCO 0x04[15:0] = 0x4802		// set USB suspend
 	rtw_write16(Adapter, REG_APS_FSMCO,value16 );//0x4802
 
 	rtw_write8(Adapter, REG_RSV_CTRL, 0x0e);
-
- #if 0
-	//tynli_test for suspend mode.
-	if(!bWithoutHWSM){
-		rtw_write8(Adapter, 0xfe10, 0x19);
-	}
-#endif
-
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable Analog Reg0x04:0x%04x.\n",value16));
 }
 
 static void rtl8723bu_hw_power_down(_adapter *padapter)
@@ -2240,31 +2132,6 @@ _ReadBoardType(
 	IN	BOOLEAN		AutoloadFail
 	)
 {
-#if 0 //amyma
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
-	u32			value32;
-	u8			boardType = BOARD_USB_DONGLE;
-
-	if(AutoloadFail){
-		if(IS_8723_SERIES(pHalData->VersionID))
-			pHalData->rf_type = RF_1T1R;
-		else
-		        pHalData->rf_type = RF_2T2R;
-
-		pHalData->BoardType = boardType;
-		return;
-	}
-
-	boardType = PROMContent[EEPROM_NORMAL_BoardType_92C];
-	boardType &= BOARD_TYPE_NORMAL_MASK;//bit[7:5]
-	boardType >>= 5;
-
-	pHalData->BoardType = boardType;
-	MSG_8192C("_ReadBoardType(%x)\n",pHalData->BoardType);
-
-	if (boardType == BOARD_USB_High_PA)
-		pHalData->ExternalPA = 1;
-#endif
 }
 
 
@@ -2335,15 +2202,7 @@ _ReadThermalMeter(
 	if(pHalData->EEPROMThermalMeter == 0x1f || AutoloadFail)
 		pdmpriv->bAPKThermalMeterIgnore = _TRUE;
 
-#if 0
-	if(pHalData->EEPROMThermalMeter < 0x06 || pHalData->EEPROMThermalMeter > 0x1c)
-		pHalData->EEPROMThermalMeter = 0x12;
-#endif
-
 	pdmpriv->ThermalMeter[0] = pHalData->EEPROMThermalMeter;
-
-	//RTPRINT(FINIT, INIT_TxPower, ("ThermalMeter = 0x%x\n", pHalData->EEPROMThermalMeter));
-
 }
 
 static VOID
@@ -2826,26 +2685,7 @@ _func_enter_;
 
 _func_exit_;
 }
-#ifdef CONFIG_C2H_PACKET_EN
-void SetHwRegWithBuf8723B(PADAPTER padapter, u8 variable, u8 *pbuf, int len)
-{
-	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
-_func_enter_;
-
-	switch (variable)
-	{
-		case HW_VAR_C2H_HANDLE:
-			DBG_8192C("%s len=%d \n",__func__,len);
-			C2HPacketHandler_8723B(padapter, pbuf, len);
-			break;
-
-		default:
-			break;
-	}
-_func_exit_;
-}
-#endif
 //
 //	Description:
 //		Query setting of specified variable.
@@ -2966,6 +2806,8 @@ void rtl8723bu_set_hal_ops(_adapter * padapter)
 
 _func_enter_;
 
+	rtl8723b_set_hal_ops(pHalFunc);
+
 	pHalFunc->hal_init = &rtl8723bu_hal_init;
 	pHalFunc->hal_deinit = &rtl8723bu_hal_deinit;
 
@@ -2997,9 +2839,7 @@ _func_enter_;
 	pHalFunc->hal_xmit = &rtl8723bu_hal_xmit;
 	pHalFunc->mgnt_xmit = &rtl8723bu_mgnt_xmit;
 	pHalFunc->hal_xmitframe_enqueue = &rtl8723bu_hal_xmitframe_enqueue;
-#ifdef CONFIG_C2H_PACKET_EN
-	pHalFunc->SetHwRegHandlerWithBuf = &SetHwRegWithBuf8723B;
-#endif
+
 #ifdef CONFIG_HOSTAPD_MLME
 	pHalFunc->hostap_mgnt_xmit_entry = &rtl8723bu_hostap_mgnt_xmit_entry;
 #endif
@@ -3008,8 +2848,6 @@ _func_enter_;
 #ifdef CONFIG_XMIT_THREAD_MODE
 	pHalFunc->xmit_thread_handler = &rtl8723bu_xmit_buf_handler;
 #endif
-	rtl8723b_set_hal_ops(pHalFunc);
 
 _func_exit_;
-
 }

@@ -226,13 +226,22 @@
 //	0x0400h ~ 0x047Fh	Protocol Configuration
 //
 //-----------------------------------------------------
-#define REG_VOQ_INFORMATION			0x0400
-#define REG_VIQ_INFORMATION			0x0404
-#define REG_BEQ_INFORMATION			0x0408
-#define REG_BKQ_INFORMATION			0x040C
-#define REG_MGQ_INFORMATION			0x0410
-#define REG_HGQ_INFORMATION			0x0414
-#define REG_BCNQ_INFORMATION			0x0418
+
+/* 92C, 92D */
+#define REG_VOQ_INFO	0x0400
+#define REG_VIQ_INFO	0x0404
+#define REG_BEQ_INFO	0x0408
+#define REG_BKQ_INFO	0x040C
+
+/* 88E, 8723A, 8812A, 8821A, 92E, 8723B */
+#define REG_Q0_INFO	0x400
+#define REG_Q1_INFO	0x404
+#define REG_Q2_INFO	0x408
+#define REG_Q3_INFO	0x40C
+
+#define REG_MGQ_INFO	0x0410
+#define REG_HGQ_INFO	0x0414
+#define REG_BCNQ_INFO	0x0418
 #define REG_TXPKT_EMPTY				0x041A
 #define REG_CPU_MGQ_INFORMATION		0x041C
 #define REG_FWHW_TXQ_CTRL				0x0420
@@ -258,8 +267,18 @@
 #define REG_FAST_EDCA_CTRL				0x0460
 #define REG_RD_RESP_PKT_TH				0x0463
 
+/* 8723A, 8812A, 8821A, 92E, 8723B */
+#define REG_Q4_INFO	0x468
+#define REG_Q5_INFO	0x46C
+#define REG_Q6_INFO	0x470
+#define REG_Q7_INFO	0x474
+
 #define REG_INIRTS_RATE_SEL				0x0480
 #define REG_INIDATA_RATE_SEL			0x0484
+
+/* 8723B, 92E, 8812A, 8821A*/
+#define REG_MACID_SLEEP_3				0x0484
+#define REG_MACID_SLEEP_1				0x0488
 
 #define REG_POWER_STAGE1				0x04B4
 #define REG_POWER_STAGE2				0x04B8
@@ -273,7 +292,17 @@
 #define REG_RTS_MAX_AGGR_NUM			0x04CB
 #define REG_BAR_MODE_CTRL				0x04CC
 #define REG_RA_TRY_RATE_AGG_LMT		0x04CF
+
+/* 8723A */
+#define REG_MACID_DROP	0x04D0
+
+/* 88E */
 #define REG_EARLY_MODE_CONTROL		0x04D0
+
+/* 8723B, 92E, 8812A, 8821A */
+#define REG_MACID_SLEEP_2	0x04D0
+
+/* 8723A, 8723B, 92E, 8812A, 8821A */
 #define REG_MACID_SLEEP				0x04D4
 #define REG_NQOS_SEQ					0x04DC
 #define REG_QOS_SEQ					0x04DE
@@ -1651,12 +1680,8 @@ Current IOREG MAP
 #define SDIO_TX_FREE_PG_QUEUE			4	// The number of Tx FIFO free page
 #define SDIO_TX_FIFO_PAGE_SZ			128
 
-#ifdef CONFIG_SDIO_HCI
-	#define MAX_TX_AGG_PACKET_NUMBER	0x8
-#else
 	#define MAX_TX_AGG_PACKET_NUMBER	0xFF
 	#define MAX_TX_AGG_PACKET_NUMBER_8812	64
-#endif
 
 //-----------------------------------------------------
 //
@@ -1724,12 +1749,7 @@ Current IOREG MAP
 #define LAST_ENTRY_OF_TX_PKT_BUFFER_DUAL_MAC	127
 
 #define POLLING_LLT_THRESHOLD				20
-#if defined(CONFIG_RTL8723B) && defined(CONFIG_PCI_HCI)
-#define POLLING_READY_TIMEOUT_COUNT		6000
-#else
 #define POLLING_READY_TIMEOUT_COUNT		1000
-#endif
-
 
 // GPIO BIT
 #define	HAL_8192C_HW_GPIO_WPS_BIT	BIT2

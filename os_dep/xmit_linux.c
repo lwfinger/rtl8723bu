@@ -21,6 +21,7 @@
 
 #include <drv_types.h>
 
+#define DBG_DUMP_OS_QUEUE_CTL 0
 
 uint rtw_remainder_len(struct pkt_file *pfile)
 {
@@ -138,7 +139,6 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 	}
 
 	if (flag) {
-#ifdef CONFIG_USB_HCI
 		int i;
 		for(i=0; i<8; i++)
 		{
@@ -149,7 +149,6 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 			return _FAIL;
 	             }
 		}
-#endif
 	}
 
 	return _SUCCESS;
@@ -158,7 +157,6 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32 free_sz, u8 flag)
 {
 	if (flag) {
-#ifdef CONFIG_USB_HCI
 		int i;
 
 		for(i=0; i<8; i++)
@@ -169,7 +167,6 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 				usb_free_urb(pxmitbuf->pxmit_urb[i]);
 			}
 		}
-#endif
 	}
 
 	if (free_sz > 0 ) {
@@ -187,28 +184,78 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf,u32
 	}
 }
 
+void dump_os_queue(void *sel, _adapter *padapter)
+{
+	struct net_device *ndev = padapter->pnetdev;
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
+	int i;
+
+	for (i=0;i<4;i++) {
+		DBG_871X_SEL_NL(sel, "os_queue[%d]:%s\n"
+			, i, __netif_subqueue_stopped(ndev, i)?"stopped":"waked");
+	}
+#else
+	DBG_871X_SEL_NL(sel, "os_queue:%s\n"
+			, netif_queue_stopped(ndev)?"stopped":"waked");
+#endif
+}
+
 #define WMM_XMIT_THRESHOLD	(NR_XMITFRAME*2/5)
+
+inline static bool rtw_os_need_wake_queue(_adapter *padapter, u16 qidx)
+{
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+
+	if (padapter->registrypriv.wifi_spec) {
+		if (pxmitpriv->hwxmits[qidx].accnt < WMM_XMIT_THRESHOLD)
+			return _TRUE;
+	} else {
+		return _TRUE;
+		}
+	return _FALSE;
+#else
+	return _TRUE;
+#endif
+}
+
+inline static bool rtw_os_need_stop_queue(_adapter *padapter, u16 qidx)
+{
+	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
+	if (padapter->registrypriv.wifi_spec) {
+		/* No free space for Tx, tx_worker is too slow */
+		if (pxmitpriv->hwxmits[qidx].accnt > WMM_XMIT_THRESHOLD)
+			return _TRUE;
+	} else {
+		if(pxmitpriv->free_xmitframe_cnt<=4)
+			return _TRUE;
+	}
+#else
+	if(pxmitpriv->free_xmitframe_cnt<=4)
+		return _TRUE;
+#endif
+	return _FALSE;
+}
 
 void rtw_os_pkt_complete(_adapter *padapter, _pkt *pkt)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
-	u16	queue;
-	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+	u16	qidx;
 
-	queue = skb_get_queue_mapping(pkt);
-	if (padapter->registrypriv.wifi_spec) {
-		if(__netif_subqueue_stopped(padapter->pnetdev, queue) &&
-			(pxmitpriv->hwxmits[queue].accnt < WMM_XMIT_THRESHOLD))
-		{
-			netif_wake_subqueue(padapter->pnetdev, queue);
-		}
-	} else {
-		if(__netif_subqueue_stopped(padapter->pnetdev, queue))
-			netif_wake_subqueue(padapter->pnetdev, queue);
+	qidx = skb_get_queue_mapping(pkt);
+	if (rtw_os_need_wake_queue(padapter, qidx)) {
+		if (DBG_DUMP_OS_QUEUE_CTL)
+			DBG_871X(FUNC_ADPT_FMT": netif_wake_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), qidx);
+		netif_wake_subqueue(padapter->pnetdev, qidx);
 	}
 #else
-	if (netif_queue_stopped(padapter->pnetdev))
+	if (rtw_os_need_wake_queue(padapter, 0)) {
+		if (DBG_DUMP_OS_QUEUE_CTL)
+			DBG_871X(FUNC_ADPT_FMT": netif_wake_queue\n", FUNC_ADPT_ARG(padapter));
 		netif_wake_queue(padapter->pnetdev);
+	}
 #endif
 
 	rtw_skb_free(pkt);
@@ -226,20 +273,6 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 {
 	_adapter *pri_adapter = padapter;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	if(!padapter)
-		return;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
-		pri_adapter = padapter->pbuddy_adapter;
-#endif
-
-	if (_rtw_queue_empty(&padapter->xmitpriv.pending_xmitbuf_queue) == _FALSE)
-		_rtw_up_sema(&pri_adapter->xmitpriv.xmit_sema);
-
-
-#else
 	_irqL  irqL;
 	struct xmit_priv *pxmitpriv;
 
@@ -256,33 +289,56 @@ void rtw_os_xmit_schedule(_adapter *padapter)
 	}
 
 	_exit_critical_bh(&pxmitpriv->lock, &irqL);
-#endif
 }
 
-static void rtw_check_xmit_resource(_adapter *padapter, _pkt *pkt)
+static bool rtw_check_xmit_resource(_adapter *padapter, _pkt *pkt)
 {
+	bool busy = _FALSE;
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
-	u16	queue;
+	u16	qidx;
 
-	queue = skb_get_queue_mapping(pkt);
-	if (padapter->registrypriv.wifi_spec) {
-		/* No free space for Tx, tx_worker is too slow */
-		if (pxmitpriv->hwxmits[queue].accnt > WMM_XMIT_THRESHOLD) {
-			//DBG_871X("%s(): stop netif_subqueue[%d]\n", __FUNCTION__, queue);
-			netif_stop_subqueue(padapter->pnetdev, queue);
+	qidx = skb_get_queue_mapping(pkt);
+	if (rtw_os_need_stop_queue(padapter, qidx)) {
+		if (DBG_DUMP_OS_QUEUE_CTL)
+			DBG_871X(FUNC_ADPT_FMT": netif_stop_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), qidx);
+		netif_stop_subqueue(padapter->pnetdev, qidx);
+		busy = _TRUE;
 		}
-	} else {
-		if(pxmitpriv->free_xmitframe_cnt<=4) {
-			if (!netif_tx_queue_stopped(netdev_get_tx_queue(padapter->pnetdev, queue)))
-				netif_stop_subqueue(padapter->pnetdev, queue);
+#else
+	if (rtw_os_need_stop_queue(padapter, 0)) {
+		if (DBG_DUMP_OS_QUEUE_CTL)
+			DBG_871X(FUNC_ADPT_FMT": netif_stop_queue\n", FUNC_ADPT_ARG(padapter));
+		rtw_netif_stop_queue(padapter->pnetdev);
+		busy = _TRUE;
+	}
+#endif
+	return busy;
+}
+
+void rtw_os_wake_queue_at_free_stainfo(_adapter *padapter, int *qcnt_freed)
+{
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35))
+	int i;
+
+	for (i=0;i<4;i++) {
+		if (qcnt_freed[i] == 0)
+			continue;
+
+		if(rtw_os_need_wake_queue(padapter, i)) {
+			if (DBG_DUMP_OS_QUEUE_CTL)
+				DBG_871X(FUNC_ADPT_FMT": netif_wake_subqueue[%d]\n", FUNC_ADPT_ARG(padapter), i);
+			netif_wake_subqueue(padapter->pnetdev, i);
 		}
 	}
 #else
-	if(pxmitpriv->free_xmitframe_cnt<=4)
-	{
-		if (!rtw_netif_queue_stopped(padapter->pnetdev))
-			rtw_netif_stop_queue(padapter->pnetdev);
+	if (qcnt_freed[0] || qcnt_freed[1] || qcnt_freed[2] || qcnt_freed[3]) {
+		if(rtw_os_need_wake_queue(padapter, 0)) {
+			if (DBG_DUMP_OS_QUEUE_CTL)
+
+				DBG_871X(FUNC_ADPT_FMT": netif_wake_queue\n", FUNC_ADPT_ARG(padapter));
+			netif_wake_queue(padapter->pnetdev);
+		}
 	}
 #endif
 }
@@ -441,7 +497,7 @@ _func_enter_;
 
 drop_packet:
 	pxmitpriv->tx_drop++;
-	rtw_skb_free(pkt);
+	rtw_os_pkt_complete(padapter, pkt);
 	RT_TRACE(_module_xmit_osdep_c_, _drv_notice_, ("rtw_xmit_entry: drop, tx_drop=%d\n", (u32)pxmitpriv->tx_drop));
 
 exit:

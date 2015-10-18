@@ -22,10 +22,6 @@
 #include <drv_types.h>
 #include <platform_ops.h>
 
-#ifndef CONFIG_USB_HCI
-#error "CONFIG_USB_HCI shall be on!\n"
-#endif
-
 #ifdef CONFIG_80211N_HT
 extern int rtw_ht_enable;
 extern int rtw_bw_mode;
@@ -134,17 +130,9 @@ static void rtw_dev_shutdown(struct device *dev)
 /* DID_USB_v916_20130116 */
 static struct usb_device_id rtw_usb_id_tbl[] ={
 
-#ifdef CONFIG_RTL8723A
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x8724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x1724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x0724,0xff,0xff,0xff),.driver_info = RTL8723A}, /* 8723AU 1*1 */
-#endif
-
-#ifdef CONFIG_RTL8723B
 	//*=== Realtek demoboard ===*/
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xB720,0xff,0xff,0xff),.driver_info = RTL8723B}, /* 8723BU 1*1 */
 	//{USB_DEVICE(USB_VENDER_ID_REALTEK, 0xB720),.driver_info = RTL8723B}, /* 8723BU */
-#endif
 	{}	/* Terminating entry */
 };
 
@@ -308,56 +296,13 @@ _func_enter_;
 
 	pdev_desc = &pusbd->descriptor;
 
-#if 0
-	DBG_871X("\n8712_usb_device_descriptor:\n");
-	DBG_871X("bLength=%x\n", pdev_desc->bLength);
-	DBG_871X("bDescriptorType=%x\n", pdev_desc->bDescriptorType);
-	DBG_871X("bcdUSB=%x\n", pdev_desc->bcdUSB);
-	DBG_871X("bDeviceClass=%x\n", pdev_desc->bDeviceClass);
-	DBG_871X("bDeviceSubClass=%x\n", pdev_desc->bDeviceSubClass);
-	DBG_871X("bDeviceProtocol=%x\n", pdev_desc->bDeviceProtocol);
-	DBG_871X("bMaxPacketSize0=%x\n", pdev_desc->bMaxPacketSize0);
-	DBG_871X("idVendor=%x\n", pdev_desc->idVendor);
-	DBG_871X("idProduct=%x\n", pdev_desc->idProduct);
-	DBG_871X("bcdDevice=%x\n", pdev_desc->bcdDevice);
-	DBG_871X("iManufacturer=%x\n", pdev_desc->iManufacturer);
-	DBG_871X("iProduct=%x\n", pdev_desc->iProduct);
-	DBG_871X("iSerialNumber=%x\n", pdev_desc->iSerialNumber);
-	DBG_871X("bNumConfigurations=%x\n", pdev_desc->bNumConfigurations);
-#endif
-
 	phost_conf = pusbd->actconfig;
 	pconf_desc = &phost_conf->desc;
-
-#if 0
-	DBG_871X("\n8712_usb_configuration_descriptor:\n");
-	DBG_871X("bLength=%x\n", pconf_desc->bLength);
-	DBG_871X("bDescriptorType=%x\n", pconf_desc->bDescriptorType);
-	DBG_871X("wTotalLength=%x\n", pconf_desc->wTotalLength);
-	DBG_871X("bNumInterfaces=%x\n", pconf_desc->bNumInterfaces);
-	DBG_871X("bConfigurationValue=%x\n", pconf_desc->bConfigurationValue);
-	DBG_871X("iConfiguration=%x\n", pconf_desc->iConfiguration);
-	DBG_871X("bmAttributes=%x\n", pconf_desc->bmAttributes);
-	DBG_871X("bMaxPower=%x\n", pconf_desc->bMaxPower);
-#endif
 
 	//DBG_871X("\n/****** num of altsetting = (%d) ******/\n", pusb_interface->num_altsetting);
 
 	phost_iface = &usb_intf->altsetting[0];
 	piface_desc = &phost_iface->desc;
-
-#if 0
-	DBG_871X("\n8712_usb_interface_descriptor:\n");
-	DBG_871X("bLength=%x\n", piface_desc->bLength);
-	DBG_871X("bDescriptorType=%x\n", piface_desc->bDescriptorType);
-	DBG_871X("bInterfaceNumber=%x\n", piface_desc->bInterfaceNumber);
-	DBG_871X("bAlternateSetting=%x\n", piface_desc->bAlternateSetting);
-	DBG_871X("bNumEndpoints=%x\n", piface_desc->bNumEndpoints);
-	DBG_871X("bInterfaceClass=%x\n", piface_desc->bInterfaceClass);
-	DBG_871X("bInterfaceSubClass=%x\n", piface_desc->bInterfaceSubClass);
-	DBG_871X("bInterfaceProtocol=%x\n", piface_desc->bInterfaceProtocol);
-	DBG_871X("iInterface=%x\n", piface_desc->iInterface);
-#endif
 
 	pdvobjpriv->NumInterfaces = pconf_desc->bNumInterfaces;
 	pdvobjpriv->InterfaceNumber = piface_desc->bInterfaceNumber;
@@ -496,15 +441,8 @@ static void rtw_decide_chip_type_by_usb_info(_adapter *padapter, const struct us
 {
 	padapter->chip_type = pdid->driver_info;
 
-	#ifdef CONFIG_RTL8723A
-	if(padapter->chip_type == RTL8723A)
-		rtl8723au_set_hw_type(padapter);
-	#endif
-
-	#ifdef CONFIG_RTL8723B
 	if(padapter->chip_type == RTL8723B)
 		rtl8723bu_set_hw_type(padapter);
-	#endif
 
 }
 void rtw_set_hal_ops(_adapter *padapter)
@@ -512,28 +450,14 @@ void rtw_set_hal_ops(_adapter *padapter)
 	//alloc memory for HAL DATA
 	rtw_hal_data_init(padapter);
 
-	#ifdef CONFIG_RTL8723A
-	if(padapter->chip_type == RTL8723A)
-		rtl8723au_set_hal_ops(padapter);
-	#endif
-
-	#ifdef CONFIG_RTL8723B
 	if(padapter->chip_type == RTL8723B)
 		rtl8723bu_set_hal_ops(padapter);
-	#endif
 }
 
 void usb_set_intf_ops(_adapter *padapter,struct _io_ops *pops)
 {
-	#ifdef CONFIG_RTL8723A
-	if(padapter->chip_type == RTL8723A)
-		rtl8723au_set_intf_ops(pops);
-	#endif
-
-	#ifdef CONFIG_RTL8723B
 	if(padapter->chip_type == RTL8723B)
 		rtl8723bu_set_intf_ops(pops);
-	#endif
 }
 
 
@@ -706,10 +630,7 @@ int rtw_hw_resume(_adapter *padapter)
 	netif_device_attach(pnetdev);
 	netif_carrier_on(pnetdev);
 
-	if(!rtw_netif_queue_stopped(pnetdev))
-		rtw_netif_start_queue(pnetdev);
-	else
-		rtw_netif_wake_queue(pnetdev);
+	rtw_netif_wake_queue(pnetdev);
 
 	pwrpriv->bkeepfwalive = _FALSE;
 	pwrpriv->brfoffbyhw = _FALSE;

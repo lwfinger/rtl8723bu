@@ -25,11 +25,9 @@
 	#include <ntddndis.h>
 	#include <ntdef.h>
 
-#ifdef CONFIG_USB_HCI
 	#include <usb.h>
 	#include <usbioctl.h>
 	#include <usbdlib.h>
-#endif
 
 	typedef KSEMAPHORE	_sema;
 	typedef	LIST_ENTRY	_list;

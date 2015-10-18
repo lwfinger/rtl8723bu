@@ -83,6 +83,7 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 #include <hal_intf.h>
 #include <hal_com.h>
 #include <hal_com_led.h>
+#include <hal_dm.h>
 #include <rtw_qos.h>
 #include <rtw_pwrctrl.h>
 #include <rtw_mlme.h>
@@ -337,26 +338,26 @@ struct registry_priv
 	u8 hiq_filter;
 	u8 adaptivity_en;
 	u8 adaptivity_mode;
+	u8 nhm_en;
 };
 
 
 //For registry parameters
 #define RGTRY_OFT(field) ((ULONG)FIELD_OFFSET(struct registry_priv,field))
 #define RGTRY_SZ(field)   sizeof(((struct registry_priv*) 0)->field)
+
+#define GetRegAmplifierType2G(_Adapter)	(_Adapter->registrypriv.AmplifierType_2G)
+#define GetRegAmplifierType5G(_Adapter)	(_Adapter->registrypriv.AmplifierType_5G)
+
+#define GetRegTxBBSwing_2G(_Adapter)	(_Adapter->registrypriv.TxBBSwing_2G)
+#define GetRegTxBBSwing_5G(_Adapter)	(_Adapter->registrypriv.TxBBSwing_5G)
+
+#define GetRegbENRFEType(_Adapter)	(_Adapter->registrypriv.bEn_RFE)
+#define GetRegRFEType(_Adapter)	(_Adapter->registrypriv.RFE_Type)
+
 #define BSSID_OFT(field) ((ULONG)FIELD_OFFSET(WLAN_BSSID_EX,field))
 #define BSSID_SZ(field)   sizeof(((PWLAN_BSSID_EX) 0)->field)
 
-
-
-#ifdef CONFIG_SDIO_HCI
-#include <drv_types_sdio.h>
-#define INTF_DATA SDIO_DATA
-#elif defined(CONFIG_GSPI_HCI)
-#include <drv_types_gspi.h>
-#define INTF_DATA GSPI_DATA
-#elif defined(CONFIG_PCI_HCI)
-#include <drv_types_pci.h>
-#endif
 
 #ifdef CONFIG_CONCURRENT_MODE
 #define is_primary_adapter(adapter) (adapter->adapter_type == PRIMARY_ADAPTER)
@@ -368,6 +369,8 @@ struct registry_priv
 #define GET_PRIMARY_ADAPTER(padapter) (((_adapter *)padapter)->dvobj->if1)
 #define GET_IFACE_NUMS(padapter) (((_adapter *)padapter)->dvobj->iface_nums)
 #define GET_ADAPTER(padapter, iface_id) (((_adapter *)padapter)->dvobj->padapters[iface_id])
+
+#define GetDefaultAdapter(padapter)	padapter
 
 enum _IFACE_ID {
 	IFACE_ID0, //maping to PRIMARY_ADAPTER
@@ -576,6 +579,28 @@ struct cam_entry_cache {
 	((u8*)(x))[6],((u8*)(x))[7],((u8*)(x))[8],((u8*)(x))[9],((u8*)(x))[10],((u8*)(x))[11], \
 	((u8*)(x))[12],((u8*)(x))[13],((u8*)(x))[14],((u8*)(x))[15]
 
+struct macid_bmp {
+	u32 m0;
+#if (MACID_NUM_SW_LIMIT > 32)
+	u32 m1;
+#endif
+#if (MACID_NUM_SW_LIMIT > 64)
+	u32 m2;
+#endif
+#if (MACID_NUM_SW_LIMIT > 96)
+	u32 m3;
+#endif
+};
+
+struct macid_ctl_t {
+	_lock lock;
+	u8 num;
+	struct macid_bmp used;
+	struct macid_bmp bmc;
+	struct macid_bmp if_g[IFACE_ID_MAX];
+	struct macid_bmp ch_g[2]; /* 2 ch concurrency */
+};
+
 struct dvobj_priv
 {
 	/*-------- below is common data --------*/
@@ -585,11 +610,6 @@ struct dvobj_priv
 	s32	processing_dev_remove;
 
 	struct debug_priv drv_dbg;
-
-	//for local/global synchronization
-	//
-	_lock	lock;
-	int macid[NUM_STA];
 
 	_mutex hw_init_mutex;
 	_mutex h2c_fwcmd_mutex;
@@ -606,6 +626,8 @@ struct dvobj_priv
 	//padapters[IFACE_ID1] == if2
 	_adapter *padapters[IFACE_ID_MAX];
 	u8 iface_nums; // total number of ifaces used runtime
+
+	struct macid_ctl_t macid_ctl;
 
 	struct cam_ctl_t cam_ctl;
 	struct cam_entry_cache cam_cache[TOTAL_CAM_ENTRY];
@@ -634,10 +656,6 @@ struct dvobj_priv
 	INTF_DATA intf_data;
 #endif
 
-/*-------- below is for USB INTERFACE --------*/
-
-#ifdef CONFIG_USB_HCI
-
 	u8	usb_speed; // 1.1, 2.0 or 3.0
 	u8	nr_endpoint;
 	u8	RtNumInPipes;
@@ -659,65 +677,17 @@ struct dvobj_priv
 
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
-
-#endif//CONFIG_USB_HCI
-
-/*-------- below is for PCIE INTERFACE --------*/
-
-#ifdef CONFIG_PCI_HCI
-
-	struct pci_dev *ppcidev;
-
-	//PCI MEM map
-	unsigned long	pci_mem_end;	/* shared mem end	*/
-	unsigned long	pci_mem_start;	/* shared mem start	*/
-
-	//PCI IO map
-	unsigned long	pci_base_addr;	/* device I/O address	*/
-
-	//PciBridge
-	struct pci_priv	pcipriv;
-
-	u16	irqline;
-	u8	irq_enabled;
-	RT_ISR_CONTENT	isr_content;
-	_lock	irq_th_lock;
-
-	//ASPM
-	u8	const_pci_aspm;
-	u8	const_amdpci_aspm;
-	u8	const_hwsw_rfoff_d3;
-	u8	const_support_pciaspm;
-	// pci-e bridge */
-	u8	const_hostpci_aspm_setting;
-	// pci-e device */
-	u8	const_devicepci_aspm_setting;
-	u8	b_support_aspm; // If it supports ASPM, Offset[560h] = 0x40, otherwise Offset[560h] = 0x00.
-	u8	b_support_backdoor;
-	u8	bdma64;
-
-#endif//CONFIG_PCI_HCI
 };
 
 #define dvobj_to_pwrctl(dvobj) (&(dvobj->pwrctl_priv))
 #define pwrctl_to_dvobj(pwrctl) container_of(pwrctl, struct dvobj_priv, pwrctl_priv)
+#define dvobj_to_macidctl(dvobj) (&(dvobj->macid_ctl))
 
 static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
 	/* todo: get interface type from dvobj and the return the dev accordingly */
 
-#ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
-#ifdef CONFIG_SDIO_HCI
-	return &dvobj->intf_data.func->dev;
-#endif
-#ifdef CONFIG_GSPI_HCI
-	return &dvobj->intf_data.func->dev;
-#endif
-#ifdef CONFIG_PCI_HCI
-	return &dvobj->ppcidev->dev;
-#endif
 }
 
 _adapter *dvobj_get_port0_adapter(struct dvobj_priv *dvobj);
@@ -774,7 +744,6 @@ struct _ADAPTER{
 	int	pid[3];//process id from UI, 0:wps, 1:hostapd, 2:dhcpcd
 	int	bDongle;//build-in module or external dongle
 	u16	chip_type;
-	u16	HardwareType;
 	u16	interface_type;//USB,SDIO,SPI,PCI
 
 	struct dvobj_priv *dvobj;
@@ -845,7 +814,9 @@ struct _ADAPTER{
 	u8	bDriverIsGoingToUnload;
 	u8	init_adpt_in_progress;
 	u8	bHaltInProgress;
-
+#ifdef CONFIG_GPIO_API
+	u8	pre_gpio_pin;
+#endif
 	_thread_hdl_ cmdThread;
 	_thread_hdl_ evtThread;
 	_thread_hdl_ xmitThread;
@@ -957,11 +928,13 @@ struct _ADAPTER{
 
 	//for debug purpose
 	u8 fix_rate;
+	u8 data_fb; /* data rate fallback, valid only when fix_rate is not 0xff */
 	u8 driver_vcs_en; //Enable=1, Disable=0 driver control vrtl_carrier_sense for tx
 	u8 driver_vcs_type;//force 0:disable VCS, 1:RTS-CTS, 2:CTS-to-self when vcs_en=1.
 	u8 driver_ampdu_spacing;//driver control AMPDU Density for peer sta's rx
 	u8 driver_rx_ampdu_factor;//0xff: disable drv ctrl, 0:8k, 1:16k, 2:32k, 3:64k;
 	u8 fix_ba_rxbuf_bz; /* 0~127, TODO:consider each sta and each TID */
+	u8 driver_rx_ampdu_spacing;  //driver control Rx AMPDU Density
 
 	unsigned char     in_cta_test;
 
@@ -1026,12 +999,6 @@ void rtw_dev_pno_debug(struct net_device *net);
 #endif //CONFIG_PNO_SET_DEBUG
 #endif //CONFIG_PNO_SUPPORT
 
-#ifdef CONFIG_GPIO_API
-int rtw_get_gpio(struct net_device *netdev, int gpio_num);
-int rtw_set_gpio_output_value(struct net_device *netdev, int gpio_num, BOOLEAN isHigh);
-int rtw_config_gpio(struct net_device *netdev, int gpio_num, BOOLEAN isOutput);
-#endif
-
 #ifdef CONFIG_WOWLAN
 int rtw_suspend_wow(_adapter *padapter);
 int rtw_resume_process_wow(_adapter *padapter);
@@ -1043,29 +1010,9 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 }
 
 // HCI Related header file
-#ifdef CONFIG_USB_HCI
 #include <usb_osintf.h>
 #include <usb_ops.h>
 #include <usb_hal.h>
-#endif
-
-#ifdef CONFIG_SDIO_HCI
-#include <sdio_osintf.h>
-#include <sdio_ops.h>
-#include <sdio_hal.h>
-#endif
-
-#ifdef CONFIG_GSPI_HCI
-#include <gspi_osintf.h>
-#include <gspi_ops.h>
-#include <gspi_hal.h>
-#endif
-
-#ifdef CONFIG_PCI_HCI
-#include <pci_osintf.h>
-#include <pci_ops.h>
-#include <pci_hal.h>
-#endif
 
 #ifdef CONFIG_BT_COEXIST
 #include <rtw_btcoex.h>

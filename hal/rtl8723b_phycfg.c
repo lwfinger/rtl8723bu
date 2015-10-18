@@ -498,6 +498,10 @@ s32 PHY_MACConfig8723B(PADAPTER Adapter)
 #endif//CONFIG_EMBEDDED_FWIMG
 	}
 
+#ifdef CONFIG_GPIO_WAKEUP
+	rtw_clear_hostwakeupgpio(Adapter);
+#endif // CONFIG_GPIO_WAKEUP
+
 	return rtStatus;
 }
 
@@ -621,28 +625,6 @@ phy_ConfigBBWithMpHeaderFile(
 
 #endif	// #if (MP_DRIVER == 1)
 
-#if 0 //YJ,test,130321
-static VOID
-phy_BB8192C_Config_1T(
-	IN PADAPTER Adapter
-	)
-{
-	//for path - B
-	PHY_SetBBReg(Adapter, rFPGA0_TxInfo, 0x3, 0x2);
-	PHY_SetBBReg(Adapter, rFPGA1_TxInfo, 0x300033, 0x200022);
-
-	// 20100519 Joseph: Add for 1T2R config. Suggested by Kevin, Jenyu and Yunan.
-	PHY_SetBBReg(Adapter, rCCK0_AFESetting, bMaskByte3, 0x45);
-	PHY_SetBBReg(Adapter, rOFDM0_TRxPathEnable, bMaskByte0, 0x23);
-	PHY_SetBBReg(Adapter, rOFDM0_AGCParameter1, 0x30, 0x1);	// B path first AGC
-
-	PHY_SetBBReg(Adapter, 0xe74, 0x0c000000, 0x2);
-	PHY_SetBBReg(Adapter, 0xe78, 0x0c000000, 0x2);
-	PHY_SetBBReg(Adapter, 0xe7c, 0x0c000000, 0x2);
-	PHY_SetBBReg(Adapter, 0xe80, 0x0c000000, 0x2);
-	PHY_SetBBReg(Adapter, 0xe88, 0x0c000000, 0x2);
-}
-#endif
 
 static	int
 phy_BB8723b_Config_ParaFile(
@@ -794,23 +776,14 @@ PHY_BBConfig8723B(
 	RegVal = rtw_read16(Adapter, REG_SYS_FUNC_EN);
 	rtw_write16(Adapter, REG_SYS_FUNC_EN, (u16)(RegVal|BIT13|BIT0|BIT1));
 
-#ifdef CONFIG_USB_HCI
+	// switch ant to BT
 	rtw_write32(Adapter, 0x948, 0x0);	// USB use Antenna S0
-#else
-	rtw_write32(Adapter, 0x948, 0x280);	// Others use Antenna S1
-#endif
 
 	rtw_write8(Adapter, REG_RF_CTRL, RF_EN|RF_RSTB|RF_SDMRSTB);
 
 	rtw_usleep_os(10);
 
 	PHY_SetRFReg(Adapter, ODM_RF_PATH_A, 0x1, 0xfffff,0x780);
-
-#if 0
-	// 20090923 Joseph: Advised by Steven and Jenyu. Power sequence before init RF.
-	rtw_write8(Adapter, REG_AFE_PLL_CTRL, 0x83);
-	rtw_write8(Adapter, REG_AFE_PLL_CTRL+1, 0xdb);
-#endif
 
 	rtw_write8(Adapter, REG_SYS_FUNC_EN, FEN_PPLL|FEN_PCIEA|FEN_DIO_PCIE|FEN_BB_GLB_RSTn|FEN_BBRSTB);
 
@@ -838,40 +811,6 @@ void phy_LCK_8723B(
 	PHY_SetRFReg(Adapter, RF_PATH_A, 0xB0, bRFRegOffsetMask, 0xDFFE0);
 }
 
-#if 0
-// Block & Path enable
-#define		rOFDMCCKEN_Jaguar		0x808 // OFDM/CCK block enable
-#define		bOFDMEN_Jaguar			0x20000000
-#define		bCCKEN_Jaguar			0x10000000
-#define		rRxPath_Jaguar			0x808	// Rx antenna
-#define		bRxPath_Jaguar			0xff
-#define		rTxPath_Jaguar			0x80c	// Tx antenna
-#define		bTxPath_Jaguar			0x0fffffff
-#define		rCCK_RX_Jaguar			0xa04	// for cck rx path selection
-#define		bCCK_RX_Jaguar			0x0c000000
-#define		rVhtlen_Use_Lsig_Jaguar	0x8c3	// Use LSIG for VHT length
-VOID
-PHY_BB8723B_Config_1T(
-	IN PADAPTER Adapter
-	)
-{
-	// BB OFDM RX Path_A
-	PHY_SetBBReg(Adapter, rRxPath_Jaguar, bRxPath_Jaguar, 0x11);
-	// BB OFDM TX Path_A
-	PHY_SetBBReg(Adapter, rTxPath_Jaguar, bMaskLWord, 0x1111);
-	// BB CCK R/Rx Path_A
-	PHY_SetBBReg(Adapter, rCCK_RX_Jaguar, bCCK_RX_Jaguar, 0x0);
-	// MCS support
-	PHY_SetBBReg(Adapter, 0x8bc, 0xc0000060, 0x4);
-	// RF Path_B HSSI OFF
-	PHY_SetBBReg(Adapter, 0xe00, 0xf, 0x4);
-	// RF Path_B Power Down
-	PHY_SetBBReg(Adapter, 0xe90, bMaskDWord, 0);
-	// ADDA Path_B OFF
-	PHY_SetBBReg(Adapter, 0xe60, bMaskDWord, 0);
-	PHY_SetBBReg(Adapter, 0xe64, bMaskDWord, 0);
-}
-#endif
 
 int
 PHY_RFConfig8723B(
@@ -1083,14 +1022,6 @@ PHY_GetTxPowerLevel8723B(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	s32				TxPwrDbm = 13;
-#if 0
-	RT_TRACE(COMP_TXAGC, DBG_LOUD, ("PHY_GetTxPowerLevel8723B(): TxPowerLevel: %#x\n", TxPwrDbm));
-
-	if ( pMgntInfo->ClientConfigPwrInDbm != UNSPECIFIED_PWR_DBM )
-		*powerlevel = pMgntInfo->ClientConfigPwrInDbm;
-	else
-		*powerlevel = TxPwrDbm;
-#endif
 }
 
 
@@ -1474,21 +1405,7 @@ PHY_HandleSwChnlAndSetBW8723B(
 	}
 
 	if(bSetBandWidth)
-	{
-		#if 0
-		if(bInitialzed == _FALSE)
-		{
-			bInitialzed = _TRUE;
-			pHalData->bSetChnlBW = _TRUE;
-		}
-		else if((pHalData->CurrentChannelBW != ChnlWidth) ||(pHalData->nCur40MhzPrimeSC != ExtChnlOffsetOf40MHz) || (pHalData->CurrentCenterFrequencyIndex1!= CenterFrequencyIndex1))
-		{
-			pHalData->bSetChnlBW = _TRUE;
-		}
-		#else
-			pHalData->bSetChnlBW = _TRUE;
-		#endif
-	}
+		pHalData->bSetChnlBW = _TRUE;
 
 	if(!pHalData->bSetChnlBW && !pHalData->bSwChnl)
 	{
@@ -1507,25 +1424,8 @@ PHY_HandleSwChnlAndSetBW8723B(
 	if(pHalData->bSetChnlBW)
 	{
 		pHalData->CurrentChannelBW = ChnlWidth;
-#if 0
-		if(ExtChnlOffsetOf40MHz==EXTCHNL_OFFSET_LOWER)
-			pHalData->nCur40MhzPrimeSC = HAL_PRIME_CHNL_OFFSET_UPPER;
-		else if(ExtChnlOffsetOf40MHz==EXTCHNL_OFFSET_UPPER)
-			pHalData->nCur40MhzPrimeSC = HAL_PRIME_CHNL_OFFSET_LOWER;
-		else
-			pHalData->nCur40MhzPrimeSC = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
-
-		if(ExtChnlOffsetOf80MHz==EXTCHNL_OFFSET_LOWER)
-			pHalData->nCur80MhzPrimeSC = HAL_PRIME_CHNL_OFFSET_UPPER;
-		else if(ExtChnlOffsetOf80MHz==EXTCHNL_OFFSET_UPPER)
-			pHalData->nCur80MhzPrimeSC = HAL_PRIME_CHNL_OFFSET_LOWER;
-		else
-			pHalData->nCur80MhzPrimeSC = HAL_PRIME_CHNL_OFFSET_DONT_CARE;
-#else
 		pHalData->nCur40MhzPrimeSC = ExtChnlOffsetOf40MHz;
 		pHalData->nCur80MhzPrimeSC = ExtChnlOffsetOf80MHz;
-#endif
-
 		pHalData->CurrentCenterFrequencyIndex1 = CenterFrequencyIndex1;
 	}
 

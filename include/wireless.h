@@ -23,19 +23,19 @@
 
 /***************************** INCLUDES *****************************/
 
-#if 0
-#include <linux/types.h>		/* for __u* and __s* typedefs */
-#include <linux/socket.h>		/* for "struct sockaddr" et al	*/
-#include <linux/if.h>			/* for IFNAMSIZ and co... */
-#else
 #define __user
 //typedef uint16_t	__u16;
 #include <sys/socket.h>			/* for "struct sockaddr" et al	*/
 #include <net/if.h>			/* for IFNAMSIZ and co... */
-#endif
 
 /****************************** TYPES ******************************/
-
+#ifdef CONFIG_COMPAT
+struct compat_iw_point {
+	compat_caddr_t pointer;
+	__u16 length;
+	__u16 flags;
+};
+#endif
 /* --------------------------- SUBTYPES --------------------------- */
 /*
  *	For all data larger than 16 octets, we need to use a

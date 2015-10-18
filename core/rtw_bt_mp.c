@@ -21,14 +21,8 @@
 
 #include <drv_types.h>
 #include <rtw_bt_mp.h>
-
-#ifdef CONFIG_RTL8723A
-#include <rtl8723a_hal.h>
-#elif defined(CONFIG_RTL8723B)
 #include <rtl8723b_hal.h>
-#endif
 
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 void MPh2c_timeout_handle(void *FunctionContext)
 {
 	PADAPTER pAdapter;
@@ -107,10 +101,6 @@ mptbt_CheckC2hFrame(
 	return c2hStatus;
 }
 
-#if defined(CONFIG_RTL8723A)
-extern s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
-#endif
-
 BT_CTRL_STATUS
 mptbt_SendH2c(
 	PADAPTER	Adapter,
@@ -139,11 +129,8 @@ mptbt_SendH2c(
 			pMptCtx->MptH2cRspEvent = _FALSE;
 			pMptCtx->MptBtC2hEvent = _FALSE;
 
-#if defined(CONFIG_RTL8723A)
-			FillH2CCmd(Adapter, 70, h2cCmdLen, (pu1Byte)pH2c);
-#elif defined(CONFIG_RTL8723B)
 			rtl8723b_set_FwBtMpOper_cmd(Adapter, pH2c->opCode, pH2c->opCodeVer, pH2c->reqNum, pH2c->buf);
-#endif
+
 			pMptCtx->h2cReqNum++;
 			pMptCtx->h2cReqNum %= 16;
 
@@ -551,13 +538,7 @@ MPTBT_FwC2hBtMpCtrl(
 	{
 		case EXT_C2H_WIFI_FW_ACTIVE_RSP:
 			DBG_8192C("[MPT], EXT_C2H_WIFI_FW_ACTIVE_RSP\n");
-#if 0
-			DBG_8192C("[MPT], pExtC2h->buf hex: \n");
-			for (i=0; i<(length-3); i++)
-			{
-				DBG_8192C(" 0x%x ", pExtC2h->buf[i]);
-			}
-#endif
+
 			if ((_FALSE == pMptCtx->bMPh2c_timeout)
 				&& (_FALSE == pMptCtx->MptH2cRspEvent))
 			{
@@ -1093,25 +1074,6 @@ mptbt_BtSetGeneral(
 				calVal = pBtReq->pParamStart[1];
 			break;
 		case BT_GSET_UPDATE_BT_PATCH:
-			if(IS_HARDWARE_TYPE_8723AE(Adapter) && Adapter->bFWReady)
-			{
-				u1Byte i;
-				DBG_8192C ("[MPT], write regs for load patch\n");
-				//BTFwPatch8723A(Adapter);
-				PlatformEFIOWrite1Byte(Adapter, 0xCC, 0x2d);
-				rtw_msleep_os(50);
-				PlatformEFIOWrite4Byte(Adapter, 0x68, 0xa005000c);
-				rtw_msleep_os(50);
-				PlatformEFIOWrite4Byte(Adapter, 0x68, 0xb005000c);
-				rtw_msleep_os(50);
-				PlatformEFIOWrite1Byte(Adapter, 0xCC, 0x29);
-				for(i=0; i<12; i++)
-				rtw_msleep_os(100);
-//#if (DEV_BUS_TYPE == RT_PCI_INTERFACE)
-//				BTFwPatch8723A(Adapter);
-//#endif
-				DBG_8192C("[MPT], load BT FW Patch finished!!!\n");
-			}
 			break;
 		default:
 			{
@@ -1774,5 +1736,3 @@ mptbt_BtControlProcess(
 	DBG_8192C("[MPT], pMptCtx->mptOutLen=%d, pBtRsp->paraLength=%d\n", pMptCtx->mptOutLen, pBtRsp->paraLength);
 	DBG_8192C("[MPT], mptbt_BtControlProcess()<=========\n");
 }
-
-#endif

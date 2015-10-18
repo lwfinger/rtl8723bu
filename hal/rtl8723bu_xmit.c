@@ -175,21 +175,7 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 	_adapter			*padapter = pxmitframe->padapter;
 	struct tx_desc	*ptxdesc = (struct tx_desc *)pmem;
-#if 0
-	uint	qsel;
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 
-	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	sint	bmcst = IS_MCAST(pattrib->ra);
-#ifdef CONFIG_P2P
-	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
-#endif //CONFIG_P2P
-#endif
 #ifndef CONFIG_USE_USB_BUFFER_ALLOC_TX
 	if((_FALSE == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0))
 	{
@@ -202,8 +188,8 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 	_rtw_memset(ptxdesc, 0, sizeof(struct tx_desc));
 
-	rtl8723b_update_txdesc(pxmitframe, (u8 *)ptxdesc);
-	_dbg_dump_tx_info(padapter,pxmitframe->frame_tag,ptxdesc);
+	rtl8723b_update_txdesc(padapter, pxmitframe, (u8 *)ptxdesc);
+	_dbg_dump_tx_info(padapter, pxmitframe->frame_tag,ptxdesc);
 	return pull;
 
 }
@@ -314,7 +300,7 @@ static s32 rtw_dump_xframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 		}
 
 		pull = update_txdesc(pxmitframe, mem_addr, sz, _FALSE);
-//		rtl8723b_update_txdesc(pxmitframe, mem_addr+PACKET_OFFSET_SZ);
+//		rtl8723b_update_txdesc(padapter, pxmitframe, mem_addr+PACKET_OFFSET_SZ);
 
 		if(pull)
 		{
@@ -521,6 +507,9 @@ s32 rtl8723bu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 	{
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
 		xmitframe_plist = get_next(xmitframe_plist);
+
+		if(_FAIL == rtw_hal_busagg_qsel_check(padapter,pfirstframe->attrib.qsel,pxmitframe->attrib.qsel))
+			break;
 
 		len = xmitframe_need_length(pxmitframe) + TXDESC_SIZE; // no offset
 		if (pbuf + len > MAX_XMITBUF_SZ) break;
@@ -813,9 +802,9 @@ s32	rtl8723bu_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmit
 		rtw_free_xmitframe(pxmitpriv, pxmitframe);
 
 		pxmitpriv->tx_drop++;
-	} else {
-		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 	}
+	else
+		tasklet_hi_schedule(&pxmitpriv->xmit_tasklet);
 
 	return err;
 

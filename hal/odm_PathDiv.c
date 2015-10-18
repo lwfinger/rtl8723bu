@@ -32,26 +32,25 @@ odm_PathDiversityInit(
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
+
+	if(pDM_Odm->mp_mode == TRUE)
+		return;
+
 	if(!(pDM_Odm->SupportAbility & ODM_BB_PATH_DIV))
 	{
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_PATH_DIV,ODM_DBG_LOUD,("Return: Not Support PathDiv\n"));
 		return;
 	}
 
-#if RTL8812A_SUPPORT
-
-	if(pDM_Odm->SupportICType & ODM_RTL8812)
-		ODM_PathDiversityInit_8812A(pDM_Odm);
-#endif
 #endif
 }
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 odm_PathDiversity(
 	IN	PVOID	pDM_VOID
 )
 {
+#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	if(!(pDM_Odm->SupportAbility & ODM_BB_PATH_DIV))
 	{
@@ -59,13 +58,8 @@ odm_PathDiversity(
 		return;
 	}
 
-#if RTL8812A_SUPPORT
-
-	if(pDM_Odm->SupportICType & ODM_RTL8812)
-		ODM_PathDiversity_8812A(pDM_Odm);
-#endif
-}
 #endif  //(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
+}
 
 
 
@@ -132,7 +126,7 @@ ODM_PathDiversityBeforeLink92C(
 	PRT_WLAN_BSS	pTestBssDesc;
 
 	u1Byte			target_chnl = 0;
-	u1Byte			index;
+	u2Byte			index;
 
 	if (pDM_Odm->Adapter == NULL)  //For BSOD when plug/unplug fast.  //By YJ,120413
 	{	// The ODM structure is not initialized.
@@ -143,7 +137,7 @@ ODM_PathDiversityBeforeLink92C(
 	pDM_PDTable = &Adapter->DM_PDTable;
 
 	// Condition that does not need to use path diversity.
-	if((!IS_92C_SERIAL(pHalData->VersionID)) || (pHalData->PathDivCfg!=1) || pMgntInfo->AntennaTest )
+	if((!(pHalData->CVID_Version==VERSION_1_BEFORE_8703B && IS_92C_SERIAL(pHalData->VersionID))) || (pHalData->PathDivCfg!=1) || pMgntInfo->AntennaTest )
 	{
 		RT_TRACE(COMP_INIT, DBG_LOUD,
 				("ODM_PathDiversityBeforeLink92C(): No PathDiv Mechanism before link.\n"));
@@ -200,17 +194,6 @@ ODM_PathDiversityBeforeLink92C(
 			pDM_PDTable->OFDMTXPath = 0x0;
 			pDM_PDTable->CCKTXPath = 0x0;
 		}
-#if 0
-
-		pDM_SWAT_Table->PreAntenna = pDM_SWAT_Table->CurAntenna;
-		pDM_SWAT_Table->CurAntenna = (pDM_SWAT_Table->CurAntenna==Antenna_A)?Antenna_B:Antenna_A;
-
-		RT_TRACE(COMP_INIT, DBG_LOUD,
-			("ODM_SwAntDivCheckBeforeLink: Change to Ant(%s) for testing.\n", (pDM_SWAT_Table->CurAntenna==Antenna_A)?"A":"B"));
-		//PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, 0x300, DM_SWAT_Table.CurAntenna);
-		pDM_SWAT_Table->SWAS_NoLink_BK_Reg860 = ((pDM_SWAT_Table->SWAS_NoLink_BK_Reg860 & 0xfffffcff) | (pDM_SWAT_Table->CurAntenna<<8));
-		PHY_SetBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, bMaskDWord, pDM_SWAT_Table->SWAS_NoLink_BK_Reg860);
-#endif
 
 		// Go back to scan function again.
 		RT_TRACE(COMP_INIT, DBG_LOUD, ("ODM_PathDiversityBeforeLink92C: Scan one more time\n"));
@@ -314,7 +297,7 @@ odm_PathDiversityAfterLink_92C(
 	pPD_T		pDM_PDTable = &Adapter->DM_PDTable;
 	u1Byte		DefaultRespPath=0;
 
-	if((!IS_92C_SERIAL(pHalData->VersionID)) || (pHalData->PathDivCfg != 1) || (pHalData->eRFPowerState == eRfOff))
+	if((!(pHalData->CVID_Version==VERSION_1_BEFORE_8703B && IS_92C_SERIAL(pHalData->VersionID))) || (pHalData->PathDivCfg != 1) || (pHalData->eRFPowerState == eRfOff))
 	{
 		if(pHalData->PathDivCfg == 0)
 		{
@@ -1147,7 +1130,7 @@ odm_PathDivChkAntSwitch(
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
                  odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
 #else
-                 ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
+                 ODM_FillH2CCmd(pDM_Odm, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
 #endif
 		}
 	       else if(nextAntenna==AUX_ANT)
@@ -1162,15 +1145,15 @@ odm_PathDivChkAntSwitch(
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
                      odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
 #else
-                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
+                     ODM_FillH2CCmd(pDM_Odm, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
                      //for(u1Byte n=0; n<80,n++)
                      //{
                      //delay_us(500);
 			  ODM_delay_ms(500);
                      odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
 
-			 fw_value=0x01;		// to backup RF Path A Releated Registers
-                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
+			 fw_value=0x01;   	// to backup RF Path A Releated Registers
+                     ODM_FillH2CCmd(pDM_Odm, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
 #endif
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_PATH_DIV, ODM_DBG_LOUD, ("=PATH=: FIRST TIME To DO PATH SWITCH!\n "));
 	           }
@@ -1181,7 +1164,7 @@ odm_PathDivChkAntSwitch(
 #if DEV_BUS_TYPE==RT_PCI_INTERFACE
                      odm_PathDiversity_8192D(pDM_Odm, pathdiv_para);
 #else
-                     ODM_FillH2CCmd(Adapter, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
+                     ODM_FillH2CCmd(pDM_Odm, ODM_H2C_PathDiv,1,(pu1Byte)(&fw_value));
 #endif
 		    }
 	       }
@@ -1263,7 +1246,7 @@ ODM_CCKPathDiversityChkPerPktRssi(
 #if DEV_BUS_TYPE != RT_SDIO_INTERFACE
 	BOOLEAN	isCCKrate = RX_HAL_IS_CCK_RATE(Adapter, pDesc);
 #else  //below code would be removed if we have verified SDIO
-	BOOLEAN	isCCKrate = IS_HARDWARE_TYPE_8188E(Adapter) ? RX_HAL_IS_CCK_RATE_88E(pDesc) : RX_HAL_IS_CCK_RATE_92C(pDesc);
+	BOOLEAN	isCCKrate = RX_HAL_IS_CCK_RATE_92C(pDesc);
 #endif
 
 	if((pHalData->PathDivCfg != 1) || (pHalData->RSSI_test == FALSE))
@@ -1453,7 +1436,7 @@ ODM_FillTXPathInTXDESC(
 //Only for MP //Neil Chen--2012--0502--
 VOID
 odm_PathDivInit_92D(
-IN	PDM_ODM_T	pDM_Odm)
+IN	PDM_ODM_T 	pDM_Odm)
 {
 	pPATHDIV_PARA	pathIQK = &pDM_Odm->pathIQK;
 
@@ -1486,9 +1469,10 @@ odm_SwAntDivSelectScanChnl(
 	PHAL_DATA_TYPE		pHalData = GET_HAL_DATA(Adapter);
 	PMGNT_INFO			pMgntInfo = &(Adapter->MgntInfo);
 	PDM_ODM_T			pDM_Odm = &pHalData->DM_OutSrc;
-	u1Byte				i, j, ScanChannel = 0, ChannelNum = 0;
+	u2Byte 				i;
+	u1Byte				j, ScanChannel = 0, ChannelNum = 0;
 	PRT_CHANNEL_LIST	pChannelList = GET_RT_CHANNEL_LIST(pMgntInfo);
-	u1Byte				EachChannelSTAs[MAX_SCAN_CHANNEL_NUM] = {0};
+	u1Byte 				EachChannelSTAs[MAX_SCAN_CHANNEL_NUM] = {0};
 
 	if(pMgntInfo->tmpNumBssDesc == 0)
 		return 0;
@@ -1509,7 +1493,7 @@ odm_SwAntDivSelectScanChnl(
 	for(i = 0; i < MAX_SCAN_CHANNEL_NUM; i++)
 		{
 		if(EachChannelSTAs[i] > EachChannelSTAs[ScanChannel])
-			ScanChannel = i;
+			ScanChannel = (u1Byte)i;
 		}
 
 	if(EachChannelSTAs[ScanChannel] == 0)

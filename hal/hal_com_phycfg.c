@@ -920,13 +920,6 @@ PHY_InitTxPowerByRate(
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	u8	band = 0, rfPath = 0, TxNum = 0, rate = 0, i = 0, j = 0;
 
-	if ( IS_HARDWARE_TYPE_8188E( pAdapter ) || IS_HARDWARE_TYPE_8723A( pAdapter ) )
-	{
-		for ( i = 0; i < MAX_PG_GROUP; ++i )
-			for ( j = 0; j < 16; ++j )
-				pHalData->MCSTxPowerLevelOriginalOffset[i][j] = 0;
-	}
-	else
 	{
 		for ( band = BAND_ON_2_4G; band <= BAND_ON_5G; ++band )
 				for ( rfPath = 0; rfPath < TX_PWR_BY_RATE_NUM_RF; ++rfPath )
@@ -1721,22 +1714,8 @@ PHY_SetTxPowerLevelByPath(
 		PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, OFDM );
 		PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS0_MCS7 );
 
-		if ( IS_HARDWARE_TYPE_JAGUAR( Adapter ) || IS_HARDWARE_TYPE_8813A( Adapter ) )
-			PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, VHT_1SSMCS0_1SSMCS9 );
-
 		if ( pHalData->NumTotalRFPath >= 2 )
-		{
 			PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS8_MCS15 );
-
-			if ( IS_HARDWARE_TYPE_JAGUAR( Adapter ) || IS_HARDWARE_TYPE_8813A( Adapter ) )
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, VHT_2SSMCS0_2SSMCS9 );
-
-			if ( IS_HARDWARE_TYPE_8813A( Adapter ) )
-			{
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS16_MCS23 );
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, VHT_3SSMCS0_3SSMCS9 );
-			}
-		}
 	}
 }
 
@@ -2144,56 +2123,6 @@ PHY_ConvertTxPowerLimitToPowerIndex(
 			}
 		}
 	}
-
-	if ( IS_HARDWARE_TYPE_JAGUAR( Adapter ) || IS_HARDWARE_TYPE_8813A( Adapter ) )
-	{
-		for ( regulation = 0; regulation < MAX_REGULATION_NUM; ++regulation )
-		{
-			for ( bw = 0; bw < MAX_5G_BANDWITH_NUM; ++bw )
-			{
-				for ( channel = 0; channel < CHANNEL_MAX_NUMBER_5G; ++channel )
-				{
-					for ( rateSection = 0; rateSection < MAX_RATE_SECTION_NUM; ++rateSection )
-					{
-						tempPwrLmt = pHalData->TxPwrLimit_5G[regulation][bw][rateSection][channel][ODM_RF_PATH_A];
-
-						for ( rfPath = ODM_RF_PATH_A; rfPath < MAX_RF_PATH_NUM; ++rfPath )
-						{
-							if ( pHalData->odmpriv.PhyRegPgValueType == PHY_REG_PG_EXACT_VALUE )
-							{
-								if ( rateSection == 9 ) // VHT 4SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_4TX, VHT_4SSMCS0_4SSMCS9);
-								else if ( rateSection == 8 ) // VHT 3SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_3TX, VHT_3SSMCS0_3SSMCS9 );
-								else if ( rateSection == 7 ) // VHT 2SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_2TX, VHT_2SSMCS0_2SSMCS9 );
-								else if ( rateSection == 6 ) // VHT 1SS
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_1TX, VHT_1SSMCS0_1SSMCS9 );
-								else if ( rateSection == 5 ) // HT 4T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_4TX, HT_MCS24_MCS31 );
-								else if ( rateSection == 4 ) // HT 3T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_3TX, HT_MCS16_MCS23 );
-								else if ( rateSection == 3 ) // HT 2T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_2TX, HT_MCS8_MCS15 );
-								else if ( rateSection == 2 ) // HT 1T
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_1TX, HT_MCS0_MCS7 );
-								else if ( rateSection == 1 ) // OFDM
-									BW40PwrBasedBm5G = PHY_GetTxPowerByRateBase( Adapter, BAND_ON_2_4G, rfPath, RF_1TX, OFDM );
-							}
-							else
-								BW40PwrBasedBm5G = Adapter->registrypriv.RegPowerBase * 2;
-
-							if ( tempPwrLmt != MAX_POWER_INDEX ) {
-								tempValue = tempPwrLmt - BW40PwrBasedBm5G;
-								pHalData->TxPwrLimit_5G[regulation][bw][rateSection][channel][rfPath] = tempValue;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	//DBG_871X("<===== PHY_ConvertTxPowerLimitToPowerIndex()\n" );
 }
 
 VOID
@@ -2340,31 +2269,7 @@ PHY_GetTxPowerIndex(
 {
 	u8	txPower = 0x3E;
 
-	if (IS_HARDWARE_TYPE_8813A(pAdapter)) {
-//#if (RTL8814A_SUPPORT==1)
-//		txPower = PHY_GetTxPowerIndex_8813A( pAdapter, PowerIndex, RFPath, Rate );
-//#endif
-	}
-	else if (IS_HARDWARE_TYPE_JAGUAR(pAdapter)) {
-#if ((RTL8812A_SUPPORT==1) || (RTL8821A_SUPPORT == 1))
-		txPower = PHY_GetTxPowerIndex_8812A(pAdapter, RFPath, Rate, BandWidth, Channel);
-#endif
-	}
-	else if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
-#if (RTL8723B_SUPPORT==1)
-		txPower = PHY_GetTxPowerIndex_8723B(pAdapter, RFPath, Rate, BandWidth, Channel);
-#endif
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pAdapter)) {
-#if (RTL8192E_SUPPORT==1)
-		txPower = PHY_GetTxPowerIndex_8192E(pAdapter, RFPath, Rate, BandWidth, Channel);
-#endif
-	}
-	else if (IS_HARDWARE_TYPE_8188E(pAdapter)) {
-#if (RTL8188E_SUPPORT==1)
-		txPower = PHY_GetTxPowerIndex_8188E(pAdapter, RFPath, Rate, BandWidth, Channel);
-#endif
-	}
+	txPower = PHY_GetTxPowerIndex_8723B(pAdapter, RFPath, Rate, BandWidth, Channel);
 
 	return txPower;
 }
@@ -2377,31 +2282,7 @@ PHY_SetTxPowerIndex(
 	IN	u8				Rate
 	)
 {
-	if (IS_HARDWARE_TYPE_8813A(pAdapter)) {
-//#if (RTL8814A_SUPPORT==1)
-//		PHY_SetTxPowerIndex_8813A( pAdapter, PowerIndex, RFPath, Rate );
-//#endif
-	}
-	else if (IS_HARDWARE_TYPE_JAGUAR(pAdapter)) {
-#if ((RTL8812A_SUPPORT==1) || (RTL8821A_SUPPORT == 1))
-		PHY_SetTxPowerIndex_8812A( pAdapter, PowerIndex, RFPath, Rate );
-#endif
-	}
-	else if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
-#if (RTL8723B_SUPPORT==1)
-		PHY_SetTxPowerIndex_8723B( pAdapter, PowerIndex, RFPath, Rate );
-#endif
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pAdapter)) {
-#if (RTL8192E_SUPPORT==1)
-		PHY_SetTxPowerIndex_8192E( pAdapter, PowerIndex, RFPath, Rate );
-#endif
-	}
-	else if (IS_HARDWARE_TYPE_8188E(pAdapter)) {
-#if (RTL8188E_SUPPORT==1)
-		PHY_SetTxPowerIndex_8188E( pAdapter, PowerIndex, RFPath, Rate );
-#endif
-	}
+	PHY_SetTxPowerIndex_8723B( pAdapter, PowerIndex, RFPath, Rate );
 }
 
 VOID
@@ -2573,17 +2454,12 @@ Hal_ChannelPlanToRegulation(
 			break;
 	}
 
-	ODM_CmnInfoInit(odm, ODM_CMNINFO_DOMAIN_CODE_2G, pHalData->Regulation2_4G);
-	ODM_CmnInfoInit(odm, ODM_CMNINFO_DOMAIN_CODE_5G, pHalData->Regulation5G);
+	DBG_871X("%s ChannelPlan:0x%02x,Regulation(2_4G/5G):0x%02x,0x%02x\n",
+		__FUNCTION__,ChannelPlan,pHalData->Regulation2_4G,pHalData->Regulation5G);
+
 }
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-
-extern char *rtw_phy_file_path;
-char	file_path_bu[PATH_LENGTH_MAX];
-
-#define GetLineFromBuffer(buffer)	 strsep(&buffer, "\n")
-
 int
 phy_ConfigMACWithParaFile(
 	IN	PADAPTER	Adapter,
@@ -3702,27 +3578,7 @@ PHY_ConfigRFWithTxPwrTrackParaFile(
 	{
 		DBG_871X("%s(): No File %s, Load from HWImg Array!\n", __FUNCTION__, pFileName);
 	}
-#if 0
-	for (i = 0; i < DELTA_SWINGIDX_SIZE; ++i)
-	{
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GA_P[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GA_P[i]);
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GA_N[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GA_N[i]);
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GB_P[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GB_P[i]);
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GB_N[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GB_N[i]);
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKA_P[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKA_P[i]);
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKA_N[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKA_N[i]);
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKB_P[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKB_P[i]);
-		DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKB_N[%d] = %d\n", i, pRFCalibrateInfo->DeltaSwingTableIdx_2GCCKB_N[i]);
 
-		for (j = 0; j < 3; ++j)
-		{
-		    DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_5GA_P[%d][%d] = %d\n", j, i, pRFCalibrateInfo->DeltaSwingTableIdx_5GA_P[j][i]);
-		    DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_5GA_N[%d][%d] = %d\n", j, i, pRFCalibrateInfo->DeltaSwingTableIdx_5GA_N[j][i]);
-		    DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_5GB_P[%d][%d] = %d\n", j, i, pRFCalibrateInfo->DeltaSwingTableIdx_5GB_P[j][i]);
-		    DBG_871X("pRFCalibrateInfo->DeltaSwingTableIdx_5GB_N[%d][%d] = %d\n", j, i, pRFCalibrateInfo->DeltaSwingTableIdx_5GB_N[j][i]);
-		}
-	}
-#endif
 	return rtStatus;
 }
 

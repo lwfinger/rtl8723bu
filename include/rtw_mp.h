@@ -20,39 +20,8 @@
 #ifndef _RTW_MP_H_
 #define _RTW_MP_H_
 
-#if 0
-#define MPT_NOOP			0
-#define MPT_READ_MAC_1BYTE		1
-#define MPT_READ_MAC_2BYTE		2
-#define MPT_READ_MAC_4BYTE		3
-#define MPT_WRITE_MAC_1BYTE		4
-#define MPT_WRITE_MAC_2BYTE		5
-#define MPT_WRITE_MAC_4BYTE		6
-#define MPT_READ_BB_CCK			7
-#define MPT_WRITE_BB_CCK		8
-#define MPT_READ_BB_OFDM		9
-#define MPT_WRITE_BB_OFDM		10
-#define MPT_READ_RF			11
-#define MPT_WRITE_RF			12
-#define MPT_READ_EEPROM_1BYTE		13
-#define MPT_WRITE_EEPROM_1BYTE		14
-#define MPT_READ_EEPROM_2BYTE		15
-#define MPT_WRITE_EEPROM_2BYTE		16
-#define MPT_SET_CSTHRESHOLD		21
-#define MPT_SET_INITGAIN		22
-#define MPT_SWITCH_BAND			23
-#define MPT_SWITCH_CHANNEL		24
-#define MPT_SET_DATARATE		25
-#define MPT_SWITCH_ANTENNA		26
-#define MPT_SET_TX_POWER		27
-#define MPT_SET_CONT_TX			28
-#define MPT_SET_SINGLE_CARRIER		29
-#define MPT_SET_CARRIER_SUPPRESSION	30
-#define MPT_GET_RATE_TABLE		31
-#define MPT_READ_TSSI			32
-#define MPT_GET_THERMAL_METER		33
-#endif
 
+#define RTWPRIV_VER_INFO	1
 
 #define MAX_MP_XMITBUF_SZ	2048
 #define NR_MP_XMITFRAME		8
@@ -69,8 +38,6 @@ struct mp_xmit_frame
 
 	_adapter *padapter;
 
-#ifdef CONFIG_USB_HCI
-
 	//insert urb, irp, and irpcnt info below...
 	//max frag_cnt = 8
 
@@ -82,7 +49,6 @@ struct mp_xmit_frame
 	sint last[8];
 	uint irpcnt;
 	uint fragcnt;
-#endif /* CONFIG_USB_HCI */
 
 	uint mem[(MAX_MP_XMITBUF_SZ >> 2)];
 };
@@ -111,8 +77,6 @@ struct mp_tx
 	u32 buf_size, write_size;
 	_thread_hdl_ PktTxThread;
 };
-
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 
 #define MP_MAX_LINES		1000
 #define MP_MAX_LINES_BYTES	256
@@ -256,17 +220,9 @@ typedef struct _MPT_CONTEXT
     u1Byte          mptOutBuf[100];
 
 }MPT_CONTEXT, *PMPT_CONTEXT;
-#endif
-//#endif
 
 /* E-Fuse */
-#ifdef CONFIG_RTL8723A
-#define EFUSE_MAP_SIZE		256
-#endif
-#ifdef CONFIG_RTL8723B
 #define EFUSE_MAP_SIZE		512
-#endif
-
 #define EFUSE_MAX_SIZE		512
 /* end of E-Fuse */
 
@@ -302,6 +258,7 @@ enum {
 	CTA_TEST,
 	MP_DISABLE_BT_COEXIST,
 	MP_PwrCtlDM,
+	MP_GETVER,
 #ifdef CONFIG_WOWLAN
 	MP_WOW_ENABLE,
 #endif
@@ -415,30 +372,9 @@ typedef struct _MP_FIRMWARE {
 #define RAISE	_FALSE
 
 /* Hardware Registers */
-#if 0
-#if 0
-#define IOCMD_CTRL_REG			0x102502C0
-#define IOCMD_DATA_REG			0x102502C4
-#else
-#define IOCMD_CTRL_REG			0x10250370
-#define IOCMD_DATA_REG			0x10250374
-#endif
-
-#define IOCMD_GET_THERMAL_METER		0xFD000028
-
-#define IOCMD_CLASS_BB_RF		0xF0
-#define IOCMD_BB_READ_IDX		0x00
-#define IOCMD_BB_WRITE_IDX		0x01
-#define IOCMD_RF_READ_IDX		0x02
-#define IOCMD_RF_WRIT_IDX		0x03
-#endif
 #define BB_REG_BASE_ADDR		0x800
 
 /* MP variables */
-#if 0
-#define _2MAC_MODE_	0
-#define _LOOPBOOK_MODE_	1
-#endif
 typedef enum _MP_MODE_ {
 	MP_OFF,
 	MP_ON,
@@ -493,27 +429,63 @@ typedef enum _MPT_RATE_INDEX
 	MPT_RATE_MCS13,
 	MPT_RATE_MCS14,
 	MPT_RATE_MCS15,	/* 27 */
+	MPT_RATE_MCS16,
+	MPT_RATE_MCS17, // #29
+	MPT_RATE_MCS18,
+	MPT_RATE_MCS19,
+	MPT_RATE_MCS20,
+	MPT_RATE_MCS21,
+	MPT_RATE_MCS22, // #34
+	MPT_RATE_MCS23,
+	MPT_RATE_MCS24,
+	MPT_RATE_MCS25,
+	MPT_RATE_MCS26,
+	MPT_RATE_MCS27, // #39
+	MPT_RATE_MCS28, // #40
+	MPT_RATE_MCS29, // #41
+	MPT_RATE_MCS30, // #42
+	MPT_RATE_MCS31, // #43
 	/* VHT rate. Total: 20*/
-	MPT_RATE_VHT1SS_MCS0 = 100,// To reserve MCS16~MCS31, the index starts from #100.
-	MPT_RATE_VHT1SS_MCS1, // #101
+	MPT_RATE_VHT1SS_MCS0,//  #44
+	MPT_RATE_VHT1SS_MCS1, // #
 	MPT_RATE_VHT1SS_MCS2,
 	MPT_RATE_VHT1SS_MCS3,
 	MPT_RATE_VHT1SS_MCS4,
 	MPT_RATE_VHT1SS_MCS5,
-	MPT_RATE_VHT1SS_MCS6, // #106
+	MPT_RATE_VHT1SS_MCS6, // #
 	MPT_RATE_VHT1SS_MCS7,
 	MPT_RATE_VHT1SS_MCS8,
-	MPT_RATE_VHT1SS_MCS9,
-	MPT_RATE_VHT2SS_MCS0,
-	MPT_RATE_VHT2SS_MCS1, // #111
+	MPT_RATE_VHT1SS_MCS9, //#53
+	MPT_RATE_VHT2SS_MCS0, //#54
+	MPT_RATE_VHT2SS_MCS1,
 	MPT_RATE_VHT2SS_MCS2,
 	MPT_RATE_VHT2SS_MCS3,
 	MPT_RATE_VHT2SS_MCS4,
 	MPT_RATE_VHT2SS_MCS5,
-	MPT_RATE_VHT2SS_MCS6, // #116
+	MPT_RATE_VHT2SS_MCS6,
 	MPT_RATE_VHT2SS_MCS7,
 	MPT_RATE_VHT2SS_MCS8,
-	MPT_RATE_VHT2SS_MCS9,
+	MPT_RATE_VHT2SS_MCS9, //#63
+	MPT_RATE_VHT3SS_MCS0,
+	MPT_RATE_VHT3SS_MCS1,
+	MPT_RATE_VHT3SS_MCS2,
+	MPT_RATE_VHT3SS_MCS3,
+	MPT_RATE_VHT3SS_MCS4,
+	MPT_RATE_VHT3SS_MCS5,
+	MPT_RATE_VHT3SS_MCS6, // #126
+	MPT_RATE_VHT3SS_MCS7,
+	MPT_RATE_VHT3SS_MCS8,
+	MPT_RATE_VHT3SS_MCS9,
+	MPT_RATE_VHT4SS_MCS0,
+	MPT_RATE_VHT4SS_MCS1, // #131
+	MPT_RATE_VHT4SS_MCS2,
+	MPT_RATE_VHT4SS_MCS3,
+	MPT_RATE_VHT4SS_MCS4,
+	MPT_RATE_VHT4SS_MCS5,
+	MPT_RATE_VHT4SS_MCS6, // #136
+	MPT_RATE_VHT4SS_MCS7,
+	MPT_RATE_VHT4SS_MCS8,
+	MPT_RATE_VHT4SS_MCS9,
 	MPT_RATE_LAST
 }MPT_RATE_E, *PMPT_RATE_E;
 
@@ -536,42 +508,6 @@ typedef enum _OFDM_TX_MODE {
 #define RX_PKT_BROADCAST	1
 #define RX_PKT_DEST_ADDR	2
 #define RX_PKT_PHY_MATCH	3
-
-#if 0
-#define RPTMaxCount 0x000FFFFF;
-
-// parameter 1 : BitMask
-//	bit 0  : OFDM PPDU
-//	bit 1  : OFDM False Alarm
-//	bit 2  : OFDM MPDU OK
-//	bit 3  : OFDM MPDU Fail
-//	bit 4  : CCK PPDU
-//	bit 5  : CCK False Alarm
-//	bit 6  : CCK MPDU ok
-//	bit 7  : CCK MPDU fail
-//	bit 8  : HT PPDU counter
-//	bit 9  : HT false alarm
-//	bit 10 : HT MPDU total
-//	bit 11 : HT MPDU OK
-//	bit 12 : HT MPDU fail
-//	bit 15 : RX full drop
-typedef enum _RXPHY_BITMASK_
-{
-	OFDM_PPDU_BIT = 0,
-	OFDM_FALSE_BIT,
-	OFDM_MPDU_OK_BIT,
-	OFDM_MPDU_FAIL_BIT,
-	CCK_PPDU_BIT,
-	CCK_FALSE_BIT,
-	CCK_MPDU_OK_BIT,
-	CCK_MPDU_FAIL_BIT,
-	HT_PPDU_BIT,
-	HT_FALSE_BIT,
-	HT_MPDU_BIT,
-	HT_MPDU_OK_BIT,
-	HT_MPDU_FAIL_BIT,
-} RXPHY_BITMASK;
-#endif
 
 #define Mac_OFDM_OK			0x00000000
 #define Mac_OFDM_Fail			0x10000000
@@ -599,17 +535,8 @@ typedef enum	_MPT_TXPWR_DEF{
 
 #ifdef CONFIG_RF_GAIN_OFFSET
 
-#if defined(CONFIG_RTL8723A)
-	#define		REG_RF_BB_GAIN_OFFSET_CCK	0x0d
-	#define		REG_RF_BB_GAIN_OFFSET_OFDM	0x0e
-	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#elif defined(CONFIG_RTL8723B)
 	#define		REG_RF_BB_GAIN_OFFSET	0x7f
 	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#else
-	#define		REG_RF_BB_GAIN_OFFSET	0x55
-	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#endif	//CONFIG_RTL8723A
 
 #endif //CONFIG_RF_GAIN_OFFSET
 
@@ -713,5 +640,6 @@ extern void MP_PHY_SetRFPathSwitch(PADAPTER pAdapter ,BOOLEAN bMain);
 extern ULONG mpt_ProQueryCalTxPower(PADAPTER	pAdapter,u8 RfPath);
 extern void MPT_PwrCtlDM(PADAPTER padapter, u32 bstart);
 extern u8 MptToMgntRate(u32	MptRateIdx);
+extern u8 rtw_mpRateParseFunc(PADAPTER pAdapter, u8 *targetStr);
 
 #endif //_RTW_MP_H_

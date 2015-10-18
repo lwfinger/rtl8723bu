@@ -37,17 +37,17 @@ int platform_wifi_power_on(void)
 	rtw_wifi_gpio_init();
 	rtw_wifi_gpio_wlan_ctrl(WLAN_PWDN_ON);
 
-#if (MP_DRIVER == 1) && (defined(CONFIG_RTL8723A)||defined(CONFIG_RTL8723B))
+#if (MP_DRIVER == 1)
 	// Pull up BT reset pin.
 	rtw_wifi_gpio_wlan_ctrl(WLAN_BT_PWDN_ON);
 #endif
 	rtw_mdelay_os(5);
 
 	sdhci_bus_scan();
-#ifdef CONFIG_RTL8723B
+
 	//YJ,test,130305
 	rtw_mdelay_os(1000);
-#endif
+
 #ifdef ANDROID_2X
 	rtw_mdelay_os(200);
 #else // !ANDROID_2X

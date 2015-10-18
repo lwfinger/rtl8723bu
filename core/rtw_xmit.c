@@ -171,13 +171,6 @@ _func_enter_;
 			}
 		}
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->phead = pxmitbuf->pbuf;
-		pxmitbuf->pend = pxmitbuf->pbuf + MAX_XMITBUF_SZ;
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-#endif
-
 		pxmitbuf->flags = XMIT_VO_QUEUE;
 
 		rtw_list_insert_tail(&pxmitbuf->list, &(pxmitpriv->free_xmitbuf_queue.queue));
@@ -252,13 +245,6 @@ _func_enter_;
 			goto exit;
 		}
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->phead = pxmitbuf->pbuf;
-		pxmitbuf->pend = pxmitbuf->pbuf + MAX_XMIT_EXTBUF_SZ;
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-#endif
-
 		rtw_list_insert_tail(&pxmitbuf->list, &(pxmitpriv->free_xmit_extbuf_queue.queue));
 		#ifdef DBG_XMIT_BUF_EXT
 		pxmitbuf->no=i;
@@ -283,12 +269,6 @@ _func_enter_;
 				goto exit;
 			}
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-			pxmitbuf->phead = pxmitbuf->pbuf;
-			pxmitbuf->pend = pxmitbuf->pbuf + MAX_CMDBUF_SZ;
-			pxmitbuf->len = 0;
-			pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-#endif
 			pxmitbuf->alloc_sz = MAX_CMDBUF_SZ+XMITBUF_ALIGN_SZ;
 		}
 	}
@@ -301,7 +281,6 @@ _func_enter_;
 		pxmitpriv->wmm_para_seq[i] = i;
 	}
 
-#ifdef CONFIG_USB_HCI
 	pxmitpriv->txirp_cnt=1;
 
 	_rtw_init_sema(&(pxmitpriv->tx_retevt), 0);
@@ -311,8 +290,6 @@ _func_enter_;
 	pxmitpriv->bkq_cnt = 0;
 	pxmitpriv->viq_cnt = 0;
 	pxmitpriv->voq_cnt = 0;
-#endif
-
 
 #ifdef CONFIG_XMIT_ACK
 	pxmitpriv->ack_tx = _FALSE;
@@ -443,7 +420,6 @@ u8	query_ra_short_GI(struct sta_info *psta)
 	if (psta->vhtpriv.vht_option) {
 		sgi_80m= psta->vhtpriv.sgi_80m;
 	}
-	else
 #endif //CONFIG_80211AC_VHT
 	{
 		sgi_20m = psta->htpriv.sgi_20m;
@@ -474,30 +450,6 @@ static void update_attrib_vcs_info(_adapter *padapter, struct xmit_frame *pxmitf
 	//struct sta_info	*psta = pattrib->psta;
 	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-
-/*
-        if(pattrib->psta)
-	{
-		psta = pattrib->psta;
-	}
-	else
-	{
-		DBG_871X("%s, call rtw_get_stainfo()\n", __func__);
-		psta=rtw_get_stainfo(&padapter->stapriv ,&pattrib->ra[0] );
-	}
-
-        if(psta==NULL)
-	{
-		DBG_871X("%s, psta==NUL\n", __func__);
-		return;
-	}
-
-	if(!(psta->state &_FW_LINKED))
-	{
-		DBG_871X("%s, psta->state(0x%x) != _FW_LINKED\n", __func__, psta->state);
-		return;
-	}
-*/
 
 	if (pattrib->nr_frags != 1)
 	{
@@ -532,22 +484,6 @@ static void update_attrib_vcs_info(_adapter *padapter, struct xmit_frame *pxmitf
 	{
 		while (_TRUE)
 		{
-#if 0 //Todo
-			//check IOT action
-			if(pHTInfo->IOTAction & HT_IOT_ACT_FORCED_CTS2SELF)
-			{
-				pattrib->vcs_mode = CTS_TO_SELF;
-				pattrib->rts_rate = MGN_24M;
-				break;
-			}
-			else if(pHTInfo->IOTAction & (HT_IOT_ACT_FORCED_RTS|HT_IOT_ACT_PURE_N_MODE))
-			{
-				pattrib->vcs_mode = RTS_CTS;
-				pattrib->rts_rate = MGN_24M;
-				break;
-			}
-#endif
-
 			//IOT action
 			if((pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_ATHEROS) && (pattrib->ampdu_en==_TRUE) &&
 				(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_ ))
@@ -590,7 +526,7 @@ static void update_attrib_vcs_info(_adapter *padapter, struct xmit_frame *pxmitf
 			//to do list: check MIMO power save condition.
 
 			//check AMPDU aggregation for TXOP
-			if((pattrib->ampdu_en==_TRUE) && (!IS_HARDWARE_TYPE_8812(padapter)))
+			if(pattrib->ampdu_en == _TRUE)
 			{
 				pattrib->vcs_mode = RTS_CTS;
 				break;
@@ -959,6 +895,19 @@ exit:
 
 #endif //CONFIG_TDLS
 
+//get non-qos hw_ssn control register,mapping to REG_HW_SEQ0,1,2,3
+inline u8 rtw_get_hwseq_no(_adapter *padapter)
+{
+	u8 hwseq_num = 0;
+#ifdef CONFIG_CONCURRENT_MODE
+	if(padapter->adapter_type == SECONDARY_ADAPTER)
+		hwseq_num = 1;
+	//else
+	//	hwseq_num = 2;
+#endif //CONFIG_CONCURRENT_MODE
+	return hwseq_num;
+}
+
 static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattrib)
 {
 	uint i;
@@ -971,6 +920,7 @@ static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattr
 	struct security_priv	*psecuritypriv = &padapter->securitypriv;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct qos_priv		*pqospriv= &pmlmepriv->qospriv;
+	struct xmit_priv 		*pxmitpriv = &padapter->xmitpriv;
 	sint res = _SUCCESS;
 
  _func_enter_;
@@ -1071,16 +1021,12 @@ static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattr
 #ifdef CONFIG_WAPI_SUPPORT
 	if ( (pattrib->ether_type == 0x88B4) || (pattrib->ether_type == 0x0806) || (pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
 #else //!CONFIG_WAPI_SUPPORT
-#if 0
-	if ( (pattrib->ether_type == 0x0806) || (pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
-#else // only ICMP/DHCP packets is as SPECIAL_PACKET, and leave LPS when tx IMCP/DHCP packets.
-	//if ((pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
+	// only ICMP/DHCP packets is as SPECIAL_PACKET, and leave LPS when tx IMCP/DHCP packets.
 	if (pattrib->icmp_pkt==1)
 	{
 		rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_LEAVE, 1);
 	}
 	else if(pattrib->dhcp_pkt==1)
-#endif
 #endif
 	{
 		DBG_COUNTER(padapter->tx_logs.core_tx_upd_attrib_active);
@@ -1176,7 +1122,7 @@ static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattr
 	}
 
 	//pattrib->priority = 5; //force to used VI queue, for testing
-
+	pattrib->hw_ssn_sel = pxmitpriv->hw_ssn_seq_no;
 	rtw_set_tx_chksum_offload(pkt, pattrib);
 
 exit:
@@ -2237,7 +2183,7 @@ _func_enter_;
 		int frame_body_len;
 		u8 mic[16];
 
-		_rtw_memset(MME, 0, 18);
+		_rtw_memset(MME, 0, _MME_IE_LENGTH_);
 
 		//other types doesn't need the BIP
 		if(GetFrameSubType(pframe) != WIFI_DEAUTH && GetFrameSubType(pframe) != WIFI_DISASSOC)
@@ -2515,7 +2461,7 @@ void rtw_count_tx_stats(PADAPTER padapter, struct xmit_frame *pxmitframe, int sz
 
 	if ((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
 	{
-#if defined(CONFIG_USB_TX_AGGREGATION) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_TX_AGGREGATION)
 		pkt_num = pxmitframe->agg_num;
 #endif
 		pmlmepriv->LinkDetectInfo.NumTxOkInPeriod += pkt_num;
@@ -2559,17 +2505,6 @@ _func_enter_;
 	pxmitbuf = &pxmitpriv->pcmd_xmitbuf[buf_type];
 	if (pxmitbuf !=  NULL) {
 		pxmitbuf->priv_data = NULL;
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-		pxmitbuf->agg_num = 0;
-		pxmitbuf->pg_num = 0;
-#endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-		pxmitbuf->desc = NULL;
-#endif
 
 		if (pxmitbuf->sctx) {
 			DBG_871X("%s pxmitbuf->sctx is not NULL\n", __func__);
@@ -2650,16 +2585,6 @@ _func_enter_;
 
 		pxmitbuf->priv_data = NULL;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-		pxmitbuf->agg_num = 1;
-#endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-		pxmitbuf->desc = NULL;
-#endif
-
 		if (pxmitbuf->sctx) {
 			DBG_871X("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
@@ -2739,17 +2664,6 @@ _func_enter_;
 
 		pxmitbuf->priv_data = NULL;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-		pxmitbuf->agg_num = 0;
-		pxmitbuf->pg_num = 0;
-#endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-		pxmitbuf->desc = NULL;
-#endif
-
 		if (pxmitbuf->sctx) {
 			DBG_871X("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
@@ -2826,8 +2740,8 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 
 		pxframe->frame_tag = DATA_FRAMETAG;
 
-#ifdef CONFIG_USB_HCI
 		pxframe->pkt = NULL;
+
 #ifdef USB_PACKET_OFFSET_SZ
 		pxframe->pkt_offset = (PACKET_OFFSET_SZ/8);
 #else
@@ -2835,13 +2749,6 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 #endif
 
 #ifdef CONFIG_USB_TX_AGGREGATION
-		pxframe->agg_num = 1;
-#endif
-
-#endif //#ifdef CONFIG_USB_HCI
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxframe->pg_num = 1;
 		pxframe->agg_num = 1;
 #endif
 
@@ -2996,7 +2903,7 @@ _func_enter_;
 	else if(pxmitframe->ext_tag == 1)
 		queue = &pxmitpriv->free_xframe_ext_queue;
 	else
-	{}
+		rtw_warn_on(1);
 
 	_enter_critical_bh(&queue->lock, &irqL);
 
@@ -3103,7 +3010,7 @@ static struct xmit_frame *dequeue_one_xmitframe(struct xmit_priv *pxmitpriv, str
 
 		break;
 
-		pxmitframe = NULL;
+		//pxmitframe = NULL;
 
 	}
 
@@ -3121,9 +3028,6 @@ struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmi
 	_adapter *padapter = pxmitpriv->adapter;
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	int i, inx[4];
-#ifdef CONFIG_USB_HCI
-//	int j, tmp, acirp_cnt[4];
-#endif
 
 _func_enter_;
 
@@ -3132,19 +3036,9 @@ _func_enter_;
 	if(pregpriv->wifi_spec==1)
 	{
 		int j, tmp, acirp_cnt[4];
-#if 0
-		if(flags<XMIT_QUEUE_ENTRY)
-		{
-			//priority exchange according to the completed xmitbuf flags.
-			inx[flags] = 0;
-			inx[0] = flags;
-		}
-#endif
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_PCI_HCI)
 		for(j=0; j<4; j++)
 			inx[j] = pxmitpriv->wmm_para_seq[j];
-#endif
 	}
 
 	_enter_critical_bh(&pxmitpriv->lock, &irqL0);
@@ -3250,15 +3144,6 @@ __inline static struct tx_servq *rtw_get_sta_pending
 
 _func_enter_;
 
-#ifdef CONFIG_RTL8711
-
-	if(IS_MCAST(psta->hwaddr))
-	{
-		ptxservq = &(psta->sta_xmitpriv.be_q); // we will use be_q to queue bc/mc frames in BCMC_stainfo
-		*ppstapending = &padapter->xmitpriv.bm_pending;
-	}
-	else
-#endif
 	{
 		switch (up)
 		{
@@ -3626,24 +3511,6 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 				*((unsigned short *)(skb->data+MACADDRLEN*2+2)) = vlan_hdr;
 			}
 		}
-#if 0
-		else{
-			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_8021Q)) {
-				is_vlan_tag = 1;
-			}
-
-			if(is_vlan_tag){
-				if(ICMPV6_MCAST_MAC(skb->data) && ICMPV6_PROTO1A_VALN(skb->data)){
-                                        memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-				}
-			}else
-			{
-				if(ICMPV6_MCAST_MAC(skb->data) && ICMPV6_PROTO1A(skb->data)){
-                                        memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-				}
-			}
-		}
-#endif	// 0
 
 		// check if SA is equal to our MAC
 		if (memcmp(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN)) {
@@ -4006,7 +3873,7 @@ sint xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *p
 
 		//pattrib->triggered=0;
 		if (bmcst && xmitframe_hiq_filter(pxmitframe) == _TRUE)
-			pattrib->qsel = 0x11;//HIQ
+			pattrib->qsel = QSLT_HIGH;//HIQ
 
 		return ret;
 	}
@@ -4018,7 +3885,7 @@ sint xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *p
 
 		if(pstapriv->sta_dz_bitmap)//if anyone sta is in ps mode
 		{
-			//pattrib->qsel = 0x11;//HIQ
+			//pattrib->qsel = QSLT_HIGH;//HIQ
 
 			rtw_list_delete(&pxmitframe->list);
 
@@ -4037,7 +3904,10 @@ sint xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *p
 			//DBG_871X("enqueue, sq_len=%d, tim=%x\n", psta->sleepq_len, pstapriv->tim_bitmap);
 
 			if (update_tim == _TRUE) {
-				update_beacon(padapter, _TIM_IE_, NULL, _TRUE);
+				if (is_broadcast_mac_addr(pattrib->ra))
+					_update_beacon(padapter, _TIM_IE_, NULL, _TRUE, "buffer BC");
+				else
+					_update_beacon(padapter, _TIM_IE_, NULL, _TRUE, "buffer MC");
 			} else {
 				chk_bmc_sleepq_cmd(padapter);
 			}
@@ -4110,7 +3980,7 @@ sint xmitframe_enqueue_for_sleeping_sta(_adapter *padapter, struct xmit_frame *p
 				{
 					//DBG_871X("sleepq_len==1, update BCNTIM\n");
 					//upate BCN for TIM IE
-					update_beacon(padapter, _TIM_IE_, NULL, _TRUE);
+					_update_beacon(padapter, _TIM_IE_, NULL, _TRUE, "buffer UC");
 				}
 			}
 
@@ -4417,8 +4287,12 @@ _exit:
 	if(update_mask)
 	{
 		//update_BCNTIM(padapter);
-		//printk("%s => call update_beacon\n",__FUNCTION__);
-		update_beacon(padapter, _TIM_IE_, NULL, _TRUE);
+		if ((update_mask & (BIT(0)|BIT(1))) == (BIT(0)|BIT(1)))
+			_update_beacon(padapter, _TIM_IE_, NULL, _TRUE, "clear UC&BMC");
+		else if ((update_mask & BIT(1)) == BIT(1))
+			_update_beacon(padapter, _TIM_IE_, NULL, _TRUE, "clear BMC");
+		else
+			_update_beacon(padapter, _TIM_IE_, NULL, _TRUE, "clear UC");
 	}
 
 }
@@ -4533,14 +4407,7 @@ void enqueue_pending_xmitbuf(
 	rtw_list_insert_tail(&pxmitbuf->list, get_list_head(pqueue));
 	_exit_critical_bh(&pqueue->lock, &irql);
 
-
-
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	if (pri_adapter->adapter_type > PRIMARY_ADAPTER)
-		pri_adapter = pri_adapter->pbuddy_adapter;
-#endif  //SDIO_HCI + CONCURRENT
 	_rtw_up_sema(&(pri_adapter->xmitpriv.xmit_sema));
-
 }
 
 void enqueue_pending_xmitbuf_to_head(
@@ -4592,9 +4459,7 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 {
 	_irqL irql;
 	struct xmit_buf *pxmitbuf;
-#ifdef CONFIG_USB_HCI
 	struct xmit_frame *pxmitframe;
-#endif
 	_queue *pqueue;
 
 
@@ -4616,19 +4481,11 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 
 			pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 
-#ifdef CONFIG_USB_HCI
 			pxmitframe = (struct xmit_frame*)pxmitbuf->priv_data;
 			if(pxmitframe)
-			{
 				type = GetFrameSubType(pxmitbuf->pbuf + TXDESC_SIZE + pxmitframe->pkt_offset * PACKET_OFFSET_SZ);
-			}
 			else
-			{
 				DBG_871X("%s, !!!ERROR!!! For USB, TODO ITEM \n", __FUNCTION__);
-			}
-#else
-			type = GetFrameSubType(pxmitbuf->pbuf + TXDESC_OFFSET);
-#endif
 
 			if ((type == WIFI_PROBEREQ) ||
 				(type == WIFI_DATA_NULL) ||

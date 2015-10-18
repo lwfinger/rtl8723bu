@@ -23,13 +23,7 @@
 #ifdef CONFIG_SINGLE_RECV_BUF
 	#define NR_RECVBUFF (1)
 #else
-	#if defined(CONFIG_GSPI_HCI)
-		#define NR_RECVBUFF (32)
-	#elif defined(CONFIG_SDIO_HCI)
-		#define NR_RECVBUFF (8)
-	#else
-		#define NR_RECVBUFF (8)
-	#endif
+	#define NR_RECVBUFF (8)
 #endif //CONFIG_SINGLE_RECV_BUF
 
 #define NR_PREALLOC_RECV_SKB (8)
@@ -272,33 +266,19 @@ struct recv_stat
 
 	unsigned int rxdw1;
 
+	unsigned int rxdw2;
+
+	unsigned int rxdw3;
+
 #ifndef BUF_DESC_ARCH
 	unsigned int rxdw4;
 
 	unsigned int rxdw5;
 
-#ifdef CONFIG_PCI_HCI
-	unsigned int rxdw6;
-
-	unsigned int rxdw7;
-#endif
 #endif //if BUF_DESC_ARCH is defined, rx_buf_desc occupy 4 double words
 };
 
 #define EOR BIT(30)
-
-#ifdef CONFIG_PCI_HCI
-#define PCI_MAX_RX_QUEUE		1// MSDU packet queue, Rx Command Queue
-#define PCI_MAX_RX_COUNT		128
-
-struct rtw_rx_ring {
-	struct recv_stat	*desc;
-	dma_addr_t		dma;
-	unsigned int		idx;
-	struct sk_buff	*rx_buf[PCI_MAX_RX_COUNT];
-};
-#endif
-
 
 
 /*
@@ -339,11 +319,10 @@ struct recv_priv
 	uint  rx_smallpacket_crcerr;
 	uint  rx_middlepacket_crcerr;
 
-#ifdef CONFIG_USB_HCI
 	//u8 *pallocated_urb_buf;
 	_sema allrxreturnevt;
 	uint	ff_hwaddr;
-	u8	rx_pending_cnt;
+	ATOMIC_T	rx_pending_cnt;
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	PURB	int_in_urb;
@@ -351,7 +330,6 @@ struct recv_priv
 	u8	*int_in_buf;
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
-#endif
 	struct tasklet_struct irq_prepare_beacon_tasklet;
 	struct tasklet_struct recv_tasklet;
 	struct sk_buff_head free_recv_skb_queue;
@@ -366,16 +344,7 @@ struct recv_priv
 	_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI) || defined(CONFIG_USB_HCI)
 	_queue	recv_buf_pending_queue;
-#endif
-
-#ifdef CONFIG_PCI_HCI
-	// Rx
-	struct rtw_rx_ring	rx_ring[PCI_MAX_RX_QUEUE];
-	int	rxringcount;
-	u16	rxbuffersize;
-#endif
 
 	//For display the phy informatiom
 	u8 is_signal_dbg;	// for debug
@@ -404,7 +373,7 @@ struct recv_priv
 	struct smooth_rssi_data signal_qual_data;
 	struct smooth_rssi_data signal_strength_data;
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
-
+	u16 sink_udpport,pre_rtp_rxseq,cur_rtp_rxseq;
 };
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
@@ -447,15 +416,13 @@ struct recv_buf
 	u8	*ptail;
 	u8	*pend;
 
-#ifdef CONFIG_USB_HCI
-
 	PURB	purb;
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u32 alloc_sz;
 
 	u8  irp_pending;
 	int  transfer_len;
-#endif
+
 	_pkt	*pskb;
 	u8	reuse;
 };

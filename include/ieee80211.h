@@ -1037,49 +1037,7 @@ struct ieee80211_txb {
 #define IEEE80211_PS_UNICAST IEEE80211_DTIM_UCAST
 #define IEEE80211_PS_MBCAST IEEE80211_DTIM_MBCAST
 #define IW_ESSID_MAX_SIZE 32
-#if 0
-struct ieee80211_network {
-	/* These entries are used to identify a unique network */
-	u8 bssid[ETH_ALEN];
-	u8 channel;
-	/* Ensure null-terminated for any debug msgs */
-	u8 ssid[IW_ESSID_MAX_SIZE + 1];
-	u8 ssid_len;
-	u8	rssi;	//relative signal strength
-	u8	sq;		//signal quality
 
-	/* These are network statistics */
-	//struct ieee80211_rx_stats stats;
-	u16 capability;
-	u16	aid;
-	u8 rates[MAX_RATES_LENGTH];
-	u8 rates_len;
-	u8 rates_ex[MAX_RATES_EX_LENGTH];
-	u8 rates_ex_len;
-
-	u8 edca_parmsets[18];
-
-	u8 mode;
-	u8 flags;
-	u8 time_stamp[8];
-	u16 beacon_interval;
-	u16 listen_interval;
-	u16 atim_window;
-	u8 wpa_ie[MAX_WPA_IE_LEN];
-	size_t wpa_ie_len;
-	u8 rsn_ie[MAX_WPA_IE_LEN];
-	size_t rsn_ie_len;
-	u8 country[6];
-	u8 dtim_period;
-	u8 dtim_data;
-	u8 power_constraint;
-	u8 qosinfo;
-	u8 qbssload[5];
-	u8 network_type;
-	int join_res;
-	unsigned long	last_scanned;
-};
-#endif
 /*
 join_res:
 -1: authentication fail
@@ -1171,17 +1129,6 @@ typedef struct tx_pending_t{
 int ieee80211_is_empty_essid(const char *essid, int essid_len);
 int ieee80211_get_hdrlen(u16 fc);
 
-#if 0
-/* Action frame categories (IEEE 802.11-2007, 7.3.1.11, Table 7-24) */
-#define WLAN_ACTION_SPECTRUM_MGMT 0
-#define WLAN_ACTION_QOS 1
-#define WLAN_ACTION_DLS 2
-#define WLAN_ACTION_BLOCK_ACK 3
-#define WLAN_ACTION_RADIO_MEASUREMENT 5
-#define WLAN_ACTION_FT 6
-#define WLAN_ACTION_SA_QUERY 8
-#define WLAN_ACTION_WMM 17
-#endif
 
 
 /* Action category code */
@@ -1487,13 +1434,18 @@ u8 *rtw_get_wps_attr_content(u8 *wps_ie, uint wps_ielen, u16 target_attr_id ,u8 
 #define for_each_ie(ie, buf, buf_len) \
 	for (ie = (void*)buf; (((u8*)ie) - ((u8*)buf) + 1) < buf_len; ie = (void*)(((u8*)ie) + *(((u8*)ie)+1) + 2))
 
-void dump_ies(u8 *buf, u32 buf_len);
-void dump_wps_ie(u8 *ie, u32 ie_len);
+void dump_ies(void *sel, u8 *buf, u32 buf_len);
+
+#ifdef CONFIG_80211N_HT
+void dump_ht_cap_ie_content(void *sel, u8 *buf, u32 buf_len);
+#endif
+
+void dump_wps_ie(void *sel, u8 *ie, u32 ie_len);
 
 #ifdef CONFIG_P2P
 u32 rtw_get_p2p_merged_ies_len(u8 *in_ie, u32 in_len);
 int rtw_p2p_merge_ies(u8 *in_ie, u32 in_len, u8 *merge_ie);
-void dump_p2p_ie(u8 *ie, u32 ie_len);
+void dump_p2p_ie(void *sel, u8 *ie, u32 ie_len);
 u8 *rtw_get_p2p_ie(u8 *in_ie, int in_len, u8 *p2p_ie, uint *p2p_ielen);
 u8 *rtw_get_p2p_ie_from_scan_queue(u8 *in_ie, int in_len, u8 *p2p_ie, uint *p2p_ielen, u8 frame_type);
 u8 *rtw_get_p2p_attr(u8 *p2p_ie, uint p2p_ielen, u8 target_attr_id ,u8 *buf_attr, u32 *len_attr);
@@ -1503,7 +1455,7 @@ void rtw_WLAN_BSSID_EX_remove_p2p_attr(WLAN_BSSID_EX *bss_ex, u8 attr_id);
 #endif
 
 #ifdef CONFIG_WFD
-void dump_wfd_ie(u8 *ie, u32 ie_len);
+void dump_wfd_ie(void *sel, u8 *ie, u32 ie_len);
 int rtw_get_wfd_ie(u8 *in_ie, int in_len, u8 *wfd_ie, uint *wfd_ielen);
 int rtw_get_wfd_ie_from_scan_queue(u8 *in_ie, int in_len, u8 *p2p_ie, uint *p2p_ielen, u8 frame_type);
 int rtw_get_wfd_attr_content(u8 *wfd_ie, uint wfd_ielen, u8 target_attr_id ,u8 *attr_content, uint *attr_contentlen);

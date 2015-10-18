@@ -18,12 +18,16 @@
  *
  ******************************************************************************/
 
-#ifndef	__ODMDIG_H__
-#define    __ODMDIG_H__
+#ifndef __HAL_ODM_DIG_H__
+#define __HAL_ODM_DIG_H__
+
+#define DIG_VERSION	"1.1"
 
 typedef struct _Dynamic_Initial_Gain_Threshold_
 {
-	BOOLEAN		bStopDIG;
+	BOOLEAN		bStopDIG;		// for debug
+	BOOLEAN		bPauseDIG;
+	BOOLEAN		bIgnoreDIG;
 	BOOLEAN		bPSDInProgress;
 
 	u1Byte		Dig_Enable_Flag;
@@ -102,7 +106,7 @@ typedef struct _FALSE_ALARM_STATISTICS{
 typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 {
 	DIG_TYPE_THRESH_HIGH	= 0,
-	DIG_TYPE_THRESH_LOW	= 1,
+	DIG_TYPE_THRESH_LOW		= 1,
 	DIG_TYPE_BACKOFF		= 2,
 	DIG_TYPE_RX_GAIN_MIN	= 3,
 	DIG_TYPE_RX_GAIN_MAX	= 4,
@@ -121,53 +125,6 @@ typedef enum tag_ODM_PauseCCKPD_Type {
 	ODM_RESUME_CCKPD	=	BIT1
 } ODM_Pause_CCKPD_TYPE;
 
-#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
-typedef enum _tag_ODM_REGULATION_Type {
-	REGULATION_FCC = 0,
-	REGULATION_MKK = 1,
-	REGULATION_ETSI = 2,
-	REGULATION_WW = 3,
-
-	MAX_REGULATION_NUM = 4
-} ODM_REGULATION_TYPE;
-#endif
-
-/*
-typedef enum tag_CCK_Packet_Detection_Threshold_Type_Definition
-{
-	CCK_PD_STAGE_LowRssi = 0,
-	CCK_PD_STAGE_HighRssi = 1,
-	CCK_PD_STAGE_MAX = 3,
-}DM_CCK_PDTH_E;
-
-typedef enum tag_DIG_EXT_PORT_ALGO_Definition
-{
-	DIG_EXT_PORT_STAGE_0 = 0,
-	DIG_EXT_PORT_STAGE_1 = 1,
-	DIG_EXT_PORT_STAGE_2 = 2,
-	DIG_EXT_PORT_STAGE_3 = 3,
-	DIG_EXT_PORT_STAGE_MAX = 4,
-}DM_DIG_EXT_PORT_ALG_E;
-
-typedef enum tag_DIG_Connect_Definition
-{
-	DIG_STA_DISCONNECT = 0,
-	DIG_STA_CONNECT = 1,
-	DIG_STA_BEFORE_CONNECT = 2,
-	DIG_MultiSTA_DISCONNECT = 3,
-	DIG_MultiSTA_CONNECT = 4,
-	DIG_CONNECT_MAX
-}DM_DIG_CONNECT_E;
-
-
-#define DM_MultiSTA_InitGainChangeNotify(Event) {DM_DigTable.CurMultiSTAConnectState = Event;}
-
-#define DM_MultiSTA_InitGainChangeNotify_CONNECT(_ADAPTER)	\
-	DM_MultiSTA_InitGainChangeNotify(DIG_MultiSTA_CONNECT)
-
-#define DM_MultiSTA_InitGainChangeNotify_DISCONNECT(_ADAPTER)	\
-	DM_MultiSTA_InitGainChangeNotify(DIG_MultiSTA_DISCONNECT)
-*/
 #define		DM_DIG_THRESH_HIGH			40
 #define		DM_DIG_THRESH_LOW			35
 
@@ -222,63 +179,16 @@ typedef enum tag_DIG_Connect_Definition
 #define		DM_DIG_BACKOFF_MIN			-4
 #define		DM_DIG_BACKOFF_DEFAULT		10
 
-#define			DM_DIG_FA_TH0_LPS				4 //-> 4 in lps
-#define			DM_DIG_FA_TH1_LPS				15 //-> 15 lps
-#define			DM_DIG_FA_TH2_LPS				30 //-> 30 lps
-#define			RSSI_OFFSET_DIG				0x05
+#define		DM_DIG_FA_TH0_LPS			4 //-> 4 in lps
+#define		DM_DIG_FA_TH1_LPS			15 //-> 15 lps
+#define		DM_DIG_FA_TH2_LPS			30 //-> 30 lps
+#define		RSSI_OFFSET_DIG				0x05
 
 VOID
 ODM_ChangeDynamicInitGainThresh(
 	IN		PVOID					pDM_VOID,
 	IN		u4Byte						DM_Type,
 	IN		u4Byte					DM_Value
-	);
-
-VOID
-odm_NHMCounterStatisticsInit(
-	IN		PVOID					pDM_VOID
-	);
-
-VOID
-odm_NHMCounterStatistics(
-	IN		PVOID					pDM_VOID
-	);
-
-VOID
-odm_NHMBBInit(
-	IN		PVOID					pDM_VOID
-);
-
-VOID
-odm_NHMBB(
-	IN		PVOID					pDM_VOID
-);
-
-VOID
-odm_NHMCounterStatisticsReset(
-	IN		PVOID			pDM_VOID
-);
-
-VOID
-odm_GetNHMCounterStatistics(
-	IN		PVOID			pDM_VOID
-);
-
-VOID
-odm_SearchPwdBLowerBound(
-	IN		PVOID					pDM_VOID,
-	IN		u1Byte					IGI_target
-);
-
-VOID
-odm_AdaptivityInit(
-	IN		PVOID					pDM_VOID
-	);
-
-VOID
-odm_Adaptivity(
-	IN		PVOID					pDM_VOID,
-	IN		u1Byte					IGI
 	);
 
 VOID
@@ -310,39 +220,7 @@ odm_DIGbyRSSI_LPS(
 	);
 
 VOID
-odm_DigForBtHsMode(
-	IN		PVOID					pDM_VOID
-	);
-
-VOID
 odm_FalseAlarmCounterStatistics(
-	IN		PVOID					pDM_VOID
-	);
-
-VOID
-odm_FAThresholdCheck(
-	IN		PVOID					pDM_VOID,
-	IN		BOOLEAN					bDFSBand,
-	IN		BOOLEAN					bPerformance,
-	IN		u4Byte					RxTp,
-	IN		u4Byte					TxTp,
-	OUT		u4Byte*					dm_FA_thres
-	);
-
-u1Byte
-odm_ForbiddenIGICheck(
-	IN		PVOID					pDM_VOID,
-	IN		u1Byte					DIG_Dynamic_MIN,
-	IN		u1Byte					CurrentIGI
-	);
-
-VOID
-odm_InbandNoiseCalculate (
-	IN		PVOID					pDM_VOID
-	);
-
-BOOLEAN
-odm_DigAbort(
 	IN		PVOID					pDM_VOID
 	);
 
@@ -365,17 +243,6 @@ ODM_Write_CCK_CCA_Thres(
 	);
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-
-VOID
-odm_DisableEDCCA(
-	IN		PVOID					pDM_VOID
-);
-
-VOID
-odm_DynamicEDCCA(
-	IN		PVOID					pDM_VOID
-);
-
 VOID
 odm_MPT_DIGCallback(
 	PRT_TIMER						pTimer
@@ -383,8 +250,8 @@ odm_MPT_DIGCallback(
 
 VOID
 odm_MPT_DIGWorkItemCallback(
-    IN		PVOID					pContext
-    );
+	IN		PVOID					pContext
+);
 
 #endif
 

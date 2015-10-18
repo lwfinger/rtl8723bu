@@ -49,19 +49,10 @@ enum{
 #endif
 #include <usb_ops_linux.h>
 
-#ifdef CONFIG_RTL8723A
-void rtl8723au_set_hw_type(_adapter *padapter);
-void rtl8723au_set_intf_ops(struct _io_ops *pops);
-void rtl8192cu_recv_tasklet(void *priv);
-void rtl8192cu_xmit_tasklet(void *priv);
-#endif
-
-#ifdef CONFIG_RTL8723B
 void rtl8723bu_set_hw_type(_adapter *padapter);
 void rtl8723bu_set_intf_ops(struct _io_ops *pops);
 void rtl8723bu_recv_tasklet(void *priv);
 void rtl8723bu_xmit_tasklet(void *priv);
-#endif
 
 
 enum RTW_USB_SPEED {

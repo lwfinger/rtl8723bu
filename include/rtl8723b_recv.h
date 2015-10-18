@@ -22,34 +22,11 @@
 
 #include <rtl8192c_recv.h>
 
-#ifdef CONFIG_SDIO_HCI
-#ifndef CONFIG_SDIO_RX_COPY
-#undef MAX_RECVBUF_SZ
-#define MAX_RECVBUF_SZ	(RX_DMA_SIZE_8723B - RX_DMA_RESERVED_SIZE_8723B)
-#endif // !CONFIG_SDIO_RX_COPY
-#endif // CONFIG_SDIO_HCI
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-s32 rtl8723bs_init_recv_priv(PADAPTER padapter);
-void rtl8723bs_free_recv_priv(PADAPTER padapter);
-#endif
-
-void rtl8723b_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);
-void rtl8723b_process_phy_info(PADAPTER padapter, void *prframe);
-
-#ifdef CONFIG_USB_HCI
-void update_recvframe_attrib(PADAPTER padapter, union recv_frame *precvframe, u8 *prxstat);
-void update_recvframe_phyinfo(union recv_frame *precvframe, struct phy_stat *pphy_info);
 int	rtl8723bu_init_recv_priv(_adapter *padapter);
 void rtl8723bu_free_recv_priv (_adapter *padapter);
 void rtl8723bu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf);
-#endif
 
-#ifdef CONFIG_PCI_HCI
-s32 rtl8723be_init_recv_priv(PADAPTER padapter);
-void rtl8723be_free_recv_priv(PADAPTER padapter);
-#endif
-
+void rtl8723b_query_rx_phy_status(union recv_frame *precvframe, struct phy_stat *pphy_status);
 void	rtl8723b_query_rx_desc_status(union recv_frame *precvframe, u8 *pdesc);
 
 #endif

@@ -58,6 +58,11 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
 
 	pdata_attr = rtw_zmalloc(MAX_P2P_IE_LEN);
 
+	if(NULL == pdata_attr){
+		DBG_871X("%s pdata_attr malloc failed \n", __FUNCTION__);
+		goto _exit;
+	}
+
 	pstart = pdata_attr;
 	pcur = pdata_attr;
 
@@ -140,6 +145,7 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
 
 	rtw_mfree(pdata_attr, MAX_P2P_IE_LEN);
 
+_exit:
 	return len;
 
 }
@@ -340,20 +346,6 @@ static void issue_p2p_provision_resp(struct wifidirect_info *pwdinfo, u8* raddr,
 	//*(u32*) ( wpsie ) = cpu_to_be32( WPSOUI );
 	RTW_PUT_BE32(wpsie, WPSOUI);
 	wpsielen += 4;
-
-#if 0
-	//	WPS version
-	//	Type:
-	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( WPS_ATTR_VER1 );
-	wpsielen += 2;
-
-	//	Length:
-	*(u16*) ( wpsie + wpsielen ) = cpu_to_be16( 0x0001 );
-	wpsielen += 2;
-
-	//	Value:
-	wpsie[wpsielen++] = WPS_VERSION_1;	//	Version 1.0
-#endif
 
 	//	Config Method
 	//	Type:
@@ -3455,6 +3447,8 @@ _func_exit_;
 void p2p_concurrent_handler( _adapter*	padapter )
 {
 	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
+	struct mlme_ext_priv	*pmlmeext = &(padapter->mlmeextpriv);
+	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	//_adapter				*pbuddy_adapter = padapter->pbuddy_adapter;
 	//struct wifidirect_info	*pbuddy_wdinfo = &pbuddy_adapter->wdinfo;
 	//struct mlme_priv		*pbuddy_mlmepriv = &pbuddy_adapter->mlmepriv;
@@ -3495,8 +3489,13 @@ _func_enter_;
 					}
 
 					rtw_p2p_set_state(pwdinfo, P2P_STATE_LISTEN);
-					val8 = 1;
-					rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+
+					if(!check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
+						!(pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
+					{
+						val8 = 1;
+						rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+					}
 
 					//	Todo: To check the value of pwdinfo->ext_listen_period is equal to 0 or not.
 					_set_timer( &pwdinfo->ap_p2p_switch_timer, pwdinfo->ext_listen_period );
@@ -3517,8 +3516,14 @@ _func_enter_;
 				if ( pbuddy_mlmeext->cur_channel != pwdinfo->listen_channel )
 				{
 					set_channel_bwmode(padapter, pbuddy_mlmeext->cur_channel, pbuddy_mlmeext->cur_ch_offset, pbuddy_mlmeext->cur_bwmode);
-					val8 = 0;
-					padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+
+					if(!check_buddy_mlmeinfo_state(padapter, WIFI_FW_AP_STATE) &&
+						!(pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
+					{
+						val8 = 0;
+						padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+					}
+
 					rtw_p2p_set_state(pwdinfo, P2P_STATE_IDLE);
 					issue_nulldata(pbuddy_adapter, NULL, 0, 3, 500);
 				}
@@ -3611,6 +3616,9 @@ _func_enter_;
 
 	pcfg80211_wdinfo->is_ro_ch = _FALSE;
 	pcfg80211_wdinfo->last_ro_ch_time = rtw_get_current_time();
+
+	if (pcfg80211_wdinfo->not_indic_ro_ch_exp == _TRUE)
+		return;
 
 	DBG_871X("cfg80211_remain_on_channel_expired, ch=%d, bw=%d, offset=%d\n",
 		rtw_get_oper_ch(padapter), rtw_get_oper_bw(padapter), rtw_get_oper_choffset(padapter));
@@ -5190,21 +5198,7 @@ void dbg_rtw_p2p_set_pre_state(struct wifidirect_info *wdinfo, enum P2P_STATE st
 		);
 	}
 }
-#if 0
-void dbg_rtw_p2p_restore_state(struct wifidirect_info *wdinfo, const char *caller, int line)
-{
-	if(wdinfo->pre_p2p_state != -1) {
-		DBG_871X("[CONFIG_DBG_P2P]%s:%d restore from %s to %s\n", caller, line
-			, p2p_state_str[wdinfo->p2p_state], p2p_state_str[wdinfo->pre_p2p_state]
-		);
-		_rtw_p2p_restore_state(wdinfo);
-	} else {
-		DBG_871X("[CONFIG_DBG_P2P]%s:%d restore no pre state, cur state %s\n", caller, line
-			, p2p_state_str[wdinfo->p2p_state]
-		);
-	}
-}
-#endif
+
 void dbg_rtw_p2p_set_role(struct wifidirect_info *wdinfo, enum P2P_ROLE role, const char *caller, int line)
 {
 	if(wdinfo->role != role) {

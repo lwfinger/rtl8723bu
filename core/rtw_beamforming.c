@@ -265,10 +265,7 @@ void	beamforming_get_ndpa_frame(PADAPTER	 Adapter, union recv_frame *precv_frame
 
 	//DBG_871X("beamforming_get_ndpa_frame\n");
 
-	if(IS_HARDWARE_TYPE_8812(Adapter) == _FALSE)
-		return;
-	else if(GetFrameSubType(pframe) != WIFI_NDPA)
-		return;
+	return;
 
 	ta = GetAddr2Ptr(pframe);
 	// Remove signaling TA.
@@ -330,7 +327,7 @@ BOOLEAN	issue_ht_ndpa_packet(PADAPTER Adapter, u8 *ra, CHANNEL_WIDTH bw, u8 qidx
 	update_mgntframe_attrib(Adapter, pattrib);
 
 	if (qidx == BCN_QUEUE_INX)
-		pattrib->qsel = 0x10;
+		pattrib->qsel = QSLT_BEACON;
 	pattrib->rate = MGN_MCS8;
 	pattrib->bwmode = bw;
 	pattrib->order = 1;
@@ -412,7 +409,7 @@ BOOLEAN	issue_vht_ndpa_packet(PADAPTER Adapter, u8 *ra, u16 aid, CHANNEL_WIDTH b
 	update_mgntframe_attrib(Adapter, pattrib);
 
 	if (qidx == BCN_QUEUE_INX)
-		pattrib->qsel = 0x10;
+		pattrib->qsel = QSLT_BEACON;
 	pattrib->rate = MGN_VHT2SS_MCS0;
 	pattrib->bwmode = bw;
 	pattrib->subtype = WIFI_NDPA;

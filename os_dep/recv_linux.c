@@ -171,7 +171,6 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	int res=_SUCCESS;
 
-#ifdef CONFIG_USB_HCI
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
 
@@ -200,8 +199,6 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 		return _FAIL;
 	#endif //CONFIG_USE_USB_BUFFER_ALLOC_RX
 
-#endif //CONFIG_USB_HCI
-
 	return res;
 }
 
@@ -209,8 +206,6 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 int rtw_os_recvbuf_resource_free(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	int ret = _SUCCESS;
-
-#ifdef CONFIG_USB_HCI
 
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
 
@@ -228,9 +223,6 @@ int rtw_os_recvbuf_resource_free(_adapter *padapter, struct recv_buf *precvbuf)
 		//usb_kill_urb(precvbuf->purb);
 		usb_free_urb(precvbuf->purb);
 	}
-
-#endif //CONFIG_USB_HCI
-
 
 	if(precvbuf->pskb)
 	{
@@ -302,6 +294,7 @@ _pkt *rtw_os_alloc_msdu_pkt(union recv_frame *prframe, u16 nSubframe_Length, u8 
 void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attrib *pattrib)
 {
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
+	struct recv_priv *precvpriv = &(padapter->recvpriv);
 #ifdef CONFIG_BR_EXT
 	void *br_port = NULL;
 #endif
@@ -388,7 +381,8 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 			}
 		}
 #endif	// CONFIG_BR_EXT
-
+		if( precvpriv->sink_udpport > 0)
+			rtw_sink_rtp_seq_dbg(padapter,pkt);
 		pkt->protocol = eth_type_trans(pkt, padapter->pnetdev);
 		pkt->dev = padapter->pnetdev;
 
@@ -549,13 +543,6 @@ static void rtw_os_ksocket_send(_adapter *padapter, union recv_frame *precv_fram
 				//DBG_871X("0x%x\n", *(skb->data+ETH_HLEN+6+i));
 
 			DBG_871X("eth, RC-end\n");
-
-#if 0
-			//send_sz = ksocket_send(padapter->ksock_send, &padapter->kaddr_send, (skb->data+ETH_HLEN+2), len);
-			rtw_recv_ksocket_send_cmd(padapter, (skb->data+ETH_HLEN+2), len);
-
-			//DBG_871X("ksocket_send size=%d\n", send_sz);
-#endif
 		}
 
 	}
@@ -569,12 +556,13 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 	_queue	*pfree_recv_queue;
 	_pkt *skb;
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
-	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
+	struct rx_pkt_attrib *pattrib;
 
-_func_enter_;
+	if(NULL == precv_frame)
+		goto _recv_indicatepkt_drop;
 
 	DBG_COUNTER(padapter->rx_logs.os_indicate);
-
+	pattrib = &precv_frame->u.hdr.attrib;
 	precvpriv = &(padapter->recvpriv);
 	pfree_recv_queue = &(precvpriv->free_recv_queue);
 
@@ -642,9 +630,7 @@ _recv_indicatepkt_end:
 
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("\n rtw_recv_indicatepkt :after rtw_os_recv_indicate_pkt!!!!\n"));
 
-_func_exit_;
-
-        return _SUCCESS;
+	return _SUCCESS;
 
 _recv_indicatepkt_drop:
 
@@ -653,17 +639,13 @@ _recv_indicatepkt_drop:
 		 rtw_free_recvframe(precv_frame, pfree_recv_queue);
 
 	 DBG_COUNTER(padapter->rx_logs.os_indicate_err);
+
 	 return _FAIL;
-
-_func_exit_;
-
 }
 
 void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	struct recv_priv *precvpriv = &padapter->recvpriv;
-
-#ifdef CONFIG_USB_HCI
 
 	precvbuf->ref_cnt--;
 
@@ -677,14 +659,8 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 	{
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 	}
-
-
-#endif
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		precvbuf->pskb = NULL;
-#endif
-
 }
+
 void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext);
 void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)
 {
