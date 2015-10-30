@@ -1170,7 +1170,7 @@ u32 rtl8723bu_hal_init(PADAPTER padapter)
 
 
 
-_func_enter_;
+
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 
@@ -1565,7 +1565,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_END);
 	}
 	#endif
 
-_func_exit_;
+
 
 	return status;
 }
@@ -2040,7 +2040,7 @@ unsigned int rtl8723bu_inirp_init(PADAPTER Adapter)
 	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(Adapter);
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
-_func_enter_;
+
 
 	_read_port = pintfhdl->io_ops._read_port;
 
@@ -2082,7 +2082,7 @@ exit:
 
 	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("<=== usb_inirp_init \n"));
 
-_func_exit_;
+
 
 	return status;
 
@@ -2776,7 +2776,7 @@ void SetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 
-_func_enter_;
+
 
 	switch(variable)
 	{
@@ -2804,7 +2804,7 @@ _func_enter_;
 			break;
 	}
 
-_func_exit_;
+
 }
 
 /*
@@ -2815,7 +2815,7 @@ void GetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 
-_func_enter_;
+
 
 	switch (variable)
 	{
@@ -2824,14 +2824,14 @@ _func_enter_;
 			break;
 	}
 
-_func_exit_;
+
 }
 #ifdef CONFIG_C2H_PACKET_EN
 void SetHwRegWithBuf8723B(PADAPTER padapter, u8 variable, u8 *pbuf, int len)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
-_func_enter_;
+
 
 	switch (variable)
 	{
@@ -2843,7 +2843,7 @@ _func_enter_;
 		default:
 			break;
 	}
-_func_exit_;
+
 }
 #endif
 //
@@ -2964,7 +2964,7 @@ void rtl8723bu_set_hal_ops(_adapter * padapter)
 {
 	struct hal_ops	*pHalFunc = &padapter->HalFunc;
 
-_func_enter_;
+
 
 	pHalFunc->hal_init = &rtl8723bu_hal_init;
 	pHalFunc->hal_deinit = &rtl8723bu_hal_deinit;
@@ -3010,6 +3010,6 @@ _func_enter_;
 #endif
 	rtl8723b_set_hal_ops(pHalFunc);
 
-_func_exit_;
+
 
 }

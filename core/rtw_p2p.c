@@ -3348,7 +3348,7 @@ void find_phase_handler( _adapter*	padapter )
 	_irqL				irqL;
 	u8					_status = 0;
 
-_func_enter_;
+
 
 	_rtw_memset((unsigned char*)&ssid, 0, sizeof(NDIS_802_11_SSID));
 	_rtw_memcpy(ssid.Ssid, pwdinfo->p2p_wildcard_ssid, P2P_WILDCARD_SSID_LEN );
@@ -3361,7 +3361,7 @@ _func_enter_;
 	_exit_critical_bh(&pmlmepriv->lock, &irqL);
 
 
-_func_exit_;
+
 }
 
 void p2p_concurrent_handler(  _adapter* padapter );
@@ -3371,7 +3371,7 @@ void restore_p2p_state_handler( _adapter*	padapter )
 	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
 	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
 
-_func_enter_;
+
 
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_ING) || rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_FAIL))
 	{
@@ -3406,49 +3406,49 @@ _func_enter_;
 		set_channel_bwmode( padapter, pwdinfo->listen_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
 #endif
 	}
-_func_exit_;
+
 }
 
 void pre_tx_invitereq_handler( _adapter*	padapter )
 {
 	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
 	u8	val8 = 1;
-_func_enter_;
+
 
 	set_channel_bwmode(padapter, pwdinfo->invitereq_info.peer_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
 	padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
 	issue_probereq_p2p(padapter, NULL);
 	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
 
-_func_exit_;
+
 }
 
 void pre_tx_provdisc_handler( _adapter*	padapter )
 {
 	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
 	u8	val8 = 1;
-_func_enter_;
+
 
 	set_channel_bwmode(padapter, pwdinfo->tx_prov_disc_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
 	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
 	issue_probereq_p2p(padapter, NULL);
 	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
 
-_func_exit_;
+
 }
 
 void pre_tx_negoreq_handler( _adapter*	padapter )
 {
 	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
 	u8	val8 = 1;
-_func_enter_;
+
 
 	set_channel_bwmode(padapter, pwdinfo->nego_req_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
 	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
 	issue_probereq_p2p(padapter, NULL);
 	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
 
-_func_exit_;
+
 }
 
 #ifdef CONFIG_CONCURRENT_MODE
@@ -3578,7 +3578,7 @@ static void ro_ch_handler(_adapter *padapter)
 	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	u8 ch, bw, offset;
-_func_enter_;
+
 
 	if (rtw_get_ch_setting_union(padapter, &ch, &bw, &offset) != 0) {
 		if (0)
@@ -3620,7 +3620,7 @@ _func_enter_;
 		&pcfg80211_wdinfo->remain_on_ch_channel,
 		pcfg80211_wdinfo->remain_on_ch_type, GFP_KERNEL);
 
-_func_exit_;
+
 }
 
 static void ro_ch_timer_process (void *FunctionContext)
@@ -4404,7 +4404,7 @@ void p2p_protocol_wk_hdl(_adapter *padapter, int intCmdType)
 {
 	struct wifidirect_info	*pwdinfo= &(padapter->wdinfo);
 
-_func_enter_;
+
 
 	switch(intCmdType)
 	{
@@ -4485,7 +4485,7 @@ _func_enter_;
 
 	}
 
-_func_exit_;
+
 }
 
 #ifdef CONFIG_P2P_PS
@@ -4502,7 +4502,7 @@ void process_p2p_ps_ie(PADAPTER padapter, u8 *IEs, u32 IELength)
 	u8	find_p2p = _FALSE, find_p2p_ps = _FALSE;
 	u8	noa_offset, noa_num, noa_index;
 
-_func_enter_;
+
 
 	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
 	{
@@ -4597,7 +4597,7 @@ _func_enter_;
 		}
 	}
 
-_func_exit_;
+
 }
 
 void p2p_ps_wk_hdl(_adapter *padapter, u8 p2p_ps_state)
@@ -4605,7 +4605,7 @@ void p2p_ps_wk_hdl(_adapter *padapter, u8 p2p_ps_state)
 	struct pwrctrl_priv		*pwrpriv = adapter_to_pwrctl(padapter);
 	struct wifidirect_info	*pwdinfo= &(padapter->wdinfo);
 
-_func_enter_;
+
 
 	// Pre action for p2p state
 	switch(p2p_ps_state)
@@ -4657,7 +4657,7 @@ _func_enter_;
 			break;
 	}
 
-_func_exit_;
+
 }
 
 u8 p2p_ps_wk_cmd(_adapter*padapter, u8 p2p_ps_state, u8 enqueue)
@@ -4668,7 +4668,7 @@ u8 p2p_ps_wk_cmd(_adapter*padapter, u8 p2p_ps_state, u8 enqueue)
 	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
-_func_enter_;
+
 
 	if ( rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)
 #ifdef CONFIG_CONCURRENT_MODE
@@ -4710,7 +4710,7 @@ _func_enter_;
 
 exit:
 
-_func_exit_;
+
 
 	return res;
 

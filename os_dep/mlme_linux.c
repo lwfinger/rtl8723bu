@@ -30,7 +30,7 @@ void Linkup_workitem_callback(struct work_struct *work)
 	struct mlme_priv *pmlmepriv = container_of(work, struct mlme_priv, Linkup_workitem);
 	_adapter *padapter = container_of(pmlmepriv, _adapter, mlmepriv);
 
-_func_enter_;
+
 
 	RT_TRACE(_module_mlme_osdep_c_,_drv_info_,("+ Linkup_workitem_callback\n"));
 
@@ -40,7 +40,7 @@ _func_enter_;
 	kobject_hotplug(&padapter->pnetdev->class_dev.kobj, KOBJ_LINKUP);
 #endif
 
-_func_exit_;
+
 }
 
 void Linkdown_workitem_callback(struct work_struct *work)
@@ -48,7 +48,7 @@ void Linkdown_workitem_callback(struct work_struct *work)
 	struct mlme_priv *pmlmepriv = container_of(work, struct mlme_priv, Linkdown_workitem);
 	_adapter *padapter = container_of(pmlmepriv, _adapter, mlmepriv);
 
-_func_enter_;
+
 
 	RT_TRACE(_module_mlme_osdep_c_,_drv_info_,("+ Linkdown_workitem_callback\n"));
 
@@ -58,7 +58,7 @@ _func_enter_;
 	kobject_hotplug(&padapter->pnetdev->class_dev.kobj, KOBJ_LINKDOWN);
 #endif
 
-_func_exit_;
+
 }
 #endif
 
@@ -147,7 +147,7 @@ extern void rtw_indicate_wx_disassoc_event(_adapter *padapter);
 void rtw_os_indicate_connect(_adapter *adapter)
 {
 	struct mlme_priv *pmlmepriv = &(adapter->mlmepriv);
-_func_enter_;
+
 
 #ifdef CONFIG_IOCTL_CFG80211
 	if ( (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)==_TRUE ) ||
@@ -169,7 +169,7 @@ _func_enter_;
 	_set_workitem(&adapter->mlmepriv.Linkup_workitem);
 #endif
 
-_func_exit_;
+
 
 }
 
@@ -251,7 +251,7 @@ void rtw_os_indicate_disconnect( _adapter *adapter )
 {
 	//RT_PMKID_LIST   backupPMKIDList[ NUM_PMKID_CACHE ];
 
-_func_enter_;
+
 
 	netif_carrier_off(adapter->pnetdev); // Do it first for tx broadcast pkt after disconnection issue!
 
@@ -267,7 +267,7 @@ _func_enter_;
 	 //modify for CONFIG_IEEE80211W, none 11w also can use the same command
 	 rtw_reset_securitypriv_cmd(adapter);
 
-_func_exit_;
+
 
 }
 
@@ -277,7 +277,7 @@ void rtw_report_sec_ie(_adapter *adapter,u8 authmode,u8 *sec_ie)
 	u8	*buff,*p,i;
 	union iwreq_data wrqu;
 
-_func_enter_;
+
 
 	RT_TRACE(_module_mlme_osdep_c_,_drv_info_,("+rtw_report_sec_ie, authmode=%d\n", authmode));
 
@@ -317,11 +317,6 @@ _func_enter_;
 
 		rtw_mfree(buff, IW_CUSTOM_MAX);
 	}
-
-exit:
-
-_func_exit_;
-
 }
 
 void _survey_timer_hdl (void *FunctionContext)

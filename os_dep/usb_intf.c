@@ -288,7 +288,7 @@ static struct dvobj_priv *usb_dvobj_init(struct usb_interface *usb_intf)
 	struct usb_endpoint_descriptor	*pendp_desc;
 	struct usb_device				*pusbd;
 
-_func_enter_;
+
 
 
 	if((pdvobjpriv = devobj_init()) == NULL) {
@@ -458,7 +458,7 @@ free_dvobj:
 		pdvobjpriv = NULL;
 	}
 exit:
-_func_exit_;
+
 	return pdvobjpriv;
 }
 
@@ -466,7 +466,7 @@ static void usb_dvobj_deinit(struct usb_interface *usb_intf)
 {
 	struct dvobj_priv *dvobj = usb_get_intfdata(usb_intf);
 
-_func_enter_;
+
 
 	usb_set_intfdata(usb_intf, NULL);
 	if (dvobj) {
@@ -489,7 +489,7 @@ _func_enter_;
 	//DBG_871X("%s %d\n", __func__, ATOMIC_READ(&usb_intf->dev.kobj.kref.refcount));
 	usb_put_dev(interface_to_usbdev(usb_intf));
 
-_func_exit_;
+
 }
 
 static void rtw_decide_chip_type_by_usb_info(_adapter *padapter, const struct usb_device_id *pdid)
@@ -616,7 +616,7 @@ int rtw_hw_suspend(_adapter *padapter )
 	struct usb_interface *pusb_intf;
 	struct net_device *pnetdev;
 
-	_func_enter_;
+
 	if(NULL==padapter)
 		goto error_exit;
 
@@ -676,7 +676,7 @@ int rtw_hw_suspend(_adapter *padapter )
 	pwrpriv->bips_processing = _FALSE;
 	_exit_pwrlock(&pwrpriv->lock);
 
-	_func_exit_;
+
 	return 0;
 
 error_exit:
@@ -691,7 +691,7 @@ int rtw_hw_resume(_adapter *padapter)
 	struct usb_interface *pusb_intf = adapter_to_dvobj(padapter)->pusbintf;
 	struct net_device *pnetdev = padapter->pnetdev;
 
-	_func_enter_;
+
 	DBG_871X("==> rtw_hw_resume\n");
 	_enter_pwrlock(&pwrpriv->lock);
 	pwrpriv->bips_processing = _TRUE;
@@ -718,7 +718,7 @@ int rtw_hw_resume(_adapter *padapter)
 	pwrpriv->bips_processing = _FALSE;
 	_exit_pwrlock(&pwrpriv->lock);
 
-	_func_exit_;
+
 
 	return 0;
 error_exit:
@@ -1371,7 +1371,7 @@ static void rtw_dev_remove(struct usb_interface *pusb_intf)
 	struct net_device *pnetdev = padapter->pnetdev;
 	struct mlme_priv *pmlmepriv= &padapter->mlmepriv;
 
-_func_enter_;
+
 
 	DBG_871X("+rtw_dev_remove\n");
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("+dev_remove()\n"));
@@ -1431,7 +1431,7 @@ _func_enter_;
 	rtw_sw_export=NULL;
 #endif
 
-_func_exit_;
+
 
 	return;
 

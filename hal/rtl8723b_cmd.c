@@ -72,7 +72,7 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 	s32 ret = _FAIL;
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
-_func_enter_;
+
 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pHalData = GET_HAL_DATA(padapter);
@@ -147,7 +147,7 @@ exit:
 
 	_exit_critical_mutex(&(adapter_to_dvobj(padapter)->h2c_fwcmd_mutex), NULL);
 
-_func_exit_;
+
 
 	return ret;
 }
@@ -1163,7 +1163,7 @@ void rtl8723b_set_FwMacIdConfig_cmd(_adapter* padapter, u8 mac_id, u8 raid, u8 b
 
 	DBG_871X("%s(): mac_id=%d raid=0x%x bw=%d mask=0x%x\n", __func__, mac_id, raid, bw, mask);
 
-_func_enter_;
+
 
 	SET_8723B_H2CCMD_MACID_CFG_MACID(u1H2CMacIdConfigParm, mac_id);
 	SET_8723B_H2CCMD_MACID_CFG_RAID(u1H2CMacIdConfigParm, raid);
@@ -1177,7 +1177,7 @@ _func_enter_;
 	RT_PRINT_DATA(_module_hal_init_c_, _drv_always_, "u1H2CMacIdConfigParm:", u1H2CMacIdConfigParm, H2C_MACID_CFG_LEN);
 	FillH2CCmd8723B(padapter, H2C_8723B_MACID_CFG, H2C_MACID_CFG_LEN, u1H2CMacIdConfigParm);
 
-_func_exit_;
+
 }
 
 void rtl8723b_set_FwRssiSetting_cmd(_adapter*padapter, u8 *param)
@@ -1187,7 +1187,7 @@ void rtl8723b_set_FwRssiSetting_cmd(_adapter*padapter, u8 *param)
 	u8 rssi = *(param+2);
 	u8 uldl_state = 0;
 
-_func_enter_;
+
 	//DBG_871X("%s(): param=%.2x-%.2x-%.2x\n", __func__, *param, *(param+1), *(param+2));
 	//DBG_871X("%s(): mac_id=%d rssi=%d\n", __func__, mac_id, rssi);
 
@@ -1198,7 +1198,7 @@ _func_enter_;
 	RT_PRINT_DATA(_module_hal_init_c_, _drv_notice_, "u1H2CRssiSettingParm:", u1H2CRssiSettingParm, H2C_RSSI_SETTING_LEN);
 	FillH2CCmd8723B(padapter, H2C_8723B_RSSI_SETTING, H2C_RSSI_SETTING_LEN, u1H2CRssiSettingParm);
 
-_func_exit_;
+
 }
 
 void rtl8723b_set_FwAPReqRPT_cmd(PADAPTER padapter, u32 need_ack)
@@ -1224,7 +1224,7 @@ void rtl8723b_set_FwPwrMode_cmd(PADAPTER padapter, u8 psmode)
 	u8 PowerState=0, awake_intvl = 1, byte5 = 0, rlbm = 0;
 	struct wifidirect_info *wdinfo = &(padapter->wdinfo);
 
-_func_enter_;
+
 
 	if(pwrpriv->dtim > 0)
 		DBG_871X("%s(): FW LPS mode = %d, SmartPS=%d, dtim=%d\n", __func__, psmode, pwrpriv->smart_ps, pwrpriv->dtim);
@@ -1377,7 +1377,7 @@ _func_enter_;
 	RT_PRINT_DATA(_module_hal_init_c_, _drv_always_, "u1H2CPwrModeParm:", u1H2CPwrModeParm, H2C_PWRMODE_LEN);
 
 	FillH2CCmd8723B(padapter, H2C_8723B_SET_PWR_MODE, H2C_PWRMODE_LEN, u1H2CPwrModeParm);
-_func_exit_;
+
 }
 
 void rtl8723b_set_FwPsTuneParam_cmd(PADAPTER padapter)
@@ -1389,7 +1389,7 @@ void rtl8723b_set_FwPsTuneParam_cmd(PADAPTER padapter)
 	u8 ps_timeout = 20;  //ms //Keep awake when tx
 	u8 dtim_period = 3;
 
-_func_enter_;
+
 	//DBG_871X("%s(): FW LPS mode = %d\n", __func__, psmode);
 
 	SET_8723B_H2CCMD_PSTUNE_PARM_BCN_TO_LIMIT(u1H2CPsTuneParm, bcn_to_limit);
@@ -1401,14 +1401,14 @@ _func_enter_;
 	RT_PRINT_DATA(_module_hal_init_c_, _drv_always_, "u1H2CPsTuneParm:", u1H2CPsTuneParm, H2C_PSTUNEPARAM_LEN);
 
 	FillH2CCmd8723B(padapter, H2C_8723B_PS_TUNING_PARA, H2C_PSTUNEPARAM_LEN, u1H2CPsTuneParm);
-_func_exit_;
+
 }
 
 void rtl8723b_set_FwBtMpOper_cmd(PADAPTER padapter, u8 idx, u8 ver, u8 reqnum, u8 *param)
 {
 	u8 u1H2CBtMpOperParm[H2C_BTMP_OPER_LEN+1]={0};
 
-_func_enter_;
+
 
 	DBG_8192C("%s: idx=%d ver=%d reqnum=%d param1=0x%02x param2=0x%02x\n", __FUNCTION__, idx, ver, reqnum, param[0], param[1]);
 
@@ -1422,7 +1422,7 @@ _func_enter_;
 	RT_PRINT_DATA(_module_hal_init_c_, _drv_always_, "u1H2CBtMpOperParm:", u1H2CBtMpOperParm, H2C_BTMP_OPER_LEN);
 
 	FillH2CCmd8723B(padapter, H2C_8723B_BT_MP_OPER, H2C_BTMP_OPER_LEN+1, u1H2CBtMpOperParm);
-_func_exit_;
+
 }
 
 void rtl8723b_set_FwPwrModeInIPS_cmd(PADAPTER padapter, u8 cmd_param)
@@ -1676,7 +1676,7 @@ static void rtl8723b_set_FwWoWlanRelated_cmd(_adapter* padapter, u8 enable)
 	u8	pkt_type = 0;
 
 	DBG_871X_LEVEL(_drv_always_, "+%s()+: enable=%d\n", __func__, enable);
-_func_enter_;
+
 	if(enable)
 	{
 		rtl8723b_set_FwAOACGlobalInfo_Cmd(padapter, psecpriv->dot118021XGrpPrivacy, psecpriv->dot11PrivacyAlgrthm);
@@ -1719,7 +1719,7 @@ _func_enter_;
 		rtl8723b_set_FwWoWlanCtrl_Cmd(padapter, enable);
 	}
 
-_func_exit_;
+
 	DBG_871X_LEVEL(_drv_always_, "-%s()-\n", __func__);
 	return ;
 }
@@ -1785,7 +1785,7 @@ static void rtl8723b_set_AP_FwWoWlan_cmd(_adapter* padapter, u8 enable)
 	u8	res = 0;
 
 	DBG_871X_LEVEL(_drv_always_, "+%s()+: enable=%d\n", __func__, enable);
-_func_enter_;
+
 	if (enable) {
 #ifdef CONFIG_CONCURRENT_MODE
 		if (rtw_buddy_adapter_up(padapter) == _TRUE &&
@@ -1810,7 +1810,7 @@ _func_enter_;
 	rtw_msleep_os(10);
 	rtl8723b_set_Fw_AP_Offload_Cmd(padapter, enable);
 	rtw_msleep_os(10);
-_func_exit_;
+
 	DBG_871X_LEVEL(_drv_always_, "-%s()-\n", __func__);
 	return ;
 }
@@ -2423,7 +2423,7 @@ void rtl8723b_download_rsvd_page(PADAPTER padapter, u8 mstatus)
 	u32 poll = 0;
 	u8 val8;
 
-_func_enter_;
+
 
 	DBG_8192C("+" FUNC_ADPT_FMT ": iface_type=%d mstatus(%x)\n",
 		FUNC_ADPT_ARG(padapter), get_iface_type(padapter), mstatus);
@@ -2523,7 +2523,7 @@ _func_enter_;
 		rtw_write8(padapter, REG_CR+1, v8);
 	}
 
-_func_exit_;
+
 }
 
 void rtl8723b_set_rssi_cmd(_adapter*padapter, u8 *param)
@@ -2873,7 +2873,7 @@ void rtl8723b_set_p2p_ps_offload_cmd(_adapter* padapter, u8 p2p_ps_state)
 	struct P2P_PS_Offload_t	*p2p_ps_offload = (struct P2P_PS_Offload_t	*)(&pHalData->p2p_ps_offload);
 	u8	i;
 
-_func_enter_;
+
 
 #if 1
 	switch(p2p_ps_state)
@@ -2951,7 +2951,7 @@ _func_enter_;
 	FillH2CCmd8723B(padapter, H2C_8723B_P2P_PS_OFFLOAD, 1, (u8 *)p2p_ps_offload);
 #endif
 
-_func_exit_;
+
 
 }
 #endif //CONFIG_P2P
@@ -2966,7 +2966,7 @@ u8 rtl8723b_reset_tsf(_adapter *padapter, u8 reset_port )
 	u8	buf[2];
 	u8	res=_SUCCESS;
 
-_func_enter_;
+
 	if (IFACE_PORT0==reset_port) {
 		buf[0] = 0x1; buf[1] = 0;
 
@@ -2974,7 +2974,7 @@ _func_enter_;
 		buf[0] = 0x0; buf[1] = 0x1;
 	}
 	FillH2CCmd8723B(padapter, H2C_8723B_RESET_TSF, 2, buf);
-_func_exit_;
+
 
 	return res;
 }

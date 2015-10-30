@@ -917,7 +917,7 @@ void	beamforming_watchdog(PADAPTER Adapter)
 void	beamforming_wk_hdl(_adapter *padapter, u8 type, u8 *pbuf)
 {
 
-_func_enter_;
+
 
 	switch(type)
 	{
@@ -941,7 +941,7 @@ _func_enter_;
 			break;
 	}
 
-_func_exit_;
+
 }
 
 u8	beamforming_wk_cmd(_adapter*padapter, s32 type, u8 *pbuf, s32 size, u8 enqueue)
@@ -951,7 +951,7 @@ u8	beamforming_wk_cmd(_adapter*padapter, s32 type, u8 *pbuf, s32 size, u8 enqueu
 	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
 
-_func_enter_;
+
 
 	if(enqueue)
 	{
@@ -1001,7 +1001,7 @@ _func_enter_;
 
 exit:
 
-_func_exit_;
+
 
 	return res;
 }

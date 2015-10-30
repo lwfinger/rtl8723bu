@@ -571,7 +571,7 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
 
-_func_enter_;
+
 
 	DBG_COUNTER(padapter->rx_logs.os_indicate);
 
@@ -642,7 +642,7 @@ _recv_indicatepkt_end:
 
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("\n rtw_recv_indicatepkt :after rtw_os_recv_indicate_pkt!!!!\n"));
 
-_func_exit_;
+
 
         return _SUCCESS;
 
@@ -655,7 +655,7 @@ _recv_indicatepkt_drop:
 	 DBG_COUNTER(padapter->rx_logs.os_indicate_err);
 	 return _FAIL;
 
-_func_exit_;
+
 
 }
 

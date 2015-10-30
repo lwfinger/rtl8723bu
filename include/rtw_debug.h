@@ -152,8 +152,6 @@ extern void rtl871x_cedbg(const char *fmt, ...);
 #endif
 
 #define RT_TRACE(_Comp, _Level, Fmt) do{}while(0)
-#define _func_enter_ do{}while(0)
-#define _func_exit_ do{}while(0)
 #define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData, _HexDataLen) do{}while(0)
 
 	#define DBG_871X(x, ...) do {} while(0)
@@ -263,24 +261,6 @@ extern void rtl871x_cedbg(const char *fmt, ...);
 
 
 #if	defined(_dbgdump)
-	#undef  _func_enter_
-	#define _func_enter_ \
-	do {	\
-		if (GlobalDebugLevel >= _drv_debug_) \
-		{																	\
-			_dbgdump("\n %s : %s enters at %d\n", DRIVER_PREFIX, __FUNCTION__, __LINE__);\
-		}		\
-	} while(0)
-
-	#undef  _func_exit_
-	#define _func_exit_ \
-	do {	\
-		if (GlobalDebugLevel >= _drv_debug_) \
-		{																	\
-			_dbgdump("\n %s : %s exits at %d\n", DRIVER_PREFIX, __FUNCTION__, __LINE__); \
-		}	\
-	} while(0)
-
 	#undef RT_PRINT_DATA
 	#define RT_PRINT_DATA(_Comp, _Level, _TitleString, _HexData, _HexDataLen)			\
 		if(((_Comp) & GlobalDebugComponents) && (_Level <= GlobalDebugLevel))	\

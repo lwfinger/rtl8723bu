@@ -1044,7 +1044,7 @@ void SetHwReg(_adapter *adapter, u8 variable, u8 *val)
 	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
 	DM_ODM_T *odm = &(hal_data->odmpriv);
 
-_func_enter_;
+
 
 	switch (variable) {
 	case HW_VAR_PORT_SWITCH:
@@ -1137,7 +1137,7 @@ _func_enter_;
 		break;
 	}
 
-_func_exit_;
+
 }
 
 void GetHwReg(_adapter *adapter, u8 variable, u8 *val)
@@ -1145,7 +1145,7 @@ void GetHwReg(_adapter *adapter, u8 variable, u8 *val)
 	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
 	DM_ODM_T *odm = &(hal_data->odmpriv);
 
-_func_enter_;
+
 
 	switch (variable) {
 	case HW_VAR_BASIC_RATE:
@@ -1164,7 +1164,7 @@ _func_enter_;
 		break;
 	}
 
-_func_exit_;
+
 }
 
 
