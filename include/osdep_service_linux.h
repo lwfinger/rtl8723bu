@@ -31,7 +31,6 @@
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,5))
 	#include <linux/kref.h>
 #endif
-	//#include <linux/smp_lock.h>
 	#include <linux/netdevice.h>
 	#include <linux/skbuff.h>
 	#include <linux/circ_buf.h>
@@ -117,7 +116,8 @@
 
 	struct	__queue	{
 		struct	list_head	queue;
-		_lock	lock;
+		spinlock_t	lock;
+		bool lock_set;
 	};
 
 	typedef	struct sk_buff	_pkt;
@@ -186,8 +186,7 @@ __inline static _list	*get_list_head(_queue	*queue)
 #define LIST_CONTAINOR(ptr, type, member) \
         ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
 
-
-__inline static void _enter_critical(_lock *plock, _irqL *pirqL)
+__inline static void _enter_critical(spinlock_t *plock, _irqL *pirqL)
 {
 	spin_lock_irqsave(plock, *pirqL);
 }
@@ -197,22 +196,12 @@ __inline static void _exit_critical(_lock *plock, _irqL *pirqL)
 	spin_unlock_irqrestore(plock, *pirqL);
 }
 
-__inline static void _enter_critical_ex(_lock *plock, _irqL *pirqL)
-{
-	spin_lock_irqsave(plock, *pirqL);
-}
-
-__inline static void _exit_critical_ex(_lock *plock, _irqL *pirqL)
-{
-	spin_unlock_irqrestore(plock, *pirqL);
-}
-
 __inline static void _enter_critical_bh(_lock *plock, _irqL *pirqL)
 {
 	spin_lock_bh(plock);
 }
 
-__inline static void _exit_critical_bh(_lock *plock, _irqL *pirqL)
+__inline static void _exit_critical_bh(spinlock_t *plock, _irqL *pirqL)
 {
 	spin_unlock_bh(plock);
 }
@@ -221,7 +210,6 @@ __inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)
 {
 	int ret = 0;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-	//mutex_lock(pmutex);
 	ret = mutex_lock_interruptible(pmutex);
 #else
 	ret = down_interruptible(pmutex);

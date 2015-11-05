@@ -234,65 +234,10 @@ struct rtw_tx_ring {
 #endif
 
 struct	hw_xmit	{
-	//_lock xmit_lock;
-	//_list	pending;
 	_queue *sta_queue;
-	//struct hw_txqueue *phwtxqueue;
-	//sint	txcmdcnt;
 	int	accnt;
 };
 
-#if 0
-struct pkt_attrib
-{
-	u8	type;
-	u8	subtype;
-	u8	bswenc;
-	u8	dhcp_pkt;
-	u16	ether_type;
-	int	pktlen;		//the original 802.3 pkt raw_data len (not include ether_hdr data)
-	int	pkt_hdrlen;	//the original 802.3 pkt header len
-	int	hdrlen;		//the WLAN Header Len
-	int	nr_frags;
-	int	last_txcmdsz;
-	int	encrypt;	//when 0 indicate no encrypt. when non-zero, indicate the encrypt algorith
-	u8	iv[8];
-	int	iv_len;
-	u8	icv[8];
-	int	icv_len;
-	int	priority;
-	int	ack_policy;
-	int	mac_id;
-	int	vcs_mode;	//virtual carrier sense method
-
-	u8	dst[ETH_ALEN];
-	u8	src[ETH_ALEN];
-	u8	ta[ETH_ALEN];
-	u8	ra[ETH_ALEN];
-
-	u8	key_idx;
-
-	u8	qos_en;
-	u8	ht_en;
-	u8	raid;//rate adpative id
-	u8	bwmode;
-	u8	ch_offset;//PRIME_CHNL_OFFSET
-	u8	sgi;//short GI
-	u8	ampdu_en;//tx ampdu enable
-	u8	mdata;//more data bit
-	u8	eosp;
-
-	u8	triggered;//for ap mode handling Power Saving sta
-
-	u32	qsel;
-	u16	seqnum;
-
-	struct sta_info * psta;
-#ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
-	u8	hw_tcp_csum;
-#endif
-};
-#else
 //reduce size
 struct pkt_attrib
 {
@@ -349,7 +294,6 @@ struct pkt_attrib
 	u8 rtsen;
 	u8 cts2self;
 	union Keytype	dot11tkiptxmickey;
-	//union Keytype	dot11tkiprxmickey;
 	union Keytype	dot118021x_UncstKey;
 
 #ifdef CONFIG_TDLS
@@ -358,9 +302,7 @@ struct pkt_attrib
 #endif //CONFIG_TDLS
 
 	u8 icmp_pkt;
-
 };
-#endif
 
 #define WLANHDR_OFFSET	64
 
@@ -517,7 +459,8 @@ struct tx_servq {
 
 struct sta_xmit_priv
 {
-	_lock	lock;
+	spinlock_t	lock;
+	bool lock_set;
 	sint	option;
 	sint	apsd_setting;	//When bit mask is on, the associated edca queue supports APSD.
 
@@ -563,9 +506,8 @@ enum cmdbuf_type {
 };
 
 struct	xmit_priv	{
-
-	_lock	lock;
-
+	spinlock_t	lock;
+	bool lock_set;
 	_sema	xmit_sema;
 	_sema	terminate_xmitthread_sema;
 
@@ -679,7 +621,8 @@ struct	xmit_priv	{
 	struct submit_ctx ack_tx_ops;
 	u8 seq_no;
 #endif
-	_lock lock_sctx;
+	spinlock_t lock_sctx;
+	bool lock_sctx_set;
 };
 
 extern struct xmit_frame *__rtw_alloc_cmdxmitframe(struct xmit_priv *pxmitpriv,

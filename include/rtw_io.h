@@ -322,7 +322,8 @@ Below is the data structure used by _io_handler
 */
 
 struct io_queue {
-	_lock	lock;
+	spinlock_t lock;
+	bool lock_set;
 	_list	free_ioreqs;
 	_list		pending;		//The io_req list that will be served in the single protocol read/write.
 	_list		processing;
@@ -332,11 +333,8 @@ struct io_queue {
 };
 
 struct io_priv{
-
 	_adapter *padapter;
-
 	struct intf_hdl intf;
-
 };
 
 extern uint ioreq_flush(_adapter *adapter, struct io_queue *ioqueue);

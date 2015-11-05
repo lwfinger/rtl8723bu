@@ -561,7 +561,8 @@ struct rtw_traffic_statistics {
 };
 
 struct cam_ctl_t {
-	_lock lock;
+	spinlock_t lock;
+	bool lock_set;
 	u64 bitmap;
 };
 
@@ -588,7 +589,8 @@ struct dvobj_priv
 
 	//for local/global synchronization
 	//
-	_lock	lock;
+	spinlock_t lock;
+	bool lock_set;
 	int macid[NUM_STA];
 
 	_mutex hw_init_mutex;
@@ -681,8 +683,8 @@ struct dvobj_priv
 	u16	irqline;
 	u8	irq_enabled;
 	RT_ISR_CONTENT	isr_content;
-	_lock	irq_th_lock;
-
+	spinlock_t	irq_th_lock;
+	bool irq_th_lock_set;
 	//ASPM
 	u8	const_pci_aspm;
 	u8	const_amdpci_aspm;
@@ -788,7 +790,8 @@ struct _ADAPTER{
 	struct	recv_priv	recvpriv;
 	struct	sta_priv	stapriv;
 	struct	security_priv	securitypriv;
-	_lock   security_key_mutex; // add for CONFIG_IEEE80211W, none 11w also can use
+	spinlock_t   security_key_mutex; // add for CONFIG_IEEE80211W, none 11w also can use
+	bool security_key_mutex_set;
 	struct	registry_priv	registrypriv;
 	struct	eeprom_priv eeprompriv;
 	struct	led_priv	ledpriv;
@@ -930,8 +933,8 @@ struct _ADAPTER{
 #endif
 
 #ifdef CONFIG_BR_EXT
-	_lock					br_ext_lock;
-	//unsigned int			macclone_completed;
+	spinlock_t 			br_ext_lock;
+	bool br_ext_lock_set;
 	struct nat25_network_db_entry	*nethash[NAT25_HASH_SIZE];
 	int				pppoe_connection_in_progress;
 	unsigned char			pppoe_addr[MACADDRLEN];
