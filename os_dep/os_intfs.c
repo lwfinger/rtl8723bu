@@ -180,10 +180,6 @@ int rtw_hw_wps_pbc = 0;
 int rtw_mc2u_disable = 0;
 #endif	// CONFIG_TX_MCAST2UNI
 
-#ifdef CONFIG_DUALMAC_CONCURRENT
-int rtw_dmsp = 0;
-#endif	// CONFIG_DUALMAC_CONCURRENT
-
 #ifdef CONFIG_80211D
 int rtw_80211d = 0;
 #endif
@@ -283,10 +279,6 @@ MODULE_PARM_DESC(rtw_fw_iol,"FW IOL");
 #ifdef CONFIG_TX_MCAST2UNI
 module_param(rtw_mc2u_disable, int, 0644);
 #endif	// CONFIG_TX_MCAST2UNI
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-module_param(rtw_dmsp, int, 0644);
-#endif	// CONFIG_DUALMAC_CONCURRENT
 
 #ifdef CONFIG_80211D
 module_param(rtw_80211d, int, 0644);
@@ -488,10 +480,6 @@ uint loadparam( _adapter *padapter,  _nic_hdl	pnetdev)
 
 #ifdef CONFIG_IOL
 	registry_par->fw_iol = rtw_fw_iol;
-#endif
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	registry_par->dmsp= (u8)rtw_dmsp;
 #endif
 
 #ifdef CONFIG_80211D

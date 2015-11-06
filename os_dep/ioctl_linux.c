@@ -1867,15 +1867,6 @@ static int rtw_wx_set_wap(struct net_device *dev,
 	}
 #endif
 
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	if (dc_check_fwstate(padapter, _FW_UNDER_SURVEY|_FW_UNDER_LINKING)== _TRUE)
-	{
-		DBG_871X("set bssid, but buddy_intf is under scanning or linking\n");
-		ret = -EINVAL;
-		goto exit;
-	}
-#endif
-
 	rtw_ps_deny(padapter, PS_DENY_JOIN);
 	if(_FAIL == rtw_pwr_wakeup(padapter))
 	{
@@ -2142,14 +2133,6 @@ static int rtw_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
 	}
 #endif
 
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	if (dc_check_fwstate(padapter, _FW_UNDER_SURVEY|_FW_UNDER_LINKING)== _TRUE)
-	{
-		indicate_wx_scan_complete_event(padapter);
-		goto exit;
-	}
-#endif
-
 #ifdef CONFIG_P2P
 	if ( pwdinfo->p2p_state != P2P_STATE_NONE )
 	{
@@ -2351,7 +2334,6 @@ static int rtw_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
 	}
 #endif //CONFIG_P2P
 
-#if 1 // Wireless Extension use EAGAIN to try
 	wait_status = _FW_UNDER_SURVEY
 #ifndef CONFIG_ANDROID
 		| _FW_UNDER_LINKING
@@ -2362,31 +2344,6 @@ static int rtw_wx_get_scan(struct net_device *dev, struct iw_request_info *a,
 	{
 		return -EAGAIN;
 	}
-#else
-	wait_status = _FW_UNDER_SURVEY
-		#ifndef CONFIG_ANDROID
-		|_FW_UNDER_LINKING
-		#endif
-	;
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	while(dc_check_fwstate(padapter, wait_status)== _TRUE)
-	{
-		rtw_msleep_os(30);
-		cnt++;
-		if(cnt > wait_for_surveydone )
-			break;
-	}
-#endif // CONFIG_DUALMAC_CONCURRENT
-
-	while(check_fwstate(pmlmepriv, wait_status) == _TRUE)
-	{
-		rtw_msleep_os(30);
-		cnt++;
-		if(cnt > wait_for_surveydone )
-			break;
-	}
-#endif
 	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
 
 	phead = get_list_head(queue);
@@ -2477,15 +2434,6 @@ static int rtw_wx_set_essid(struct net_device *dev,
 
 		ret = -EINVAL;
 
-		goto exit;
-	}
-#endif
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	if (dc_check_fwstate(padapter, _FW_UNDER_SURVEY|_FW_UNDER_LINKING)== _TRUE)
-	{
-		DBG_871X("set bssid, but buddy_intf is under scanning or linking\n");
-		ret = -EINVAL;
 		goto exit;
 	}
 #endif

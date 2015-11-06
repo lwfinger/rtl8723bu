@@ -1061,7 +1061,7 @@ _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	dvobj->padapters[dvobj->iface_nums++] = padapter;
 	padapter->iface_id = IFACE_ID0;
 
-#if defined(CONFIG_CONCURRENT_MODE) || defined(CONFIG_DUALMAC_CONCURRENT)
+#if defined(CONFIG_CONCURRENT_MODE)
 	//set adapter_type/iface type for primary padapter
 	padapter->isprimary = _TRUE;
 	padapter->adapter_type = PRIMARY_ADAPTER;

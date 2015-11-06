@@ -361,7 +361,7 @@ u8 halbtcoutsrc_IsWifiBusy(PADAPTER padapter)
 			return _TRUE;
 	}
 
-#if defined(CONFIG_CONCURRENT_MODE) || defined(CONFIG_DUALMAC_CONCURRENT)
+#if defined(CONFIG_CONCURRENT_MODE)
 	pmlmepriv = &padapter->pbuddy_adapter->mlmepriv;
 
 	if (check_fwstate(pmlmepriv, WIFI_ASOC_STATE) == _TRUE)

@@ -1335,9 +1335,6 @@ void rtw_surveydone_event_callback(_adapter	*adapter, u8 *pbuf)
 #ifdef CONFIG_CONCURRENT_MODE
 	rtw_os_xmit_schedule(adapter->pbuddy_adapter);
 #endif
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	dc_resume_xmit(adapter);
-#endif
 
 #ifdef CONFIG_DRVEXT_MODULE_WSC
 	drvext_surveydone_callback(&adapter->drvextpriv);

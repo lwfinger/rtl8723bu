@@ -293,10 +293,6 @@ struct registry_priv
 	u8 fw_iol; //enable iol without other concern
 #endif
 
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	u8	dmsp;//0:disable,1:enable
-#endif
-
 #ifdef CONFIG_80211D
 	u8 enable80211d;
 #endif
@@ -913,7 +909,7 @@ struct _ADAPTER{
 	//for PRIMARY_ADAPTER(IFACE_ID0) can directly refer to if1 in struct dvobj_priv
 	_adapter *pbuddy_adapter;
 
-#if defined(CONFIG_CONCURRENT_MODE) || defined(CONFIG_DUALMAC_CONCURRENT)
+#if defined(CONFIG_CONCURRENT_MODE)
 	u8 isprimary; //is primary adapter or not
 	//notes:
 	// if isprimary is true, the adapter_type value is 0, iface_id is IFACE_ID0 for PRIMARY_ADAPTER
@@ -921,16 +917,12 @@ struct _ADAPTER{
 	// refer to iface_id if iface_nums>2 and isprimary is false and the adapter_type value is 0xff.
 	u8 adapter_type;//used only in  two inteface case(PRIMARY_ADAPTER and SECONDARY_ADAPTER) .
 	u8 iface_type; //interface port type, it depends on HW port
-#endif //CONFIG_CONCURRENT_MODE || CONFIG_DUALMAC_CONCURRENT
+#endif //CONFIG_CONCURRENT_MODE
 
 	//extend to support multi interface
        //IFACE_ID0 is equals to PRIMARY_ADAPTER
        //IFACE_ID1 is equals to SECONDARY_ADAPTER
 	u8 iface_id;
-
-#ifdef CONFIG_DUALMAC_CONCURRENT
-	u8 DualMacConcurrent; // 1: DMSP 0:DMDP
-#endif
 
 #ifdef CONFIG_BR_EXT
 	spinlock_t 			br_ext_lock;
