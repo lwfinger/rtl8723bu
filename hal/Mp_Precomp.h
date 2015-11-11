@@ -36,18 +36,7 @@
 #endif
 
 #include "HalBtcOutSrc.h"
-#include "HalBtc8188c2Ant.h"
-#include "HalBtc8192d2Ant.h"
-#include "HalBtc8192e1Ant.h"
-#include "HalBtc8192e2Ant.h"
-#include "HalBtc8723a1Ant.h"
-#include "HalBtc8723a2Ant.h"
 #include "HalBtc8723b1Ant.h"
 #include "HalBtc8723b2Ant.h"
-#include "HalBtc8812a1Ant.h"
-#include "HalBtc8812a2Ant.h"
-#include "HalBtc8821a1Ant.h"
-#include "HalBtc8821a2Ant.h"
-#include "HalBtc8821aCsr2Ant.h"
 
 #endif // __MP_PRECOMP_H__
