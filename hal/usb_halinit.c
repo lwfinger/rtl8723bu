@@ -22,8 +22,6 @@
 
 #include <rtl8723b_hal.h>
 
-
-
 static void _dbg_dump_macreg(_adapter *padapter)
 {
 	u32 offset = 0;
@@ -70,7 +68,7 @@ _ConfigChipOutEP_8723(
 				break;
 
 	}
-	DBG_871X("%s OutEpQueueSel(0x%02x), OutEpNumber(%d) \n",__FUNCTION__,pHalData->OutEpQueueSel,pHalData->OutEpNumber );
+	DBG_871X("%s OutEpQueueSel(0x%02x), OutEpNumber(%d) \n",__func__,pHalData->OutEpQueueSel,pHalData->OutEpNumber );
 
 	}
 
@@ -167,17 +165,17 @@ static u8 _InitPowerOn_8723BU(PADAPTER padapter)
 	// Switch the control of EESK, EECS to RFC for DPDT or Antenna switch
 	value16 |= BIT(11); // BIT_EEPRPAD_RFE_CTRL_EN
 	rtw_write16(padapter, REG_PWR_DATA, value16);
-	//DBG_8192C("%s: REG_PWR_DATA(0x%x)=0x%04X\n", __FUNCTION__, REG_PWR_DATA, rtw_read16(padapter, REG_PWR_DATA));
+	//DBG_8192C("%s: REG_PWR_DATA(0x%x)=0x%04X\n", __func__, REG_PWR_DATA, rtw_read16(padapter, REG_PWR_DATA));
 
 	value32 = rtw_read32(padapter, REG_LEDCFG0);
 	value32 |= BIT(23); // DPDT_SEL_EN, 1 for SW control
 	rtw_write32(padapter, REG_LEDCFG0, value32);
-	//DBG_8192C("%s: REG_LEDCFG0(0x%x)=0x%08X\n", __FUNCTION__, REG_LEDCFG0, rtw_read32(padapter, REG_LEDCFG0));
+	//DBG_8192C("%s: REG_LEDCFG0(0x%x)=0x%08X\n", __func__, REG_LEDCFG0, rtw_read32(padapter, REG_LEDCFG0));
 
 	value8 = rtw_read8(padapter, REG_PAD_CTRL1_8723B);
 	value8 &= ~BIT(0); // BIT_SW_DPDT_SEL_DATA, DPDT_SEL default configuration
 	rtw_write8(padapter, REG_PAD_CTRL1_8723B, value8);
-	//DBG_8192C("%s: REG_PAD_CTRL1(0x%x)=0x%02X\n", __FUNCTION__, REG_PAD_CTRL1_8723B, rtw_read8(padapter, REG_PAD_CTRL1_8723B));
+	//DBG_8192C("%s: REG_PAD_CTRL1(0x%x)=0x%02X\n", __func__, REG_PAD_CTRL1_8723B, rtw_read8(padapter, REG_PAD_CTRL1_8723B));
 #endif // CONFIG_BT_COEXIST
 
 	return status;
@@ -836,7 +834,7 @@ usb_AggSettingRxUpdate(
 		aggrx |= agg_size;
 		aggrx |= (pHalData->UsbRxAggPageTimeout << 8);
 		DBG_8192C("%s: RX Agg-DMA mode, size=%dKB, timeout=%dus\n",
-			__FUNCTION__, agg_size, pHalData->UsbRxAggPageTimeout*32);
+			__func__, agg_size, pHalData->UsbRxAggPageTimeout*32);
 		break;
 
 	case USB_RX_AGG_USB:
@@ -853,12 +851,12 @@ usb_AggSettingRxUpdate(
 		aggrx |= agg_size;
 		aggrx |= (pHalData->UsbRxAggBlockTimeout << 8);
 		DBG_8192C("%s: RX Agg-USB mode, size=%dKB, timeout=%dus\n",
-			__FUNCTION__, agg_size*4, pHalData->UsbRxAggBlockTimeout*32);
+			__func__, agg_size*4, pHalData->UsbRxAggBlockTimeout*32);
 		break;
 
 	case USB_RX_AGG_DISABLE:
 	default:
-		DBG_8192C("%s: RX Aggregation Disable!\n", __FUNCTION__);
+		DBG_8192C("%s: RX Aggregation Disable!\n", __func__);
 		break;
 	}
 #endif // CONFIG_USB_RX_AGGREGATION
@@ -1546,7 +1544,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 exit:
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_END);
 
-	DBG_871X("%s in %dms\n", __FUNCTION__, rtw_get_passing_time_ms(init_start_time));
+	DBG_871X("%s in %dms\n", __func__, rtw_get_passing_time_ms(init_start_time));
 
 	#ifdef DBG_HAL_INIT_PROFILING
 	hal_init_stages_timestamp[HAL_INIT_STAGES_END]=rtw_get_current_time();
@@ -1768,7 +1766,7 @@ _ResetDigitalProcedure1(
 			{
 				u8 val;
 				if( (val=rtw_read8(Adapter, REG_MCUFWDL)))
-					DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
+					DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __func__, __LINE__, val);
 			}
 			#endif
 
@@ -1799,7 +1797,7 @@ _ResetDigitalProcedure1(
 				}
 
 				if(retry_cnts >= 100){
-					DBG_8192C("%s #####=> 8051 reset failed!.........................\n", __FUNCTION__);
+					DBG_8192C("%s #####=> 8051 reset failed!.........................\n", __func__);
 					// if 8051 reset fail we trigger GPIO 0 for LA
 					//PlatformEFIOWrite4Byte(	Adapter,
 					//						REG_GPIO_PIN_CTRL,
@@ -1809,22 +1807,22 @@ _ResetDigitalProcedure1(
 					rtw_mdelay_os(10);
 				}
 				else {
-					//DBG_871X("%s =====> 8051 reset success (%d) .\n", __FUNCTION__, retry_cnts);
+					//DBG_871X("%s =====> 8051 reset success (%d) .\n", __func__, retry_cnts);
 				}
 			}
 			else {
-				DBG_871X("%s =====> 8051 in RAM but !Adapter->bFWReady\n", __FUNCTION__);
+				DBG_871X("%s =====> 8051 in RAM but !Adapter->bFWReady\n", __func__);
 			}
 		}
 		else{
-			//DBG_871X("%s =====> 8051 in ROM.\n", __FUNCTION__);
+			//DBG_871X("%s =====> 8051 in ROM.\n", __func__);
 		}
 
 		#ifdef DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE
 		{
 			u8 val;
 			if( (val=rtw_read8(Adapter, REG_MCUFWDL)))
-				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __FUNCTION__, __LINE__, val);
+				DBG_871X("DBG_SHOW_MCUFWDL_BEFORE_51_ENABLE %s:%d REG_MCUFWDL:0x%02x\n", __func__, __LINE__, val);
 		}
 		#endif
 
@@ -2010,7 +2008,7 @@ u32 rtl8723bu_hal_deinit(PADAPTER padapter)
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
 
-	DBG_8192C("==> %s\n", __FUNCTION__);
+	DBG_8192C("==> %s\n", __func__);
 
 
 	// 2011/02/18 To Fix RU LNA  power leakage problem. We need to execute below below in
@@ -2095,7 +2093,7 @@ unsigned int rtl8723bu_inirp_deinit(PADAPTER Adapter)
 	rtw_read_port_cancel(Adapter);
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	pHalData->IntrMask[0]=rtw_read32(Adapter, REG_USB_HIMR);
-	MSG_8192C("%s pHalData->IntrMask = 0x%04x\n",__FUNCTION__, pHalData->IntrMask[0]);
+	MSG_8192C("%s pHalData->IntrMask = 0x%04x\n",__func__, pHalData->IntrMask[0]);
 	pHalData->IntrMask[0]=0x0;
 	rtw_write32(Adapter, REG_USB_HIMR,pHalData->IntrMask[0]);
 	RT_TRACE(_module_hci_hal_init_c_,_drv_info_,("\n <=== usb_rx_deinit \n"));
@@ -2223,7 +2221,7 @@ _ReadMACAddress(
 		//sMacAddr[5] = (u8)GetRandomNumber(1, 254);
 		_rtw_memcpy(pEEPROM->mac_addr, sMacAddr, ETH_ALEN);
 	}
-	DBG_8192C("%s MAC Address from EFUSE = "MAC_FMT"\n",__FUNCTION__, MAC_ARG(pEEPROM->mac_addr));
+	DBG_8192C("%s MAC Address from EFUSE = "MAC_FMT"\n",__func__, MAC_ARG(pEEPROM->mac_addr));
 	//NicIFSetMacAddress(Adapter, Adapter->PermanentAddress);
 	//RT_PRINT_ADDR(COMP_INIT|COMP_EFUSE, DBG_LOUD, "MAC Addr: %s", Adapter->PermanentAddress);
 
@@ -2381,7 +2379,7 @@ static void _ReadPSSetting(IN PADAPTER Adapter,IN u8*PROMContent,IN u8	AutoloadF
 		//if(SUPPORT_HW_RADIO_DETECT(Adapter))
 			//Adapter->registrypriv.usbss_enable = pwrctl->bSupportRemoteWakeup ;
 
-		DBG_8192C("%s...bHWPwrPindetect(%x)-bHWPowerdown(%x) ,bSupportRemoteWakeup(%x)\n",__FUNCTION__,
+		DBG_8192C("%s...bHWPwrPindetect(%x)-bHWPowerdown(%x) ,bSupportRemoteWakeup(%x)\n",__func__,
 			pwrctl->bHWPwrPindetect, pwrctl->bHWPowerdown, pwrctl->bSupportRemoteWakeup);
 
 		DBG_8192C("### PS params=>  power_mgnt(%x),usbss_enable(%x) ###\n",Adapter->registrypriv.power_mgnt,Adapter->registrypriv.usbss_enable);
@@ -2630,7 +2628,7 @@ InitAdapterVariablesByPROM_8723BU(
 	//hal_CustomizedBehavior_8723U(Adapter);
 
 //	Adapter->bDongle = (PROMContent[EEPROM_EASY_REPLACEMENT] == 1)? 0: 1;
-	DBG_8192C("%s(): REPLACEMENT = %x\n",__FUNCTION__,padapter->bDongle);
+	DBG_8192C("%s(): REPLACEMENT = %x\n",__func__,padapter->bDongle);
 }
 
 static void _ReadPROMContent(
@@ -2725,7 +2723,7 @@ static int _ReadAdapterInfo8723BU(PADAPTER	Adapter)
 
 	_InitOtherVariable(Adapter);
 
-	//MSG_8192C("%s()(done), rf_chip=0x%x, rf_type=0x%x\n",  __FUNCTION__, pHalData->rf_chip, pHalData->rf_type);
+	//MSG_8192C("%s()(done), rf_chip=0x%x, rf_type=0x%x\n",  __func__, pHalData->rf_chip, pHalData->rf_type);
 
 	MSG_8192C("<==== _ReadAdapterInfo8723BU in %d ms\n", rtw_get_passing_time_ms(start));
 
