@@ -22,20 +22,18 @@
 #include "odm_precomp.h"
 
 
-#define		CALCULATE_SWINGTALBE_OFFSET(_offset, _direction, _size, _deltaThermal) \
-					do {\
-						for(_offset = 0; _offset < _size; _offset++)\
-						{\
-							if(_deltaThermal < thermalThreshold[_direction][_offset])\
-							{\
-								if(_offset != 0)\
-									_offset--;\
-								break;\
-							}\
-						}			\
-						if(_offset >= _size)\
-							_offset = _size-1;\
-					} while(0)
+#define	CALCULATE_SWINGTALBE_OFFSET(_offset, _direction, _size, _deltaThermal) \
+do {\
+	for(_offset = 0; _offset < _size; _offset++) {	\
+		if(_deltaThermal < thermalThreshold[_direction][_offset]) { \
+			if (_offset != 0)\
+				_offset--;\
+				break;\
+		}\
+	}			\
+	if(_offset >= _size)\
+		_offset = _size-1;\
+} while(0)
 
 
 void ConfigureTxpowerTrack(
