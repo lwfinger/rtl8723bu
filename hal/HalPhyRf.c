@@ -109,22 +109,14 @@ ODM_ClearTxPowerTrackingState(
 }
 
 VOID
-ODM_TXPowerTrackingCallback_ThermalMeter(
-#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
-	IN PDM_ODM_T		pDM_Odm
-#else
-	IN PADAPTER	Adapter
-#endif
-	)
+ODM_TXPowerTrackingCallback_ThermalMeter(IN PADAPTER Adapter)
 {
 
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
+#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	PDM_ODM_T		pDM_Odm = &pHalData->DM_OutSrc;
-	#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
+#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PDM_ODM_T		pDM_Odm = &pHalData->odmpriv;
-	#endif
 #endif
 
 	u1Byte			ThermalValue = 0, delta, delta_LCK, delta_IQK, p = 0, i = 0;
@@ -393,12 +385,7 @@ ODM_TXPowerTrackingCallback_ThermalMeter(
 				pDM_Odm->RFCalibrateInfo.PowerIndexOffset[ODM_RF_PATH_B], delta, ThermalValue, pHalData->EEPROMThermalMeter, pDM_Odm->RFCalibrateInfo.ThermalValue));
 
 		}
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-		if (ThermalValue > pHalData->EEPROMThermalMeter)
-#else
-		if (ThermalValue > pDM_Odm->priv->pmib->dot11RFEntry.ther)
-#endif
-		{
+		if (ThermalValue > pHalData->EEPROMThermalMeter) {
 			ODM_RT_TRACE(pDM_Odm,ODM_COMP_TX_PWR_TRACK, ODM_DBG_LOUD,
 				("Temperature(%d) higher than PG value(%d)\n", ThermalValue, pHalData->EEPROMThermalMeter));
 
@@ -447,14 +434,12 @@ ODM_TXPowerTrackingCallback_ThermalMeter(
 		pDM_Odm->RFCalibrateInfo.ThermalValue = ThermalValue;         //Record last Power Tracking Thermal Value
 
 	}
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
 #if (RTL8723B_SUPPORT == 0)
 	// Delta temperature is equal to or larger than 20 centigrade (When threshold is 8).
 	if ((delta_IQK >= c.Threshold_IQK)) {
 		if ( ! pDM_Odm->RFCalibrateInfo.bIQKInProgress)
 			(*c.DoIQK)(pDM_Odm, delta_IQK, ThermalValue, 8);
 	}
-#endif
 #endif
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_TX_PWR_TRACK, ODM_DBG_LOUD,("<===ODM_TXPowerTrackingCallback_ThermalMeter\n"));
@@ -484,26 +469,22 @@ ODM_ResetIQKResult(
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,("PHY_ResetIQKResult:: settings regs %d default regs %d\n", (u4Byte)(sizeof(pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting)/sizeof(IQK_MATRIX_REGS_SETTING)), IQK_Matrix_Settings_NUM));
 	//0xe94, 0xe9c, 0xea4, 0xeac, 0xeb4, 0xebc, 0xec4, 0xecc
 
-	for(i = 0; i < IQK_Matrix_Settings_NUM; i++)
-	{
-		{
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][0] =
-				pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][2] =
-				pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][4] =
-				pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][6] = 0x100;
+	for (i = 0; i < IQK_Matrix_Settings_NUM; i++) {
+		pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][0] =
+			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][2] =
+			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][4] =
+			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][6] = 0x100;
 
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][1] =
-				pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][3] =
-				pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][5] =
-				pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][7] = 0x0;
+		pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][1] =
+			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][3] =
+			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][5] =
+			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][7] = 0x0;
 
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].bIQKDone = FALSE;
+		pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].bIQKDone = FALSE;
 
-		}
 	}
-
 }
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
+
 u1Byte ODM_GetRightChnlPlaceforIQK(u1Byte chnl)
 {
 	u1Byte	channel_all[ODM_TARGET_CHNL_NUM_2G_5G] =
@@ -524,4 +505,3 @@ u1Byte ODM_GetRightChnlPlaceforIQK(u1Byte chnl)
 	return 0;
 
 }
-#endif
