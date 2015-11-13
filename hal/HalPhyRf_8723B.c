@@ -2764,9 +2764,6 @@ PHY_IQCalibrate_8723B(IN PADAPTER pAdapter, IN BOOLEAN bReCovery,
 	if(bSingleTone || bCarrierSuppression)
 		return;
 
-#if DISABLE_BB_RF
-	return;
-#endif
 	if (pDM_Odm->RFCalibrateInfo.bIQKInProgress)
 		return;
 
@@ -3022,10 +3019,6 @@ PHY_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm)
 #endif
 
 
-#if DISABLE_BB_RF
-	return;
-#endif
-
 	if (!(pDM_Odm->SupportAbility & ODM_RF_CALIBRATION)) {
 		return;
 	}
@@ -3060,9 +3053,6 @@ PHY_APCalibrate_8723B(IN PADAPTER pAdapter, IN s1Byte delta)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	PDM_ODM_T	pDM_Odm = &pHalData->odmpriv;
-#if DISABLE_BB_RF
-	return;
-#endif
 
 	return;
 
@@ -3082,6 +3072,7 @@ PHY_APCalibrate_8723B(IN PADAPTER pAdapter, IN s1Byte delta)
 		phy_APCalibrate_8723B(pAdapter, delta, FALSE);
 	}
 }
+
 VOID phy_SetRFPathSwitch_8723B(IN PADAPTER pAdapter,
 			       IN BOOLEAN bMain, IN BOOLEAN is2T)
 {
@@ -3094,11 +3085,8 @@ VOID phy_SetRFPathSwitch_8723B(IN PADAPTER pAdapter,
 		ODM_SetBBReg(pDM_Odm, 0x92C, bMaskDWord, 0x2);
 	}
 }
+
 VOID PHY_SetRFPathSwitch_8723B(IN PADAPTER pAdapter, IN BOOLEAN bMain)
 {
-#if DISABLE_BB_RF
-	return;
-#endif
-
 	phy_SetRFPathSwitch_8723B(pAdapter, bMain, TRUE);
 }

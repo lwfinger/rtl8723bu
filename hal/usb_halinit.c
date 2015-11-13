@@ -918,10 +918,6 @@ static VOID _BBTurnOnBlock(
 	IN	PADAPTER		Adapter
 	)
 {
-#if (DISABLE_BB_RF)
-	return;
-#endif
-
 	PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bCCKEn, 0x1);
 	PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bOFDMEn, 0x1);
 }
@@ -2680,17 +2676,11 @@ _InitOtherVariable(
 }
 
 static VOID
-_ReadRFType(
-	IN	PADAPTER	Adapter
-	)
+_ReadRFType(IN PADAPTER Adapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-#if DISABLE_BB_RF
-	pHalData->rf_chip = RF_PSEUDO_11N;
-#else
 	pHalData->rf_chip = RF_6052;
-#endif
 }
 
 

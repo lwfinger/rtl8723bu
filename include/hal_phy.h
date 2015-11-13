@@ -21,17 +21,10 @@
 #define __HAL_PHY_H__
 
 
-#if DISABLE_BB_RF
-#define	HAL_FW_ENABLE				0
-#define	HAL_MAC_ENABLE			0
-#define	HAL_BB_ENABLE				0
-#define	HAL_RF_ENABLE				0
-#else // FPGA_PHY and ASIC
-#define		HAL_FW_ENABLE				1
-#define	HAL_MAC_ENABLE			1
+#define HAL_FW_ENABLE				1
+#define	HAL_MAC_ENABLE				1
 #define	HAL_BB_ENABLE				1
 #define	HAL_RF_ENABLE				1
-#endif
 
 #define	RF6052_MAX_TX_PWR			0x3F
 #define	RF6052_MAX_REG_88E			0xFF
