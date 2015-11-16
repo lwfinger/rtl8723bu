@@ -182,39 +182,49 @@ __inline static _list	*get_list_head(_queue	*queue)
 	return (&(queue->queue));
 }
 
+extern ulong lock_jiffies;
+extern ulong locked_jiffies;
+extern ulong lock_jiffies_bh;
+extern ulong locked_jiffies_bh;
 
 #define LIST_CONTAINOR(ptr, type, member) \
         ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
 
-__inline static void _enter_critical(spinlock_t *plock, _irqL *pirqL)
-{
-	spin_lock_irqsave(plock, *pirqL);
-}
+#define SPIN_LOCK(_LOCK, _IRQL)					\
+	{							\
+		_LOCK##_set = jiffies;				\
+		spin_lock_irqsave(&_LOCK, *_IRQL);		\
+		if (jiffies - _LOCK##_set > lock_jiffies) {	\
+			lock_jiffies = jiffies - _LOCK##_set;	\
+			pr_info("ms waiting to acquire lock  = %d\n", jiffies_to_msecs(lock_jiffies)); \
+		}						\
+	}
 
-__inline static void _exit_critical(_lock *plock, _irqL *pirqL)
-{
-	spin_unlock_irqrestore(plock, *pirqL);
-}
-
-extern ulong lock_jiffies;
-extern ulong locked_jiffies;
+#define SPIN_UNLOCK(_LOCK, _IRQL)				\
+	{							\
+		spin_unlock_irqrestore(&_LOCK, *_IRQL);		\
+		if (jiffies - _LOCK##_set > locked_jiffies) {	\
+			locked_jiffies = jiffies - _LOCK##_set; \
+			pr_info("ms lock is held  = %d\n", jiffies_to_msecs(locked_jiffies)); \
+		}						\
+	}
 
 #define SPIN_LOCK_BH(_LOCK, _IRQL)				\
 	{							\
 		_LOCK##_set = jiffies;				\
 		spin_lock_bh(&_LOCK);				\
-		if (jiffies - _LOCK##_set > lock_jiffies) {	\
-			lock_jiffies = jiffies - _LOCK##_set;	\
-			pr_info("Lock_jiffies = %d for %s\n", (int)lock_jiffies, "_LOCK##_set"); \
+		if (jiffies - _LOCK##_set > lock_jiffies_bh) {	\
+			lock_jiffies_bh = jiffies - _LOCK##_set;	\
+			pr_info("ms waiting to acquire lock_bh  = %d\n", jiffies_to_msecs(lock_jiffies_bh)); \
 		}						\
 	}
 
 #define SPIN_UNLOCK_BH(_LOCK, _IRQL)				\
 	{							\
 		spin_unlock_bh(&_LOCK);				\
-		if (jiffies - _LOCK##_set > locked_jiffies) {   \
-			locked_jiffies = jiffies - _LOCK##_set;	\
-			pr_info("Locked_jiffies = %d for %s\n", (int)locked_jiffies, "_LOCK##_set"); \
+		if (jiffies - _LOCK##_set > locked_jiffies_bh) {   \
+			locked_jiffies_bh = jiffies - _LOCK##_set;	\
+			pr_info("ms lock_bh is held  = %d\n", jiffies_to_msecs(locked_jiffies_bh)); \
 		}						\
 	}
 

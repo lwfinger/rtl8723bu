@@ -219,12 +219,12 @@ sint	_rtw_enqueue_cmd(_queue *queue, struct cmd_obj *obj)
 		goto exit;
 
 	//SPIN_LOCK_BH(queue->lock, &irqL);
-	_enter_critical(&queue->lock, &irqL);
+	SPIN_LOCK(queue->lock, &irqL);
 
 	rtw_list_insert_tail(&obj->list, &queue->queue);
 
 	//SPIN_UNLOCK_BH(queue->lock, &irqL);
-	_exit_critical(&queue->lock, &irqL);
+	SPIN_UNLOCK(queue->lock, &irqL);
 
 exit:
 
@@ -240,7 +240,7 @@ struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 
 
 
-	_enter_critical(&queue->lock, &irqL);
+	SPIN_LOCK(queue->lock, &irqL);
 	if (rtw_is_list_empty(&(queue->queue)))
 		obj = NULL;
 	else
@@ -249,7 +249,7 @@ struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 		rtw_list_delete(&obj->list);
 	}
 
-	_exit_critical(&queue->lock, &irqL);
+	SPIN_UNLOCK(queue->lock, &irqL);
 
 	return obj;
 }

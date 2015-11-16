@@ -2616,7 +2616,7 @@ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv)
 
 
 
-	_enter_critical(&pfree_queue->lock, &irqL);
+	SPIN_LOCK(pfree_queue->lock, &irqL);
 
 	if(_rtw_queue_empty(pfree_queue) == _TRUE) {
 		pxmitbuf = NULL;
@@ -2658,7 +2658,7 @@ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv)
 
 	}
 
-	_exit_critical(&pfree_queue->lock, &irqL);
+	SPIN_UNLOCK(pfree_queue->lock, &irqL);
 
 
 
@@ -2677,7 +2677,7 @@ s32 rtw_free_xmitbuf_ext(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 		return _FAIL;
 	}
 
-	_enter_critical(&pfree_queue->lock, &irqL);
+	SPIN_LOCK(pfree_queue->lock, &irqL);
 
 	rtw_list_delete(&pxmitbuf->list);
 
@@ -2687,7 +2687,7 @@ s32 rtw_free_xmitbuf_ext(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 	DBG_871X("DBG_XMIT_BUF_EXT FREE no=%d, free_xmit_extbuf_cnt=%d\n",pxmitbuf->no ,pxmitpriv->free_xmit_extbuf_cnt);
 	#endif
 
-	_exit_critical(&pfree_queue->lock, &irqL);
+	SPIN_UNLOCK(pfree_queue->lock, &irqL);
 
 
 
@@ -2705,7 +2705,7 @@ struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 
 	//DBG_871X("+rtw_alloc_xmitbuf\n");
 
-	_enter_critical(&pfree_xmitbuf_queue->lock, &irqL);
+	SPIN_LOCK(pfree_xmitbuf_queue->lock, &irqL);
 
 	if(_rtw_queue_empty(pfree_xmitbuf_queue) == _TRUE) {
 		pxmitbuf = NULL;
@@ -2753,7 +2753,7 @@ struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 	}
 	#endif
 
-	_exit_critical(&pfree_xmitbuf_queue->lock, &irqL);
+	SPIN_UNLOCK(pfree_xmitbuf_queue->lock, &irqL);
 
 
 
@@ -2786,7 +2786,7 @@ s32 rtw_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 	}
 	else
 	{
-		_enter_critical(&pfree_xmitbuf_queue->lock, &irqL);
+		SPIN_LOCK(pfree_xmitbuf_queue->lock, &irqL);
 
 		rtw_list_delete(&pxmitbuf->list);
 
@@ -2797,7 +2797,7 @@ s32 rtw_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
 		#ifdef DBG_XMIT_BUF
 		DBG_871X("DBG_XMIT_BUF FREE no=%d, free_xmitbuf_cnt=%d\n",pxmitbuf->no ,pxmitpriv->free_xmitbuf_cnt);
 		#endif
-		_exit_critical(&pfree_xmitbuf_queue->lock, &irqL);
+		SPIN_UNLOCK(pfree_xmitbuf_queue->lock, &irqL);
 	}
 
 
@@ -3349,21 +3349,21 @@ s32 rtw_xmit_classifier(_adapter *padapter, struct xmit_frame *pxmitframe)
 
 	ptxservq = rtw_get_sta_pending(padapter, psta, pattrib->priority, (u8 *)(&ac_index));
 
-	//_enter_critical(&pstapending->lock, &irqL0);
+	//SPIN_LOCK(pstapending->lock, &irqL0);
 
 	if (rtw_is_list_empty(&ptxservq->tx_pending)) {
 		rtw_list_insert_tail(&ptxservq->tx_pending, get_list_head(phwxmits[ac_index].sta_queue));
 	}
 
-	//_enter_critical(&ptxservq->sta_pending.lock, &irqL1);
+	//SPIN_LOCK(ptxservq->sta_pending.lock, &irqL1);
 
 	rtw_list_insert_tail(&pxmitframe->list, get_list_head(&ptxservq->sta_pending));
 	ptxservq->qcnt++;
 	phwxmits[ac_index].accnt++;
 
-	//_exit_critical(&ptxservq->sta_pending.lock, &irqL1);
+	//SPIN_UNLOCK(ptxservq->sta_pending.lock, &irqL1);
 
-	//_exit_critical(&pstapending->lock, &irqL0);
+	//SPIN_UNLOCK(pstapending->lock, &irqL0);
 
 exit:
 

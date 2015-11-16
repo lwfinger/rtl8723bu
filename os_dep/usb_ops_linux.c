@@ -492,7 +492,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 
 
 /*
-	_enter_critical(&pxmitpriv->lock, &irqL);
+	SPIN_LOCK(pxmitpriv->lock, &irqL);
 
 	pxmitpriv->txirp_cnt--;
 
@@ -522,7 +522,7 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 
 	}
 
-	_exit_critical(&pxmitpriv->lock, &irqL);
+	SPIN_UNLOCK(pxmitpriv->lock, &irqL);
 
 
 	if(pxmitpriv->txirp_cnt==0)
@@ -591,10 +591,10 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 	#endif
 
 check_completion:
-	_enter_critical(&pxmitpriv->lock_sctx, &irqL);
+	SPIN_LOCK(pxmitpriv->lock_sctx, &irqL);
 	rtw_sctx_done_err(&pxmitbuf->sctx,
 	purb->status ? RTW_SCTX_DONE_WRITE_PORT_ERR : RTW_SCTX_DONE_SUCCESS);
-	_exit_critical(&pxmitpriv->lock_sctx, &irqL);
+	SPIN_UNLOCK(pxmitpriv->lock_sctx, &irqL);
 
 	rtw_free_xmitbuf(pxmitpriv, pxmitbuf);
 
@@ -637,7 +637,7 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 		goto exit;
 	}
 
-	_enter_critical(&pxmitpriv->lock, &irqL);
+	SPIN_LOCK(pxmitpriv->lock, &irqL);
 
 	switch(addr)
 	{
@@ -665,7 +665,7 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 			break;
 	}
 
-	_exit_critical(&pxmitpriv->lock, &irqL);
+	SPIN_UNLOCK(pxmitpriv->lock, &irqL);
 
 	purb	= pxmitbuf->pxmit_urb[0];
 

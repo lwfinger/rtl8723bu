@@ -6603,9 +6603,9 @@ s32 dump_mgntframe_and_wait(_adapter *padapter, struct xmit_frame *pmgntframe, i
 	if (ret == _SUCCESS)
 		ret = rtw_sctx_wait(&sctx, __func__);
 
-	_enter_critical(&pxmitpriv->lock_sctx, &irqL);
+	SPIN_LOCK(pxmitpriv->lock_sctx, &irqL);
 	pxmitbuf->sctx = NULL;
-	_exit_critical(&pxmitpriv->lock_sctx, &irqL);
+	SPIN_UNLOCK(pxmitpriv->lock_sctx, &irqL);
 
 	 return ret;
 }
