@@ -90,7 +90,7 @@ struct TDLS_PeerKey {
 struct sta_info {
 
 	spinlock_t	lock;
-	bool lock_set;
+	ulong lock_set;
 	_list	list; //free_sta_queue
 	_list	hash_list; //sta_hash
 	//_list asoc_list; //20061114
@@ -403,7 +403,7 @@ struct	sta_priv {
 	_queue	free_sta_queue;
 
 	spinlock_t sta_hash_lock;
-	bool sta_hash_lock_set;
+	ulong sta_hash_lock_set;
 	_list   sta_hash[NUM_STA];
 	int asoc_sta_count;
 	_queue sleep_q;
@@ -416,9 +416,9 @@ struct	sta_priv {
 	_list asoc_list;
 	_list auth_list;
 	spinlock_t asoc_list_lock;
-	bool asoc_list_lock_set;
+	ulong asoc_list_lock_set;
 	spinlock_t auth_list_lock;
-	bool auth_list_lock_set;
+	ulong auth_list_lock_set;
 	u8 asoc_list_cnt;
 	u8 auth_list_cnt;
 

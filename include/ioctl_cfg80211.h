@@ -85,7 +85,7 @@ struct rtw_wdev_priv
 
 	struct cfg80211_scan_request *scan_request;
 	spinlock_t scan_req_lock;
-	bool scan_req_lock_set;
+	ulong scan_req_lock_set;
 
 	struct net_device *pmon_ndev;//for monitor interface
 	char ifname_mon[IFNAMSIZ + 1]; //interface name for monitor interface

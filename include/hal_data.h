@@ -508,7 +508,7 @@ typedef struct hal_com_data
 	// HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg
 	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
 	spinlock_t		SdioTxFIFOFreePageLock;
-	bool			SdioTxFIFOFreePageLock_set;
+	ulong			sdioTxFIFOFreePageLock_set;
 	u8			SdioTxOQTMaxFreeSpace;
 	u8			SdioTxOQTFreeSpace;
 

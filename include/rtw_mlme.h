@@ -375,8 +375,8 @@ struct tdls_info{
 	u8					collect_pkt_num[MAX_CHANNEL_NUM];
 	spinlock_t				cmd_lock;
 	spinlock_t				hdl_lock;
-	bool					cmd_lock_set;
-	bool					hdl_lock_set;
+	ulong					cmd_lock_set;
+	ulong					hdl_lock_set;
 	u8					watchdog_count;
 	u8					dev_discovered;		//WFD_TDLS: for sigma test
 	u8					tdls_enable;
@@ -405,7 +405,7 @@ enum {
 
 struct mlme_priv {
 	spinlock_t lock;
-	bool lock_set;
+	ulong lock_set;
 	sint	fw_state;	//shall we protect this variable? maybe not necessarily...
 	u8 bScanInProcess;
 	u8	to_join; //flag
@@ -563,7 +563,7 @@ struct mlme_priv {
 */
 
 	spinlock_t	bcn_update_lock;
-	bool bcn_update_lock_set;
+	ulong bcn_update_lock_set;
 	u8		update_bcn;
 
 

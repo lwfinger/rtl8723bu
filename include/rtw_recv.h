@@ -310,7 +310,7 @@ using enter_critical section to protect
 struct recv_priv
 {
 	spinlock_t	lock;
-	bool lock_set;
+	ulong lock_set;
 
 #ifdef CONFIG_RECV_THREAD_MODE
 	_sema	recv_sema;
@@ -415,7 +415,7 @@ struct recv_priv
 struct sta_recv_priv {
 
 	spinlock_t	lock;
-	bool lock_set;
+	ulong lock_set;
 	sint	option;
 
 	//_queue	blk_strms[MAX_RX_NUMBLKS];
@@ -435,7 +435,7 @@ struct recv_buf
 	_list list;
 
 	spinlock_t recvbuf_lock;
-	bool recvbuf_lock_set;
+	ulong recvbuf_lock_set;
 	u32	ref_cnt;
 
 	PADAPTER adapter;

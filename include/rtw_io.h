@@ -323,7 +323,7 @@ Below is the data structure used by _io_handler
 
 struct io_queue {
 	spinlock_t lock;
-	bool lock_set;
+	ulong lock_set;
 	_list	free_ioreqs;
 	_list		pending;		//The io_req list that will be served in the single protocol read/write.
 	_list		processing;

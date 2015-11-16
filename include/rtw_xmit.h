@@ -460,7 +460,7 @@ struct tx_servq {
 struct sta_xmit_priv
 {
 	spinlock_t	lock;
-	bool lock_set;
+	ulong lock_set;
 	sint	option;
 	sint	apsd_setting;	//When bit mask is on, the associated edca queue supports APSD.
 
@@ -507,7 +507,7 @@ enum cmdbuf_type {
 
 struct	xmit_priv	{
 	spinlock_t	lock;
-	bool lock_set;
+	ulong lock_set;
 	_sema	xmit_sema;
 	_sema	terminate_xmitthread_sema;
 
@@ -622,7 +622,7 @@ struct	xmit_priv	{
 	u8 seq_no;
 #endif
 	spinlock_t lock_sctx;
-	bool lock_sctx_set;
+	ulong lock_sctx_set;
 };
 
 extern struct xmit_frame *__rtw_alloc_cmdxmitframe(struct xmit_priv *pxmitpriv,

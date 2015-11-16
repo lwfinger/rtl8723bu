@@ -117,7 +117,7 @@
 	struct	__queue	{
 		struct	list_head	queue;
 		spinlock_t	lock;
-		bool lock_set;
+		ulong lock_set;
 	};
 
 	typedef	struct sk_buff	_pkt;

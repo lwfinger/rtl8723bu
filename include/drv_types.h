@@ -558,7 +558,7 @@ struct rtw_traffic_statistics {
 
 struct cam_ctl_t {
 	spinlock_t lock;
-	bool lock_set;
+	ulong lock_set;
 	u64 bitmap;
 };
 
@@ -586,7 +586,7 @@ struct dvobj_priv
 	//for local/global synchronization
 	//
 	spinlock_t lock;
-	bool lock_set;
+	ulong lock_set;
 	int macid[NUM_STA];
 
 	_mutex hw_init_mutex;
@@ -680,7 +680,7 @@ struct dvobj_priv
 	u8	irq_enabled;
 	RT_ISR_CONTENT	isr_content;
 	spinlock_t	irq_th_lock;
-	bool irq_th_lock_set;
+	ulong irq_th_lock_set;
 	//ASPM
 	u8	const_pci_aspm;
 	u8	const_amdpci_aspm;
@@ -787,7 +787,7 @@ struct _ADAPTER{
 	struct	sta_priv	stapriv;
 	struct	security_priv	securitypriv;
 	spinlock_t   security_key_mutex; // add for CONFIG_IEEE80211W, none 11w also can use
-	bool security_key_mutex_set;
+	ulong security_key_mutex_set;
 	struct	registry_priv	registrypriv;
 	struct	eeprom_priv eeprompriv;
 	struct	led_priv	ledpriv;
@@ -926,7 +926,7 @@ struct _ADAPTER{
 
 #ifdef CONFIG_BR_EXT
 	spinlock_t 			br_ext_lock;
-	bool br_ext_lock_set;
+	ulong br_ext_lock_set;
 	struct nat25_network_db_entry	*nethash[NAT25_HASH_SIZE];
 	int				pppoe_connection_in_progress;
 	unsigned char			pppoe_addr[MACADDRLEN];
