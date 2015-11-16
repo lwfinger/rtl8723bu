@@ -325,12 +325,10 @@ struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 
 	pfree_sta_queue = &pstapriv->free_sta_queue;
 
-	//SPIN_LOCK_BH((pfree_sta_queue->lock), &irqL);
-	SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL2);
+	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL2);
 	if (_rtw_queue_empty(pfree_sta_queue) == _TRUE)
 	{
-		//SPIN_UNLOCK_BH((pfree_sta_queue->lock), &irqL);
-		SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL2);
+		SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL2);
 		psta = NULL;
 	}
 	else
@@ -338,8 +336,6 @@ struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 		psta = LIST_CONTAINOR(get_next(&pfree_sta_queue->queue), struct sta_info, list);
 
 		rtw_list_delete(&(psta->list));
-
-		//SPIN_UNLOCK_BH((pfree_sta_queue->lock), &irqL);
 
 		tmp_aid = psta->aid;
 
@@ -360,13 +356,9 @@ struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 		}
 		phash_list = &(pstapriv->sta_hash[index]);
 
-		//SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL2);
-
 		rtw_list_insert_tail(&psta->hash_list, phash_list);
 
 		pstapriv->asoc_sta_count ++ ;
-
-		//SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL2);
 
 // Commented by Albert 2009/08/13
 // For the SMC router, the sequence number of first packet of WPS handshake will be 0.
@@ -427,13 +419,9 @@ struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 
 exit:
 
-	SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL2);
-
-
+	SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL2);
 
 	return psta;
-
-
 }
 
 
@@ -475,40 +463,32 @@ u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta)
 	psta->sleepq_len = 0;
 
 	//vo
-	//SPIN_LOCK_BH((pxmitpriv->vo_pending.lock), &irqL0);
 	rtw_free_xmitframe_queue( pxmitpriv, &pstaxmitpriv->vo_q.sta_pending);
 	rtw_list_delete(&(pstaxmitpriv->vo_q.tx_pending));
 	phwxmit = pxmitpriv->hwxmits;
 	phwxmit->accnt -= pstaxmitpriv->vo_q.qcnt;
 	pstaxmitpriv->vo_q.qcnt = 0;
-	//SPIN_UNLOCK_BH((pxmitpriv->vo_pending.lock), &irqL0);
 
 	//vi
-	//SPIN_LOCK_BH((pxmitpriv->vi_pending.lock), &irqL0);
 	rtw_free_xmitframe_queue( pxmitpriv, &pstaxmitpriv->vi_q.sta_pending);
 	rtw_list_delete(&(pstaxmitpriv->vi_q.tx_pending));
 	phwxmit = pxmitpriv->hwxmits+1;
 	phwxmit->accnt -= pstaxmitpriv->vi_q.qcnt;
 	pstaxmitpriv->vi_q.qcnt = 0;
-	//SPIN_UNLOCK_BH((pxmitpriv->vi_pending.lock), &irqL0);
 
 	//be
-	//SPIN_LOCK_BH((pxmitpriv->be_pending.lock), &irqL0);
 	rtw_free_xmitframe_queue( pxmitpriv, &pstaxmitpriv->be_q.sta_pending);
 	rtw_list_delete(&(pstaxmitpriv->be_q.tx_pending));
 	phwxmit = pxmitpriv->hwxmits+2;
 	phwxmit->accnt -= pstaxmitpriv->be_q.qcnt;
 	pstaxmitpriv->be_q.qcnt = 0;
-	//SPIN_UNLOCK_BH((pxmitpriv->be_pending.lock), &irqL0);
 
 	//bk
-	//SPIN_LOCK_BH((pxmitpriv->bk_pending.lock), &irqL0);
 	rtw_free_xmitframe_queue( pxmitpriv, &pstaxmitpriv->bk_q.sta_pending);
 	rtw_list_delete(&(pstaxmitpriv->bk_q.tx_pending));
 	phwxmit = pxmitpriv->hwxmits+3;
 	phwxmit->accnt -= pstaxmitpriv->bk_q.qcnt;
 	pstaxmitpriv->bk_q.qcnt = 0;
-	//SPIN_UNLOCK_BH((pxmitpriv->bk_pending.lock), &irqL0);
 
 	SPIN_UNLOCK_BH(pxmitpriv->lock, &irqL0);
 
@@ -622,16 +602,11 @@ u32	rtw_free_stainfo(_adapter *padapter , struct sta_info *psta)
 
 	 _rtw_spinlock_free(&psta->lock);
 
-	//SPIN_LOCK_BH((pfree_sta_queue->lock), &irqL0);
 	rtw_list_insert_tail(&psta->list, get_list_head(pfree_sta_queue));
-	//SPIN_UNLOCK_BH((pfree_sta_queue->lock), &irqL0);
 
 exit:
 
-
-
 	return _SUCCESS;
-
 }
 
 // free all stainfo which in sta_hash[all]
@@ -790,24 +765,21 @@ u8 rtw_access_ctrl(_adapter *padapter, u8 *mac_addr)
 	struct wlan_acl_pool *pacl_list = &pstapriv->acl_list;
 	_queue	*pacl_node_q =&pacl_list->acl_node_q;
 
-	SPIN_LOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_LOCK_BH(pacl_node_q->lock, &irqL);
 	phead = get_list_head(pacl_node_q);
 	plist = get_next(phead);
-	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
-	{
+	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE) {
 		paclnode = LIST_CONTAINOR(plist, struct rtw_wlan_acl_node, list);
 		plist = get_next(plist);
 
-		if(_rtw_memcmp(paclnode->addr, mac_addr, ETH_ALEN))
-		{
-			if(paclnode->valid == _TRUE)
-			{
+		if(_rtw_memcmp(paclnode->addr, mac_addr, ETH_ALEN)) {
+			if(paclnode->valid == _TRUE) {
 				match = _TRUE;
 				break;
 			}
 		}
 	}
-	SPIN_UNLOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_UNLOCK_BH(pacl_node_q->lock, &irqL);
 
 
 	if(pacl_list->mode == 1)//accept unless in deny list

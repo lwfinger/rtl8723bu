@@ -89,7 +89,7 @@ u8 rtw_do_join(_adapter * padapter)
 
 
 
-	SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 	phead = get_list_head(queue);
 	plist = get_next(phead);
 
@@ -105,7 +105,7 @@ u8 rtw_do_join(_adapter * padapter)
 
 	if(_rtw_queue_empty(queue)== _TRUE)
 	{
-		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
 		//when set_ssid/set_bssid for rtw_do_join(), but scanning queue is empty
@@ -133,7 +133,7 @@ u8 rtw_do_join(_adapter * padapter)
 	else
 	{
 		int select_ret;
-		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		if((select_ret=rtw_select_and_join_from_scanned_queue(pmlmepriv))==_SUCCESS)
 		{
 			pmlmepriv->to_join = _FALSE;

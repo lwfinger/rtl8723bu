@@ -197,10 +197,10 @@ void free_tdls_sta(_adapter *padapter, struct sta_info *ptdls_sta)
 	_irqL irqL;
 
 	//free peer sta_info
-	SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 	if(ptdlsinfo->sta_cnt != 0)
 		ptdlsinfo->sta_cnt--;
-	SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 	if( ptdlsinfo->sta_cnt < (NUM_STA - 2 - 4) )	// -2: AP + BC/MC sta, -4: default key
 	{
 		ptdlsinfo->sta_maximum = _FALSE;
@@ -617,9 +617,9 @@ int issue_tdls_teardown(_adapter *padapter, struct tdls_txmgmt *ptxmgmt, u8 wait
 
 		if( ptdls_sta->timer_flag == 1 )
 		{
-			SPIN_LOCK_BH((padapter->tdlsinfo.hdl_lock), &irqL);
+			SPIN_LOCK_BH(padapter->tdlsinfo.hdl_lock, &irqL);
 			ptdls_sta->timer_flag = 2;
-			SPIN_UNLOCK_BH((padapter->tdlsinfo.hdl_lock), &irqL);
+			SPIN_UNLOCK_BH(padapter->tdlsinfo.hdl_lock, &irqL);
 		}
 		else
 			rtw_tdls_cmd(padapter, ptxmgmt->peer, TDLS_TEAR_STA );

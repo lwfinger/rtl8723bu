@@ -196,14 +196,26 @@ __inline static void _exit_critical(_lock *plock, _irqL *pirqL)
 	spin_unlock_irqrestore(plock, *pirqL);
 }
 
+extern ulong lock_jiffies;
+extern ulong locked_jiffies;
+
 #define SPIN_LOCK_BH(_LOCK, _IRQL)				\
 	{							\
+		_LOCK##_set = jiffies;				\
 		spin_lock_bh(&_LOCK);				\
+		if (jiffies - _LOCK##_set > lock_jiffies) {	\
+			lock_jiffies = jiffies - _LOCK##_set;	\
+			pr_info("Lock_jiffies = %d for %s\n", (int)lock_jiffies, "_LOCK##_set"); \
+		}						\
 	}
 
 #define SPIN_UNLOCK_BH(_LOCK, _IRQL)				\
 	{							\
 		spin_unlock_bh(&_LOCK);				\
+		if (jiffies - _LOCK##_set > locked_jiffies) {   \
+			locked_jiffies = jiffies - _LOCK##_set;	\
+			pr_info("Locked_jiffies = %d for %s\n", (int)locked_jiffies, "_LOCK##_set"); \
+		}						\
 	}
 
 __inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)

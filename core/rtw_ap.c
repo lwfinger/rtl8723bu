@@ -71,9 +71,9 @@ void free_mlme_ap_info(_adapter *padapter)
 
 	//free bc/mc sta_info
 	psta = rtw_get_bcmc_stainfo(padapter);
-	SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 	rtw_free_stainfo(padapter, psta);
-	SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 
 	_rtw_spinlock_free(&pmlmepriv->bcn_update_lock);
@@ -405,9 +405,9 @@ void	expire_timeout_chk(_adapter *padapter)
 
 				SPIN_UNLOCK_BH(pstapriv->auth_list_lock, &irqL);
 
-				SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+				SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 				rtw_free_stainfo(padapter, psta);
-				SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+				SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 				SPIN_LOCK_BH(pstapriv->auth_list_lock, &irqL);
 			}
@@ -1967,7 +1967,7 @@ int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 		return (-1);
 
 
-	SPIN_LOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_LOCK_BH(pacl_node_q->lock, &irqL);
 
 	phead = get_list_head(pacl_node_q);
 	plist = get_next(phead);
@@ -1988,14 +1988,14 @@ int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 		}
 	}
 
-	SPIN_UNLOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_UNLOCK_BH(pacl_node_q->lock, &irqL);
 
 
 	if(added == _TRUE)
 		return ret;
 
 
-	SPIN_LOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_LOCK_BH(pacl_node_q->lock, &irqL);
 
 	for(i=0; i< NUM_ACL; i++)
 	{
@@ -2019,7 +2019,7 @@ int rtw_acl_add_sta(_adapter *padapter, u8 *addr)
 
 	DBG_871X("%s, acl_num=%d\n", __func__, pacl_list->num);
 
-	SPIN_UNLOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_UNLOCK_BH(pacl_node_q->lock, &irqL);
 
 	return ret;
 }
@@ -2037,7 +2037,7 @@ int rtw_acl_remove_sta(_adapter *padapter, u8 *addr)
 
 	DBG_871X("%s(acl_num=%d)=" MAC_FMT "\n", __func__, pacl_list->num, MAC_ARG(addr));
 
-	SPIN_LOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_LOCK_BH(pacl_node_q->lock, &irqL);
 
 	phead = get_list_head(pacl_node_q);
 	plist = get_next(phead);
@@ -2060,7 +2060,7 @@ int rtw_acl_remove_sta(_adapter *padapter, u8 *addr)
 		}
 	}
 
-	SPIN_UNLOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_UNLOCK_BH(pacl_node_q->lock, &irqL);
 
 	DBG_871X("%s, acl_num=%d\n", __func__, pacl_list->num);
 
@@ -2925,9 +2925,9 @@ u8 ap_free_sta(_adapter *padapter, struct sta_info *psta, bool active, u16 reaso
 
 	beacon_updated = bss_cap_update_on_sta_leave(padapter, psta);
 
-	SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 	rtw_free_stainfo(padapter, psta);
-	SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 
 	return beacon_updated;
@@ -3222,7 +3222,7 @@ void stop_ap_mode(_adapter *padapter)
 	padapter->securitypriv.ndisencryptstatus = Ndis802_11WEPDisabled;
 
 	//for ACL
-	SPIN_LOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_LOCK_BH(pacl_node_q->lock, &irqL);
 	phead = get_list_head(pacl_node_q);
 	plist = get_next(phead);
 	while ((rtw_end_of_queue_search(phead, plist)) == _FALSE)
@@ -3239,7 +3239,7 @@ void stop_ap_mode(_adapter *padapter)
 			pacl_list->num--;
 		}
 	}
-	SPIN_UNLOCK_BH((pacl_node_q->lock), &irqL);
+	SPIN_UNLOCK_BH(pacl_node_q->lock, &irqL);
 
 	DBG_871X("%s, free acl_node_queue, num=%d\n", __func__, pacl_list->num);
 
@@ -3249,9 +3249,9 @@ void stop_ap_mode(_adapter *padapter)
 	rtw_free_all_stainfo(padapter);
 
 	psta = rtw_get_bcmc_stainfo(padapter);
-	SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 	rtw_free_stainfo(padapter, psta);
-	SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+	SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 	rtw_init_bcmc_stainfo(padapter);
 

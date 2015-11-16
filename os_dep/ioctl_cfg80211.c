@@ -1994,7 +1994,7 @@ void rtw_cfg80211_surveydone_event_callback(_adapter *padapter)
 	DBG_8192C("%s\n", __func__);
 #endif
 
-	SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 	phead = get_list_head(queue);
 	plist = get_next(phead);
@@ -2020,7 +2020,7 @@ void rtw_cfg80211_surveydone_event_callback(_adapter *padapter)
 
 	}
 
-	SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 }
 
 static int rtw_cfg80211_set_probe_req_wpsp2pie(_adapter *padapter, char *buf, int len)

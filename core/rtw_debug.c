@@ -469,7 +469,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 	s16 notify_noise = 0;
 	u16  index = 0;
 
-	SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 	phead = get_list_head(queue);
 	plist = get_next(phead);
 	if ((!phead) || (!plist))
@@ -508,7 +508,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 			pnetwork->network.Ssid.Ssid);
 		plist = get_next(plist);
 	}
-	SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 	return 0;
 }

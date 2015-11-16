@@ -3024,7 +3024,7 @@ void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv, _queue *pframequeue)
 
 
 
-	SPIN_LOCK_BH((pframequeue->lock), &irqL);
+	SPIN_LOCK_BH(pframequeue->lock, &irqL);
 
 	phead = get_list_head(pframequeue);
 	plist = get_next(phead);
@@ -3039,7 +3039,7 @@ void rtw_free_xmitframe_queue(struct xmit_priv *pxmitpriv, _queue *pframequeue)
 		rtw_free_xmitframe(pxmitpriv,pxmitframe);
 
 	}
-	SPIN_UNLOCK_BH((pframequeue->lock), &irqL);
+	SPIN_UNLOCK_BH(pframequeue->lock, &irqL);
 
 
 }

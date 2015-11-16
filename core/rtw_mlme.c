@@ -1142,15 +1142,15 @@ void rtw_survey_event_callback(_adapter	*adapter, u8 *pbuf)
 			_irqL	irqL;
 
 			_rtw_memcpy(pmlmepriv->cur_network.network.IEs, pnetwork->IEs, 8);
-			SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+			SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 			ibss_wlan = rtw_find_network(&pmlmepriv->scanned_queue,  pnetwork->MacAddress);
 			if(ibss_wlan)
 			{
 				_rtw_memcpy(ibss_wlan->network.IEs , pnetwork->IEs, 8);
-				SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+				SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 				goto exit;
 			}
-			SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+			SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		}
 	}
 
@@ -1463,16 +1463,16 @@ void rtw_free_assoc_resources(_adapter *adapter, int lock_scanned_queue)
 			rtw_tdls_cmd(adapter, myid(&(adapter->eeprompriv)), TDLS_RS_RCR);
 			rtw_reset_tdls_info(adapter);
 			rtw_free_all_stainfo(adapter);
-			SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+			SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 		}
 		else
 #endif //CONFIG_TDLS
 		{
-			SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+			SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 			rtw_free_stainfo(adapter,  psta);
 		}
 
-		SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+		SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 	}
 
@@ -1483,15 +1483,15 @@ void rtw_free_assoc_resources(_adapter *adapter, int lock_scanned_queue)
 		rtw_free_all_stainfo(adapter);
 
 		psta = rtw_get_bcmc_stainfo(adapter);
-		SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+		SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 		rtw_free_stainfo(adapter, psta);
-		SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+		SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 		rtw_init_bcmc_stainfo(adapter);
 	}
 
 	if(lock_scanned_queue)
-		SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 	pwlan = rtw_find_network(&pmlmepriv->scanned_queue, tgt_network->network.MacAddress);
 	if(pwlan)
@@ -1539,7 +1539,7 @@ void rtw_free_assoc_resources(_adapter *adapter, int lock_scanned_queue)
 	}
 
 	if(lock_scanned_queue)
-		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 	adapter->securitypriv.key_mask = 0;
 
@@ -1987,7 +1987,7 @@ void rtw_joinbss_event_prehandle(_adapter *adapter, u8 *pbuf)
 
 	if(pnetwork->join_res > 0)
 	{
-		SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		retry = 0;
 		if (check_fwstate(pmlmepriv,_FW_UNDER_LINKING) )
 		{
@@ -2005,9 +2005,9 @@ void rtw_joinbss_event_prehandle(_adapter *adapter, u8 *pbuf)
 
 					pcur_sta = rtw_get_stainfo(pstapriv, cur_network->network.MacAddress);
 					if(pcur_sta){
-						SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL2);
+						SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL2);
 						rtw_free_stainfo(adapter,  pcur_sta);
-						SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL2);
+						SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL2);
 					}
 
 					ptarget_wlan = rtw_find_network(&pmlmepriv->scanned_queue, pnetwork->network.MacAddress);
@@ -2033,7 +2033,7 @@ void rtw_joinbss_event_prehandle(_adapter *adapter, u8 *pbuf)
 			else
 			{
 				DBG_871X_LEVEL(_drv_always_, "Can't find ptarget_wlan when joinbss_event callback\n");
-				SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+				SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 				goto ignore_joinbss_callback;
 			}
 
@@ -2045,7 +2045,7 @@ void rtw_joinbss_event_prehandle(_adapter *adapter, u8 *pbuf)
 				if(ptarget_sta==NULL)
 				{
 					RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("Can't update stainfo when joinbss_event callback\n"));
-					SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+					SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 					goto ignore_joinbss_callback;
 				}
 			}
@@ -2072,11 +2072,11 @@ void rtw_joinbss_event_prehandle(_adapter *adapter, u8 *pbuf)
 		else
 		{
 			RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,("rtw_joinbss_event_callback err: fw_state:%x", get_fwstate(pmlmepriv)));
-			SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+			SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 			goto ignore_joinbss_callback;
 		}
 
-		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 	}
 	else if(pnetwork->join_res == -4)
@@ -2273,11 +2273,11 @@ void rtw_stassoc_event_callback(_adapter *adapter, u8 *pbuf)
 	{
 		if(adapter->stapriv.asoc_sta_count== 2)
 		{
-			SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+			SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 			ptarget_wlan = rtw_find_network(&pmlmepriv->scanned_queue, cur_network->network.MacAddress);
 			pmlmepriv->cur_network_scanned = ptarget_wlan;
 			if(ptarget_wlan)	ptarget_wlan->fixed = _TRUE;
-			SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+			SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 			// a sta + bc/mc_stainfo (not Ibss_stainfo)
 			rtw_indicate_connect(adapter);
 		}
@@ -2382,14 +2382,14 @@ void rtw_stadel_event_callback(_adapter *adapter, u8 *pbuf)
 		rtw_free_assoc_resources(adapter, 1);
 		rtw_indicate_disconnect(adapter);
 
-		SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		// remove the network entry in scanned_queue
 		pwlan = rtw_find_network(&pmlmepriv->scanned_queue, tgt_network->network.MacAddress);
 		if (pwlan) {
 			pwlan->fixed = _FALSE;
 			rtw_free_network_nolock(adapter, pwlan);
 		}
-		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 #ifdef CONFIG_INTEL_WIDI
 		if (!rtw_to_roam(adapter))
@@ -2403,14 +2403,14 @@ void rtw_stadel_event_callback(_adapter *adapter, u8 *pbuf)
 	      check_fwstate(pmlmepriv,WIFI_ADHOC_STATE))
 	{
 
-		SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
+		SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 		rtw_free_stainfo(adapter,  psta);
-		SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
+		SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 		if(adapter->stapriv.asoc_sta_count== 1) //a sta + bc/mc_stainfo (not Ibss_stainfo)
 		{
 			//rtw_indicate_disconnect(adapter);//removed@20091105
-			SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+			SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 			//free old ibss network
 			//pwlan = rtw_find_network(&pmlmepriv->scanned_queue, pstadel->macaddr);
 			pwlan = rtw_find_network(&pmlmepriv->scanned_queue, tgt_network->network.MacAddress);
@@ -2419,7 +2419,7 @@ void rtw_stadel_event_callback(_adapter *adapter, u8 *pbuf)
 				pwlan->fixed = _FALSE;
 				rtw_free_network_nolock(adapter, pwlan);
 			}
-			SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+			SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 			//re-create ibss
 			pdev_network = &(adapter->registrypriv.dev_network);
 			pibss = adapter->registrypriv.dev_network.MacAddress;
@@ -2916,7 +2916,7 @@ int rtw_select_roaming_candidate(struct mlme_priv *mlme)
 		goto exit;
 	}
 
-	SPIN_LOCK_BH((mlme->scanned_queue.lock), &irqL);
+	SPIN_LOCK_BH(mlme->scanned_queue.lock, &irqL);
 	phead = get_list_head(queue);
 	adapter = (_adapter *)mlme->nic_hdl;
 
@@ -2961,7 +2961,7 @@ int rtw_select_roaming_candidate(struct mlme_priv *mlme)
 
 	ret = _SUCCESS;
 exit:
-	SPIN_UNLOCK_BH((mlme->scanned_queue.lock), &irqL);
+	SPIN_UNLOCK_BH(mlme->scanned_queue.lock, &irqL);
 
 	return ret;
 }
@@ -3059,7 +3059,7 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv )
 
 	adapter = (_adapter *)pmlmepriv->nic_hdl;
 
-	SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 	#ifdef CONFIG_LAYER2_ROAMING
 	if (pmlmepriv->roam_network) {
@@ -3150,7 +3150,7 @@ candidate_exist:
 	ret = rtw_joinbss_cmd(adapter, candidate);
 
 exit:
-	SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 
 

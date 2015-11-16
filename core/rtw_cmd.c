@@ -240,7 +240,6 @@ struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 
 
 
-	//SPIN_LOCK_BH((queue->lock), &irqL);
 	_enter_critical(&queue->lock, &irqL);
 	if (rtw_is_list_empty(&(queue->queue)))
 		obj = NULL;
@@ -250,10 +249,7 @@ struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 		rtw_list_delete(&obj->list);
 	}
 
-	//SPIN_UNLOCK_BH((queue->lock), &irqL);
 	_exit_critical(&queue->lock, &irqL);
-
-
 
 	return obj;
 }
@@ -3645,14 +3641,14 @@ void rtw_createbss_cmd_callback(_adapter *padapter, struct cmd_obj *pcmd)
 		_irqL	irqL;
 
 		pwlan = _rtw_alloc_network(pmlmepriv);
-		SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		if ( pwlan == NULL)
 		{
 			pwlan = rtw_get_oldest_wlan_network(&pmlmepriv->scanned_queue);
 			if( pwlan == NULL)
 			{
 				RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n Error:  can't get pwlan in rtw_joinbss_event_callback \n"));
-				SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+				SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 				goto createbss_cmd_fail;
 			}
 			pwlan->last_scanned = rtw_get_current_time();
@@ -3693,7 +3689,7 @@ void rtw_createbss_cmd_callback(_adapter *padapter, struct cmd_obj *pcmd)
 			//rtw_indicate_disconnect(dev);
 		}
 #endif
-		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		// we will set _FW_LINKED when there is one more sat to join us (rtw_stassoc_event_callback)
 
 	}

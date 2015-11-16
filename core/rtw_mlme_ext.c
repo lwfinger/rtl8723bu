@@ -2576,10 +2576,6 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
-		//SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
-		//rtw_free_stainfo(padapter, psta);
-		//SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
-
 		DBG_871X_LEVEL(_drv_always_, "ap recv deauth reason code(%d) sta:%pM\n",
 				reason, GetAddr2Ptr(pframe));
 
@@ -2674,10 +2670,6 @@ unsigned int OnDisassoc(_adapter *padapter, union recv_frame *precv_frame)
 		_irqL irqL;
 		struct sta_info *psta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
-
-		//SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
-		//rtw_free_stainfo(padapter, psta);
-		//SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
 
 		DBG_871X_LEVEL(_drv_always_, "ap recv disassoc reason code(%d) sta:%pM\n",
 				reason, GetAddr2Ptr(pframe));
@@ -9099,7 +9091,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 	{
 		int i;
 
-		SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 		phead = get_list_head(queue);
 		plist = get_next(phead);
@@ -9133,7 +9125,7 @@ static void issue_action_BSSCoexistPacket(_adapter *padapter)
 
 		}
 
-		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 
 		for(i= 0;i<8;i++)
@@ -10098,7 +10090,7 @@ void start_clnt_join(_adapter* padapter)
 			_irqL irqL;
 			bool has_p2p_ie = _FALSE;
 
-			SPIN_LOCK_BH((padapter->mlmepriv.scanned_queue.lock), &irqL);
+			SPIN_LOCK_BH(padapter->mlmepriv.scanned_queue.lock, &irqL);
 
 			for (pos = get_next(head);!rtw_end_of_queue_search(head, pos); pos = get_next(pos)) {
 
@@ -10116,7 +10108,7 @@ void start_clnt_join(_adapter* padapter)
 				}
 			}
 
-			SPIN_UNLOCK_BH((padapter->mlmepriv.scanned_queue.lock), &irqL);
+			SPIN_UNLOCK_BH(padapter->mlmepriv.scanned_queue.lock, &irqL);
 
 			if (scanned == NULL || rtw_end_of_queue_search(head, pos) || has_p2p_ie == _FALSE)
 			#endif /* CONFIG_P2P */
@@ -13717,7 +13709,6 @@ u8 tdls_hdl(_adapter *padapter, unsigned char *pbuf)
 			return H2C_REJECTED;
 	}
 
-	//SPIN_LOCK_BH((ptdlsinfo->hdl_lock), &irqL);
 	DBG_871X("[%s] option:%d\n", __FUNCTION__, option);
 
 	switch(option){
@@ -13878,8 +13869,6 @@ u8 tdls_hdl(_adapter *padapter, unsigned char *pbuf)
 			break;
 
 	}
-
-	//SPIN_UNLOCK_BH((ptdlsinfo->hdl_lock), &irqL);
 
 	return H2C_SUCCESS;
 #else
