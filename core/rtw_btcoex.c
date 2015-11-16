@@ -322,7 +322,7 @@ void rtw_btcoex_RejectApAggregatedPacket(PADAPTER padapter, u8 enable)
 			struct sta_priv *pstapriv = &padapter->stapriv;
 			int i;
 
-			_enter_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+			SPIN_LOCK_BH(pstapriv->asoc_list_lock, &irqL);
 
 			phead = &pstapriv->asoc_list;
 			plist = get_next(phead);
@@ -338,7 +338,7 @@ void rtw_btcoex_RejectApAggregatedPacket(PADAPTER padapter, u8 enable)
 					peers[peer_num++] = stainfo_offset;
 			}
 
-			_exit_critical_bh(&pstapriv->asoc_list_lock, &irqL);
+			SPIN_UNLOCK_BH(pstapriv->asoc_list_lock, &irqL);
 
 			if (peer_num) {
 				for (i = 0; i < peer_num; i++) {

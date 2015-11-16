@@ -553,7 +553,7 @@ odm_RSSIMonitorCheckCE(
 		struct sta_priv *pstapriv = &Adapter->stapriv;
 		u8 bcast_addr[ETH_ALEN]= {0xff,0xff,0xff,0xff,0xff,0xff};
 
-		_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+		SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 		for(i=0; i< NUM_STA; i++)
 		{
@@ -593,7 +593,7 @@ odm_RSSIMonitorCheckCE(
 
 		}
 
-		_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+		SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 		#endif
 
 		//printk("%s==> sta_cnt(%d)\n",__FUNCTION__,sta_cnt);

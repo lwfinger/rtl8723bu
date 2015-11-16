@@ -197,10 +197,10 @@ void free_tdls_sta(_adapter *padapter, struct sta_info *ptdls_sta)
 	_irqL irqL;
 
 	//free peer sta_info
-	_enter_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+	SPIN_LOCK_BH((pstapriv->sta_hash_lock), &irqL);
 	if(ptdlsinfo->sta_cnt != 0)
 		ptdlsinfo->sta_cnt--;
-	_exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL);
+	SPIN_UNLOCK_BH((pstapriv->sta_hash_lock), &irqL);
 	if( ptdlsinfo->sta_cnt < (NUM_STA - 2 - 4) )	// -2: AP + BC/MC sta, -4: default key
 	{
 		ptdlsinfo->sta_maximum = _FALSE;
@@ -617,9 +617,9 @@ int issue_tdls_teardown(_adapter *padapter, struct tdls_txmgmt *ptxmgmt, u8 wait
 
 		if( ptdls_sta->timer_flag == 1 )
 		{
-			_enter_critical_bh(&(padapter->tdlsinfo.hdl_lock), &irqL);
+			SPIN_LOCK_BH((padapter->tdlsinfo.hdl_lock), &irqL);
 			ptdls_sta->timer_flag = 2;
-			_exit_critical_bh(&(padapter->tdlsinfo.hdl_lock), &irqL);
+			SPIN_UNLOCK_BH((padapter->tdlsinfo.hdl_lock), &irqL);
 		}
 		else
 			rtw_tdls_cmd(padapter, ptxmgmt->peer, TDLS_TEAR_STA );
@@ -977,9 +977,9 @@ int issue_tdls_ch_switch_rsp(_adapter *padapter, u8 *mac_addr)
 	update_tdls_attrib(padapter, pattrib);
 	pattrib->qsel = pattrib->priority;
 /*
-	_enter_critical_bh(&pxmitpriv->lock, &irqL);
+	SPIN_LOCK_BH(pxmitpriv->lock, &irqL);
 	if(xmitframe_enqueue_for_tdls_sleeping_sta(padapter, pmgntframe)==_TRUE){
-		_exit_critical_bh(&pxmitpriv->lock, &irqL);
+		SPIN_UNLOCK_BH(pxmitpriv->lock, &irqL);
 		return _FALSE;
 	}
 */
@@ -1747,7 +1747,7 @@ int On_TDLS_Peer_Traffic_Rsp(_adapter *padapter, union recv_frame *precv_frame)
 			_list	*xmitframe_plist, *xmitframe_phead;
 			struct xmit_frame *pxmitframe=NULL;
 
-			_enter_critical_bh(&ptdls_sta->sleep_q.lock, &irqL);
+			SPIN_LOCK_BH(ptdls_sta->sleep_q.lock, &irqL);
 
 			xmitframe_phead = get_list_head(&ptdls_sta->sleep_q);
 			xmitframe_plist = get_next(xmitframe_phead);
@@ -1796,7 +1796,7 @@ int On_TDLS_Peer_Traffic_Rsp(_adapter *padapter, union recv_frame *precv_frame)
 				ptdls_sta->sleepq_len=0;
 			}
 
-			_exit_critical_bh(&ptdls_sta->sleep_q.lock, &irqL);
+			SPIN_UNLOCK_BH(ptdls_sta->sleep_q.lock, &irqL);
 
 		}
 

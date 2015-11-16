@@ -513,7 +513,7 @@ s32 rtl8723bu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 			break;
 	}
 
-	_enter_critical_bh(&pxmitpriv->lock, &irqL);
+	SPIN_LOCK_BH(pxmitpriv->lock, &irqL);
 
 	xmitframe_phead = get_list_head(&ptxservq->sta_pending);
 	xmitframe_plist = get_next(xmitframe_phead);
@@ -592,7 +592,7 @@ s32 rtl8723bu_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv
 	if (_rtw_queue_empty(&ptxservq->sta_pending) == _TRUE)
 		rtw_list_delete(&ptxservq->tx_pending);
 
-	_exit_critical_bh(&pxmitpriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pxmitpriv->lock, &irqL);
 
 	if ((pfirstframe->attrib.ether_type != 0x0806) &&
 	    (pfirstframe->attrib.ether_type != 0x888e) &&
@@ -744,7 +744,7 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 #endif
 
 
-	_enter_critical_bh(&pxmitpriv->lock, &irqL);
+	SPIN_LOCK_BH(pxmitpriv->lock, &irqL);
 
 	if (rtw_txframes_sta_ac_pending(padapter, pattrib) > 0)
 		goto enqueue;
@@ -761,7 +761,7 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 	if (pxmitbuf == NULL)
 		goto enqueue;
 
-	_exit_critical_bh(&pxmitpriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pxmitpriv->lock, &irqL);
 
 	pxmitframe->pxmitbuf = pxmitbuf;
 	pxmitframe->buf_addr = pxmitbuf->pbuf;
@@ -776,7 +776,7 @@ static s32 pre_xmitframe(_adapter *padapter, struct xmit_frame *pxmitframe)
 
 enqueue:
 	res = rtw_xmitframe_enqueue(padapter, pxmitframe);
-	_exit_critical_bh(&pxmitpriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pxmitpriv->lock, &irqL);
 
 	if (res != _SUCCESS) {
 		RT_TRACE(_module_xmit_osdep_c_, _drv_err_, ("pre_xmitframe: enqueue xmitframe fail\n"));

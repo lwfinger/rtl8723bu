@@ -786,7 +786,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 				FUNC_ADPT_ARG(padapter), msg);
 
 #ifdef CONFIG_TDLS
-			_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 			for(i=0; i< NUM_STA; i++)
 			{
@@ -803,7 +803,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 				}
 			}
 
-			_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 #endif //CONFIG_TDLS
 
 			pwrpriv->pwr_mode = ps_mode;
@@ -857,7 +857,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 				FUNC_ADPT_ARG(padapter), msg);
 
 #ifdef CONFIG_TDLS
-			_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 			for(i=0; i< NUM_STA; i++)
 			{
@@ -874,7 +874,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 				}
 			}
 
-			_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+			SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 #endif //CONFIG_TDLS
 
 #ifdef CONFIG_BT_COEXIST

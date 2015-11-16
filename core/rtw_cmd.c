@@ -218,12 +218,12 @@ sint	_rtw_enqueue_cmd(_queue *queue, struct cmd_obj *obj)
 	if (obj == NULL)
 		goto exit;
 
-	//_enter_critical_bh(&queue->lock, &irqL);
+	//SPIN_LOCK_BH(queue->lock, &irqL);
 	_enter_critical(&queue->lock, &irqL);
 
 	rtw_list_insert_tail(&obj->list, &queue->queue);
 
-	//_exit_critical_bh(&queue->lock, &irqL);
+	//SPIN_UNLOCK_BH(queue->lock, &irqL);
 	_exit_critical(&queue->lock, &irqL);
 
 exit:
@@ -240,7 +240,7 @@ struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 
 
 
-	//_enter_critical_bh(&(queue->lock), &irqL);
+	//SPIN_LOCK_BH((queue->lock), &irqL);
 	_enter_critical(&queue->lock, &irqL);
 	if (rtw_is_list_empty(&(queue->queue)))
 		obj = NULL;
@@ -250,7 +250,7 @@ struct	cmd_obj	*_rtw_dequeue_cmd(_queue *queue)
 		rtw_list_delete(&obj->list);
 	}
 
-	//_exit_critical_bh(&(queue->lock), &irqL);
+	//SPIN_UNLOCK_BH((queue->lock), &irqL);
 	_exit_critical(&queue->lock, &irqL);
 
 
@@ -656,11 +656,11 @@ u32 rtw_enqueue_evt(struct evt_priv *pevtpriv, struct evt_obj *obj)
 		goto exit;
 	}
 
-	_enter_critical_bh(&queue->lock, &irqL);
+	SPIN_LOCK_BH(queue->lock, &irqL);
 
 	rtw_list_insert_tail(&obj->list, &queue->queue);
 
-	_exit_critical_bh(&queue->lock, &irqL);
+	SPIN_UNLOCK_BH(queue->lock, &irqL);
 
 	//rtw_evt_notify_isr(pevtpriv);
 
@@ -678,7 +678,7 @@ struct evt_obj *rtw_dequeue_evt(_queue *queue)
 
 
 
-	_enter_critical_bh(&queue->lock, &irqL);
+	SPIN_LOCK_BH(queue->lock, &irqL);
 
 	if (rtw_is_list_empty(&(queue->queue)))
 		pevtobj = NULL;
@@ -688,7 +688,7 @@ struct evt_obj *rtw_dequeue_evt(_queue *queue)
 		rtw_list_delete(&pevtobj->list);
 	}
 
-	_exit_critical_bh(&queue->lock, &irqL);
+	SPIN_UNLOCK_BH(queue->lock, &irqL);
 
 
 
@@ -3541,9 +3541,9 @@ void rtw_disassoc_cmd_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 	struct	mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 	if (pcmd->res != H2C_SUCCESS) {
-		_enter_critical_bh(&pmlmepriv->lock, &irqL);
+		SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 		set_fwstate(pmlmepriv, _FW_LINKED);
-		_exit_critical_bh(&pmlmepriv->lock, &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 
 		RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n ***Error: disconnect_cmd_callback Fail ***\n."));
 
@@ -3622,7 +3622,7 @@ void rtw_createbss_cmd_callback(_adapter *padapter, struct cmd_obj *pcmd)
 	pnetwork->IELength = le32_to_cpu(pnetwork->IELength);
 #endif
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 
 	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) )
@@ -3645,14 +3645,14 @@ void rtw_createbss_cmd_callback(_adapter *padapter, struct cmd_obj *pcmd)
 		_irqL	irqL;
 
 		pwlan = _rtw_alloc_network(pmlmepriv);
-		_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 		if ( pwlan == NULL)
 		{
 			pwlan = rtw_get_oldest_wlan_network(&pmlmepriv->scanned_queue);
 			if( pwlan == NULL)
 			{
 				RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\n Error:  can't get pwlan in rtw_joinbss_event_callback \n"));
-				_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+				SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 				goto createbss_cmd_fail;
 			}
 			pwlan->last_scanned = rtw_get_current_time();
@@ -3693,14 +3693,14 @@ void rtw_createbss_cmd_callback(_adapter *padapter, struct cmd_obj *pcmd)
 			//rtw_indicate_disconnect(dev);
 		}
 #endif
-		_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 		// we will set _FW_LINKED when there is one more sat to join us (rtw_stassoc_event_callback)
 
 	}
 
 createbss_cmd_fail:
 
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 exit:
 	rtw_free_cmd_obj(pcmd);
 
@@ -3753,13 +3753,13 @@ void rtw_setassocsta_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 
 	psta->aid = psta->mac_id = passocsta_rsp->cam_id;
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 	if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == _TRUE) && (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == _TRUE))
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
 	set_fwstate(pmlmepriv, _FW_LINKED);
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 
 exit:
 	rtw_free_cmd_obj(pcmd);

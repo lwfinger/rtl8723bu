@@ -89,7 +89,7 @@ u8 rtw_do_join(_adapter * padapter)
 
 
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 	phead = get_list_head(queue);
 	plist = get_next(phead);
 
@@ -105,7 +105,7 @@ u8 rtw_do_join(_adapter * padapter)
 
 	if(_rtw_queue_empty(queue)== _TRUE)
 	{
-		_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
 		//when set_ssid/set_bssid for rtw_do_join(), but scanning queue is empty
@@ -133,7 +133,7 @@ u8 rtw_do_join(_adapter * padapter)
 	else
 	{
 		int select_ret;
-		_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+		SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 		if((select_ret=rtw_select_and_join_from_scanned_queue(pmlmepriv))==_SUCCESS)
 		{
 			pmlmepriv->to_join = _FALSE;
@@ -239,7 +239,7 @@ u8 rtw_set_802_11_bssid(_adapter* padapter, u8 *bssid)
 		goto exit;
 	}
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 
 	DBG_871X("Set BSSID under fw_state=0x%08x\n", get_fwstate(pmlmepriv));
@@ -294,7 +294,7 @@ handle_tkip_countermeasure:
 	}
 
 release_mlme_lock:
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 
 exit:
 	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
@@ -326,7 +326,7 @@ u8 rtw_set_802_11_ssid(_adapter* padapter, NDIS_802_11_SSID *ssid)
 		goto exit;
 	}
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 	DBG_871X("Set SSID under fw_state=0x%08x\n", get_fwstate(pmlmepriv));
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == _TRUE) {
@@ -417,7 +417,7 @@ handle_tkip_countermeasure:
 	}
 
 release_mlme_lock:
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 
 exit:
 	RT_TRACE(_module_rtl871x_ioctl_set_c_, _drv_err_,
@@ -460,7 +460,7 @@ u8 rtw_set_802_11_connect(_adapter* padapter, u8 *bssid, NDIS_802_11_SSID *ssid)
 		goto exit;
 	}
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 	DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT"  fw_state=0x%08x\n",
 		FUNC_ADPT_ARG(padapter), get_fwstate(pmlmepriv));
@@ -497,7 +497,7 @@ handle_tkip_countermeasure:
 	}
 
 release_mlme_lock:
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 
 exit:
 
@@ -535,7 +535,7 @@ u8 rtw_set_802_11_infrastructure_mode(_adapter* padapter,
 #endif
 		}
 
-		_enter_critical_bh(&pmlmepriv->lock, &irqL);
+		SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 		if((check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE) ||(*pold_state==Ndis802_11IBSS))
 			rtw_disassoc_cmd(padapter, 0, _TRUE);
@@ -585,7 +585,7 @@ u8 rtw_set_802_11_infrastructure_mode(_adapter* padapter,
 		//RT_TRACE(COMP_OID_SET, DBG_LOUD, ("set_infrastructure: fw_state:%x after changing mode\n",
 		//									get_fwstate(pmlmepriv) ));
 
-		_exit_critical_bh(&pmlmepriv->lock, &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 	}
 
 
@@ -601,7 +601,7 @@ u8 rtw_set_802_11_disassociate(_adapter *padapter)
 
 
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)
 	{
@@ -615,7 +615,7 @@ u8 rtw_set_802_11_disassociate(_adapter *padapter)
 			DBG_871X("%s(): rtw_pwr_wakeup fail !!!\n",__FUNCTION__);
 	}
 
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 
 
 
@@ -661,11 +661,11 @@ u8 rtw_set_802_11_bssid_list_scan(_adapter* padapter, NDIS_802_11_SSID *pssid, i
 			return _SUCCESS;
 		}
 
-		_enter_critical_bh(&pmlmepriv->lock, &irqL);
+		SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
 		res = rtw_sitesurvey_cmd(padapter, pssid, ssid_max_num, NULL, 0);
 
-		_exit_critical_bh(&pmlmepriv->lock, &irqL);
+		SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 	}
 exit:
 

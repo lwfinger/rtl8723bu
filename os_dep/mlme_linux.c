@@ -192,7 +192,7 @@ void rtw_reset_securitypriv( _adapter *adapter )
 	_irqL irqL;
 	struct mlme_ext_priv	*pmlmeext = &adapter->mlmeextpriv;
 
-	_enter_critical_bh(&adapter->security_key_mutex, &irqL);
+	SPIN_LOCK_BH(adapter->security_key_mutex, &irqL);
 
 	if(adapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X)//802.1x
 	{
@@ -244,7 +244,7 @@ void rtw_reset_securitypriv( _adapter *adapter )
 		//}
 	}
 	// add for CONFIG_IEEE80211W, none 11w also can use
-	_exit_critical_bh(&adapter->security_key_mutex, &irqL);
+	SPIN_UNLOCK_BH(adapter->security_key_mutex, &irqL);
 }
 
 void rtw_os_indicate_disconnect( _adapter *adapter )

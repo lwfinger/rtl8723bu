@@ -196,15 +196,15 @@ __inline static void _exit_critical(_lock *plock, _irqL *pirqL)
 	spin_unlock_irqrestore(plock, *pirqL);
 }
 
-__inline static void _enter_critical_bh(_lock *plock, _irqL *pirqL)
-{
-	spin_lock_bh(plock);
-}
+#define SPIN_LOCK_BH(_LOCK, _IRQL)				\
+	{							\
+		spin_lock_bh(&_LOCK);				\
+	}
 
-__inline static void _exit_critical_bh(spinlock_t *plock, _irqL *pirqL)
-{
-	spin_unlock_bh(plock);
-}
+#define SPIN_UNLOCK_BH(_LOCK, _IRQL)				\
+	{							\
+		spin_unlock_bh(&_LOCK);				\
+	}
 
 __inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)
 {

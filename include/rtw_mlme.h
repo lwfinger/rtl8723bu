@@ -728,28 +728,28 @@ __inline static void clr_fwstate(struct mlme_priv *pmlmepriv, sint state)
 {
 	_irqL irqL;
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 	if (check_fwstate(pmlmepriv, state) == _TRUE)
 		pmlmepriv->fw_state ^= state;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 }
 
 __inline static void clr_fwstate_ex(struct mlme_priv *pmlmepriv, sint state)
 {
 	_irqL irqL;
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 	_clr_fwstate_(pmlmepriv, state);
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 }
 
 __inline static void up_scanned_network(struct mlme_priv *pmlmepriv)
 {
 	_irqL irqL;
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 	pmlmepriv->num_of_scanned++;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 }
 
 #ifdef CONFIG_CONCURRENT_MODE
@@ -762,18 +762,18 @@ __inline static void down_scanned_network(struct mlme_priv *pmlmepriv)
 {
 	_irqL irqL;
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 	pmlmepriv->num_of_scanned--;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 }
 
 __inline static void set_scanned_network_val(struct mlme_priv *pmlmepriv, sint val)
 {
 	_irqL irqL;
 
-	_enter_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 	pmlmepriv->num_of_scanned = val;
-	_exit_critical_bh(&pmlmepriv->lock, &irqL);
+	SPIN_UNLOCK_BH(pmlmepriv->lock, &irqL);
 }
 
 extern u16 rtw_get_capability(WLAN_BSSID_EX *bss);

@@ -469,7 +469,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 	s16 notify_noise = 0;
 	u16  index = 0;
 
-	_enter_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_LOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 	phead = get_list_head(queue);
 	plist = get_next(phead);
 	if ((!phead) || (!plist))
@@ -508,7 +508,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 			pnetwork->network.Ssid.Ssid);
 		plist = get_next(plist);
 	}
-	_exit_critical_bh(&(pmlmepriv->scanned_queue.lock), &irqL);
+	SPIN_UNLOCK_BH((pmlmepriv->scanned_queue.lock), &irqL);
 
 	return 0;
 }
@@ -1380,7 +1380,7 @@ int proc_get_all_sta_info(struct seq_file *m, void *v)
 
 	DBG_871X_SEL_NL(m, "sta_dz_bitmap=0x%x, tim_bitmap=0x%x\n", pstapriv->sta_dz_bitmap, pstapriv->tim_bitmap);
 
-	_enter_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 	for(i=0; i< NUM_STA; i++)
 	{
@@ -1443,7 +1443,7 @@ int proc_get_all_sta_info(struct seq_file *m, void *v)
 
 	}
 
-	_exit_critical_bh(&pstapriv->sta_hash_lock, &irqL);
+	SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
 
 	return 0;
 }
