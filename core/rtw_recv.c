@@ -396,7 +396,7 @@ sint rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
 #ifdef CONFIG_SDIO_HCI
 	SPIN_LOCK_BH(queue->lock, &irqL);
 #else
-	SPIN_LOCK(queue->lock, &irqL);
+	SPIN_LOCK_IRQ(queue->lock, &irqL);
 #endif/*#ifdef  CONFIG_SDIO_HCI*/
 
 	rtw_list_delete(&precvbuf->list);
@@ -405,7 +405,7 @@ sint rtw_enqueue_recvbuf(struct recv_buf *precvbuf, _queue *queue)
 #ifdef CONFIG_SDIO_HCI
 	SPIN_UNLOCK_BH(queue->lock, &irqL);
 #else
-	SPIN_UNLOCK(queue->lock, &irqL);
+	SPIN_UNLOCK_IRQ(queue->lock, &irqL);
 #endif/*#ifdef  CONFIG_SDIO_HCI*/
 	return _SUCCESS;
 
@@ -420,7 +420,7 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
 #ifdef CONFIG_SDIO_HCI
 	SPIN_LOCK_BH(queue->lock, &irqL);
 #else
-	SPIN_LOCK(queue->lock, &irqL);
+	SPIN_LOCK_IRQ(queue->lock, &irqL);
 #endif/*#ifdef  CONFIG_SDIO_HCI*/
 
 	if(_rtw_queue_empty(queue) == _TRUE)
@@ -442,7 +442,7 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
 #ifdef CONFIG_SDIO_HCI
 	SPIN_UNLOCK_BH(queue->lock, &irqL);
 #else
-	SPIN_UNLOCK(queue->lock, &irqL);
+	SPIN_UNLOCK_IRQ(queue->lock, &irqL);
 #endif/*#ifdef  CONFIG_SDIO_HCI*/
 
 	return precvbuf;

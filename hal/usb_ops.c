@@ -1087,10 +1087,10 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 	RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
 		 ("usb_read_port_complete!!!\n"));
 
-	//SPIN_LOCK(precvpriv->lock, &irqL);
+	//SPIN_LOCK_IRQ(precvpriv->lock, &irqL);
 	//precvbuf->irp_pending=_FALSE;
 	//precvpriv->rx_pending_cnt --;
-	//SPIN_UNLOCK(precvpriv->lock, &irqL);
+	//SPIN_UNLOCK_IRQ(precvpriv->lock, &irqL);
 
 	precvpriv->rx_pending_cnt --;
 
@@ -1261,10 +1261,10 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 		precvbuf->reuse = _FALSE;
 	}
 
-	//SPIN_LOCK(precvpriv->lock, &irqL);
+	//SPIN_LOCK_IRQ(precvpriv->lock, &irqL);
 	//precvpriv->rx_pending_cnt++;
 	//precvbuf->irp_pending = _TRUE;
-	//SPIN_UNLOCK(precvpriv->lock, &irqL);
+	//SPIN_UNLOCK_IRQ(precvpriv->lock, &irqL);
 
 	precvpriv->rx_pending_cnt++;
 

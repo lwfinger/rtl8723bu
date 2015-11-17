@@ -726,12 +726,12 @@ u32 rtw_init_bcmc_stainfo(_adapter* padapter)
 	ptxservq= &(psta->sta_xmitpriv.be_q);
 
 /*
-	SPIN_LOCK(pstapending->lock, &irqL0);
+	SPIN_LOCK_IRQ(pstapending->lock, &irqL0);
 
 	if (rtw_is_list_empty(&ptxservq->tx_pending))
 		rtw_list_insert_tail(&ptxservq->tx_pending, get_list_head(pstapending));
 
-	SPIN_UNLOCK(pstapending->lock, &irqL0);
+	SPIN_UNLOCK_IRQ(pstapending->lock, &irqL0);
 */
 
 exit:

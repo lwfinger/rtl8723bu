@@ -1699,7 +1699,7 @@ int proc_get_rx_ring(struct seq_file *m, void *v)
 	DBG_871X_SEL_NL(m, "  dma: 0x%08x\n", (int) rx_ring->dma);
 	DBG_871X_SEL_NL(m, "  idx: %d\n", rx_ring->idx);
 
-	SPIN_LOCK(pdvobjpriv->irq_th_lock, &irqL);
+	SPIN_LOCK_IRQ(pdvobjpriv->irq_th_lock, &irqL);
 	for (i=0; i<precvpriv->rxringcount; i++)
 	{
 		struct recv_stat *entry = &rx_ring->desc[i];
@@ -1719,7 +1719,7 @@ int proc_get_rx_ring(struct seq_file *m, void *v)
 				DBG_871X_SEL_NL(m, "\n");
 		}
 	}
-	SPIN_UNLOCK(pdvobjpriv->irq_th_lock, &irqL);
+	SPIN_UNLOCK_IRQ(pdvobjpriv->irq_th_lock, &irqL);
 
 	return 0;
 }
@@ -1733,7 +1733,7 @@ int proc_get_tx_ring(struct seq_file *m, void *v)
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	int i, j, k;
 
-	SPIN_LOCK(pdvobjpriv->irq_th_lock, &irqL);
+	SPIN_LOCK_IRQ(pdvobjpriv->irq_th_lock, &irqL);
 	for (i = 0; i < PCI_MAX_TX_QUEUE_COUNT; i++)
 	{
 		struct rtw_tx_ring *tx_ring = &pxmitpriv->tx_ring[i];
@@ -1762,7 +1762,7 @@ int proc_get_tx_ring(struct seq_file *m, void *v)
 			}
 		}
 	}
-	SPIN_UNLOCK(pdvobjpriv->irq_th_lock, &irqL);
+	SPIN_UNLOCK_IRQ(pdvobjpriv->irq_th_lock, &irqL);
 
 	return 0;
 }

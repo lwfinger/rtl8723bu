@@ -190,7 +190,7 @@ extern ulong locked_jiffies_bh;
 #define LIST_CONTAINOR(ptr, type, member) \
         ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
 
-#define SPIN_LOCK(_LOCK, _IRQL)					\
+#define SPIN_LOCK_IRQ(_LOCK, _IRQL)					\
 	{							\
 		_LOCK##_set = jiffies;				\
 		spin_lock_irqsave(&_LOCK, *_IRQL);		\
@@ -200,7 +200,7 @@ extern ulong locked_jiffies_bh;
 		}						\
 	}
 
-#define SPIN_UNLOCK(_LOCK, _IRQL)				\
+#define SPIN_UNLOCK_IRQ(_LOCK, _IRQL)				\
 	{							\
 		spin_unlock_irqrestore(&_LOCK, *_IRQL);		\
 		if (jiffies - _LOCK##_set > locked_jiffies) {	\
