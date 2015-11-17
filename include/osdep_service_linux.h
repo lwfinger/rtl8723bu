@@ -184,6 +184,8 @@ __inline static _list	*get_list_head(_queue	*queue)
 
 extern ulong lock_jiffies;
 extern ulong locked_jiffies;
+extern ulong lock_jiffies_irq;
+extern ulong locked_jiffies_irq;
 extern ulong lock_jiffies_bh;
 extern ulong locked_jiffies_bh;
 
@@ -194,18 +196,18 @@ extern ulong locked_jiffies_bh;
 	{							\
 		_LOCK##_set = jiffies;				\
 		spin_lock_irqsave(&_LOCK, *_IRQL);		\
-		if (jiffies - _LOCK##_set > lock_jiffies) {	\
-			lock_jiffies = jiffies - _LOCK##_set;	\
-			pr_info("ms waiting to acquire lock  = %d\n", jiffies_to_msecs(lock_jiffies)); \
+		if (jiffies - _LOCK##_set > lock_jiffies_irq) {	\
+			lock_jiffies_irq = jiffies - _LOCK##_set;	\
+			pr_info("ms waiting to acquire lock_irq  = %d\n", jiffies_to_msecs(lock_jiffies_irq)); \
 		}						\
 	}
 
 #define SPIN_UNLOCK_IRQ(_LOCK, _IRQL)				\
 	{							\
 		spin_unlock_irqrestore(&_LOCK, *_IRQL);		\
-		if (jiffies - _LOCK##_set > locked_jiffies) {	\
-			locked_jiffies = jiffies - _LOCK##_set; \
-			pr_info("ms lock is held  = %d\n", jiffies_to_msecs(locked_jiffies)); \
+		if (jiffies - _LOCK##_set > locked_jiffies_irq) {	\
+			locked_jiffies_irq = jiffies - _LOCK##_set; \
+			pr_info("ms lock_irq is held  = %d\n", jiffies_to_msecs(locked_jiffies_irq)); \
 		}						\
 	}
 
@@ -226,6 +228,16 @@ extern ulong locked_jiffies_bh;
 			locked_jiffies_bh = jiffies - _LOCK##_set;	\
 			pr_info("ms lock_bh is held  = %d\n", jiffies_to_msecs(locked_jiffies_bh)); \
 		}						\
+	}
+
+#define SPIN_LOCK(_LOCK)					\
+	{							\
+		spin_lock(_LOCK);				\
+	}
+
+#define SPIN_UNLOCK(_LOCK)					\
+	{							\
+		spin_unlock(_LOCK);				\
 	}
 
 __inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)

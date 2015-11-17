@@ -21,10 +21,12 @@
 
 #include <drv_types.h>
 
-ulong lock_jiffies;
-ulong locked_jiffies;
+ulong lock_jiffies_irq;
+ulong locked_jiffies_irq;
 ulong lock_jiffies_bh;
 ulong locked_jiffies_bh;
+ulong lock_jiffies;
+ulong locked_jiffies;
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS);
