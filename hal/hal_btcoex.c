@@ -1964,9 +1964,6 @@ EXhalbtcoutsrc_RfStatusNotify(
 		if(pBtCoexist->boardInfo.btdmAntNum == 1)
 			EXhalbtc8723b1ant_RfStatusNotify(pBtCoexist, type);
 	}
-	else if(IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-	}
 	else if(IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 	}

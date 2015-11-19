@@ -387,41 +387,6 @@ static u1Byte odm_SQ_process_patch_RT_CID_819x_Lenovo(
 #endif
 
 		}
-		else if(IS_HARDWARE_TYPE_8192E(pDM_Odm->Adapter)){
-
-			//
-			// <Roger_Notes> Expected signal strength and bars indication at Lenovo lab. 2013.04.11
-			// 802.11n, 802.11b, 802.11g only at channel 6
-			//
-			//		Attenuation (dB)	OS Signal Bars	RSSI by Xirrus (dBm)
-			//			50				5			-49
-			//			55				5			-49
-			//			60				5			-50
-			//			65				5			-51
-			//			70				5			-52
-			//			75				5			-54
-			//			80				5			-55
-			//			85				4			-60
-			//			90				3			-63
-			//			95				3			-65
-			//			100				2			-67
-			//			102				2			-67
-			//			104				1			-70
-			//
-
-			if(PWDB_ALL >= 50)
-				SQ = 100;
-			else if(PWDB_ALL >= 35 && PWDB_ALL < 50)
-				SQ = 80;
-			else if(PWDB_ALL >= 31 && PWDB_ALL < 35)
-				SQ = 60;
-			else if(PWDB_ALL >= 22 && PWDB_ALL < 31)
-				SQ = 40;
-			else if(PWDB_ALL >= 18 && PWDB_ALL < 22)
-				SQ = 20;
-			else
-				SQ = 10;
-		}
 		else
 		{
 		if(PWDB_ALL >= 50)
@@ -440,8 +405,7 @@ static u1Byte odm_SQ_process_patch_RT_CID_819x_Lenovo(
 	else
 	{//OFDM rate
 
-		if(IS_HARDWARE_TYPE_8723AE(pDM_Odm->Adapter) ||
-			IS_HARDWARE_TYPE_8192E(pDM_Odm->Adapter))
+		if(IS_HARDWARE_TYPE_8723AE(pDM_Odm->Adapter))
 		{
 			if(RSSI >= 45)
 				SQ = 100;
@@ -525,8 +489,7 @@ static u1Byte odm_SQ_process_patch_RT_CID_819x_Acer(
 	else
 	{//OFDM rate
 
-		if(IS_HARDWARE_TYPE_8723AE(pDM_Odm->Adapter) ||
-			IS_HARDWARE_TYPE_8192E(pDM_Odm->Adapter))
+		if(IS_HARDWARE_TYPE_8723AE(pDM_Odm->Adapter))
 		{
 			if(RSSI >= 45)
 				SQ = 100;

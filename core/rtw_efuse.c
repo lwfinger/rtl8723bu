@@ -443,9 +443,7 @@ efuse_OneByteRead(
 		return bResult;
 	}
 
-	if(	IS_HARDWARE_TYPE_8723B(pAdapter) ||
-		(IS_HARDWARE_TYPE_8192E(pAdapter) && IS_VENDOR_8192E_B_CUT(pAdapter)))
-	{
+	if(	IS_HARDWARE_TYPE_8723B(pAdapter)) {
 		// <20130121, Kordan> For SMIC EFUSE specificatoin.
 		//0x34[11]: SW force PGMEN input of efuse to high. (for the bank selected by 0x34[9:8])
 		//PHY_SetMacReg(pAdapter, 0x34, BIT11, 0);
@@ -517,8 +515,7 @@ efuse_OneByteWrite(
 
 
 	// <20130227, Kordan> 8192E MP chip A-cut had better not set 0x34[11] until B-Cut.
-	if (IS_HARDWARE_TYPE_8723B(pAdapter)||(IS_HARDWARE_TYPE_8192E(pAdapter) && IS_VENDOR_8192E_B_CUT(pAdapter)))
-	{
+	if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
 		// <20130121, Kordan> For SMIC EFUSE specificatoin.
 		//0x34[11]: SW force PGMEN input of efuse to high. (for the bank selected by 0x34[9:8])
 		//PHY_SetMacReg(pAdapter, 0x34, BIT11, 1);

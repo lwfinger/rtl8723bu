@@ -942,11 +942,6 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 
 
 		}
-		else if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		{ // USB need to do RF LO disable first, PCIE isn't required to follow this order.
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x1); // RF LO disabled
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC, 0xF0000, 0x2); // Tx mode
-		}
 		else if (IS_HARDWARE_TYPE_8723B(pAdapter))
 		{
 			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
@@ -1017,11 +1012,6 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 
 		PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bCCKEn, 0x1);
 		PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bOFDMEn, 0x1);
-		}
-		else if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		{
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC, 0xF0000, 0x3); // Tx mode
-			PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x0); // RF LO disabled
 		}
 		else if (IS_HARDWARE_TYPE_8723B(pAdapter))
 		{

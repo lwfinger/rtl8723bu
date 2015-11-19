@@ -2192,8 +2192,7 @@ void dm_DynamicUsbTxAgg(_adapter *padapter, u8 from_timer)
 	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 #ifdef CONFIG_USB_RX_AGGREGATION
-	if(IS_HARDWARE_TYPE_8821U(padapter) )//|| IS_HARDWARE_TYPE_8192EU(padapter))
-	{
+	if(IS_HARDWARE_TYPE_8821U(padapter) ) {
 		//This AGG_PH_TH only for UsbRxAggMode == USB_RX_AGG_USB
 		if((pHalData->UsbRxAggMode == USB_RX_AGG_USB) && (check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE))
 		{

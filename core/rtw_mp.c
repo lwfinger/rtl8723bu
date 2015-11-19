@@ -1986,8 +1986,7 @@ void Hal_ProSetCrystalCap (PADAPTER pAdapter , u32 CrystalCap)
 		// write 0x2C[30:25] = 0x2C[24:19] = CrystalCap
 		PHY_SetBBReg(pAdapter, REG_MAC_PHY_CTRL, 0x7FF80000, (CrystalCap | (CrystalCap << 6)));
 	}
-	else if(IS_HARDWARE_TYPE_8821(pAdapter) || IS_HARDWARE_TYPE_8192E(pAdapter) ||
-		    IS_HARDWARE_TYPE_8723B(pAdapter))
+	else if(IS_HARDWARE_TYPE_8821(pAdapter) || IS_HARDWARE_TYPE_8723B(pAdapter))
 	{
 		// write 0x2C[23:18] = 0x2C[17:12] = CrystalCap
 		PHY_SetBBReg(pAdapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));

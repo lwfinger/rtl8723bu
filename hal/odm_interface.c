@@ -649,17 +649,6 @@ ODM_FillH2CCmd(
 		}
 
 	}
-	else if(IS_HARDWARE_TYPE_8192E(Adapter))
-	{
-		switch(ElementID)
-		{
-		case ODM_H2C_RSSI_REPORT:
-			FillH2CCmd8812(Adapter, H2C_8812_RSSI_REPORT, CmdLen, pCmdBuffer);
-			break;
-		default:
-			break;
-		}
-	}
 	else if(IS_HARDWARE_TYPE_8723B(Adapter))
 	{
 		//

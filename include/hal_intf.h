@@ -442,14 +442,6 @@ typedef enum _HARDWARE_TYPE{
 #define IS_HARDWARE_TYPE_JAGUAR(_Adapter)		\
 (IS_HARDWARE_TYPE_8812(_Adapter) || IS_HARDWARE_TYPE_8821(_Adapter))
 
-//RTL8192E Series
-#define IS_HARDWARE_TYPE_8192EE(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8192EE)
-#define IS_HARDWARE_TYPE_8192EU(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8192EU)
-#define IS_HARDWARE_TYPE_8192ES(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8192ES)
-
-#define IS_HARDWARE_TYPE_8192E(_Adapter)		\
-(IS_HARDWARE_TYPE_8192EE(_Adapter) || IS_HARDWARE_TYPE_8192EU(_Adapter) ||IS_HARDWARE_TYPE_8192ES(_Adapter))
-
 #define IS_HARDWARE_TYPE_8723BE(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8723BE)
 #define IS_HARDWARE_TYPE_8723BU(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8723BU)
 #define IS_HARDWARE_TYPE_8723BS(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8723BS)
