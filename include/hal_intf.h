@@ -424,12 +424,6 @@ typedef enum _HARDWARE_TYPE{
  IS_HARDWARE_TYPE_8188EE(_Adapter) || IS_HARDWARE_TYPE_8188EU(_Adapter) || IS_HARDWARE_TYPE_8188ES(_Adapter)\
 )
 
-// RTL8812 Series
-#define IS_HARDWARE_TYPE_8812E(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8812E)
-#define IS_HARDWARE_TYPE_8812AU(_Adapter)	(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8812AU)
-#define IS_HARDWARE_TYPE_8812(_Adapter)			\
-(IS_HARDWARE_TYPE_8812E(_Adapter) || IS_HARDWARE_TYPE_8812AU(_Adapter))
-
 // RTL8821 Series
 #define IS_HARDWARE_TYPE_8821E(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8821E)
 #define IS_HARDWARE_TYPE_8811AU(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8811AU)
@@ -438,9 +432,6 @@ typedef enum _HARDWARE_TYPE{
 #define IS_HARDWARE_TYPE_8821S(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8821S)
 #define IS_HARDWARE_TYPE_8821(_Adapter)			\
 (IS_HARDWARE_TYPE_8821E(_Adapter) || IS_HARDWARE_TYPE_8821U(_Adapter)|| IS_HARDWARE_TYPE_8821S(_Adapter))
-
-#define IS_HARDWARE_TYPE_JAGUAR(_Adapter)		\
-(IS_HARDWARE_TYPE_8812(_Adapter) || IS_HARDWARE_TYPE_8821(_Adapter))
 
 #define IS_HARDWARE_TYPE_8723BE(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8723BE)
 #define IS_HARDWARE_TYPE_8723BU(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8723BU)

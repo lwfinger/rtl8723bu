@@ -637,19 +637,7 @@ ODM_FillH2CCmd(
 	IN	pu1Byte	pCmdBuffer
 )
 {
-	if(IS_HARDWARE_TYPE_JAGUAR(Adapter))
-	{
-		switch(ElementID)
-		{
-		case ODM_H2C_RSSI_REPORT:
-			FillH2CCmd8812(Adapter, H2C_8812_RSSI_REPORT, CmdLen, pCmdBuffer);
-			break;
-		default:
-			break;
-		}
-
-	}
-	else if(IS_HARDWARE_TYPE_8723B(Adapter))
+	if(IS_HARDWARE_TYPE_8723B(Adapter))
 	{
 		//
 		// <Roger_TODO> We should take RTL8723B into consideration, 2012.10.08

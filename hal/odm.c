@@ -1823,33 +1823,6 @@ odm_IQCalibrate(
 		)
 {
 	PADAPTER	Adapter = pDM_Odm->Adapter;
-
-	if(!IS_HARDWARE_TYPE_JAGUAR(Adapter))
-		return;
-	else if(IS_HARDWARE_TYPE_8812AU(Adapter))
-		return;
-#if (RTL8821A_SUPPORT == 1)
-	if(pDM_Odm->bLinked)
-	{
-		if((*pDM_Odm->pChannel != pDM_Odm->preChannel) && (!*pDM_Odm->pbScanInProcess))
-		{
-			pDM_Odm->preChannel = *pDM_Odm->pChannel;
-			pDM_Odm->LinkedInterval = 0;
-		}
-
-		if(pDM_Odm->LinkedInterval < 3)
-			pDM_Odm->LinkedInterval++;
-
-		if(pDM_Odm->LinkedInterval == 2)
-		{
-			// Mark out IQK flow to prevent tx stuck. by Maddest 20130306
-			// Open it verified by James 20130715
-			PHY_IQCalibrate_8821A(Adapter, FALSE);
-		}
-	}
-	else
-		pDM_Odm->LinkedInterval = 0;
-#endif
 }
 
 
@@ -2071,7 +2044,7 @@ odm_TXPowerTrackingCheckCE(
 	if(!pDM_Odm->RFCalibrateInfo.TM_Trigger)		//at least delay 1 sec
 	{
 		//pHalData->TxPowerCheckCnt++;	//cosa add for debug
-		if(IS_HARDWARE_TYPE_8188E(Adapter) || IS_HARDWARE_TYPE_JAGUAR(Adapter))
+		if(IS_HARDWARE_TYPE_8188E(Adapter))
 			ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_A, RF_T_METER_NEW, (BIT17 | BIT16), 0x03);
 		else
 			ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_A, RF_T_METER_OLD, bRFRegOffsetMask, 0x60);
@@ -2173,7 +2146,7 @@ odm_TXPowerTrackingThermalMeterCheck(
 	{
 		if(IS_HARDWARE_TYPE_8192D(Adapter))
 			PHY_SetRFReg(Adapter, ODM_RF_PATH_A, RF_T_METER_92D, BIT17 | BIT16, 0x03);
-		else if(IS_HARDWARE_TYPE_8188E(Adapter) || IS_HARDWARE_TYPE_JAGUAR(Adapter) ||
+		else if(IS_HARDWARE_TYPE_8188E(Adapter) ||
 			    IS_HARDWARE_TYPE_8723B(Adapter))
 			PHY_SetRFReg(Adapter, ODM_RF_PATH_A, RF_T_METER_88E, BIT17 | BIT16, 0x03);
 		else

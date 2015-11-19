@@ -1448,7 +1448,7 @@ SwLedBlink9(
 				}
 				else
 				{
-					if(IS_HARDWARE_TYPE_8192DU(Adapter) || IS_HARDWARE_TYPE_8812AU(Adapter))
+					if(IS_HARDWARE_TYPE_8192DU(Adapter))
 					{
 						pLed->BlinkingLedState = RTW_LED_ON;
 						pLed->CurrLedState = LED_BLINK_ALWAYS_ON;
@@ -1475,7 +1475,7 @@ SwLedBlink9(
 				}
 				else
 				{
-					if(IS_HARDWARE_TYPE_8192DU(Adapter) || IS_HARDWARE_TYPE_8723AU(Adapter) || IS_HARDWARE_TYPE_8812AU(Adapter))
+					if(IS_HARDWARE_TYPE_8192DU(Adapter) || IS_HARDWARE_TYPE_8723AU(Adapter))
 					{
 						pLed->BlinkingLedState = RTW_LED_ON;
 					}
@@ -1716,7 +1716,7 @@ SwLedBlink10(
 				}
 				else
 				{
-					if(IS_HARDWARE_TYPE_8192DU(Adapter) || IS_HARDWARE_TYPE_8812AU(Adapter))
+					if(IS_HARDWARE_TYPE_8192DU(Adapter))
 					{
 						pLed->BlinkingLedState = RTW_LED_ON;
 						pLed->CurrLedState = LED_BLINK_ALWAYS_ON;
@@ -1743,7 +1743,7 @@ SwLedBlink10(
 				}
 				else
 				{
-					if(IS_HARDWARE_TYPE_8192DU(Adapter) || IS_HARDWARE_TYPE_8723AU(Adapter) || IS_HARDWARE_TYPE_8812AU(Adapter))
+					if(IS_HARDWARE_TYPE_8192DU(Adapter) || IS_HARDWARE_TYPE_8723AU(Adapter))
 					{
 						pLed->BlinkingLedState = RTW_LED_ON;
 					}
@@ -2115,18 +2115,12 @@ SwLedBlink14(
 					if( pLed->bLedOn )
 					{
 						pLed->BlinkingLedState = RTW_LED_OFF;
-						if (IS_HARDWARE_TYPE_8812AU(Adapter))
-							_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
-						else
-							_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+						_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
 					}
 					else
 					{
 						pLed->BlinkingLedState = RTW_LED_ON;
-						if (IS_HARDWARE_TYPE_8812AU(Adapter))
-							_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
-						else
-							_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+						_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
 					}
 				}
 			}
@@ -3975,7 +3969,7 @@ SwLedControlMode9(
 				}
 
 				pLed->bLedNoLinkBlinkInProgress = _TRUE;
-				if(IS_HARDWARE_TYPE_8192DU(Adapter) || IS_HARDWARE_TYPE_8812AU(Adapter))
+				if(IS_HARDWARE_TYPE_8192DU(Adapter))
 				{
 					if(LedAction == LED_CTL_LINK)
 					{
@@ -4838,10 +4832,7 @@ SwLedControlMode14(
 
 		case LED_CTL_LINK:
 		case LED_CTL_NO_LINK:
-			if (IS_HARDWARE_TYPE_8812AU(Adapter))
-				SwLedOn(Adapter, pLed);
 			break;
-
 		case LED_CTL_TX:
 		case LED_CTL_RX:
 			if(pLed->bLedBlinkInProgress ==_FALSE)
@@ -4852,18 +4843,12 @@ SwLedControlMode14(
 				if( pLed->bLedOn )
 				{
 					pLed->BlinkingLedState = RTW_LED_OFF;
-					if (IS_HARDWARE_TYPE_8812AU(Adapter))
-						_set_timer(&(pLed->BlinkTimer), LED_BLINK_LINK_INTERVAL_ALPHA);
-					else
-						_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+					_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
 				}
 				else
 				{
 					pLed->BlinkingLedState = RTW_LED_ON;
-					if (IS_HARDWARE_TYPE_8812AU(Adapter))
-						_set_timer(&(pLed->BlinkTimer), LED_BLINK_NORMAL_INTERVAL);
-					else
-						_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
+					_set_timer(&(pLed->BlinkTimer), LED_BLINK_FASTER_INTERVAL_ALPHA);
 				}
 			}
 			break;
