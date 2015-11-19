@@ -2181,11 +2181,6 @@ void EXhalbtcoutsrc_Periodical(PBTC_COEXIST pBtCoexist)
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_Periodical(pBtCoexist);
 	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_Periodical(pBtCoexist);
-	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
