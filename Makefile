@@ -105,12 +105,11 @@ _PLATFORM_FILES := platform/platform_ops.o
 
 ifeq ($(CONFIG_BT_COEXIST), y)
 EXTRA_CFLAGS += -I$(src)/hal
-_OUTSRC_FILES += hal/HalBtc8188c2Ant.o \
-				hal/HalBtc8192d2Ant.o \
-				hal/HalBtc8723a1Ant.o \
-				hal/HalBtc8723a2Ant.o \
-				hal/HalBtc8723b1Ant.o \
-				hal/HalBtc8723b2Ant.o
+_OUTSRC_FILES += hal/HalBtc8192d2Ant.o \
+		 hal/HalBtc8723a1Ant.o \
+		 hal/HalBtc8723a2Ant.o \
+		 hal/HalBtc8723b1Ant.o \
+		 hal/HalBtc8723b2Ant.o
 endif
 		
 
