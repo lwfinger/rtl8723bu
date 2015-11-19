@@ -111,8 +111,6 @@ _OUTSRC_FILES += hal/HalBtc8188c2Ant.o \
 				hal/HalBtc8723a2Ant.o \
 				hal/HalBtc8723b1Ant.o \
 				hal/HalBtc8723b2Ant.o \
-				hal/HalBtc8812a1Ant.o \
-				hal/HalBtc8812a2Ant.o \
 				hal/HalBtc8821a1Ant.o \
 				hal/HalBtc8821a2Ant.o \
 				hal/HalBtc8821aCsr2Ant.o
