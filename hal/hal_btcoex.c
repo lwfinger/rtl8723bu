@@ -1464,13 +1464,6 @@ void EXhalbtcoutsrc_InitHwConfig(PBTC_COEXIST pBtCoexist, u8 bWifiOnly)
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_InitHwConfig(pBtCoexist, bWifiOnly);
 	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_InitHwConfig(pBtCoexist, bWifiOnly);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_InitHwConfig(pBtCoexist, bWifiOnly);
-	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
@@ -1517,13 +1510,6 @@ void EXhalbtcoutsrc_InitCoexDm(PBTC_COEXIST pBtCoexist)
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_InitCoexDm(pBtCoexist);
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_InitCoexDm(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_InitCoexDm(pBtCoexist);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
@@ -1586,13 +1572,6 @@ void EXhalbtcoutsrc_IpsNotify(PBTC_COEXIST pBtCoexist, u8 type)
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_IpsNotify(pBtCoexist, ipsType);
 	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_IpsNotify(pBtCoexist, ipsType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_IpsNotify(pBtCoexist, ipsType);
-	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
@@ -1651,13 +1630,6 @@ void EXhalbtcoutsrc_LpsNotify(PBTC_COEXIST pBtCoexist, u8 type)
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_LpsNotify(pBtCoexist, lpsType);
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_LpsNotify(pBtCoexist, lpsType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_LpsNotify(pBtCoexist, lpsType);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
@@ -1723,13 +1695,6 @@ void EXhalbtcoutsrc_ScanNotify(PBTC_COEXIST pBtCoexist, u8 type)
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_ScanNotify(pBtCoexist, scanType);
 	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_ScanNotify(pBtCoexist, scanType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_ScanNotify(pBtCoexist, scanType);
-	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
@@ -1789,13 +1754,6 @@ void EXhalbtcoutsrc_ConnectNotify(PBTC_COEXIST pBtCoexist, u8 action)
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_ConnectNotify(pBtCoexist, assoType);
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_ConnectNotify(pBtCoexist, assoType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_ConnectNotify(pBtCoexist, assoType);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
@@ -1857,13 +1815,6 @@ void EXhalbtcoutsrc_MediaStatusNotify(PBTC_COEXIST pBtCoexist, RT_MEDIA_STATUS m
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_MediaStatusNotify(pBtCoexist, mStatus);
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_MediaStatusNotify(pBtCoexist, mStatus);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_MediaStatusNotify(pBtCoexist, mStatus);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
@@ -1932,13 +1883,6 @@ void EXhalbtcoutsrc_SpecialPacketNotify(PBTC_COEXIST pBtCoexist, u8 pktType)
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_SpecialPacketNotify(pBtCoexist, packetType);
 	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_SpecialPacketNotify(pBtCoexist, packetType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_SpecialPacketNotify(pBtCoexist, packetType);
-	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
@@ -1990,13 +1934,6 @@ void EXhalbtcoutsrc_BtInfoNotify(PBTC_COEXIST pBtCoexist, u8 *tmpBuf, u8 length)
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_BtInfoNotify(pBtCoexist, tmpBuf, length);
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_BtInfoNotify(pBtCoexist, tmpBuf, length);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_BtInfoNotify(pBtCoexist, tmpBuf, length);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
@@ -2110,13 +2047,6 @@ void EXhalbtcoutsrc_HaltNotify(PBTC_COEXIST pBtCoexist)
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_HaltNotify(pBtCoexist);
 	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_HaltNotify(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_HaltNotify(pBtCoexist);
-	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
@@ -2168,11 +2098,6 @@ void EXhalbtcoutsrc_PnpNotify(PBTC_COEXIST pBtCoexist, u8 pnpState)
 			EXhalbtc8821a1ant_PnpNotify(pBtCoexist,pnpState);
 		else if(pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8821a2ant_PnpNotify(pBtCoexist,pnpState);
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_PnpNotify(pBtCoexist, pnpState);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
@@ -2260,8 +2185,6 @@ void EXhalbtcoutsrc_Periodical(PBTC_COEXIST pBtCoexist)
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192e2ant_Periodical(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_Periodical(pBtCoexist);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
@@ -2285,12 +2208,7 @@ void EXhalbtcoutsrc_DbgControl(PBTC_COEXIST pBtCoexist, u8 opCode, u8 opLen, u8 
 	// default no need to leave low power to avoid deadlock
 //	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_DbgControl(pBtCoexist, opCode, opLen, pData);
-	}
-	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
+	if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8812a2ant_DbgControl(pBtCoexist, opCode, opLen, pData);
@@ -2502,13 +2420,6 @@ void EXhalbtcoutsrc_DisplayBtCoexInfo(PBTC_COEXIST pBtCoexist)
 	{
 		if (pBtCoexist->boardInfo.btdmAntNum == 2)
 			EXhalbtc8192d2ant_DisplayCoexInfo(pBtCoexist);
-	}
-	else if (IS_HARDWARE_TYPE_8192E(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8192e2ant_DisplayCoexInfo(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8192e1ant_DisplayCoexInfo(pBtCoexist);
 	}
 	else if (IS_HARDWARE_TYPE_8812(pBtCoexist->Adapter))
 	{
