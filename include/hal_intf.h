@@ -380,14 +380,6 @@ typedef enum _HARDWARE_TYPE{
 
 #define IS_NEW_GENERATION_IC(_Adapter)	(((PADAPTER)_Adapter)->HardwareType >=HARDWARE_TYPE_RTL8192EE)
 //
-// RTL8192C Series
-//
-#define IS_HARDWARE_TYPE_8192CE(_Adapter)	(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8192CE)
-#define IS_HARDWARE_TYPE_8192CU(_Adapter)	(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8192CU)
-#define	IS_HARDWARE_TYPE_8192C(_Adapter)			\
-(IS_HARDWARE_TYPE_8192CE(_Adapter) || IS_HARDWARE_TYPE_8192CU(_Adapter))
-
-//
 // RTL8192D Series
 //
 #define IS_HARDWARE_TYPE_8192DE(_Adapter)	(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8192DE)
@@ -415,11 +407,11 @@ typedef enum _HARDWARE_TYPE{
 
 
 #define	IS_HARDWARE_TYPE_8188E_before(_Adapter)			\
-(IS_HARDWARE_TYPE_8192C(_Adapter) ||IS_HARDWARE_TYPE_8192D(_Adapter) ||IS_HARDWARE_TYPE_8723A(_Adapter))
+(IS_HARDWARE_TYPE_8192D(_Adapter) ||IS_HARDWARE_TYPE_8723A(_Adapter))
 
 
 #define IS_HARDWARE_TYPE_OLDER_THAN_8812A(_Adapter)	\
-(IS_HARDWARE_TYPE_8192D(_Adapter) || IS_HARDWARE_TYPE_8192C(_Adapter) ||\
+(IS_HARDWARE_TYPE_8192D(_Adapter) ||\
  IS_HARDWARE_TYPE_8723AE(_Adapter) || IS_HARDWARE_TYPE_8723AU(_Adapter) || IS_HARDWARE_TYPE_8723AS(_Adapter) ||\
  IS_HARDWARE_TYPE_8188EE(_Adapter) || IS_HARDWARE_TYPE_8188EU(_Adapter) || IS_HARDWARE_TYPE_8188ES(_Adapter)\
 )

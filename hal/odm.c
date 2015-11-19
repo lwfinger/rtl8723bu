@@ -2018,12 +2018,6 @@ odm_TXPowerTrackingCheckCE(
 {
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
-	#if( (RTL8192C_SUPPORT==1) ||  (RTL8723A_SUPPORT==1) )
-	if(IS_HARDWARE_TYPE_8192C(Adapter)){
-		rtl8192c_odm_CheckTXPowerTracking(Adapter);
-		return;
-	}
-	#endif
 
 	#if (RTL8192D_SUPPORT==1)
 	if(IS_HARDWARE_TYPE_8192D(Adapter)){
@@ -4561,11 +4555,6 @@ odm_PSD_Monitor(
 
 	ODM_SetBBReg(pDM_Odm, 0x818, BIT28, 0x0);
 	//1 Fix initial gain
-	//if (IS_HARDWARE_TYPE_8723AE(Adapter))
-	//RSSI_BT = pHalData->RSSI_BT;
-       //else if((IS_HARDWARE_TYPE_8192C(Adapter))||(IS_HARDWARE_TYPE_8192D(Adapter)))      // Add by Gary
-       //    RSSI_BT = RSSI_BT_new;
-
 	if((pDM_Odm->SupportICType==ODM_RTL8723A)&(pDM_Odm->SupportInterface==ODM_ITRF_PCIE))
 	RSSI_BT=pDM_Odm->RSSI_BT;		//need to check C2H to pDM_Odm RSSI BT
 
@@ -4617,29 +4606,11 @@ odm_PSD_Monitor(
 		initialGainUpper = 0x5E;
 	}
 
-	/*
-	if (initial_gain_psd < 0x1a)
-		initial_gain_psd = 0x1a;
-	if (initial_gain_psd > initialGainUpper)
-		initial_gain_psd = initialGainUpper;
-	*/
-
-	//if(pDM_Odm->SupportICType==ODM_RTL8723A)
 	SSBT = RSSI_BT  * 2 +0x3E;
 
-
-	//if(IS_HARDWARE_TYPE_8723AE(Adapter))
-	//	SSBT = RSSI_BT  * 2 +0x3E;
-	//else if((IS_HARDWARE_TYPE_8192C(Adapter))||(IS_HARDWARE_TYPE_8192D(Adapter)))   // Add by Gary
-	//{
-	//	RSSI_BT = initial_gain_psd;
-	//	SSBT = RSSI_BT;
-	//}
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_PSD, DBG_LOUD,("PSD: SSBT= %d\n", SSBT));
 	ODM_RT_TRACE(	pDM_Odm,ODM_COMP_PSD, DBG_LOUD,("PSD: initial gain= 0x%x\n", initial_gain_psd));
-	//DbgPrint("PSD: SSBT= %d", SSBT);
 	//need to do
-	//pMgntInfo->bDMInitialGainEnable = FALSE;
 	pDM_Odm->bDMInitialGainEnable = FALSE;
 	initial_gain =(u1Byte) (ODM_GetBBReg(pDM_Odm, 0xc50, bMaskDWord) & 0x7F);
 

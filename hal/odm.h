@@ -1990,7 +1990,6 @@ typedef enum tag_DIG_Connect_Definition
 //
 #define odm_TXPowerTrackingDirectCall(_Adapter)	\
 	IS_HARDWARE_TYPE_8192D(_Adapter) ? odm_TXPowerTrackingCallback_ThermalMeter_92D(_Adapter) : \
-	IS_HARDWARE_TYPE_8192C(_Adapter) ? odm_TXPowerTrackingCallback_ThermalMeter_92C(_Adapter) : \
 	IS_HARDWARE_TYPE_8723A(_Adapter) ? odm_TXPowerTrackingCallback_ThermalMeter_8723A(_Adapter) :\
 	ODM_TXPowerTrackingCallback_ThermalMeter(_Adapter)
 
