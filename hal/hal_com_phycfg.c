@@ -1722,15 +1722,7 @@ PHY_SetTxPowerLevelByPath(
 		PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS0_MCS7 );
 
 		if ( pHalData->NumTotalRFPath >= 2 )
-		{
 			PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS8_MCS15 );
-
-			if ( IS_HARDWARE_TYPE_8813A( Adapter ) )
-			{
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS16_MCS23 );
-				PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, VHT_3SSMCS0_3SSMCS9 );
-			}
-		}
 	}
 }
 
@@ -2285,12 +2277,7 @@ PHY_GetTxPowerIndex(
 {
 	u8	txPower = 0x3E;
 
-	if (IS_HARDWARE_TYPE_8813A(pAdapter)) {
-//#if (RTL8814A_SUPPORT==1)
-//		txPower = PHY_GetTxPowerIndex_8813A( pAdapter, PowerIndex, RFPath, Rate );
-//#endif
-	}
-	else if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
+	if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
 #if (RTL8723B_SUPPORT==1)
 		txPower = PHY_GetTxPowerIndex_8723B(pAdapter, RFPath, Rate, BandWidth, Channel);
 #endif
@@ -2312,12 +2299,7 @@ PHY_SetTxPowerIndex(
 	IN	u8				Rate
 	)
 {
-	if (IS_HARDWARE_TYPE_8813A(pAdapter)) {
-//#if (RTL8814A_SUPPORT==1)
-//		PHY_SetTxPowerIndex_8813A( pAdapter, PowerIndex, RFPath, Rate );
-//#endif
-	}
-	else if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
+	if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
 #if (RTL8723B_SUPPORT==1)
 		PHY_SetTxPowerIndex_8723B( pAdapter, PowerIndex, RFPath, Rate );
 #endif

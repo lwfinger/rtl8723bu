@@ -432,15 +432,6 @@ typedef enum _HARDWARE_TYPE{
 #define IS_HARDWARE_TYPE_8723B(_Adapter) \
 	(IS_HARDWARE_TYPE_8723BE(_Adapter) || IS_HARDWARE_TYPE_8723BU(_Adapter) ||IS_HARDWARE_TYPE_8723BS(_Adapter))
 
-//RTL8813A Series
-#define IS_HARDWARE_TYPE_8813AE(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8813AE)
-#define IS_HARDWARE_TYPE_8813AU(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8813AU)
-#define IS_HARDWARE_TYPE_8813AS(_Adapter)		(((PADAPTER)_Adapter)->HardwareType==HARDWARE_TYPE_RTL8813AS)
-
-#define IS_HARDWARE_TYPE_8813A(_Adapter)		\
-(IS_HARDWARE_TYPE_8813AE(_Adapter) || IS_HARDWARE_TYPE_8813AU(_Adapter) ||IS_HARDWARE_TYPE_8813AS(_Adapter))
-
-
 typedef struct eeprom_priv EEPROM_EFUSE_PRIV, *PEEPROM_EFUSE_PRIV;
 #define GET_EEPROM_EFUSE_PRIV(adapter) (&adapter->eeprompriv)
 #define is_boot_from_eeprom(adapter) (adapter->eeprompriv.EepromOrEfuse)
