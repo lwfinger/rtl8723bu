@@ -2188,21 +2188,4 @@ void rtw_bb_rf_gain_offset(_adapter *padapter)
 //To avoid RX affect TX throughput
 void dm_DynamicUsbTxAgg(_adapter *padapter, u8 from_timer)
 {
-	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
-	struct mlme_priv		*pmlmepriv = &(padapter->mlmepriv);
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-#ifdef CONFIG_USB_RX_AGGREGATION
-	if(IS_HARDWARE_TYPE_8821U(padapter) ) {
-		//This AGG_PH_TH only for UsbRxAggMode == USB_RX_AGG_USB
-		if((pHalData->UsbRxAggMode == USB_RX_AGG_USB) && (check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE))
-		{
-			if(pdvobjpriv->traffic_stat.cur_tx_tp > 2 && pdvobjpriv->traffic_stat.cur_rx_tp < 30)
-				rtw_write16(padapter, REG_RXDMA_AGG_PG_TH,0x1010);
-			else
-				rtw_write16(padapter, REG_RXDMA_AGG_PG_TH,0x2005); //dmc agg th 20K
-
-			//DBG_871X("TX_TP=%u, RX_TP=%u \n", pdvobjpriv->traffic_stat.cur_tx_tp, pdvobjpriv->traffic_stat.cur_rx_tp);
-		}
-	}
-#endif
 }

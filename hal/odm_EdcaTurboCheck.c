@@ -403,84 +403,8 @@ odm_EdcaTurboCheckMP(
 			odm_EdcaChooseTrafficIdx(pDM_Odm,curTxOkCnt, curRxOkCnt,   FALSE,  pbIsCurRDLState);
 
 //modify by Guo.Mingzhi 2011-12-29
-			EDCA_BE=((*pbIsCurRDLState)==TRUE)?EDCA_BE_DL:EDCA_BE_UL;
-			if(IS_HARDWARE_TYPE_8821U(Adapter))
-			{
-				if(pMgntInfo->RegTxDutyEnable)
-				{
-					//2013.01.23 LukeLee: debug for 8811AU thermal issue (reduce Tx duty cycle)
-					if(!pMgntInfo->ForcedDataRate) //auto rate
-					{
-						if(pDM_Odm->TxRate != 0xFF)
-							TxRate = Adapter->HalFunc.GetHwRateFromMRateHandler(pDM_Odm->TxRate);
-					}
-					else //force rate
-					{
-						TxRate = (u1Byte) pMgntInfo->ForcedDataRate;
-					}
-
-					value64 = (curRxOkCnt<<2);
-					if(curTxOkCnt < value64) //Downlink
-						ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-					else //Uplink
-					{
-						//DbgPrint("pDM_Odm->RFCalibrateInfo.ThermalValue = 0x%X\n", pDM_Odm->RFCalibrateInfo.ThermalValue);
-						//if(pDM_Odm->RFCalibrateInfo.ThermalValue < pHalData->EEPROMThermalMeter)
-						if((pDM_Odm->RFCalibrateInfo.ThermalValue < 0x2c) || (*pDM_Odm->pBandType == BAND_ON_2_4G))
-							ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-						else
-						{
-							switch (TxRate)
-							{
-								case MGN_VHT1SS_MCS6:
-								case MGN_VHT1SS_MCS5:
-								case MGN_MCS6:
-								case MGN_MCS5:
-								case MGN_48M:
-								case MGN_54M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0x1ea42b);
-								break;
-								case MGN_VHT1SS_MCS4:
-								case MGN_MCS4:
-								case MGN_36M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa42b);
-								break;
-								case MGN_VHT1SS_MCS3:
-								case MGN_MCS3:
-								case MGN_24M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa47f);
-								break;
-								case MGN_VHT1SS_MCS2:
-								case MGN_MCS2:
-								case MGN_18M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa57f);
-								break;
-								case MGN_VHT1SS_MCS1:
-								case MGN_MCS1:
-								case MGN_9M:
-								case MGN_12M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa77f);
-								break;
-								case MGN_VHT1SS_MCS0:
-								case MGN_MCS0:
-								case MGN_6M:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa87f);
-								break;
-								default:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-								break;
-							}
-						}
-					}
-				}
-				else
-				{
-					ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
-				}
-
-			}
-			else
-				ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
+		EDCA_BE=((*pbIsCurRDLState)==TRUE)?EDCA_BE_DL:EDCA_BE_UL;
+		ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,EDCA_BE);
 
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("EDCA Turbo on: EDCA_BE:0x%lx\n",EDCA_BE));
 
