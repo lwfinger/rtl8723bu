@@ -390,40 +390,13 @@ MPT_InitializeAdapter(
 	pMptCtx->MptRfPath = ODM_RF_PATH_A;
 	//-------------------------------------------------------------------------
 
-#if 1
 	// Don't accept any packets
 	rtw_write32(pAdapter, REG_RCR, 0);
-#else
-	// Accept CRC error and destination address
-	//pHalData->ReceiveConfig |= (RCR_ACRC32|RCR_AAP);
-	//rtw_write32(pAdapter, REG_RCR, pHalData->ReceiveConfig);
-	rtw_write32(pAdapter, REG_RCR, 0x70000101);
-#endif
 
-#if 0
-	// If EEPROM or EFUSE is empty,we assign as RF 2T2R for MP.
-	if (pHalData->AutoloadFailFlag == TRUE)
-	{
-		pHalData->RF_Type = RF_2T2R;
-	}
-#endif
-
-	//ledsetting = rtw_read32(pAdapter, REG_LEDCFG0);
-	//rtw_write32(pAdapter, REG_LEDCFG0, ledsetting & ~LED0DIS);
-
-	if(IS_HARDWARE_TYPE_8192DU(pAdapter))
-	{
-		rtw_write32(pAdapter, REG_LEDCFG0, 0x8888);
-	}
-	else
-	{
-		//rtw_write32(pAdapter, REG_LEDCFG0, 0x08080);
-		ledsetting = rtw_read32(pAdapter, REG_LEDCFG0);
-	}
+	ledsetting = rtw_read32(pAdapter, REG_LEDCFG0);
 
 	PHY_LCCalibrate(pAdapter);
 	PHY_IQCalibrate(pAdapter, _FALSE);
-	//dm_CheckTXPowerTracking(&pHalData->odmpriv);	//trigger thermal meter
 
 	PHY_SetRFPathSwitch(pAdapter, 1/*pHalData->bDefaultAntenna*/); //default use Main
 
@@ -1971,17 +1944,7 @@ void Hal_ProSetCrystalCap (PADAPTER pAdapter , u32 CrystalCap)
 
 	CrystalCap = CrystalCap & 0x3F;
 
-	if(IS_HARDWARE_TYPE_8192D(pAdapter))
-	{
-		PHY_SetBBReg(pAdapter, REG_AFE_XTAL_CTRL, 0xF0, CrystalCap & 0x0F);
-		PHY_SetBBReg(pAdapter, REG_AFE_PLL_CTRL, 0xF0000000, (CrystalCap & 0xF0) >> 4);
-	}
-	else if(IS_HARDWARE_TYPE_8188E(pAdapter))
-	{
-		// write 0x24[16:11] = 0x24[22:17] = CrystalCap
-		PHY_SetBBReg(pAdapter, REG_AFE_XTAL_CTRL, 0x7FF800, (CrystalCap | (CrystalCap << 6)));
-	}
-	else if(IS_HARDWARE_TYPE_8723B(pAdapter))
+	if(IS_HARDWARE_TYPE_8723B(pAdapter))
 	{
 		// write 0x2C[23:18] = 0x2C[17:12] = CrystalCap
 		PHY_SetBBReg(pAdapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));

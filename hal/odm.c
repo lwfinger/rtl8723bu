@@ -2019,16 +2019,6 @@ odm_TXPowerTrackingCheckCE(
 #if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER	Adapter = pDM_Odm->Adapter;
 
-	#if (RTL8192D_SUPPORT==1)
-	if(IS_HARDWARE_TYPE_8192D(Adapter)){
-		#if (RTL8192D_EASY_SMART_CONCURRENT == 1)
-		if(!Adapter->bSlaveOfDMSP)
-		#endif
-			rtl8192d_odm_CheckTXPowerTracking(Adapter);
-		return;
-	}
-	#endif
-
 	#if(((RTL8188E_SUPPORT==1) ||  (RTL8812A_SUPPORT==1) ||  (RTL8821A_SUPPORT==1) ||  (RTL8192E_SUPPORT==1)  ||  (RTL8723B_SUPPORT==1)  ))
 	if(!(pDM_Odm->SupportAbility & ODM_RF_TX_PWR_TRACK))
 	{
@@ -2138,9 +2128,7 @@ odm_TXPowerTrackingThermalMeterCheck(
 
 	if(!TM_Trigger)		//at least delay 1 sec
 	{
-		if(IS_HARDWARE_TYPE_8192D(Adapter))
-			PHY_SetRFReg(Adapter, ODM_RF_PATH_A, RF_T_METER_92D, BIT17 | BIT16, 0x03);
-		else if(IS_HARDWARE_TYPE_8188E(Adapter) ||
+		if(IS_HARDWARE_TYPE_8188E(Adapter) ||
 			    IS_HARDWARE_TYPE_8723B(Adapter))
 			PHY_SetRFReg(Adapter, ODM_RF_PATH_A, RF_T_METER_88E, BIT17 | BIT16, 0x03);
 		else

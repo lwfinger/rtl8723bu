@@ -400,9 +400,6 @@ void Hal_SetChannel(PADAPTER pAdapter)
 	// set RF channel register
 	for (eRFPath = 0; eRFPath < pHalData->NumTotalRFPath; eRFPath++)
 	{
-      if(IS_HARDWARE_TYPE_8192D(pAdapter))
-			_write_rfreg(pAdapter, (RF_PATH)eRFPath, rRfChannel, 0xFF, channel);
-		else
 		_write_rfreg(pAdapter, eRFPath, rRfChannel, 0x3FF, channel);
 	}
 	Hal_mpt_SwitchRfSetting(pAdapter);

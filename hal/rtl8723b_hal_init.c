@@ -3445,15 +3445,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	}
 
 	//3. Disable LED0 & 1
-	if(IS_HARDWARE_TYPE_8192DU(padapter))
-	{
-		rtw_write16(padapter, REG_LEDCFG0, 0x8888);
-	}
-	else
-	{
-		rtw_write16(padapter, REG_LEDCFG0, 0x8080);
-	}
-//	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable GPIO and LED.\n"));
+	rtw_write16(padapter, REG_LEDCFG0, 0x8080);
 } //end of _DisableGPIO()
 
 void _DisableRFAFEAndResetBB8192C(PADAPTER padapter)
@@ -3490,12 +3482,7 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 
 void _DisableRFAFEAndResetBB(PADAPTER padapter)
 {
-#if 0
-	if (IS_HARDWARE_TYPE_8192D(padapter))
-		_DisableRFAFEAndResetBB8192D(padapter);
-	else
-#endif
-		_DisableRFAFEAndResetBB8192C(padapter);
+	_DisableRFAFEAndResetBB8192C(padapter);
 }
 
 void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
@@ -3623,12 +3610,7 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 
 void _ResetDigitalProcedure1(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 {
-#if 0
-	if(IS_HARDWARE_TYPE_8192D(padapter))
-		_ResetDigitalProcedure1_92D(padapter, bWithoutHWSM);
-	else
-#endif
-		_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
+	_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
 }
 
 void _ResetDigitalProcedure2(PADAPTER padapter)

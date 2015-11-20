@@ -569,9 +569,8 @@ ODM_ResetIQKResult(IN PDM_ODM_T	pDM_Odm)
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN || DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 
-	if (!IS_HARDWARE_TYPE_8192D(Adapter))
-		return;
-#endif
+	return;
+#else
 
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_CALIBRATION, ODM_DBG_LOUD,
 		     ("PHY_ResetIQKResult:: settings regs %d default regs %d\n",
@@ -592,6 +591,7 @@ ODM_ResetIQKResult(IN PDM_ODM_T	pDM_Odm)
 
 		pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].bIQKDone = FALSE;
 	}
+#endif
 }
 
 u1Byte ODM_GetRightChnlPlaceforIQK(u1Byte chnl)
