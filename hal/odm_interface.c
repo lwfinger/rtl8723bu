@@ -653,21 +653,6 @@ ODM_FillH2CCmd(
 		}
 
 	}
-	else if(IS_HARDWARE_TYPE_8188E(Adapter))
-	{
-		switch(ElementID)
-		{
-		case ODM_H2C_PSD_RESULT:
-			FillH2CCmd88E(Adapter, H2C_88E_PSD_RESULT, CmdLen, pCmdBuffer);
-			break;
-		case ODM_H2C_RSSI_REPORT:
-			if(IS_VENDOR_8188E_I_CUT_SERIES(Adapter))
-				FillH2CCmd88E(Adapter, H2C_88E_RSSI_REPORT, CmdLen, pCmdBuffer);
-			break;
-		default:
-			break;
-		}
-	}
 	else
 	{
 		switch(ElementID)

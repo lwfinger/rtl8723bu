@@ -3416,33 +3416,12 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	value32 |= ((u4bTmp<<8) | 0x00FF0000);
 	rtw_write32(padapter, REG_GPIO_PIN_CTRL, value32);
 
-	if (IS_HARDWARE_TYPE_8723AU(padapter) ||
-		IS_HARDWARE_TYPE_8723AS(padapter))
-	{
-		//
-		// <Roger_Notes> For RTL8723u multi-function configuration which was autoload from Efuse offset 0x0a and 0x0b,
-		// WLAN HW GPIO[9], GPS HW GPIO[10] and BT HW GPIO[11].
-		// Added by Roger, 2010.10.07.
-		//
-		//2. Disable GPIO[8] and GPIO[12]
-		rtw_write16(padapter, REG_GPIO_IO_SEL_2, 0x0000); // Configure all pins as input mode.
-		value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL_2) & 0xFFFF001F;
-		u4bTmp = value32 & 0x0000001F;
-//		if( IS_MULTI_FUNC_CHIP(padapter) )
-//			value32 |= ((u4bTmp<<8) | 0x00110000); // Set pin 8 and pin 12 to output mode.
-//		else
-			value32 |= ((u4bTmp<<8) | 0x001D0000); // Set pin 8, 10, 11 and pin 12 to output mode.
-		rtw_write32(padapter, REG_GPIO_PIN_CTRL_2, value32);
-	}
-	else
-	{
-		//2. Disable GPIO[10:8]
-		rtw_write8(padapter, REG_MAC_PINMUX_CFG, 0x00);
-		value16 = rtw_read16(padapter, REG_GPIO_IO_SEL) & 0xFF0F;
-		value8 = (u8) (value16&0x000F);
-		value16 |= ((value8<<4) | 0x0780);
-		rtw_write16(padapter, REG_GPIO_IO_SEL, value16);
-	}
+	//2. Disable GPIO[10:8]
+	rtw_write8(padapter, REG_MAC_PINMUX_CFG, 0x00);
+	value16 = rtw_read16(padapter, REG_GPIO_IO_SEL) & 0xFF0F;
+	value8 = (u8) (value16&0x000F);
+	value16 |= ((value8<<4) | 0x0780);
+	rtw_write16(padapter, REG_GPIO_IO_SEL, value16);
 
 	//3. Disable LED0 & 1
 	rtw_write16(padapter, REG_LEDCFG0, 0x8080);

@@ -2028,10 +2028,7 @@ odm_TXPowerTrackingCheckCE(
 	if(!pDM_Odm->RFCalibrateInfo.TM_Trigger)		//at least delay 1 sec
 	{
 		//pHalData->TxPowerCheckCnt++;	//cosa add for debug
-		if(IS_HARDWARE_TYPE_8188E(Adapter))
-			ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_A, RF_T_METER_NEW, (BIT17 | BIT16), 0x03);
-		else
-			ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_A, RF_T_METER_OLD, bRFRegOffsetMask, 0x60);
+		ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_A, RF_T_METER_OLD, bRFRegOffsetMask, 0x60);
 
 		//DBG_871X("Trigger Thermal Meter!!\n");
 
@@ -2061,9 +2058,6 @@ odm_TXPowerTrackingCheckMP(
 		RT_TRACE(COMP_POWER_TRACKING, DBG_LOUD, ("===>ODM_CheckPowerStatus() return FALSE\n"));
 		return;
 	}
-
-	if(IS_HARDWARE_TYPE_8723A(Adapter))
-		return;
 
 	if(!Adapter->bSlaveOfDMSP || Adapter->DualMacSmartConcurrent == FALSE)
 		odm_TXPowerTrackingThermalMeterCheck(Adapter);
@@ -2128,11 +2122,7 @@ odm_TXPowerTrackingThermalMeterCheck(
 
 	if(!TM_Trigger)		//at least delay 1 sec
 	{
-		if(IS_HARDWARE_TYPE_8188E(Adapter) ||
-			    IS_HARDWARE_TYPE_8723B(Adapter))
-			PHY_SetRFReg(Adapter, ODM_RF_PATH_A, RF_T_METER_88E, BIT17 | BIT16, 0x03);
-		else
-			PHY_SetRFReg(Adapter, ODM_RF_PATH_A, RF_T_METER, bRFRegOffsetMask, 0x60);
+		PHY_SetRFReg(Adapter, ODM_RF_PATH_A, RF_T_METER, bRFRegOffsetMask, 0x60);
 
 		RT_TRACE(COMP_POWER_TRACKING, DBG_LOUD,("Trigger Thermal Meter!!\n"));
 
@@ -2153,24 +2143,6 @@ VOID
 odm_SwAntDivInit_NIC_8723A(
 	IN	PDM_ODM_T		pDM_Odm)
 {
-	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-	PADAPTER		Adapter = pDM_Odm->Adapter;
-
-	u1Byte			btAntNum=BT_GetPgAntNum(Adapter);
-
-	if(IS_HARDWARE_TYPE_8723A(Adapter))
-	{
-		pDM_SWAT_Table->ANTA_ON =TRUE;
-
-		// Set default antenna B status by PG
-		if(btAntNum == 2)
-			pDM_SWAT_Table->ANTB_ON = TRUE;
-		else if(btAntNum == 1)
-			pDM_SWAT_Table->ANTB_ON = FALSE;
-		else
-			pDM_SWAT_Table->ANTB_ON = TRUE;
-	}
-
 }
 
 #endif //end #ifMP
@@ -4851,10 +4823,6 @@ ODM_PSDMonitor(
 	IN	PDM_ODM_T	pDM_Odm
 	)
 {
-	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
-	//if(IS_HARDWARE_TYPE_8723AE(Adapter))
-
 	if(pDM_Odm->SupportICType == ODM_RTL8723A)   //may need to add other IC type
 	{
 		if(pDM_Odm->SupportInterface==ODM_ITRF_PCIE)

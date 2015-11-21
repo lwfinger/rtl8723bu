@@ -634,22 +634,21 @@ void Hal_SetDataRate(PADAPTER pAdapter)
 
 	DataRate=MptToMgntRate(pAdapter->mppriv.rateidx);
 
-		if(!IS_HARDWARE_TYPE_8723A(pAdapter))
-	        Hal_mpt_SwitchRfSetting(pAdapter);
-		if (IS_CCK_RATE(DataRate))
-		{
-			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, 0xF, 0x6);
-			else // S0
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0x6);
-		}
-		else
-		{
-			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, 0xF, 0xE);
-			else // S0
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0xE);
-		}
+        Hal_mpt_SwitchRfSetting(pAdapter);
+	if (IS_CCK_RATE(DataRate))
+	{
+		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, 0xF, 0x6);
+		else // S0
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0x6);
+	}
+	else
+	{
+		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, 0xF, 0xE);
+		else // S0
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0xE);
+	}
 
 	// <20130913, Kordan> 8723BS TFBGA uses the default setting.
 	if ((IS_HARDWARE_TYPE_8723BS(pAdapter) &&
@@ -885,23 +884,7 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 	pAdapter->mppriv.MptCtx.bSingleTone = bStart;
 	if (bStart)// Start Single Tone.
 	{
-
-		// <20120326, Kordan> To amplify the power of tone for Xtal calibration. (asked by Edlu)
-		if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		 {
-			reg58 = PHY_QueryRFReg(pAdapter, rfPath, LNA_Low_Gain_3, bRFRegOffsetMask);
-			if (rfPath == ODM_RF_PATH_A)
-				pMptCtx->backup0x58_RF_A = reg58;
-			else
-				pMptCtx->backup0x58_RF_B = reg58;
-
-			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, LNA_Low_Gain_3, BIT1, 0x1); // RF LO enabled
-			PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bCCKEn, 0x0);
-			PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bOFDMEn, 0x0);
-
-
-		}
-		else if (IS_HARDWARE_TYPE_8723B(pAdapter))
+		if (IS_HARDWARE_TYPE_8723B(pAdapter))
 		{
 			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
 				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
@@ -926,14 +909,7 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 	else// Stop Single Tone.
 	{
 	// Stop Single Tone.
-		if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		{
-            PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, LNA_Low_Gain_3, bRFRegOffsetMask, pMptCtx->backup0x58_RF_A);
-
-		PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bCCKEn, 0x1);
-		PHY_SetBBReg(pAdapter, rFPGA0_RFMOD, bOFDMEn, 0x1);
-		}
-		else if (IS_HARDWARE_TYPE_8723B(pAdapter))
+		if (IS_HARDWARE_TYPE_8723B(pAdapter))
 		{
 			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
 				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
