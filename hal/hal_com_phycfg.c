@@ -2266,14 +2266,7 @@ PHY_GetTxPowerIndex(
 	IN	u8					Channel
 	)
 {
-	u8	txPower = 0x3E;
-
-	if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
-#if (RTL8723B_SUPPORT==1)
-		txPower = PHY_GetTxPowerIndex_8723B(pAdapter, RFPath, Rate, BandWidth, Channel);
-#endif
-	}
-	return txPower;
+	return PHY_GetTxPowerIndex_8723B(pAdapter, RFPath, Rate, BandWidth, Channel);
 }
 
 VOID
@@ -2284,11 +2277,7 @@ PHY_SetTxPowerIndex(
 	IN	u8				Rate
 	)
 {
-	if (IS_HARDWARE_TYPE_8723B(pAdapter)) {
-#if (RTL8723B_SUPPORT==1)
-		PHY_SetTxPowerIndex_8723B( pAdapter, PowerIndex, RFPath, Rate );
-#endif
-	}
+	PHY_SetTxPowerIndex_8723B( pAdapter, PowerIndex, RFPath, Rate );
 }
 
 VOID

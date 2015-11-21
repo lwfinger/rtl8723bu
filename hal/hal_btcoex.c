@@ -1226,23 +1226,20 @@ void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
 	pBtCoexist = (PBTC_COEXIST)pBtcContext;
 	padapter = pBtCoexist->Adapter;
 
-	if (IS_HARDWARE_TYPE_8723B(padapter))
-	{
-		CmdBuffer1[0] |= (OperVer & 0x0f);						/* Set OperVer */
-		CmdBuffer1[0] |= ((ReqNum << 4) & 0xf0);				/* Set ReqNum */
-		CmdBuffer1[1] = 0x0d;									/* Set OpCode to BT_LO_OP_WRITE_REG_VALUE */
-		CmdBuffer1[2] = ValueToSet[0];							/* Set WriteRegValue */
-		rtw_hal_fill_h2c_cmd(padapter, 0x67, 4, &(CmdBuffer1[0]));
+	CmdBuffer1[0] |= (OperVer & 0x0f);						/* Set OperVer */
+	CmdBuffer1[0] |= ((ReqNum << 4) & 0xf0);				/* Set ReqNum */
+	CmdBuffer1[1] = 0x0d;									/* Set OpCode to BT_LO_OP_WRITE_REG_VALUE */
+	CmdBuffer1[2] = ValueToSet[0];							/* Set WriteRegValue */
+	rtw_hal_fill_h2c_cmd(padapter, 0x67, 4, &(CmdBuffer1[0]));
 
-		rtw_msleep_os(200);
-		ReqNum++;
+	rtw_msleep_os(200);
+	ReqNum++;
 
-		CmdBuffer2[0] |= (OperVer & 0x0f);						/* Set OperVer */
-		CmdBuffer2[0] |= ((ReqNum << 4) & 0xf0);				/* Set ReqNum */
-		CmdBuffer2[1] = 0x0c;									/* Set OpCode of BT_LO_OP_WRITE_REG_ADDR */
-		CmdBuffer2[3] = AddrToSet[0];							/* Set WriteRegAddr */
-		rtw_hal_fill_h2c_cmd(padapter, 0x67, 4, &(CmdBuffer2[0]));
-	}
+	CmdBuffer2[0] |= (OperVer & 0x0f);						/* Set OperVer */
+	CmdBuffer2[0] |= ((ReqNum << 4) & 0xf0);				/* Set ReqNum */
+	CmdBuffer2[1] = 0x0c;									/* Set OpCode of BT_LO_OP_WRITE_REG_ADDR */
+	CmdBuffer2[3] = AddrToSet[0];							/* Set WriteRegAddr */
+	rtw_hal_fill_h2c_cmd(padapter, 0x67, 4, &(CmdBuffer2[0]));
 }
 
 u32 halbtcoutsrc_GetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr)
@@ -1413,13 +1410,10 @@ void EXhalbtcoutsrc_PowerOnSetting(PBTC_COEXIST pBtCoexist)
 		return;
 
 	/* Power on setting function is only added in 8723B currently */
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_PowerOnSetting(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_PowerOnSetting(pBtCoexist);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_PowerOnSetting(pBtCoexist);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_PowerOnSetting(pBtCoexist);
 }
 
 void EXhalbtcoutsrc_InitHwConfig(PBTC_COEXIST pBtCoexist, u8 bWifiOnly)
@@ -1429,13 +1423,10 @@ void EXhalbtcoutsrc_InitHwConfig(PBTC_COEXIST pBtCoexist, u8 bWifiOnly)
 
 	pBtCoexist->statistics.cntInitHwConfig++;
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_InitHwConfig(pBtCoexist, bWifiOnly);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_InitHwConfig(pBtCoexist, bWifiOnly);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_InitHwConfig(pBtCoexist, bWifiOnly);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_InitHwConfig(pBtCoexist, bWifiOnly);
 }
 
 void EXhalbtcoutsrc_InitCoexDm(PBTC_COEXIST pBtCoexist)
@@ -1445,13 +1436,10 @@ void EXhalbtcoutsrc_InitCoexDm(PBTC_COEXIST pBtCoexist)
 
 	pBtCoexist->statistics.cntInitCoexDm++;
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_InitCoexDm(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_InitCoexDm(pBtCoexist);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_InitCoexDm(pBtCoexist);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_InitCoexDm(pBtCoexist);
 	pBtCoexist->bInitilized = _TRUE;
 }
 
@@ -1474,13 +1462,10 @@ void EXhalbtcoutsrc_IpsNotify(PBTC_COEXIST pBtCoexist, u8 type)
 	// All notify is called in cmd thread, don't need to leave low power again
 //	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_IpsNotify(pBtCoexist, ipsType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_IpsNotify(pBtCoexist, ipsType);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_IpsNotify(pBtCoexist, ipsType);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_IpsNotify(pBtCoexist, ipsType);
 }
 
 void EXhalbtcoutsrc_LpsNotify(PBTC_COEXIST pBtCoexist, u8 type)
@@ -1500,13 +1485,10 @@ void EXhalbtcoutsrc_LpsNotify(PBTC_COEXIST pBtCoexist, u8 type)
 	else
 		lpsType = BTC_LPS_ENABLE;
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_LpsNotify(pBtCoexist, lpsType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_LpsNotify(pBtCoexist, lpsType);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_LpsNotify(pBtCoexist, lpsType);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_LpsNotify(pBtCoexist, lpsType);
 }
 
 void EXhalbtcoutsrc_ScanNotify(PBTC_COEXIST pBtCoexist, u8 type)
@@ -1533,13 +1515,10 @@ void EXhalbtcoutsrc_ScanNotify(PBTC_COEXIST pBtCoexist, u8 type)
 	// All notify is called in cmd thread, don't need to leave low power again
 //	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_ScanNotify(pBtCoexist, scanType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_ScanNotify(pBtCoexist, scanType);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_ScanNotify(pBtCoexist, scanType);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_ScanNotify(pBtCoexist, scanType);
 }
 
 void EXhalbtcoutsrc_ConnectNotify(PBTC_COEXIST pBtCoexist, u8 action)
@@ -1560,13 +1539,10 @@ void EXhalbtcoutsrc_ConnectNotify(PBTC_COEXIST pBtCoexist, u8 action)
 	// All notify is called in cmd thread, don't need to leave low power again
 //	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_ConnectNotify(pBtCoexist, assoType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_ConnectNotify(pBtCoexist, assoType);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_ConnectNotify(pBtCoexist, assoType);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_ConnectNotify(pBtCoexist, assoType);
 }
 
 void EXhalbtcoutsrc_MediaStatusNotify(PBTC_COEXIST pBtCoexist, RT_MEDIA_STATUS mediaStatus)
@@ -1588,13 +1564,10 @@ void EXhalbtcoutsrc_MediaStatusNotify(PBTC_COEXIST pBtCoexist, RT_MEDIA_STATUS m
 	// All notify is called in cmd thread, don't need to leave low power again
 //	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_MediaStatusNotify(pBtCoexist, mStatus);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_MediaStatusNotify(pBtCoexist, mStatus);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_MediaStatusNotify(pBtCoexist, mStatus);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_MediaStatusNotify(pBtCoexist, mStatus);
 }
 
 void EXhalbtcoutsrc_SpecialPacketNotify(PBTC_COEXIST pBtCoexist, u8 pktType)
@@ -1622,13 +1595,10 @@ void EXhalbtcoutsrc_SpecialPacketNotify(PBTC_COEXIST pBtCoexist, u8 pktType)
 	// All notify is called in cmd thread, don't need to leave low power again
 //	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_SpecialPacketNotify(pBtCoexist, packetType);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_SpecialPacketNotify(pBtCoexist, packetType);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_SpecialPacketNotify(pBtCoexist, packetType);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_SpecialPacketNotify(pBtCoexist, packetType);
 }
 
 void EXhalbtcoutsrc_BtInfoNotify(PBTC_COEXIST pBtCoexist, u8 *tmpBuf, u8 length)
@@ -1638,16 +1608,10 @@ void EXhalbtcoutsrc_BtInfoNotify(PBTC_COEXIST pBtCoexist, u8 *tmpBuf, u8 length)
 
 	pBtCoexist->statistics.cntBtInfoNotify++;
 
-	// All notify is called in cmd thread, don't need to leave low power again
-//	halbtcoutsrc_LeaveLowPower(pBtCoexist);
-
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_BtInfoNotify(pBtCoexist, tmpBuf, length);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_BtInfoNotify(pBtCoexist, tmpBuf, length);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_BtInfoNotify(pBtCoexist, tmpBuf, length);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_BtInfoNotify(pBtCoexist, tmpBuf, length);
 }
 
 VOID
@@ -1660,11 +1624,8 @@ EXhalbtcoutsrc_RfStatusNotify(
 		return;
 	pBtCoexist->statistics.cntRfStatusNotify++;
 
-	if(IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if(pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_RfStatusNotify(pBtCoexist, type);
-	}
+	if(pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_RfStatusNotify(pBtCoexist, type);
 }
 
 void EXhalbtcoutsrc_StackOperationNotify(PBTC_COEXIST pBtCoexist, u8 type)
@@ -1676,29 +1637,19 @@ void EXhalbtcoutsrc_HaltNotify(PBTC_COEXIST pBtCoexist)
 	if (!halbtcoutsrc_IsBtCoexistAvailable(pBtCoexist))
 		return;
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_HaltNotify(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_HaltNotify(pBtCoexist);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_HaltNotify(pBtCoexist);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_HaltNotify(pBtCoexist);
 	pBtCoexist->bBinded = FALSE;
 }
 
 void EXhalbtcoutsrc_SwitchBtTRxMask(PBTC_COEXIST pBtCoexist)
 {
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-		{
-			halbtcoutsrc_SetBtReg(pBtCoexist, 0, 0x3c, 0x01); //BT goto standby while GNT_BT 1-->0
-		}
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-		{
-			halbtcoutsrc_SetBtReg(pBtCoexist, 0, 0x3c, 0x15); //BT goto standby while GNT_BT 1-->0
-		}
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		halbtcoutsrc_SetBtReg(pBtCoexist, 0, 0x3c, 0x01); //BT goto standby while GNT_BT 1-->0
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		halbtcoutsrc_SetBtReg(pBtCoexist, 0, 0x3c, 0x15); //BT goto standby while GNT_BT 1-->0
 }
 
 void EXhalbtcoutsrc_PnpNotify(PBTC_COEXIST pBtCoexist, u8 pnpState)
@@ -1711,13 +1662,10 @@ void EXhalbtcoutsrc_PnpNotify(PBTC_COEXIST pBtCoexist, u8 pnpState)
 	// once pnp is notified to sleep state, we have to leave LPS that we can sleep normally.
 	//
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_PnpNotify(pBtCoexist,pnpState);
-		else if(pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_PnpNotify(pBtCoexist,pnpState);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_PnpNotify(pBtCoexist,pnpState);
+	else if(pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_PnpNotify(pBtCoexist,pnpState);
 }
 
 void EXhalbtcoutsrc_CoexDmSwitch(PBTC_COEXIST pBtCoexist)
@@ -1728,17 +1676,14 @@ void EXhalbtcoutsrc_CoexDmSwitch(PBTC_COEXIST pBtCoexist)
 
 	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
+	if (pBtCoexist->boardInfo.btdmAntNum == 1)
 	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 1)
-		{
-			pBtCoexist->bStopCoexDm = TRUE;
-			EXhalbtc8723b1ant_CoexDmReset(pBtCoexist);
-			EXhalbtcoutsrc_SetAntNum(BT_COEX_ANT_TYPE_DETECTED, 2);
-			EXhalbtc8723b2ant_InitHwConfig(pBtCoexist, FALSE);
-			EXhalbtc8723b2ant_InitCoexDm(pBtCoexist);
-			pBtCoexist->bStopCoexDm = FALSE;
-		}
+		pBtCoexist->bStopCoexDm = TRUE;
+		EXhalbtc8723b1ant_CoexDmReset(pBtCoexist);
+		EXhalbtcoutsrc_SetAntNum(BT_COEX_ANT_TYPE_DETECTED, 2);
+		EXhalbtc8723b2ant_InitHwConfig(pBtCoexist, FALSE);
+		EXhalbtc8723b2ant_InitCoexDm(pBtCoexist);
+		pBtCoexist->bStopCoexDm = FALSE;
 	}
 
 	halbtcoutsrc_NormalLowPower(pBtCoexist);
@@ -1754,13 +1699,10 @@ void EXhalbtcoutsrc_Periodical(PBTC_COEXIST pBtCoexist)
 	// don't need to leave low power again
 //	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_Periodical(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_Periodical(pBtCoexist);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_Periodical(pBtCoexist);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_Periodical(pBtCoexist);
 }
 
 void EXhalbtcoutsrc_DbgControl(PBTC_COEXIST pBtCoexist, u8 opCode, u8 opLen, u8 *pData)
@@ -1884,13 +1826,10 @@ void EXhalbtcoutsrc_DisplayBtCoexInfo(PBTC_COEXIST pBtCoexist)
 
 	halbtcoutsrc_LeaveLowPower(pBtCoexist);
 
-	if (IS_HARDWARE_TYPE_8723B(pBtCoexist->Adapter))
-	{
-		if (pBtCoexist->boardInfo.btdmAntNum == 2)
-			EXhalbtc8723b2ant_DisplayCoexInfo(pBtCoexist);
-		else if (pBtCoexist->boardInfo.btdmAntNum == 1)
-			EXhalbtc8723b1ant_DisplayCoexInfo(pBtCoexist);
-	}
+	if (pBtCoexist->boardInfo.btdmAntNum == 2)
+		EXhalbtc8723b2ant_DisplayCoexInfo(pBtCoexist);
+	else if (pBtCoexist->boardInfo.btdmAntNum == 1)
+		EXhalbtc8723b1ant_DisplayCoexInfo(pBtCoexist);
 	halbtcoutsrc_NormalLowPower(pBtCoexist);
 }
 

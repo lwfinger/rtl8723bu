@@ -651,14 +651,10 @@ void Hal_SetDataRate(PADAPTER pAdapter)
 	}
 
 	// <20130913, Kordan> 8723BS TFBGA uses the default setting.
-	if ((IS_HARDWARE_TYPE_8723BS(pAdapter) &&
-		  ((pHalData->PackageType == PACKAGE_TFBGA79) || (pHalData->PackageType == PACKAGE_TFBGA90))))
-	{
-		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
-			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, 0xF, 0xE);
-		else // S0
-			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0xE);
-	}
+	if (pMptCtx->MptRfPath == ODM_RF_PATH_A) // S1
+		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x51, 0xF, 0xE);
+	else // S0
+		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x71, 0xF, 0xE);
 }
 
 #define RF_PATH_AB	22
@@ -884,23 +880,14 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 	pAdapter->mppriv.MptCtx.bSingleTone = bStart;
 	if (bStart)// Start Single Tone.
 	{
-		if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		{
-			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x1); // RF LO enabled
-			} else {
-				// S0/S1 both use PATH A to configure
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x1); // RF LO enabled
-			}
+		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x1); // RF LO enabled
+		} else {
+			// S0/S1 both use PATH A to configure
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x1); // RF LO enabled
 		}
-		else
-		{
-			// Turn On SingleTone and turn off the other test modes.
-			PHY_SetBBReg(pAdapter, rOFDM1_LSTF, BIT30|BIT29|BIT28, OFDM_SingleTone);
-		}
-
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
@@ -909,32 +896,19 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 	else// Stop Single Tone.
 	{
 	// Stop Single Tone.
-		if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		{
-			if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x0); // RF LO disabled
-			} else {
-				// S0/S1 both use PATH A to configure
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
-				PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x0); // RF LO disabled
-			}
-		}
-		else
-		{
-			// Turn off all test modes.
-			/*
-			PHY_SetBBReg(pAdapter, rSingleTone_ContTx_Jaguar, BIT18|BIT17|BIT16, OFDM_ALL_OFF);
-			*/
+		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x0); // RF LO disabled
+		} else {
+			// S0/S1 both use PATH A to configure
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
+			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x0); // RF LO disabled
 		}
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
-
 	}
-
 }
-
 
 void Hal_SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
 {
