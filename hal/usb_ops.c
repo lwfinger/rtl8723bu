@@ -687,22 +687,20 @@ static s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
 }
 #endif
 #ifdef CONFIG_C2H_PACKET_EN
-static void rtl8723bu_c2h_packet_handler(PADAPTER padapter, u8 *pbuf, u16 length)
+static void rtl8723bu_c2h_packet_handler(PADAPTER padapter, u8 *pbuf, u16 length, u8 *tmpbuf)
 {
-	u8 *tmpBuf=NULL;
-
 	if(length == 0)
 		return;
 
 	DBG_871X("+%s() length=%d\n", __func__, length);
 
-	tmpBuf = rtw_zmalloc(length);
-	if (tmpBuf == NULL)
+	tmpbuf = rtw_zmalloc(length);
+	if (tmpbuf == NULL)
 		return;
 
-	_rtw_memcpy(tmpBuf, pbuf, length);
+	_rtw_memcpy(tmpbuf, pbuf, length);
 
-	rtw_c2h_packet_wk_cmd(padapter, tmpBuf, length);
+	rtw_c2h_packet_wk_cmd(padapter, tmpbuf, length);
 
 	DBG_871X("-%s()\n", __func__);
 
@@ -711,7 +709,7 @@ static void rtl8723bu_c2h_packet_handler(PADAPTER padapter, u8 *pbuf, u16 length
 #endif
 
 
-static int recvbuf2recvframe(_adapter *padapter,
+static int recvbuf2recvframe(_adapter *padapter, u8 *tmpbuf,
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
 struct recv_buf *precvbuf
 #else
@@ -848,7 +846,7 @@ _pkt *pskb
 							     C2hEvent.CmdLen);
 				} else {
 #ifdef CONFIG_C2H_PACKET_EN
-					rtl8723bu_c2h_packet_handler(padapter, precvframe->u.hdr.rx_data, pattrib->pkt_len);
+					rtl8723bu_c2h_packet_handler(padapter, precvframe->u.hdr.rx_data, pattrib->pkt_len, tmpbuf);
 #endif
 				}
 			}
@@ -878,6 +876,7 @@ void rtl8723bu_recv_tasklet(void *priv)
 	struct recv_buf *precvbuf = NULL;
 	_adapter	*padapter = (_adapter*)priv;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
+	u8 *tmpbuf;
 
 	while (NULL != (precvbuf = rtw_dequeue_recvbuf(&precvpriv->recv_buf_pending_queue))) {
 		if ((padapter->bDriverStopped == _TRUE) ||
@@ -887,12 +886,12 @@ void rtl8723bu_recv_tasklet(void *priv)
 			break;
 		}
 
-		recvbuf2recvframe(padapter, precvbuf);
+		recvbuf2recvframe(padapter, tmpbuf, precvbuf);
 
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
 			      (unsigned char *)precvbuf);
 	}
-
+	kfree(tmpbuf);
 }
 
 static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
@@ -1040,6 +1039,7 @@ void rtl8723bu_recv_tasklet(void *priv)
 	_adapter		*padapter = (_adapter*)priv;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 	struct recv_buf		*precvbuf = NULL;
+	u8 *tmpbuf = NULL;
 
 	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue))) {
 		if (padapter->bDriverStopped == _TRUE ||
@@ -1053,7 +1053,7 @@ void rtl8723bu_recv_tasklet(void *priv)
 			break;
 		}
 
-		recvbuf2recvframe(padapter, pskb);
+		recvbuf2recvframe(padapter, tmpbuf, pskb);
 
 #ifdef CONFIG_PREALLOC_RECV_SKB
 		skb_reset_tail_pointer(pskb);
@@ -1073,6 +1073,7 @@ void rtl8723bu_recv_tasklet(void *priv)
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
 			      (unsigned char *)precvbuf);
 	}
+	kfree(tmpbuf);
 }
 
 
