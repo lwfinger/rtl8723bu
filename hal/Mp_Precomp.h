@@ -36,8 +36,6 @@
 #endif
 
 #include "HalBtcOutSrc.h"
-#include "HalBtc8723a1Ant.h"
-#include "HalBtc8723a2Ant.h"
 #include "HalBtc8723b1Ant.h"
 #include "HalBtc8723b2Ant.h"
 
