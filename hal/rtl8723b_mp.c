@@ -785,12 +785,6 @@ s32 Hal_SetThermalMeter(PADAPTER pAdapter, u8 target_ther)
 	return _SUCCESS;
 }
 
-void Hal_TriggerRFThermalMeter(PADAPTER pAdapter)
-{
-	PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_T_METER_8723B, BIT17 | BIT16, 0x03);
-//	RT_TRACE(_module_mp_,_drv_alert_, ("TriggerRFThermalMeter() finished.\n" ));
-}
-
 u8 Hal_ReadRFThermalMeter(PADAPTER pAdapter)
 {
 	u32 ThermalValue = 0;
@@ -802,17 +796,10 @@ u8 Hal_ReadRFThermalMeter(PADAPTER pAdapter)
 
 void Hal_GetThermalMeter(PADAPTER pAdapter, u8 *value)
 {
-#if 0
-	fw_cmd(pAdapter, IOCMD_GET_THERMAL_METER);
-	rtw_msleep_os(1000);
-	fw_cmd_data(pAdapter, value, 1);
-	*value &= 0xFF;
-#else
-
-	Hal_TriggerRFThermalMeter(pAdapter);
+	PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_T_METER_8723B, BIT17 | BIT16,
+		     0x03);
 	rtw_msleep_os(1000);
 	*value = Hal_ReadRFThermalMeter(pAdapter);
-#endif
 }
 
 void Hal_SetSingleCarrierTx(PADAPTER pAdapter, u8 bStart)

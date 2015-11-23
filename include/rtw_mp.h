@@ -703,7 +703,6 @@ extern void Hal_MPT_CCKTxPowerAdjust(PADAPTER Adapter, BOOLEAN bInCH14);
 extern void Hal_MPT_CCKTxPowerAdjustbyIndex(PADAPTER pAdapter, BOOLEAN beven);
 extern void Hal_SetCCKTxPower(PADAPTER pAdapter, u8 * TxPower);
 extern void Hal_SetOFDMTxPower(PADAPTER pAdapter, u8 * TxPower);
-extern void Hal_TriggerRFThermalMeter(PADAPTER pAdapter);
 extern u8 Hal_ReadRFThermalMeter(PADAPTER pAdapter);
 extern void Hal_SetCCKContinuousTx(PADAPTER pAdapter, u8 bStart);
 extern void Hal_SetOFDMContinuousTx(PADAPTER pAdapter, u8 bStart);

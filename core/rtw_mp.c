@@ -945,11 +945,6 @@ s32 SetThermalMeter(PADAPTER pAdapter, u8 target_ther)
 	return Hal_SetThermalMeter( pAdapter, target_ther);
 }
 
-static void TriggerRFThermalMeter(PADAPTER pAdapter)
-{
-	Hal_TriggerRFThermalMeter(pAdapter);
-}
-
 static u8 ReadRFThermalMeter(PADAPTER pAdapter)
 {
 	return Hal_ReadRFThermalMeter(pAdapter);
