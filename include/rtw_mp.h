@@ -396,19 +396,6 @@ struct bb_reg_param {
 	u32 value;
 };
 
-typedef struct _MP_FIRMWARE {
-	FIRMWARE_SOURCE eFWSource;
-#ifdef CONFIG_EMBEDDED_FWIMG
-	u8*		szFwBuffer;
-#else
-	u8			szFwBuffer[0x8000];
-#endif
-	u32		ulFwLength;
-} RT_MP_FIRMWARE, *PRT_MP_FIRMWARE;
-
-
-
-
 //=======================================================================
 
 #define LOWER	_TRUE
@@ -599,17 +586,8 @@ typedef enum	_MPT_TXPWR_DEF{
 
 #ifdef CONFIG_RF_GAIN_OFFSET
 
-#if defined(CONFIG_RTL8723A)
-	#define		REG_RF_BB_GAIN_OFFSET_CCK	0x0d
-	#define		REG_RF_BB_GAIN_OFFSET_OFDM	0x0e
-	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#elif defined(CONFIG_RTL8723B)
 	#define		REG_RF_BB_GAIN_OFFSET	0x7f
 	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#else
-	#define		REG_RF_BB_GAIN_OFFSET	0x55
-	#define		RF_GAIN_OFFSET_MASK	0xfffff
-#endif	//CONFIG_RTL8723A
 
 #endif //CONFIG_RF_GAIN_OFFSET
 

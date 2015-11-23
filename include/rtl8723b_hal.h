@@ -82,7 +82,7 @@ typedef struct _RT_FIRMWARE {
 	u8			szFwBuffer[FW_8723B_SIZE];
 #endif
 	u32			ulFwLength;
-} RT_FIRMWARE_8723B, *PRT_FIRMWARE_8723B;
+} RT_FIRMWARE_8723B, *PRT_FIRMWARE_8723B, *PRT_MP_FIRMWARE;
 
 //
 // This structure must be cared byte-ordering
@@ -322,7 +322,6 @@ void Debug_FwC2H_8723b(PADAPTER padapter, u8 *pdata, u8 len);
 s32 c2h_id_filter_ccx_8723b(u8 *buf);
 s32 c2h_handler_8723b(PADAPTER padapter, u8 *pC2hEvent);
 u8 MRateToHwRate8723B(u8  rate);
-u8 HwRateToMRate8723B(u8	 rate);
 
 #ifdef CONFIG_RF_GAIN_OFFSET
 void Hal_ReadRFGainOffset(PADAPTER pAdapter,u8* hwinfo,BOOLEAN AutoLoadFail);

@@ -224,10 +224,13 @@ ODM_TxPwrTrackSetPwr_8723B(PDM_ODM_T pDM_Odm, PWRTRACK_METHOD Method,
 	u1Byte		Final_CCK_Swing_Index = 0;
 	u1Byte		i = 0;
 
+#ifdef CONFIG_MP_INCLUDED
 	if (*(pDM_Odm->mp_mode) == 1) {
 		PMPT_CONTEXT pMptCtx = &(Adapter->mppriv.MptCtx);
 		TxRate = MptToMgntRate(pMptCtx->MptRateIndex);
-	} else {
+	} else
+#endif
+	{
 		u2Byte rate = *(pDM_Odm->pForcedDataRate);
 
 		if (!rate) { //auto rate
@@ -1823,11 +1826,12 @@ phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 	const u4Byte retryCount = 2;
 #endif
 
-	if (pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3) {
+#ifdef CONFIG_MP_INCLUDED
+ 	if (pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3) {
 		DBG_871X("%s() :return !!!!!!!!!!!!!!!!!!!!!!!!!!\n",__func__);
 		return;
 	}
-
+#endif
 	// Note: IQ calibration must be performed after loading
 	//		PHY_REG.txt , and radio_a, radio_b.txt
 
@@ -2111,10 +2115,12 @@ phy_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm, IN BOOLEAN is2T)
 	u4Byte	RF_Amode=0, RF_Bmode=0, LC_Cal;
 	PADAPTER pAdapter = pDM_Odm->Adapter;
 
+#ifdef CONFIG_MP_INCLUDED
 	if (pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3) {
 		DBG_871X("%s() :return !!!!!!!!!!!!!!!!!!!!!!!!!!\n",__func__);
 		return;
 	}
+#endif
 
 	//Check continuous TX and Packet TX
 	tmpReg = ODM_Read1Byte(pDM_Odm, 0xd03);
@@ -2292,7 +2298,7 @@ phy_APCalibrate_8723B(IN PADAPTER pAdapter, IN s1Byte delta, IN BOOLEAN is2T)
 
 	s4Byte BB_offset, delta_V, delta_offset;
 
-#if MP_DRIVER == 1
+#ifdef CONFIG_MP_INCLUDED
 	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);
 	pMptCtx->APK_bound[0] = 45;
 	pMptCtx->APK_bound[1] = 52;
@@ -2717,7 +2723,7 @@ PHY_IQCalibrate_8723B(IN PADAPTER pAdapter, IN BOOLEAN bReCovery,
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	PDM_ODM_T	pDM_Odm = &pHalData->odmpriv;
 
-#if (MP_DRIVER == 1)
+#ifdef CONFIG_MP_INCLUDED
 	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);
 #endif//(MP_DRIVER == 1)
 
@@ -3003,10 +3009,10 @@ PHY_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm)
 	s4Byte		ProgressingTime;
 
 	PADAPTER	pAdapter = pDM_Odm->Adapter;
+#ifdef CONFIG_MP_INCLUDED
 	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);
 
 
-#if MP_DRIVER == 1
 	bStartContTx = pMptCtx->bStartContTx;
 	bSingleTone = pMptCtx->bSingleTone;
 	bCarrierSuppression = pMptCtx->bCarrierSuppression;

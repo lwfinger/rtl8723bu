@@ -27,7 +27,7 @@ CONFIG_RTL8723B = y
 ######################### Interface ###########################
 CONFIG_USB_HCI = y
 ########################## Features ###########################
-CONFIG_MP_INCLUDED = y
+# CONFIG_MP_INCLUDED = y
 CONFIG_POWER_SAVING = y
 CONFIG_USB_AUTOSUSPEND = n
 CONFIG_HW_PWRP_DETECTION = n

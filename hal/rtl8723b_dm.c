@@ -524,10 +524,10 @@ rtl8723b_HalDmWatchDog(
 	PADAPTER pbuddy_adapter = Adapter->pbuddy_adapter;
 #endif //CONFIG_CONCURRENT_MODE
 
-//#if MP_DRIVER
+#ifdef CONFIG_MP_INCLUDED
 if (Adapter->registrypriv.mp_mode == 1 && Adapter->mppriv.mp_dm ==0) // for MP power tracking
 	return;
-//#endif
+#endif
 
 	hw_init_completed = Adapter->hw_init_completed;
 
