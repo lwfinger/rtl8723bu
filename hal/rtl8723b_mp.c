@@ -842,31 +842,23 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	PMPT_CONTEXT		pMptCtx = &(pAdapter->mppriv.MptCtx);
 	BOOLEAN		is92C = IS_92C_SERIAL(pHalData->VersionID);
-	static u4Byte       reg58 = 0x0;
-	static u4Byte       regRF0x0 = 0x0;
-    static u4Byte       reg0xCB0 = 0x0;
-    static u4Byte       reg0xEB0 = 0x0;
-    static u4Byte       reg0xCB4 = 0x0;
-    static u4Byte       reg0xEB4 = 0x0;
 	u8 rfPath;
 
-	switch (pAdapter->mppriv.antenna_tx)
-	{
-		case ANTENNA_A:
-		default:
-			pMptCtx->MptRfPath = rfPath = RF_PATH_A;
-			break;
-		case ANTENNA_B:
-			pMptCtx->MptRfPath = rfPath = RF_PATH_B;
-			break;
-		case ANTENNA_C:
-			pMptCtx->MptRfPath = rfPath = RF_PATH_C;
-			break;
+	switch (pAdapter->mppriv.antenna_tx) {
+	case ANTENNA_A:
+	default:
+		pMptCtx->MptRfPath = rfPath = RF_PATH_A;
+		break;
+	case ANTENNA_B:
+		pMptCtx->MptRfPath = rfPath = RF_PATH_B;
+		break;
+	case ANTENNA_C:
+		pMptCtx->MptRfPath = rfPath = RF_PATH_C;
+		break;
 	}
 
 	pAdapter->mppriv.MptCtx.bSingleTone = bStart;
-	if (bStart)// Start Single Tone.
-	{
+	if (bStart) { // Start Single Tone.
 		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
 			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x2); // Tx mode
 			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x1); // RF LO enabled
@@ -878,11 +870,7 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
-
-	}
-	else// Stop Single Tone.
-	{
-	// Stop Single Tone.
+	} else { // Stop Single Tone.
 		if (pMptCtx->MptRfPath == ODM_RF_PATH_A) {
 			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
 			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x56, 0xF, 0x0); // RF LO disabled
@@ -891,7 +879,6 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_AC, 0xF0000, 0x3); // Rx mode
 			PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, 0x76, 0xF, 0x0); // RF LO disabled
 		}
-
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
 	}
