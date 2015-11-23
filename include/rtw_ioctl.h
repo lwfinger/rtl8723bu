@@ -159,13 +159,6 @@ struct oid_obj_priv {
 	NDIS_STATUS (*oidfuns)(struct oid_par_priv *poid_par_priv);
 };
 
-#if (defined(CONFIG_MP_INCLUDED) && defined(_RTW_MP_IOCTL_C_))
-static NDIS_STATUS oid_null_function(struct oid_par_priv* poid_par_priv)
-{
-	return NDIS_STATUS_SUCCESS;
-}
-#endif
-
 extern struct iw_handler_def  rtw_handlers_def;
 
 extern void rtw_request_wps_pbc_event(_adapter *padapter);

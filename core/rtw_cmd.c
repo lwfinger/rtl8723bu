@@ -1112,17 +1112,9 @@ exit:
 
 void rtw_getbbrfreg_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 {
-
-
 	//rtw_free_cmd_obj(pcmd);
 	rtw_mfree((unsigned char*) pcmd->parmbuf, pcmd->cmdsz);
 	rtw_mfree((unsigned char*) pcmd, sizeof(struct cmd_obj));
-
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.workparam.bcompleted= _TRUE;
-#endif
-
 }
 
 void rtw_readtssi_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
@@ -1131,13 +1123,6 @@ void rtw_readtssi_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 
 	rtw_mfree((unsigned char*) pcmd->parmbuf, pcmd->cmdsz);
 	rtw_mfree((unsigned char*) pcmd, sizeof(struct cmd_obj));
-
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.workparam.bcompleted= _TRUE;
-#endif
-
-
 }
 
 u8 rtw_createbss_cmd(_adapter  *padapter)
@@ -3763,17 +3748,9 @@ exit:
 
 }
 
-void rtw_getrttbl_cmd_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd);
 void rtw_getrttbl_cmd_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 {
 
 
 	rtw_free_cmd_obj(pcmd);
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.workparam.bcompleted=_TRUE;
-#endif
-
-
-
 }

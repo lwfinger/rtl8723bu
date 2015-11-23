@@ -27,7 +27,6 @@ CONFIG_RTL8723B = y
 ######################### Interface ###########################
 CONFIG_USB_HCI = y
 ########################## Features ###########################
-# CONFIG_MP_INCLUDED = y
 CONFIG_POWER_SAVING = y
 CONFIG_USB_AUTOSUSPEND = n
 CONFIG_HW_PWRP_DETECTION = n
@@ -139,15 +138,10 @@ _HAL_INTFS_FILES +=	\
 
 _HAL_INTFS_FILES += hal/usb_ops.o
 
-ifeq ($(CONFIG_MP_INCLUDED), y)
-_HAL_INTFS_FILES += hal/$(RTL871X)_mp.o
-endif
-
 _OUTSRC_FILES += hal/HalHWImg8723B_BB.o\
 			hal/HalHWImg8723B_MAC.o\
 			hal/HalHWImg8723B_RF.o\
 			hal/HalHWImg8723B_FW.o\
-			hal/HalHWImg8723B_MP.o\
 			hal/odm_RegConfig8723B.o\
 			hal/HalPhyRf_8723B.o\
 			hal/odm_RTL8723B.o
@@ -164,11 +158,6 @@ endif
 
 ifeq ($(CONFIG_USB_AUTOSUSPEND), y)
 EXTRA_CFLAGS += -DCONFIG_USB_AUTOSUSPEND
-endif
-
-ifeq ($(CONFIG_MP_INCLUDED), y)
-#MODULE_NAME := $(MODULE_NAME)_mp
-EXTRA_CFLAGS += -DCONFIG_MP_INCLUDED
 endif
 
 ifeq ($(CONFIG_POWER_SAVING), y)
@@ -325,13 +314,6 @@ $(MODULE_NAME)-y += $(_OS_INTFS_FILES)
 $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 $(MODULE_NAME)-y += $(_OUTSRC_FILES)
 $(MODULE_NAME)-y += $(_PLATFORM_FILES)
-
-$(MODULE_NAME)-$(CONFIG_MP_INCLUDED) += core/rtw_mp.o \
-					core/rtw_mp_ioctl.o
-
-ifeq ($(CONFIG_RTL8723B), y)
-$(MODULE_NAME)-$(CONFIG_MP_INCLUDED)+= core/rtw_bt_mp.o
-endif
 
 obj-$(CONFIG_RTL8723BU) := $(MODULE_NAME).o
 

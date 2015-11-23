@@ -223,22 +223,13 @@ ODM_TxPwrTrackSetPwr_8723B(PDM_ODM_T pDM_Odm, PWRTRACK_METHOD Method,
 	u1Byte		Final_OFDM_Swing_Index = 0;
 	u1Byte		Final_CCK_Swing_Index = 0;
 	u1Byte		i = 0;
+	u2Byte rate = *(pDM_Odm->pForcedDataRate);
 
-#ifdef CONFIG_MP_INCLUDED
-	if (*(pDM_Odm->mp_mode) == 1) {
-		PMPT_CONTEXT pMptCtx = &(Adapter->mppriv.MptCtx);
-		TxRate = MptToMgntRate(pMptCtx->MptRateIndex);
-	} else
-#endif
-	{
-		u2Byte rate = *(pDM_Odm->pForcedDataRate);
-
-		if (!rate) { //auto rate
-			if (pDM_Odm->TxRate != 0xFF)
-				TxRate = HwRateToMRate(pDM_Odm->TxRate);
-		} else { //force rate
-			TxRate = (u1Byte)rate;
-		}
+	if (!rate) { //auto rate
+		if (pDM_Odm->TxRate != 0xFF)
+			TxRate = HwRateToMRate(pDM_Odm->TxRate);
+	} else { //force rate
+		TxRate = (u1Byte)rate;
 	}
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_TX_PWR_TRACK, ODM_DBG_LOUD,
@@ -1826,12 +1817,6 @@ phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 	const u4Byte retryCount = 2;
 #endif
 
-#ifdef CONFIG_MP_INCLUDED
- 	if (pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3) {
-		DBG_871X("%s() :return !!!!!!!!!!!!!!!!!!!!!!!!!!\n",__func__);
-		return;
-	}
-#endif
 	// Note: IQ calibration must be performed after loading
 	//		PHY_REG.txt , and radio_a, radio_b.txt
 
@@ -2115,13 +2100,6 @@ phy_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm, IN BOOLEAN is2T)
 	u4Byte	RF_Amode=0, RF_Bmode=0, LC_Cal;
 	PADAPTER pAdapter = pDM_Odm->Adapter;
 
-#ifdef CONFIG_MP_INCLUDED
-	if (pAdapter->registrypriv.mp_mode == 1 && pAdapter->mppriv.mode == 3) {
-		DBG_871X("%s() :return !!!!!!!!!!!!!!!!!!!!!!!!!!\n",__func__);
-		return;
-	}
-#endif
-
 	//Check continuous TX and Packet TX
 	tmpReg = ODM_Read1Byte(pDM_Odm, 0xd03);
 
@@ -2297,12 +2275,6 @@ phy_APCalibrate_8723B(IN PADAPTER pAdapter, IN s1Byte delta, IN BOOLEAN is2T)
 //	u4Byte AP_curve[PATH_NUM][APK_CURVE_REG_NUM];
 
 	s4Byte BB_offset, delta_V, delta_offset;
-
-#ifdef CONFIG_MP_INCLUDED
-	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);
-	pMptCtx->APK_bound[0] = 45;
-	pMptCtx->APK_bound[1] = 52;
-#endif
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,
 		     ("==>phy_APCalibrate_8188E() delta %d\n", delta));
@@ -2722,11 +2694,6 @@ PHY_IQCalibrate_8723B(IN PADAPTER pAdapter, IN BOOLEAN bReCovery,
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	PDM_ODM_T	pDM_Odm = &pHalData->odmpriv;
-
-#ifdef CONFIG_MP_INCLUDED
-	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);
-#endif//(MP_DRIVER == 1)
-
 	s4Byte		result[4][8];	//last is final result
 	u1Byte		i, final_candidate, Indexforchannel;
 	BOOLEAN		bPathAOK, bPathBOK;
@@ -2739,7 +2706,6 @@ PHY_IQCalibrate_8723B(IN PADAPTER pAdapter, IN BOOLEAN bReCovery,
 		rOFDM0_XATxIQImbalance,		rOFDM0_XBTxIQImbalance,
 		rOFDM0_XCTxAFE,			rOFDM0_XDTxAFE,
 		rOFDM0_RxIQExtAnta};
-//	u4Byte			Path_SEL_BB = 0;
 	u4Byte		GNT_BT_default;
 	u4Byte		StartTime;
 	s4Byte		ProgressingTime;
@@ -3007,17 +2973,7 @@ PHY_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm)
 	u4Byte		timeout = 2000, timecount = 0;
 	u4Byte		StartTime;
 	s4Byte		ProgressingTime;
-
 	PADAPTER	pAdapter = pDM_Odm->Adapter;
-#ifdef CONFIG_MP_INCLUDED
-	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);
-
-
-	bStartContTx = pMptCtx->bStartContTx;
-	bSingleTone = pMptCtx->bSingleTone;
-	bCarrierSuppression = pMptCtx->bCarrierSuppression;
-#endif
-
 
 	if (!(pDM_Odm->SupportAbility & ODM_RF_CALIBRATION)) {
 		return;

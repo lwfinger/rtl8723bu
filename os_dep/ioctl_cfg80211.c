@@ -2201,25 +2201,6 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	}
 #endif //CONFIG_CONCURRENT_MODE
 
-#ifdef CONFIG_MP_INCLUDED
-if (padapter->registrypriv.mp_mode == 1)
-{
-		DBG_871X(FUNC_ADPT_FMT ": MP mode block Scan request\n", FUNC_ADPT_ARG(padapter));
-		ret = -EPERM;
-		goto exit;
-}
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->pbuddy_adapter) {
-		if (padapter->pbuddy_adapter->registrypriv.mp_mode == 1)
-		{
-			DBG_871X(FUNC_ADPT_FMT ": MP mode block Scan request\n", FUNC_ADPT_ARG(padapter->pbuddy_adapter));
-			ret = -EPERM;
-			goto exit;
-		}
-	}
-#endif //CONFIG_CONCURRENT_MODE
-#endif
-
 	SPIN_LOCK_BH(pwdev_priv->scan_req_lock, &irqL);
 	pwdev_priv->scan_request = request;
 	SPIN_UNLOCK_BH(pwdev_priv->scan_req_lock, &irqL);

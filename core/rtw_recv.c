@@ -1343,13 +1343,6 @@ sint sta2sta_data_frame(
 
 	if (*psta == NULL) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("can't get psta under sta2sta_data_frame ; drop pkt\n"));
-#ifdef CONFIG_MP_INCLUDED
-		if (adapter->registrypriv.mp_mode == 1)
-		{
-			if(check_fwstate(pmlmepriv, WIFI_MP_STATE) == _TRUE)
-			adapter->mppriv.rx_pktloss++;
-		}
-#endif
 		ret= _FAIL;
 		goto exit;
 	}
@@ -3604,82 +3597,14 @@ int process_recv_indicatepkts(_adapter *padapter, union recv_frame *prframe)
 
 }
 
-#ifdef CONFIG_MP_INCLUDED
-int validate_mp_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
-{
-	int ret = _SUCCESS;
-	u8 *ptr = precv_frame->u.hdr.rx_data;
-	u8 type,subtype;
-
-	if(!adapter->mppriv.bmac_filter)
-		return ret;
-#if 0
-	if (1){
-		u8 bDumpRxPkt;
-		type =  GetFrameType(ptr);
-		subtype = GetFrameSubType(ptr); //bit(7)~bit(2)
-
-		rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &(bDumpRxPkt));
-		if(bDumpRxPkt ==1){//dump all rx packets
-			int i;
-			DBG_871X("############ type:0x%02x subtype:0x%02x ################# \n",type,subtype);
-
-			for(i=0; i<64;i=i+8)
-				DBG_871X("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr+i),
-				*(ptr+i+1), *(ptr+i+2) ,*(ptr+i+3) ,*(ptr+i+4),*(ptr+i+5), *(ptr+i+6), *(ptr+i+7));
-			DBG_871X("############################# \n");
-		}
-	}
-#endif
-
-	if(_rtw_memcmp( GetAddr2Ptr(ptr), adapter->mppriv.mac_filter, ETH_ALEN) == _FALSE )
-		ret = _FAIL;
-
-	return ret;
-}
-#endif
-
 int recv_func_prehandle(_adapter *padapter, union recv_frame *rframe)
 {
 	int ret = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = &rframe->u.hdr.attrib;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 	_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
-#ifdef CONFIG_MP_INCLUDED
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct mp_priv *pmppriv = &padapter->mppriv;
-#endif //CONFIG_MP_INCLUDED
 
 	DBG_COUNTER(padapter->rx_logs.core_rx_pre);
-
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-	{
-		if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == _TRUE))//&&(padapter->mppriv.check_mp_pkt == 0))
-		{
-			if (pattrib->crc_err == 1){
-				padapter->mppriv.rx_crcerrpktcount++;
-			}
-			else{
-				if(_SUCCESS == validate_mp_recv_frame(padapter, rframe))
-					padapter->mppriv.rx_pktcount++;
-				else
-					padapter->mppriv.rx_pktcount_filter_out++;
-
-			}
-
-			if(pmppriv->rx_bindicatePkt == _FALSE)
-			{
-				if (check_fwstate(pmlmepriv, WIFI_MP_LPBK_STATE) == _FALSE) {
-					//RT_TRACE(_module_rtl871x_recv_c_, _drv_alert_, ("MP - Not in loopback mode , drop pkt \n"));
-					ret = _FAIL;
-					rtw_free_recvframe(rframe, pfree_recv_queue);//free this recv_frame
-					goto exit;
-				}
-			}
-	}
-	}
-#endif
 
 	//check the frame crtl field and decache
 	ret = validate_recv_frame(padapter, rframe);
@@ -3950,16 +3875,6 @@ s32 rtw_recv_entry(union recv_frame *precvframe)
 	return ret;
 
 _recv_entry_drop:
-
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.rx_pktloss = precvpriv->rx_drop;
-#endif
-
-	//RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("_recv_entry_drop\n"));
-
-
-
 	return ret;
 }
 
