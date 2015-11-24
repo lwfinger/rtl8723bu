@@ -30,9 +30,6 @@
 #define RTL871X_MODULE_NAME "8723BU"
 #define DRV_NAME "rtl8723bu"
 
-#ifndef CONFIG_RTL8723B
-#define CONFIG_RTL8723B
-#endif
 #define BT_30_SUPPORT 1
 #define CONFIG_USB_HCI	1
 

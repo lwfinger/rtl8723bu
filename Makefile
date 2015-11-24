@@ -116,8 +116,6 @@ ifeq ($(CONFIG_USB_HCI), y)
 MODULE_NAME = 8723bu
 endif
 
-EXTRA_CFLAGS += -DCONFIG_RTL8723B
-
 _HAL_INTFS_FILES += hal/HalPwrSeqCmd.o \
 					hal/Hal8723BPwrSeq.o\
 					hal/$(RTL871X)_sreset.o

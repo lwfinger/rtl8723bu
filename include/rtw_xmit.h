@@ -146,11 +146,7 @@ do{\
 
 // For Buffer Descriptor ring architecture
 
-#if defined(CONFIG_RTL8723B)
 #define TXDESC_SIZE 40
-#else
-#define TXDESC_SIZE 32
-#endif
 
 #ifdef CONFIG_TX_EARLY_MODE
 #define EARLY_MODE_INFO_SIZE	8

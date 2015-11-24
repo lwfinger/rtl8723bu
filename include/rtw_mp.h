@@ -112,8 +112,6 @@ struct mp_tx
 	_thread_hdl_ PktTxThread;
 };
 
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
-
 #define MP_MAX_LINES		1000
 #define MP_MAX_LINES_BYTES	256
 #define u1Byte u8
@@ -256,16 +254,9 @@ typedef struct _MPT_CONTEXT
     u1Byte          mptOutBuf[100];
 
 }MPT_CONTEXT, *PMPT_CONTEXT;
-#endif
-//#endif
 
 /* E-Fuse */
-#ifdef CONFIG_RTL8723A
-#define EFUSE_MAP_SIZE		256
-#endif
-#ifdef CONFIG_RTL8723B
 #define EFUSE_MAP_SIZE		512
-#endif
 
 #define EFUSE_MAX_SIZE		512
 /* end of E-Fuse */

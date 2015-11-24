@@ -595,13 +595,11 @@ typedef struct hal_com_data
 #endif // CONFIG_RTL8723A
 #endif // CONFIG_BT_COEXIST
 
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 	#ifndef CONFIG_PCI_HCI	// mutual exclusive with PCI -- so they're SDIO and GSPI
 	// Interrupt relatd register information.
 	u32			SysIntrStatus;
 	u32			SysIntrMask;
 	#endif
-#endif //endif CONFIG_RTL8723A
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
 	char	para_file_buf[MAX_PARA_FILE_BUF_LEN];

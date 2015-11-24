@@ -719,8 +719,6 @@ s32 c2h_evt_read_88xx(_adapter *adapter, u8 *buf)
 	if (buf == NULL)
 		goto exit;
 
-#if defined(CONFIG_RTL8723B)
-
 	trigger = rtw_read8(adapter, REG_C2HEVT_CLEAR);
 
 	if (trigger == C2H_EVT_HOST_CLOSE) {
@@ -760,7 +758,6 @@ clear_evt:
 	* If this field isn't clear, the FW won't update the next command message.
 	*/
 	c2h_evt_clear(adapter);
-#endif
 exit:
 	return ret;
 }
@@ -961,12 +958,10 @@ void hw_var_port_switch(_adapter *adapter)
 
 	/* write bcn ctl */
 #ifdef CONFIG_BT_COEXIST
-#if defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)
 	// always enable port0 beacon function for PSTDMA
 	bcn_ctrl_1 |= EN_BCN_FUNCTION;
 	// always disable port1 beacon function for PSTDMA
 	bcn_ctrl &= ~EN_BCN_FUNCTION;
-#endif
 #endif
 	rtw_write8(adapter, REG_BCN_CTRL, bcn_ctrl_1);
 	rtw_write8(adapter, REG_BCN_CTRL_1, bcn_ctrl);
