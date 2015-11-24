@@ -9219,18 +9219,6 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 	}
 	else if (strcmp(tmp[0], "mac") == 0)
 	{
-		#ifdef CONFIG_RTL8723A
-			#ifdef CONFIG_SDIO_HCI
-			addr = EEPROM_MAC_ADDR_8723AS;
-			#endif
-			#ifdef CONFIG_GSPI_HCI
-			addr = EEPROM_MAC_ADDR_8723AS;
-			#endif
-			#ifdef CONFIG_USB_HCI
-			addr = EEPROM_MAC_ADDR_8723AU;
-			#endif
-		#endif // CONFIG_RTL8723A
-
 		addr = EEPROM_MAC_ADDR_8723BU;
 		cnts = 6;
 
@@ -11551,35 +11539,6 @@ static int rtw_test(
 		DBG_871X("%s: loopback size=%d\n", __func__, size);
 
 		loopbackTest(padapter, cnt, size, extra);
-		wrqu->data.length = strlen(extra) + 1;
-
-		rtw_mfree(pbuf, len);
-		return 0;
-	}
-#endif
-
-#if 0
-//#ifdef CONFIG_RTL8723A
-	if (strcmp(pch, "poweron") == 0)
-	{
-		s32 ret;
-
-		ret = _InitPowerOn(padapter);
-		DBG_871X("%s: power on %s\n", __func__, (_FAIL==ret) ? "FAIL!":"OK.");
-		sprintf(extra, "Power ON %s", (_FAIL==ret) ? "FAIL!":"OK.");
-		wrqu->data.length = strlen(extra) + 1;
-
-		rtw_mfree(pbuf, len);
-		return 0;
-	}
-
-	if (strcmp(pch, "dlfw") == 0)
-	{
-		s32 ret;
-
-		ret = rtl8723a_FirmwareDownload(padapter);
-		DBG_871X("%s: download FW %s\n", __func__, (_FAIL==ret) ? "FAIL!":"OK.");
-		sprintf(extra, "download FW %s", (_FAIL==ret) ? "FAIL!":"OK.");
 		wrqu->data.length = strlen(extra) + 1;
 
 		rtw_mfree(pbuf, len);

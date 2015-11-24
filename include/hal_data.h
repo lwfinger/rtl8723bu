@@ -590,9 +590,6 @@ typedef struct hal_com_data
 #ifdef CONFIG_BT_COEXIST
 	// For bluetooth co-existance
 	BT_COEXIST		bt_coexist;
-#ifdef CONFIG_RTL8723A
-	u8				bAntennaDetected;
-#endif // CONFIG_RTL8723A
 #endif // CONFIG_BT_COEXIST
 
 	#ifndef CONFIG_PCI_HCI	// mutual exclusive with PCI -- so they're SDIO and GSPI

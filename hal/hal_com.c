@@ -659,47 +659,6 @@ s32 c2h_evt_read(_adapter *adapter, u8 *buf)
 	if (buf == NULL)
 		goto exit;
 
-#if defined(CONFIG_RTL8723A)
-
-	trigger = rtw_read8(adapter, REG_C2HEVT_CLEAR);
-
-	if (trigger == C2H_EVT_HOST_CLOSE) {
-		goto exit; /* Not ready */
-	} else if (trigger != C2H_EVT_FW_CLOSE) {
-		goto clear_evt; /* Not a valid value */
-	}
-
-	c2h_evt = (struct c2h_evt_hdr *)buf;
-
-	_rtw_memset(c2h_evt, 0, 16);
-
-	*buf = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL);
-	*(buf+1) = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL + 1);
-
-	RT_PRINT_DATA(_module_hal_init_c_, _drv_info_, "c2h_evt_read(): ",
-		&c2h_evt , sizeof(c2h_evt));
-
-	if (0) {
-		DBG_871X("%s id:%u, len:%u, seq:%u, trigger:0x%02x\n", __func__
-			, c2h_evt->id, c2h_evt->plen, c2h_evt->seq, trigger);
-	}
-
-	/* Read the content */
-	for (i = 0; i < c2h_evt->plen; i++)
-		c2h_evt->payload[i] = rtw_read8(adapter, REG_C2HEVT_MSG_NORMAL + sizeof(*c2h_evt) + i);
-
-	RT_PRINT_DATA(_module_hal_init_c_, _drv_info_, "c2h_evt_read(): Command Content:\n",
-		c2h_evt->payload, c2h_evt->plen);
-
-	ret = _SUCCESS;
-
-clear_evt:
-	/*
-	* Clear event to notify FW we have read the command.
-	* If this field isn't clear, the FW won't update the next command message.
-	*/
-	c2h_evt_clear(adapter);
-#endif
 exit:
 	return ret;
 }
