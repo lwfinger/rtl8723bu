@@ -308,13 +308,8 @@ int rtw_tx_pwr_by_rate = 1;
 int rtw_tx_pwr_lmt_enable = 0;
 int rtw_tx_pwr_by_rate = 1;
 #else //eFuse: Regulatory selection=2
-#ifdef CONFIG_PCI_HCI
-int rtw_tx_pwr_lmt_enable = 2; // 2- Depend on efuse
-int rtw_tx_pwr_by_rate = 2;// 2- Depend on efuse
-#else // USB & SDIO
 int rtw_tx_pwr_lmt_enable = 0;
 int rtw_tx_pwr_by_rate = 0;
-#endif
 #endif
 
 module_param(rtw_tx_pwr_lmt_enable, int, 0644);

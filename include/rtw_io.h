@@ -294,10 +294,6 @@ struct reg_protocol_wt {
 #endif
 
 };
-#ifdef CONFIG_PCI_HCI
-#define MAX_CONTINUAL_IO_ERR 4
-#endif
-
 #ifdef CONFIG_USB_HCI
 #define MAX_CONTINUAL_IO_ERR 4
 #endif

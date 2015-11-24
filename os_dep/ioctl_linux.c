@@ -11174,17 +11174,6 @@ static struct xmit_frame* createloopbackpkt(PADAPTER padapter, u32 size)
 	desc->txdw5 = cpu_to_le32(desc->txdw5);
 	desc->txdw6 = cpu_to_le32(desc->txdw6);
 	desc->txdw7 = cpu_to_le32(desc->txdw7);
-#ifdef CONFIG_PCI_HCI
-	desc->txdw8 = cpu_to_le32(desc->txdw8);
-	desc->txdw9 = cpu_to_le32(desc->txdw9);
-	desc->txdw10 = cpu_to_le32(desc->txdw10);
-	desc->txdw11 = cpu_to_le32(desc->txdw11);
-	desc->txdw12 = cpu_to_le32(desc->txdw12);
-	desc->txdw13 = cpu_to_le32(desc->txdw13);
-	desc->txdw14 = cpu_to_le32(desc->txdw14);
-	desc->txdw15 = cpu_to_le32(desc->txdw15);
-#endif
-
 	cal_txdesc_chksum(desc);
 
 	//2 5. coalesce

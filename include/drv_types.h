@@ -346,8 +346,6 @@ struct registry_priv
 #elif defined(CONFIG_GSPI_HCI)
 #include <drv_types_gspi.h>
 #define INTF_DATA GSPI_DATA
-#elif defined(CONFIG_PCI_HCI)
-#include <drv_types_pci.h>
 #endif
 
 #ifdef CONFIG_CONCURRENT_MODE
@@ -655,42 +653,6 @@ struct dvobj_priv
 	struct usb_device *pusbdev;
 
 #endif//CONFIG_USB_HCI
-
-/*-------- below is for PCIE INTERFACE --------*/
-
-#ifdef CONFIG_PCI_HCI
-
-	struct pci_dev *ppcidev;
-
-	//PCI MEM map
-	unsigned long	pci_mem_end;	/* shared mem end	*/
-	unsigned long	pci_mem_start;	/* shared mem start	*/
-
-	//PCI IO map
-	unsigned long	pci_base_addr;	/* device I/O address	*/
-
-	//PciBridge
-	struct pci_priv	pcipriv;
-
-	u16	irqline;
-	u8	irq_enabled;
-	RT_ISR_CONTENT	isr_content;
-	spinlock_t	irq_th_lock;
-	ulong irq_th_lock_set;
-	//ASPM
-	u8	const_pci_aspm;
-	u8	const_amdpci_aspm;
-	u8	const_hwsw_rfoff_d3;
-	u8	const_support_pciaspm;
-	// pci-e bridge */
-	u8	const_hostpci_aspm_setting;
-	// pci-e device */
-	u8	const_devicepci_aspm_setting;
-	u8	b_support_aspm; // If it supports ASPM, Offset[560h] = 0x40, otherwise Offset[560h] = 0x00.
-	u8	b_support_backdoor;
-	u8	bdma64;
-
-#endif//CONFIG_PCI_HCI
 };
 
 #define dvobj_to_pwrctl(dvobj) (&(dvobj->pwrctl_priv))
@@ -708,9 +670,6 @@ static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 #endif
 #ifdef CONFIG_GSPI_HCI
 	return &dvobj->intf_data.func->dev;
-#endif
-#ifdef CONFIG_PCI_HCI
-	return &dvobj->ppcidev->dev;
 #endif
 }
 
@@ -1046,12 +1005,6 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 #include <gspi_osintf.h>
 #include <gspi_ops.h>
 #include <gspi_hal.h>
-#endif
-
-#ifdef CONFIG_PCI_HCI
-#include <pci_osintf.h>
-#include <pci_ops.h>
-#include <pci_hal.h>
 #endif
 
 #ifdef CONFIG_BT_COEXIST

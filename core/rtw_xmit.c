@@ -2550,11 +2550,6 @@ static struct xmit_buf *__rtw_alloc_cmd_xmitbuf(struct xmit_priv *pxmitpriv,
 		pxmitbuf->agg_num = 0;
 		pxmitbuf->pg_num = 0;
 #endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-		pxmitbuf->desc = NULL;
-#endif
-
 		if (pxmitbuf->sctx) {
 			DBG_871X("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
@@ -2638,10 +2633,6 @@ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv)
 		pxmitbuf->len = 0;
 		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
 		pxmitbuf->agg_num = 1;
-#endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-		pxmitbuf->desc = NULL;
 #endif
 
 		if (pxmitbuf->sctx) {
@@ -2728,10 +2719,6 @@ struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
 		pxmitbuf->agg_num = 0;
 		pxmitbuf->pg_num = 0;
-#endif
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-		pxmitbuf->desc = NULL;
 #endif
 
 		if (pxmitbuf->sctx) {
@@ -3116,19 +3103,9 @@ struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmi
 	if(pregpriv->wifi_spec==1)
 	{
 		int j, tmp, acirp_cnt[4];
-#if 0
-		if(flags<XMIT_QUEUE_ENTRY)
-		{
-			//priority exchange according to the completed xmitbuf flags.
-			inx[flags] = 0;
-			inx[0] = flags;
-		}
-#endif
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_PCI_HCI)
 		for(j=0; j<4; j++)
 			inx[j] = pxmitpriv->wmm_para_seq[j];
-#endif
 	}
 
 	SPIN_LOCK_BH(pxmitpriv->lock, &irqL0);

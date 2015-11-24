@@ -2250,11 +2250,7 @@ static void rtl8723b_set_FwRsvdPagePkt(PADAPTER padapter, BOOLEAN bDLFinished)
 		update_mgntframe_attrib(padapter, pattrib);
 		pattrib->qsel = 0x10;
 		pattrib->pktlen = pattrib->last_txcmdsz = TotalPacketLen - TxDescOffset;
-#ifdef CONFIG_PCI_HCI
-		dump_mgntframe(padapter, pcmdframe);
-#else
 		dump_mgntframe_and_wait(padapter, pcmdframe, 100);
-#endif
 	}
 
 	DBG_871X("%s: Set RSVD page location to Fw ,TotalPacketLen(%d), TotalPageNum(%d)\n", __FUNCTION__,TotalPacketLen,TotalPageNum);
@@ -2396,11 +2392,7 @@ static void rtl8723b_set_AP_FwRsvdPagePkt(PADAPTER padapter,
 		pattrib->qsel = 0x10;
 		pattrib->pktlen = TotalPacketLen - TxDescOffset;
 		pattrib->last_txcmdsz = TotalPacketLen - TxDescOffset;
-#ifdef CONFIG_PCI_HCI
-		dump_mgntframe(padapter, pcmdframe);
-#else
 		dump_mgntframe_and_wait(padapter, pcmdframe, 100);
-#endif
 	}
 
 	DBG_871X("%s: Set RSVD page location to Fw ,TotalPacketLen(%d), TotalPageNum(%d)\n", __FUNCTION__,TotalPacketLen,TotalPageNum);
@@ -2736,14 +2728,8 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 	update_mgntframe_attrib(padapter, pattrib);
 	pattrib->qsel = 0x10;
 	pattrib->pktlen = pattrib->last_txcmdsz = TotalPacketLen - TxDescOffset;
-#ifdef CONFIG_PCI_HCI
-	dump_mgntframe(padapter, pcmdframe);
-#else
 	dump_mgntframe_and_wait(padapter, pcmdframe, 100);
-#endif
 
-//	DBG_8192C(FUNC_ADPT_FMT ": Set RSVD page location to Fw, TotalPacketLen(%d), TotalPageNum(%d)\n",
-//		FUNC_ADPT_ARG(padapter), TotalPacketLen, TotalPageNum);
 	rtl8723b_set_FwRsvdPage_cmd(padapter, &RsvdPageLoc);
 	rtl8723b_set_FwAoacRsvdPage_cmd(padapter, &RsvdPageLoc);
 

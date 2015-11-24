@@ -1026,9 +1026,6 @@ ODM_IotEdcaSwitch(
 		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (((OPMODE & WIFI_AP_STATE)?6:10) << 12) | (4 << 8)
 			| (sifs_time + 3 * slot_time));
 #endif
-#ifdef CONFIG_PCI_HCI
-//		ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) | (DIS_TXOP_CFE));
-#endif
 	}
 	else
 	{
@@ -1084,9 +1081,6 @@ ODM_IotEdcaSwitch(
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 				disable_cfe = 0;
 #endif
-#ifdef CONFIG_PCI_HCI
-//				ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) & ~(DIS_TXOP_CFE));
-#endif
 				priv->pshare->txop_enlarge = 2;
 			}
 #if(DM_ODM_SUPPORT_TYPE==ODM_AP)
@@ -1104,14 +1098,6 @@ ODM_IotEdcaSwitch(
 #endif
 			else
 			{
-//				if (txop == 0) {
-//#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
-//					disable_cfe = 1;
-//#endif
-//#ifdef CONFIG_PCI_HCI
-//					ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) | (DIS_TXOP_CFE));
-//#endif
-//				}
 
 				if (pDM_Odm->RFType==ODM_2T2R) {
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
@@ -1171,23 +1157,6 @@ ODM_IotEdcaSwitch(
 			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM,  (BE_TXOP*2 << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
 		#endif
 		#endif
-/*
-		if (priv->pshare->txop_enlarge == 0xe) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
-			disable_cfe = 0;
-#endif
-	#ifdef CONFIG_PCI_HCI
-			ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) & ~(DIS_TXOP_CFE));
-	#endif
-		} else {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
-			disable_cfe = 1;
-#endif
-	#ifdef CONFIG_PCI_HCI
-			ODM_Write2Byte(pDM_Odm, RD_CTRL, ODM_Read2Byte(pDM_Odm, RD_CTRL) | (DIS_TXOP_CFE));
-	#endif
-		}
-*/
  #endif
               }
 

@@ -1141,35 +1141,7 @@ odm_RefreshRateAdaptiveMaskAPADSL(
 				ODM_PRINT_ADDR(pDM_Odm, ODM_COMP_RA_MASK, ODM_DBG_LOUD, ("Target STA addr : "), pstat->hwaddr);
 				ODM_RT_TRACE(pDM_Odm, ODM_COMP_RA_MASK, ODM_DBG_LOUD, ("RSSI:%d, RSSI_LEVEL:%d\n", pstat->rssi, pstat->rssi_level));
 
-#if defined(CONFIG_PCI_HCI)
-#ifdef CONFIG_WLAN_HAL
-				if (IS_HAL_CHIP(priv)) {
-#ifdef WDS
-					if(!(pstat->state & WIFI_WDS))//if WDS donot setting
-#endif
-						GET_HAL_INTERFACE(priv)->UpdateHalRAMaskHandler(priv, pstat, pstat->rssi_level);
-				} else
-#endif
-#ifdef CONFIG_RTL_8812_SUPPORT
-				if(GET_CHIP_VER(priv)== VERSION_8812E) {
-					UpdateHalRAMask8812(priv, pstat, 3);
-				} else
-#endif
-#ifdef CONFIG_RTL_88E_SUPPORT
-				if (GET_CHIP_VER(priv)==VERSION_8188E) {
-#ifdef TXREPORT
-					add_RATid(priv, pstat);
-#endif
-				} else
-#endif
-				{
-#if defined(CONFIG_RTL_92D_SUPPORT) || defined(CONFIG_RTL_92C_SUPPORT)
-					add_update_RATid(priv, pstat);
-#endif
-				}
-#elif defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 				update_STA_RATid(priv, pstat);
-#endif
 			}
 		}
 	}

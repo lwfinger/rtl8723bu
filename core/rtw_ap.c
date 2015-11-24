@@ -2325,7 +2325,7 @@ static void update_bcn_wps_ie(_adapter *padapter)
 		rtw_mfree(pbackup_remainder_ie, remainder_ielen);
 
 	// deal with the case without set_tx_beacon_cmd() in update_beacon()
-#if defined( CONFIG_INTERRUPT_BASED_TXBCN ) || defined( CONFIG_PCI_HCI )
+#if defined( CONFIG_INTERRUPT_BASED_TXBCN )
 	if( (pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE)
 	{
 		u8 sr = 0;

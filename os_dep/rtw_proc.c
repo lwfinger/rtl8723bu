@@ -533,11 +533,6 @@ const struct rtw_proc_hdl adapter_proc_hdls [] = {
 	{"tx_logs", proc_get_tx_logs, NULL},
 	{"int_logs", proc_get_int_logs, NULL},
 #endif
-
-#ifdef CONFIG_PCI_HCI
-	{"rx_ring", proc_get_rx_ring, NULL},
-	{"tx_ring", proc_get_tx_ring, NULL},
-#endif
 };
 
 const int adapter_proc_hdls_num = sizeof(adapter_proc_hdls) / sizeof(struct rtw_proc_hdl);

@@ -391,11 +391,6 @@ int proc_get_tx_logs(struct seq_file *m, void *v);
 int proc_get_int_logs(struct seq_file *m, void *v);
 #endif
 
-#ifdef CONFIG_PCI_HCI
-int proc_get_rx_ring(struct seq_file *m, void *v);
-int proc_get_tx_ring(struct seq_file *m, void *v);
-#endif
-
 #endif /* CONFIG_PROC_DEBUG */
 
 #endif	//__RTW_DEBUG_H__

@@ -277,10 +277,6 @@ typedef struct hal_com_data
 	u16	EEPROMPID;
 	u16	EEPROMSDID;
 #endif
-#ifdef CONFIG_PCI_HCI
-	u16	EEPROMDID;
-	u16	EEPROMSMID;
-#endif
 
 	u8	EEPROMCustomerID;
 	u8	EEPROMSubCustomerID;
@@ -550,37 +546,6 @@ typedef struct hal_com_data
 	#endif//CONFIG_USB_RX_AGGREGATION
 #endif //CONFIG_USB_HCI
 
-
-#ifdef CONFIG_PCI_HCI
-	//
-	// EEPROM setting.
-	//
-	u16	EEPROMChannelPlan;
-
-	u8	EEPROMTSSI[2];
-	u8	EEPROMBoardType;
-	u32	TransmitConfig;
-
-	u32	IntrMaskToSet[2];
-	u32	IntArray[2];
-	u32	IntrMask[2];
-	u32	SysIntArray[1];
-	u32	SysIntrMask[1];
-	u32	IntrMaskReg[2];
-	u32	IntrMaskDefault[2];
-
-	BOOLEAN	 bL1OffSupport;
-	BOOLEAN bSupportBackDoor;
-
-	u8	bDefaultAntenna;
-	//u8	bIQKInitialized;
-
-	u8	bInterruptMigration;
-	u8	bDisableTxInt;
-
-	u16	RxTag;
-#endif //CONFIG_PCI_HCI
-
 	struct dm_priv	dmpriv;
 	DM_ODM_T		odmpriv;
 #ifdef DBG_CONFIG_ERROR_DETECT
@@ -592,11 +557,9 @@ typedef struct hal_com_data
 	BT_COEXIST		bt_coexist;
 #endif // CONFIG_BT_COEXIST
 
-	#ifndef CONFIG_PCI_HCI	// mutual exclusive with PCI -- so they're SDIO and GSPI
 	// Interrupt relatd register information.
 	u32			SysIntrStatus;
 	u32			SysIntrMask;
-	#endif
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
 	char	para_file_buf[MAX_PARA_FILE_BUF_LEN];

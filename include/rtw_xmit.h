@@ -56,22 +56,14 @@
 #else
 #define NR_XMITBUFF	(4)
 #endif //CONFIG_SINGLE_XMIT_BUF
-#elif defined (CONFIG_PCI_HCI)
-#define MAX_XMITBUF_SZ	(1664)
-#define NR_XMITBUFF	(128)
 #endif
-
 #ifdef PLATFORM_OS_CE
-#define XMITBUF_ALIGN_SZ 4
-#else
-#ifdef CONFIG_PCI_HCI
 #define XMITBUF_ALIGN_SZ 4
 #else
 #ifdef USB_XMITBUF_ALIGN_SZ
 #define XMITBUF_ALIGN_SZ (USB_XMITBUF_ALIGN_SZ)
 #else
 #define XMITBUF_ALIGN_SZ 512
-#endif
 #endif
 #endif
 
@@ -98,12 +90,6 @@
 #define TXCMD_QUEUE_INX	7
 
 #define HW_QUEUE_ENTRY	8
-
-#ifdef CONFIG_PCI_HCI
-//#define TXDESC_NUM						64
-#define TXDESC_NUM						128
-#define TXDESC_NUM_BE_QUEUE			128
-#endif
 
 #define WEP_IV(pattrib_iv, dot11txpn, keyidx)\
 do{\
@@ -166,11 +152,6 @@ do{\
 #define TXDESC_OFFSET (TXDESC_SIZE + PACKET_OFFSET_SZ)
 #endif
 
-#ifdef CONFIG_PCI_HCI
-#define TXDESC_OFFSET 0
-#define TX_DESC_NEXT_DESC_OFFSET	(TXDESC_SIZE + 8)
-#endif //CONFIG_PCI_HCI
-
 enum TXDESC_SC{
 	SC_DONT_CARE = 0x00,
 	SC_UPPER= 0x01,
@@ -214,20 +195,6 @@ union txdesc {
 	struct tx_desc txdesc;
 	unsigned int value[TXDESC_SIZE>>2];
 };
-
-#ifdef CONFIG_PCI_HCI
-#define PCI_MAX_TX_QUEUE_COUNT	8
-
-struct rtw_tx_ring {
-	unsigned char	qid;
-	struct tx_desc	*desc;
-	dma_addr_t	dma;
-	unsigned int	idx;
-	unsigned int	entries;
-	_queue		queue;
-	u32		qlen;
-};
-#endif
 
 struct	hw_xmit	{
 	_queue *sta_queue;
@@ -398,10 +365,6 @@ struct xmit_buf
 #endif
 #endif
 
-#ifdef CONFIG_PCI_HCI
-	struct tx_desc *desc;
-#endif
-
 #if defined(DBG_XMIT_BUF )|| defined(DBG_XMIT_BUF_EXT)
 	u8 no;
 #endif
@@ -566,14 +529,6 @@ struct	xmit_priv	{
 	int viq_cnt;
 	int voq_cnt;
 
-#endif
-
-#ifdef CONFIG_PCI_HCI
-	// Tx
-	struct rtw_tx_ring	tx_ring[PCI_MAX_TX_QUEUE_COUNT];
-	int	txringcount[PCI_MAX_TX_QUEUE_COUNT];
-	u8	beaconDMAing;		//flag of indicating beacon is transmiting to HW by DMA
-	struct tasklet_struct xmit_tasklet;
 #endif
 
 #if defined (CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
