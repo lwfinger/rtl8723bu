@@ -2191,9 +2191,7 @@ void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv)
 #endif //CONFIG_HAS_EARLYSUSPEND
 
 #ifdef CONFIG_ANDROID_POWER
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 extern int rtw_resume_process(PADAPTER padapter);
-#endif
 static void rtw_early_suspend(android_early_suspend_t *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);
@@ -2210,10 +2208,8 @@ static void rtw_late_resume(android_early_suspend_t *h)
 
 	DBG_871X("%s\n",__FUNCTION__);
 	if(pwrpriv->do_late_resume) {
-		#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 		rtw_set_do_late_resume(pwrpriv, _FALSE);
 		rtw_resume_process(adapter);
-		#endif
 	}
 }
 

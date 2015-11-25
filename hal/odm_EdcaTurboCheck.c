@@ -884,10 +884,8 @@ ODM_IotEdcaSwitch(
 	int   mode=priv->pmib->dot11BssType.net_work_type;
 	unsigned int slot_time = 20, sifs_time = 10, BE_TXOP = 47, VI_TXOP = 94;
 	unsigned int vi_cw_max = 4, vi_cw_min = 3, vi_aifs;
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	u32 be_edca, vi_edca;
 	u16 disable_cfe;
-#endif
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_AP)
 	if (!(!priv->pmib->dot11OperationEntry.wifi_specific ||
@@ -920,10 +918,8 @@ ODM_IotEdcaSwitch(
 		VI_TXOP = 188;
 	}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	vi_edca = -1;
 	disable_cfe = -1;
-#endif
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_ADSL)
 	if (priv->pshare->iot_mode_VO_exist) {
@@ -938,11 +934,7 @@ ODM_IotEdcaSwitch(
 	}
 	vi_aifs = (sifs_time + ((OPMODE & WIFI_AP_STATE)?1:2) * slot_time);
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	vi_edca = ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs;
-#else
-	ODM_Write4Byte(pDM_Odm, ODM_EDCA_VI_PARAM, ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs);
-#endif
 
 #elif (DM_ODM_SUPPORT_TYPE==ODM_AP)
 	if ((OPMODE & WIFI_AP_STATE) && priv->pmib->dot11OperationEntry.wifi_specific) {
@@ -966,22 +958,13 @@ ODM_IotEdcaSwitch(
 			vi_aifs = (sifs_time + ((OPMODE & WIFI_AP_STATE)?1:2) * slot_time);
 		}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 		vi_edca = ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)
 			| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs;
-#else
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_VI_PARAM, ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)
-			| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs);
-#endif
 
 	#ifdef WMM_BEBK_PRI
 	#ifdef CONFIG_RTL_88E_SUPPORT
 		if ((GET_CHIP_VER(priv) == VERSION_8188E) && priv->pshare->iot_mode_BK_exist) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (6 << 8) | 0x4f;
-#else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BK_PARAM, (10 << 12) | (6 << 8) | 0x4f);
-#endif
 		}
 	#endif
 	#endif
@@ -998,34 +981,21 @@ ODM_IotEdcaSwitch(
 	if (priv->pshare->rf_ft_var.wifi_beq_iot && priv->pshare->iot_mode_VI_exist) {
 #if defined(CONFIG_RTL_88E_SUPPORT) || defined(CONFIG_RTL_8812_SUPPORT)
 		if (GET_CHIP_VER(priv) == VERSION_8188E || GET_CHIP_VER(priv) == VERSION_8812E) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (6 << 8) | 0x4f;
-#else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (6 << 8) | 0x4f);
-#endif
 		}
 		else
 #endif
 		{
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (10 << 12) | (4 << 8) | 0x4f;
-#else
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (4 << 8) | 0x4f);
-#endif
 		}
 	} else if(!enable)
 #elif(DM_ODM_SUPPORT_TYPE==ODM_ADSL)
 	if(!enable)                                 //if iot is disable ,maintain original BEQ PARAM
 #endif
 	{
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 		be_edca = (((OPMODE & WIFI_AP_STATE)?6:10) << 12) | (4 << 8)
 			| (sifs_time + 3 * slot_time);
 		disable_cfe = 1;
-#else
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (((OPMODE & WIFI_AP_STATE)?6:10) << 12) | (4 << 8)
-			| (sifs_time + 3 * slot_time));
-#endif
 	}
 	else
 	{
@@ -1064,34 +1034,20 @@ ODM_IotEdcaSwitch(
 				// is intel client, use a different edca value
 				//ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop<< 16) | (cw_max<< 12) | (4 << 8) | 0x1f);
 				if (pDM_Odm->RFType==ODM_1T1R) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) | (5 << 12) | (3 << 8) | 0x1f;
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) | (5 << 12) | (3 << 8) | 0x1f);
-#endif
 				}
 				else {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) | (8 << 12) | (5 << 8) | 0x1f;
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) | (8 << 12) | (5 << 8) | 0x1f);
-#endif
 				}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 				disable_cfe = 0;
-#endif
 				priv->pshare->txop_enlarge = 2;
 			}
 #if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 	#ifndef LOW_TP_TXOP
 			 else if (priv->pshare->txop_enlarge == 0xd) {
 				// is intel ralink, use a different edca value
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 				be_edca = (txop << 16) | (6 << 12) | (5 << 8) | 0x2b;
-#else
-				ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) | (6 << 12) | (5 << 8) | 0x2b);
-#endif
 				priv->pshare->txop_enlarge = 2;
 			}
 	#endif
@@ -1100,23 +1056,13 @@ ODM_IotEdcaSwitch(
 			{
 
 				if (pDM_Odm->RFType==ODM_2T2R) {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time);
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) |
-						(cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
-#endif
 				}
 				else
 				#if(DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined LOW_TP_TXOP)
 				{
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) |
 						(((priv->pshare->BE_cwmax_enhance) ? 10 : 5) << 12) | (3 << 8) | (sifs_time + 2 * slot_time);
-#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) |
-						(((priv->pshare->BE_cwmax_enhance) ? 10 : 5) << 12) | (3 << 8) | (sifs_time + 2 * slot_time));
-#endif
 				}
 				#else
 				{
@@ -1124,12 +1070,7 @@ ODM_IotEdcaSwitch(
 					if ((GET_CHIP_VER(priv)==VERSION_8881A) && pstat && (pstat->IOTPeer == HT_IOT_PEER_HTC))
 					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, 0x642b);
 					else {
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 					be_edca = (txop << 16) | (5 << 12) | (3 << 8) | (sifs_time + 2 * slot_time);
-				#else
-					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) |
-						(5 << 12) | (3 << 8) | (sifs_time + 2 * slot_time));
-#endif
 					}
 				}
 				#endif
@@ -1138,33 +1079,19 @@ ODM_IotEdcaSwitch(
               else
               {
  #if((DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined LOW_TP_TXOP))
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			 be_edca = (BE_TXOP << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time);
-#else
-			 ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (BE_TXOP << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
-#endif
  #else
 		#if defined(CONFIG_RTL_8196D) || defined(CONFIG_RTL_8197DL) || defined(CONFIG_RTL_8196E) || (defined(CONFIG_RTL_8197D) && !defined(CONFIG_PORT0_EXT_GIGA))
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (BE_TXOP*2 << 16) | (cw_max << 12) | (5 << 8) | (sifs_time + 3 * slot_time);
- #else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM,  (BE_TXOP*2 << 16) | (cw_max << 12) | (5 << 8) | (sifs_time + 3 * slot_time));
-#endif
 		#else
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 			be_edca = (BE_TXOP*2 << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time);
-		#else
-			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM,  (BE_TXOP*2 << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
-		#endif
 		#endif
  #endif
               }
 
 	}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 	notify_IOT_EDCA_switch(priv, be_edca, vi_edca, disable_cfe);
-#endif
 }
 #endif
 

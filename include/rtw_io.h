@@ -118,11 +118,6 @@ struct _io_ops
 
 		void (*_read_port_cancel)(struct intf_hdl *pintfhdl);
 		void (*_write_port_cancel)(struct intf_hdl *pintfhdl);
-
-#ifdef CONFIG_SDIO_HCI
-		u8 (*_sd_f0_read8)(struct intf_hdl *pintfhdl, u32 addr);
-#endif
-
 };
 
 struct io_req {
@@ -133,54 +128,14 @@ struct io_req {
 	u32	status;
 	u8	*pbuf;
 	_sema	sema;
-
-#ifdef PLATFORM_OS_CE
-#ifdef CONFIG_USB_HCI
-	// URB handler for rtw_write_mem
-	USB_TRANSFER usb_transfer_write_mem;
-#endif
-#endif
-
 	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt);
 	u8 *cnxt;
-
-#ifdef PLATFORM_OS_XP
-	PMDL pmdl;
-	PIRP  pirp;
-
-#ifdef CONFIG_SDIO_HCI
-	PSDBUS_REQUEST_PACKET sdrp;
-#endif
-
-#endif
-
-
 };
 
 struct	intf_hdl {
-
-/*
-	u32	intf_option;
-	u32	bus_status;
-	u32	do_flush;
-	u8	*adapter;
-	u8	*intf_dev;
-	struct intf_priv	*pintfpriv;
-	u8	cnt;
-	void (*intf_hdl_init)(u8 *priv);
-	void (*intf_hdl_unload)(u8 *priv);
-	void (*intf_hdl_open)(u8 *priv);
-	void (*intf_hdl_close)(u8 *priv);
-	struct	_io_ops	io_ops;
-	//u8 intf_status;//moved to struct intf_priv
-	u16 len;
-	u16 done_len;
-*/
 	_adapter *padapter;
 	struct dvobj_priv *pintf_dev;//	pointer to &(padapter->dvobjpriv);
-
 	struct _io_ops	io_ops;
-
 };
 
 struct reg_protocol_rd {
@@ -297,17 +252,6 @@ struct reg_protocol_wt {
 #ifdef CONFIG_USB_HCI
 #define MAX_CONTINUAL_IO_ERR 4
 #endif
-
-#ifdef CONFIG_SDIO_HCI
-#define SD_IO_TRY_CNT (8)
-#define MAX_CONTINUAL_IO_ERR SD_IO_TRY_CNT
-#endif
-
-#ifdef CONFIG_GSPI_HCI
-#define SD_IO_TRY_CNT (8)
-#define MAX_CONTINUAL_IO_ERR SD_IO_TRY_CNT
-#endif
-
 
 int rtw_inc_and_chk_continual_io_error(struct dvobj_priv *dvobj);
 void rtw_reset_continual_io_error(struct dvobj_priv *dvobj);

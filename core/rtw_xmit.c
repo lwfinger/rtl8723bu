@@ -171,13 +171,6 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, _adapter *padapter)
 			}
 		}
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->phead = pxmitbuf->pbuf;
-		pxmitbuf->pend = pxmitbuf->pbuf + MAX_XMITBUF_SZ;
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-#endif
-
 		pxmitbuf->flags = XMIT_VO_QUEUE;
 
 		rtw_list_insert_tail(&pxmitbuf->list, &(pxmitpriv->free_xmitbuf_queue.queue));
@@ -252,13 +245,6 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, _adapter *padapter)
 			goto exit;
 		}
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->phead = pxmitbuf->pbuf;
-		pxmitbuf->pend = pxmitbuf->pbuf + MAX_XMIT_EXTBUF_SZ;
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-#endif
-
 		rtw_list_insert_tail(&pxmitbuf->list, &(pxmitpriv->free_xmit_extbuf_queue.queue));
 		#ifdef DBG_XMIT_BUF_EXT
 		pxmitbuf->no=i;
@@ -282,13 +268,6 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, _adapter *padapter)
 				res= _FAIL;
 				goto exit;
 			}
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-			pxmitbuf->phead = pxmitbuf->pbuf;
-			pxmitbuf->pend = pxmitbuf->pbuf + MAX_CMDBUF_SZ;
-			pxmitbuf->len = 0;
-			pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-#endif
 			pxmitbuf->alloc_sz = MAX_CMDBUF_SZ+XMITBUF_ALIGN_SZ;
 		}
 	}
@@ -523,22 +502,6 @@ static void update_attrib_vcs_info(_adapter *padapter, struct xmit_frame *pxmitf
 	{
 		while (_TRUE)
 		{
-#if 0 //Todo
-			//check IOT action
-			if(pHTInfo->IOTAction & HT_IOT_ACT_FORCED_CTS2SELF)
-			{
-				pattrib->vcs_mode = CTS_TO_SELF;
-				pattrib->rts_rate = MGN_24M;
-				break;
-			}
-			else if(pHTInfo->IOTAction & (HT_IOT_ACT_FORCED_RTS|HT_IOT_ACT_PURE_N_MODE))
-			{
-				pattrib->vcs_mode = RTS_CTS;
-				pattrib->rts_rate = MGN_24M;
-				break;
-			}
-#endif
-
 			//IOT action
 			if((pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_ATHEROS) && (pattrib->ampdu_en==_TRUE) &&
 				(padapter->securitypriv.dot11PrivacyAlgrthm == _AES_ ))
@@ -1055,16 +1018,11 @@ static s32 update_attrib(_adapter *padapter, _pkt *pkt, struct pkt_attrib *pattr
 #ifdef CONFIG_WAPI_SUPPORT
 	if ( (pattrib->ether_type == 0x88B4) || (pattrib->ether_type == 0x0806) || (pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
 #else //!CONFIG_WAPI_SUPPORT
-#if 0
-	if ( (pattrib->ether_type == 0x0806) || (pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
-#else // only ICMP/DHCP packets is as SPECIAL_PACKET, and leave LPS when tx IMCP/DHCP packets.
-	//if ((pattrib->ether_type == 0x888e) || (pattrib->dhcp_pkt == 1) )
 	if (pattrib->icmp_pkt==1)
 	{
 		rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_LEAVE, 1);
 	}
 	else if(pattrib->dhcp_pkt==1)
-#endif
 #endif
 	{
 		DBG_COUNTER(padapter->tx_logs.core_tx_upd_attrib_active);
@@ -2499,7 +2457,7 @@ void rtw_count_tx_stats(PADAPTER padapter, struct xmit_frame *pxmitframe, int sz
 
 	if ((pxmitframe->frame_tag&0x0f) == DATA_FRAMETAG)
 	{
-#if defined(CONFIG_USB_TX_AGGREGATION) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+#if defined(CONFIG_USB_TX_AGGREGATION)
 		pkt_num = pxmitframe->agg_num;
 #endif
 		pmlmepriv->LinkDetectInfo.NumTxOkInPeriod += pkt_num;
@@ -2544,12 +2502,6 @@ static struct xmit_buf *__rtw_alloc_cmd_xmitbuf(struct xmit_priv *pxmitpriv,
 	if (pxmitbuf !=  NULL) {
 		pxmitbuf->priv_data = NULL;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-		pxmitbuf->agg_num = 0;
-		pxmitbuf->pg_num = 0;
-#endif
 		if (pxmitbuf->sctx) {
 			DBG_871X("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
@@ -2629,12 +2581,6 @@ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv)
 
 		pxmitbuf->priv_data = NULL;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-		pxmitbuf->agg_num = 1;
-#endif
-
 		if (pxmitbuf->sctx) {
 			DBG_871X("%s pxmitbuf->sctx is not NULL\n", __func__);
 			rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_BUF_ALLOC);
@@ -2713,13 +2659,6 @@ struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 		//DBG_871X("alloc, free_xmitbuf_cnt=%d\n", pxmitpriv->free_xmitbuf_cnt);
 
 		pxmitbuf->priv_data = NULL;
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxmitbuf->len = 0;
-		pxmitbuf->pdata = pxmitbuf->ptail = pxmitbuf->phead;
-		pxmitbuf->agg_num = 0;
-		pxmitbuf->pg_num = 0;
-#endif
 
 		if (pxmitbuf->sctx) {
 			DBG_871X("%s pxmitbuf->sctx is not NULL\n", __func__);
@@ -2810,11 +2749,6 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 #endif
 
 #endif //#ifdef CONFIG_USB_HCI
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		pxframe->pg_num = 1;
-		pxframe->agg_num = 1;
-#endif
 
 #ifdef CONFIG_XMIT_ACK
 		pxframe->ack_report = 0;
@@ -3587,25 +3521,6 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 				*((unsigned short *)(skb->data+MACADDRLEN*2+2)) = vlan_hdr;
 			}
 		}
-#if 0
-		else{
-			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_8021Q)) {
-				is_vlan_tag = 1;
-			}
-
-			if(is_vlan_tag){
-				if(ICMPV6_MCAST_MAC(skb->data) && ICMPV6_PROTO1A_VALN(skb->data)){
-                                        memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-				}
-			}else
-			{
-				if(ICMPV6_MCAST_MAC(skb->data) && ICMPV6_PROTO1A(skb->data)){
-                                        memcpy(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN);
-				}
-			}
-		}
-#endif	// 0
-
 		// check if SA is equal to our MAC
 		if (memcmp(skb->data+MACADDRLEN, GET_MY_HWADDR(padapter), MACADDRLEN)) {
 			//priv->ext_stats.tx_drops++;
@@ -4496,10 +4411,6 @@ void enqueue_pending_xmitbuf(
 
 
 
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_CONCURRENT_MODE)
-	if (pri_adapter->adapter_type > PRIMARY_ADAPTER)
-		pri_adapter = pri_adapter->pbuddy_adapter;
-#endif  //SDIO_HCI + CONCURRENT
 	_rtw_up_sema(&(pri_adapter->xmitpriv.xmit_sema));
 
 }

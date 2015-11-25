@@ -338,16 +338,6 @@ struct registry_priv
 #define BSSID_OFT(field) ((ULONG)FIELD_OFFSET(WLAN_BSSID_EX,field))
 #define BSSID_SZ(field)   sizeof(((PWLAN_BSSID_EX) 0)->field)
 
-
-
-#ifdef CONFIG_SDIO_HCI
-#include <drv_types_sdio.h>
-#define INTF_DATA SDIO_DATA
-#elif defined(CONFIG_GSPI_HCI)
-#include <drv_types_gspi.h>
-#define INTF_DATA GSPI_DATA
-#endif
-
 #ifdef CONFIG_CONCURRENT_MODE
 #define is_primary_adapter(adapter) (adapter->adapter_type == PRIMARY_ADAPTER)
 #define get_iface_type(adapter) (adapter->iface_type)
@@ -664,12 +654,6 @@ static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 
 #ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
-#ifdef CONFIG_SDIO_HCI
-	return &dvobj->intf_data.func->dev;
-#endif
-#ifdef CONFIG_GSPI_HCI
-	return &dvobj->intf_data.func->dev;
 #endif
 }
 
@@ -993,18 +977,6 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 #include <usb_osintf.h>
 #include <usb_ops.h>
 #include <usb_hal.h>
-#endif
-
-#ifdef CONFIG_SDIO_HCI
-#include <sdio_osintf.h>
-#include <sdio_ops.h>
-#include <sdio_hal.h>
-#endif
-
-#ifdef CONFIG_GSPI_HCI
-#include <gspi_osintf.h>
-#include <gspi_ops.h>
-#include <gspi_hal.h>
 #endif
 
 #ifdef CONFIG_BT_COEXIST

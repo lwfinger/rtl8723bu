@@ -1419,13 +1419,11 @@ void start_bss_network(_adapter *padapter, u8 *pbuf)
 		update_beacon(padapter, _TIM_IE_, NULL, _TRUE);
 
 #ifndef CONFIG_INTERRUPT_BASED_TXBCN //other case will  tx beacon when bcn interrupt coming in.
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 		//issue beacon frame
 		if(send_beacon(padapter)==_FAIL)
 		{
 			DBG_871X("issue_beacon, fail!\n");
 		}
-#endif
 #endif //!CONFIG_INTERRUPT_BASED_TXBCN
 
 	}
@@ -2446,17 +2444,11 @@ void update_beacon(_adapter *padapter, u8 ie_id, u8 *oui, u8 tx)
 	SPIN_UNLOCK_BH(pmlmepriv->bcn_update_lock, &irqL);
 
 #ifndef CONFIG_INTERRUPT_BASED_TXBCN
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	if(tx)
 	{
 		//send_beacon(padapter);//send_beacon must execute on TSR level
 		set_tx_beacon_cmd(padapter);
 	}
-#else
-	{
-		//PCI will issue beacon when BCN interrupt occurs.
-	}
-#endif
 #endif //!CONFIG_INTERRUPT_BASED_TXBCN
 
 }

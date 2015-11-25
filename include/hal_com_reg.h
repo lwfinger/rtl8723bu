@@ -1651,12 +1651,8 @@ Current IOREG MAP
 #define SDIO_TX_FREE_PG_QUEUE			4	// The number of Tx FIFO free page
 #define SDIO_TX_FIFO_PAGE_SZ			128
 
-#ifdef CONFIG_SDIO_HCI
-	#define MAX_TX_AGG_PACKET_NUMBER	0x8
-#else
-	#define MAX_TX_AGG_PACKET_NUMBER	0xFF
-	#define MAX_TX_AGG_PACKET_NUMBER_8812	64
-#endif
+#define MAX_TX_AGG_PACKET_NUMBER	0xFF
+#define MAX_TX_AGG_PACKET_NUMBER_8812	64
 
 //-----------------------------------------------------
 //

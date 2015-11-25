@@ -27,12 +27,6 @@
 #include <hal_btcoex.h>
 #endif
 
-#ifdef CONFIG_SDIO_HCI
-#include <hal_sdio.h>
-#endif
-#ifdef CONFIG_GSPI_HCI
-#include <hal_gspi.h>
-#endif
 //
 // <Roger_Notes> For RTL8723 WiFi/BT/GPS multi-function configuration. 2010.10.06.
 //
@@ -483,40 +477,6 @@ typedef struct hal_com_data
 	struct submit_ctx	iqk_sctx;
 
 	RT_AMPDU_BRUST		AMPDUBurstMode; //92C maybe not use, but for compile successfully
-
-#if defined (CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	//
-	// For SDIO Interface HAL related
-	//
-
-	//
-	// SDIO ISR Related
-	//
-//	u32			IntrMask[1];
-//	u32			IntrMaskToSet[1];
-//	LOG_INTERRUPT		InterruptLog;
-	u32			sdio_himr;
-	u32			sdio_hisr;
-
-	//
-	// SDIO Tx FIFO related.
-	//
-	// HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg
-	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
-	spinlock_t		SdioTxFIFOFreePageLock;
-	ulong			sdioTxFIFOFreePageLock_set;
-	u8			SdioTxOQTMaxFreeSpace;
-	u8			SdioTxOQTFreeSpace;
-
-
-	//
-	// SDIO Rx FIFO related.
-	//
-	u8			SdioRxFIFOCnt;
-	u16			SdioRxFIFOSize;
-
-	u32			sdio_tx_max_len[SDIO_MAX_TX_QUEUE];// H, N, L, used for sdio tx aggregation max length per queue
-#endif //CONFIG_SDIO_HCI
 
 #ifdef CONFIG_USB_HCI
 	u32	UsbBulkOutSize;

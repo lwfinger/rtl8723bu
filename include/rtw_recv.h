@@ -23,13 +23,7 @@
 #ifdef CONFIG_SINGLE_RECV_BUF
 	#define NR_RECVBUFF (1)
 #else
-	#if defined(CONFIG_GSPI_HCI)
-		#define NR_RECVBUFF (32)
-	#elif defined(CONFIG_SDIO_HCI)
-		#define NR_RECVBUFF (8)
-	#else
-		#define NR_RECVBUFF (8)
-	#endif
+	#define NR_RECVBUFF (8)
 #endif //CONFIG_SINGLE_RECV_BUF
 
 #define NR_PREALLOC_RECV_SKB (8)
@@ -347,11 +341,7 @@ struct recv_priv
 	u8 *precv_buf;    // 4 alignment
 	_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI) || defined(CONFIG_USB_HCI)
 	_queue	recv_buf_pending_queue;
-#endif
-
 	//For display the phy informatiom
 	u8 is_signal_dbg;	// for debug
 	u8 signal_strength_dbg;	// for debug

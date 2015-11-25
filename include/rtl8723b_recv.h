@@ -22,18 +22,6 @@
 
 #include <rtl8192c_recv.h>
 
-#ifdef CONFIG_SDIO_HCI
-#ifndef CONFIG_SDIO_RX_COPY
-#undef MAX_RECVBUF_SZ
-#define MAX_RECVBUF_SZ	(RX_DMA_SIZE_8723B - RX_DMA_RESERVED_SIZE_8723B)
-#endif // !CONFIG_SDIO_RX_COPY
-#endif // CONFIG_SDIO_HCI
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-s32 rtl8723bs_init_recv_priv(PADAPTER padapter);
-void rtl8723bs_free_recv_priv(PADAPTER padapter);
-#endif
-
 void rtl8723b_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);
 void rtl8723b_process_phy_info(PADAPTER padapter, void *prframe);
 

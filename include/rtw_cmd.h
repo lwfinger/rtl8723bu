@@ -111,14 +111,6 @@
 		u8	*evt_buf;	//shall be non-paged, and 4 bytes aligned
 		u8	*evt_allocated_buf;
 		u32	evt_done_cnt;
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		u8	*c2h_mem;
-		u8	*allocated_c2h_mem;
-#ifdef PLATFORM_OS_XP
-		PMDL	pc2h_mdl;
-#endif
-#endif
-
 	};
 
 #define init_h2fwcmd_w_parm_no_rsp(pcmd, pparm, code) \

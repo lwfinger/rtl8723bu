@@ -860,45 +860,6 @@ Hal_EfusePowerSwitch(PADAPTER padapter, u8 bWrite, u8 PwrState)
 
 
 	if (PwrState == _TRUE) {
-#ifdef CONFIG_SDIO_HCI
-		// To avoid cannot access efuse regsiters after disable/enable several times during DTM test.
-		// Suggested by SD1 IsaacHsu. 2013.07.08, added by tynli.
-		tempval = rtw_read8(padapter, SDIO_LOCAL_BASE |
-				    SDIO_REG_HSUS_CTRL);
-		if (tempval & BIT(0)) { // SDIO local register is suspend
-			u8 count = 0;
-
-			tempval &= ~BIT(0);
-			rtw_write8(padapter,
-				   SDIO_LOCAL_BASE | SDIO_REG_HSUS_CTRL,
-				   tempval);
-
-			// check 0x86[1:0]=10'2h, wait power state to leave suspend
-			do {
-				tempval = rtw_read8(padapter,
-						    SDIO_LOCAL_BASE|
-						    SDIO_REG_HSUS_CTRL);
-				tempval &= 0x3;
-				if (tempval == 0x02)
-					break;
-
-				count++;
-				if (count >= 100)
-					break;
-
-				rtw_mdelay_os(10);
-			} while (1);
-
-			if (count >= 100) {
-				DBG_8192C(FUNC_ADPT_FMT ": Leave SDIO local register suspend fail! Local 0x86=%#X\n",
-					FUNC_ADPT_ARG(padapter), tempval);
-			} else {
-				DBG_8192C(FUNC_ADPT_FMT ": Leave SDIO local register suspend OK! Local 0x86=%#X\n",
-					  FUNC_ADPT_ARG(padapter), tempval);
-			}
-		}
-#endif // CONFIG_SDIO_HCI
-
 		rtw_write8(padapter, REG_EFUSE_ACCESS_8723,
 			   EFUSE_ACCESS_ON_8723);
 
@@ -2841,7 +2802,6 @@ s32 rtl8723b_InitLLTTable(PADAPTER padapter)
 	return ret;
 }
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 void _DisableGPIO(PADAPTER	padapter)
 {
 /***************************************
@@ -3106,15 +3066,6 @@ void _DisableAnalog(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 	rtw_write16(padapter, REG_APS_FSMCO, value16);//0x4802
 
 	rtw_write8(padapter, REG_RSV_CTRL, 0x0e);
-
-#if 0
-	//tynli_test for suspend mode.
-	if(!bWithoutHWSM){
-		rtw_write8(padapter, 0xfe10, 0x19);
-	}
-#endif
-
-//	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable Analog Reg0x04:0x%04x.\n",value16));
 }
 
 // HW Auto state machine
@@ -3172,7 +3123,6 @@ s32 CardDisableWithoutHWSM(PADAPTER padapter)
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("<====== Card Disable Without HWSM .\n"));
 	return rtStatus;
 }
-#endif // CONFIG_USB_HCI || CONFIG_SDIO_HCI || CONFIG_GSPI_HCI
 
 BOOLEAN
 Hal_GetChnlGroup8723B(
@@ -3995,7 +3945,6 @@ u8	SCMapping_8723B(PADAPTER Adapter, struct pkt_attrib *pattrib)
 	return SCSettingOfDesc;
 }
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 void rtl8723b_cal_txdesc_chksum(struct tx_desc *ptxdesc)
 {
 	u16	*usPtr = (u16*)ptxdesc;
@@ -4018,7 +3967,6 @@ void rtl8723b_cal_txdesc_chksum(struct tx_desc *ptxdesc)
 
 	ptxdesc->txdw7 |= cpu_to_le32(checksum & 0x0000ffff);
 }
-#endif
 
 static u8 fill_txdesc_sectype(struct pkt_attrib *pattrib)
 {
@@ -4207,9 +4155,7 @@ static void rtl8723b_fill_default_txdesc(
 				FUNC_ADPT_ARG(padapter), pattrib->ether_type, MRateToHwRate(pmlmeext->tx_rate));
 		}
 
-#if defined(CONFIG_USB_TX_AGGREGATION) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 		SET_TX_DESC_USB_TXAGG_NUM_8723B(pbuf, pxmitframe->agg_num);
-#endif
 	}
 	else if (pxmitframe->frame_tag == MGNT_FRAMETAG)
 	{
@@ -4279,8 +4225,6 @@ static void rtl8723b_fill_default_txdesc(
 		pkt_offset = pxmitframe->pkt_offset;
 		offset += (pxmitframe->pkt_offset >> 3);
 		SET_TX_DESC_OFFSET_8723B(pbuf, TXDESC_SIZE + (pxmitframe->pkt_offset >> 3));
-#else // CONFIG_SDIO_HCI & CONFIG_GSPI_HCI
-		offset += OFFSET_SZ;
 #endif // !CONFIG_USB_HCI
 
 #ifdef CONFIG_TX_EARLY_MODE
@@ -4322,9 +4266,7 @@ void rtl8723b_update_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf)
 {
 	rtl8723b_fill_default_txdesc(pxmitframe, pbuf);
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	rtl8723b_cal_txdesc_chksum((struct tx_desc*)pbuf);
-#endif
 }
 
 //
@@ -4404,11 +4346,9 @@ void rtl8723b_fill_fake_txdesc(
 		}
 	}
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 	// USB interface drop packet if the checksum of descriptor isn't correct.
 	// Using this checksum can let hardware recovery from packet bulk out error (e.g. Cancel URC, Bulk out error.).
 	rtl8723b_cal_txdesc_chksum((struct tx_desc*)pDesc);
-#endif
 }
 
 #ifdef CONFIG_TSF_RESET_OFFLOAD
@@ -5426,61 +5366,6 @@ void C2HPacketHandler_8723B(PADAPTER padapter, u8 *pbuffer, u16 length)
 static void C2HCommandHandler(PADAPTER padapter)
 {
 	C2H_EVT_HDR	C2hEvent;
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-
-	u8				*tmpBuf = NULL;
-	u8				index = 0;
-	u8				bCmdMsgReady = _FALSE;
-	u8				U1bTmp = 0;
-//	u8				QueueID = 0;
-
-	_rtw_memset(&C2hEvent, 0, sizeof(C2H_EVT_HDR));
-
-	C2hEvent.CmdID = rtw_read8(padapter, REG_C2HEVT_CMD_ID_8723B);
-	C2hEvent.CmdLen = rtw_read8(padapter, REG_C2HEVT_CMD_LEN_8723B);
-	C2hEvent.CmdSeq = rtw_read8(padapter, REG_C2HEVT_CMD_ID_8723B + 1);
-
-	RT_PRINT_DATA(_module_hal_init_c_, _drv_info_, "C2HCommandHandler(): ",
-		&C2hEvent , sizeof(C2hEvent));
-
-	U1bTmp = rtw_read8(padapter, REG_C2HEVT_CLEAR);
-	DBG_871X("%s C2hEvent.CmdID:%x C2hEvent.CmdLen:%x C2hEvent.CmdSeq:%x\n",
-			__func__, C2hEvent.CmdID, C2hEvent.CmdLen, C2hEvent.CmdSeq);
-
-	if (U1bTmp == C2H_EVT_HOST_CLOSE)
-	{
-		// Not ready.
-		return;
-	}
-	else if (U1bTmp == C2H_EVT_FW_CLOSE)
-	{
-		bCmdMsgReady = _TRUE;
-	}
-	else
-	{
-		// Not a valid value, reset the clear event.
-		goto exit;
-	}
-
-	if(C2hEvent.CmdLen == 0)
-		goto exit;
-	tmpBuf = rtw_zmalloc(C2hEvent.CmdLen);
-	if (tmpBuf == NULL)
-		goto exit;
-
-	// Read the content
-	for (index = 0; index < C2hEvent.CmdLen; index++)
-	{
-		tmpBuf[index] = rtw_read8(padapter, REG_C2HEVT_CMD_ID_8723B + 2 + index);
-	}
-
-	RT_PRINT_DATA(_module_hal_init_c_, _drv_notice_, "C2HCommandHandler(): Command Content:\n", tmpBuf, C2hEvent.CmdLen);
-
-	//process_c2h_event(padapter,&C2hEvent, tmpBuf);
-	c2h_handler_8723b(padapter,&C2hEvent);
-	if (tmpBuf)
-		rtw_mfree(tmpBuf, C2hEvent.CmdLen);
-#endif
 
 #ifdef CONFIG_USB_HCI
 	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(padapter);
@@ -6386,33 +6271,10 @@ void Hal_DetectWoWMode(PADAPTER pAdapter)
 
 void rtl8723b_start_thread(_adapter *padapter)
 {
-#if (defined CONFIG_SDIO_HCI) || (defined CONFIG_GSPI_HCI)
-#ifndef CONFIG_SDIO_TX_TASKLET
-	struct xmit_priv *xmitpriv = &padapter->xmitpriv;
-
-	xmitpriv->SdioXmitThread = kthread_run(rtl8723bs_xmit_thread, padapter, "RTWHALXT");
-	if (IS_ERR(xmitpriv->SdioXmitThread))
-	{
-		RT_TRACE(_module_hal_xmit_c_, _drv_err_, ("%s: start rtl8723bs_xmit_thread FAIL!!\n", __func__));
-	}
-#endif
-#endif
 }
 
 void rtl8723b_stop_thread(_adapter *padapter)
 {
-#if (defined CONFIG_SDIO_HCI) || (defined CONFIG_GSPI_HCI)
-#ifndef CONFIG_SDIO_TX_TASKLET
-	struct xmit_priv *xmitpriv = &padapter->xmitpriv;
-
-	// stop xmit_buf_thread
-	if (xmitpriv->SdioXmitThread ) {
-		_rtw_up_sema(&xmitpriv->SdioXmitSema);
-		_rtw_down_sema(&xmitpriv->SdioXmitTerminateSema);
-		xmitpriv->SdioXmitThread = 0;
-	}
-#endif
-#endif
 }
 
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
