@@ -51,9 +51,6 @@ NDIS_STATUS oid_rt_wireless_mode_hdl(struct oid_par_priv *poid_par_priv)
 //****************  oid_rtl_seg_81_87_80   section start ****************
 NDIS_STATUS oid_rt_pro_write_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL oldirql;
-#endif
 	struct bb_reg_param *pbbreg;
 	u16 offset;
 	u32 value;
@@ -92,9 +89,6 @@ NDIS_STATUS oid_rt_pro_write_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_read_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL oldirql;
-#endif
 	struct bb_reg_param *pbbreg;
 	u16 offset;
 	u32 value;
@@ -133,9 +127,6 @@ NDIS_STATUS oid_rt_pro_read_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_write_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL oldirql;
-#endif
 	struct rf_reg_param *pbbreg;
 	u8 path;
 	u8 offset;
@@ -181,9 +172,6 @@ NDIS_STATUS oid_rt_pro_write_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL oldirql;
-#endif
 	struct rf_reg_param *pbbreg;
 	u8 path;
 	u8 offset;
@@ -234,9 +222,6 @@ NDIS_STATUS oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_set_data_rate_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		ratevalue;//4
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -271,9 +256,6 @@ NDIS_STATUS oid_rt_pro_set_data_rate_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_start_test_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		mode;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -312,9 +294,6 @@ exit:
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_stop_test_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
 
@@ -338,9 +317,6 @@ NDIS_STATUS oid_rt_pro_stop_test_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_set_channel_direct_call_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		Channel;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -377,9 +353,6 @@ NDIS_STATUS oid_rt_pro_set_channel_direct_call_hdl(struct oid_par_priv *poid_par
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_set_bandwidth_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u16		bandwidth;
 	u16		channel_offset;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
@@ -419,9 +392,6 @@ NDIS_STATUS oid_rt_set_bandwidth_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_set_antenna_bb_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		antenna;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -458,9 +428,6 @@ NDIS_STATUS oid_rt_pro_set_antenna_bb_hdl(struct oid_par_priv *poid_par_priv)
 
 NDIS_STATUS oid_rt_pro_set_tx_power_control_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		tx_pwr_idx;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -619,9 +586,6 @@ NDIS_STATUS oid_rt_pro_reset_rx_packet_received_hdl(struct oid_par_priv *poid_pa
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_reset_phy_rx_packet_count_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
 
@@ -643,9 +607,6 @@ NDIS_STATUS oid_rt_reset_phy_rx_packet_count_hdl(struct oid_par_priv *poid_par_p
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_get_phy_rx_packet_received_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
 
@@ -674,9 +635,6 @@ NDIS_STATUS oid_rt_get_phy_rx_packet_received_hdl(struct oid_par_priv *poid_par_
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_get_phy_rx_packet_crc32_error_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
 
@@ -706,9 +664,6 @@ NDIS_STATUS oid_rt_get_phy_rx_packet_crc32_error_hdl(struct oid_par_priv *poid_p
 //****************  oid_rtl_seg_81_80_20   section end ****************
 NDIS_STATUS oid_rt_pro_set_continuous_tx_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		bStartTest;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -744,9 +699,6 @@ NDIS_STATUS oid_rt_pro_set_continuous_tx_hdl(struct oid_par_priv *poid_par_priv)
 
 NDIS_STATUS oid_rt_pro_set_single_carrier_tx_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		bStartTest;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -782,9 +734,6 @@ NDIS_STATUS oid_rt_pro_set_single_carrier_tx_hdl(struct oid_par_priv *poid_par_p
 
 NDIS_STATUS oid_rt_pro_set_carrier_suppression_tx_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		bStartTest;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -820,9 +769,6 @@ NDIS_STATUS oid_rt_pro_set_carrier_suppression_tx_hdl(struct oid_par_priv *poid_
 
 NDIS_STATUS oid_rt_pro_set_single_tone_tx_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u32		bStartTest;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -854,9 +800,6 @@ NDIS_STATUS oid_rt_pro_trigger_gpio_hdl(struct oid_par_priv *poid_par_priv)
 {
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
 
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 
 
@@ -929,9 +872,6 @@ NDIS_STATUS oid_rt_pro_read_register_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_write_register_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	pRW_Reg		RegRWStruct;
 	u32		offset, width, value;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
@@ -1231,9 +1171,6 @@ NDIS_STATUS oid_rt_pro_read_efuse_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL oldirql;
-#endif
 	PEFUSE_ACCESS_STRUCT pefuse;
 	u8 *data;
 	u16 addr = 0, cnts = 0, max_available_size = 0;
@@ -1274,9 +1211,6 @@ NDIS_STATUS oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_rw_efuse_pgpkt_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	PPGPKT_STRUCT	ppgpkt;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
@@ -1331,9 +1265,6 @@ NDIS_STATUS oid_rt_pro_rw_efuse_pgpkt_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_get_efuse_current_size_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u16 size;
 	u8 ret;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
@@ -1408,9 +1339,6 @@ NDIS_STATUS oid_rt_pro_efuse_hdl(struct oid_par_priv *poid_par_priv)
 //------------------------------------------------------------------------------
 NDIS_STATUS oid_rt_pro_efuse_map_hdl(struct oid_par_priv *poid_par_priv)
 {
-#ifdef PLATFORM_OS_XP
-	_irqL		oldirql;
-#endif
 	u8		*data;
 	NDIS_STATUS	status = NDIS_STATUS_SUCCESS;
 	PADAPTER	Adapter = (PADAPTER)(poid_par_priv->adapter_context);
