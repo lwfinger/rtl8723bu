@@ -54,8 +54,6 @@ struct phy_stat {
 // Rx smooth factor
 #define	Rx_Smooth_Factor (20)
 
-
-#ifdef CONFIG_USB_HCI
 typedef struct _INTERRUPT_MSG_FORMAT_EX{
 	unsigned int C2H_MSG0;
 	unsigned int C2H_MSG1;
@@ -69,8 +67,6 @@ typedef struct _INTERRUPT_MSG_FORMAT_EX{
 void rtl8192cu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf);
 int	rtl8192cu_init_recv_priv(_adapter * padapter);
 void rtl8192cu_free_recv_priv(_adapter * padapter);
-#endif
-
 void rtl8192c_translate_rx_signal_stuff(union recv_frame *precvframe, struct phy_stat *pphy_status);
 void rtl8192c_query_rx_desc_status(union recv_frame *precvframe, struct recv_stat *pdesc);
 

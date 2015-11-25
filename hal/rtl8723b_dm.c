@@ -92,7 +92,6 @@ static void dm_CheckPbcGPIO(_adapter *padapter)
 	if(!padapter->registrypriv.hw_wps_pbc)
 		return;
 
-#ifdef CONFIG_USB_HCI
 	tmp1byte = rtw_read8(padapter, GPIO_IO_SEL);
 	tmp1byte |= (HAL_8192C_HW_GPIO_WPS_BIT);
 	rtw_write8(padapter, GPIO_IO_SEL, tmp1byte);	//enable GPIO[2] as output mode
@@ -113,19 +112,6 @@ static void dm_CheckPbcGPIO(_adapter *padapter)
 	{
 		bPbcPressed = _TRUE;
 	}
-#else
-	tmp1byte = rtw_read8(padapter, GPIO_IN);
-	//RT_TRACE(COMP_IO, DBG_TRACE, ("dm_CheckPbcGPIO - %x\n", tmp1byte));
-
-	if (tmp1byte == 0xff || padapter->init_adpt_in_progress)
-		return ;
-
-	if((tmp1byte&HAL_8192C_HW_GPIO_WPS_BIT)==0)
-	{
-		bPbcPressed = _TRUE;
-	}
-#endif
-
 	if( _TRUE == bPbcPressed)
 	{
 		// Here we only set bPbcPressed to true
@@ -183,14 +169,12 @@ static void Init_ODM_ComInfo_8723b(PADAPTER	Adapter)
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_CUT_VER,cut_ver);
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_MP_TEST_CHIP,IS_NORMAL_CHIP(pHalData->VersionID));
 
-#ifdef CONFIG_USB_HCI
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BOARD_TYPE,pHalData->BoardType);
 
 	if(pHalData->BoardType == BOARD_USB_High_PA){
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA,_TRUE);
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,_TRUE);
 	}
-#endif
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PATCH_ID,pHalData->CustomerID);
 	//	ODM_CMNINFO_BINHCT_TEST only for MP Team
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BWIFI_TEST,Adapter->registrypriv.wifi_spec);
@@ -316,12 +300,9 @@ rtl8723b_InitHalDm(
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
-
 	u8	i;
 
-#ifdef CONFIG_USB_HCI
 	dm_InitGPIOSetting(Adapter);
-#endif
 
 	pdmpriv->DM_Type = DM_Type_ByDriver;
 	pdmpriv->DMFlag = DYNAMIC_FUNC_DISABLE;

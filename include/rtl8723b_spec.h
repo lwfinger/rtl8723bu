@@ -269,7 +269,6 @@
 
 #endif
 
-#ifdef CONFIG_USB_HCI
 //should be renamed and moved to another file
 typedef	enum _BOARD_TYPE_8192CUSB{
 	BOARD_USB_DONGLE			= 0,		// USB dongle
@@ -278,5 +277,3 @@ typedef	enum _BOARD_TYPE_8192CUSB{
 	BOARD_USB_SOLO			= 3,		// USB solo-Slim module
 	BOARD_USB_COMBO			= 4,		// USB Combo-Slim module
 } BOARD_TYPE_8723BUSB, *PBOARD_TYPE_8723BUSB;
-
-#endif

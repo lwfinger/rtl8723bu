@@ -280,7 +280,6 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, _adapter *padapter)
 		pxmitpriv->wmm_para_seq[i] = i;
 	}
 
-#ifdef CONFIG_USB_HCI
 	pxmitpriv->txirp_cnt=1;
 
 	_rtw_init_sema(&(pxmitpriv->tx_retevt), 0);
@@ -290,8 +289,6 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, _adapter *padapter)
 	pxmitpriv->bkq_cnt = 0;
 	pxmitpriv->viq_cnt = 0;
 	pxmitpriv->voq_cnt = 0;
-#endif
-
 
 #ifdef CONFIG_XMIT_ACK
 	pxmitpriv->ack_tx = _FALSE;
@@ -2736,7 +2733,6 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 
 		pxframe->frame_tag = DATA_FRAMETAG;
 
-#ifdef CONFIG_USB_HCI
 		pxframe->pkt = NULL;
 #ifdef USB_PACKET_OFFSET_SZ
 		pxframe->pkt_offset = (PACKET_OFFSET_SZ/8);
@@ -2748,12 +2744,9 @@ void rtw_init_xmitframe(struct xmit_frame *pxframe)
 		pxframe->agg_num = 1;
 #endif
 
-#endif //#ifdef CONFIG_USB_HCI
-
 #ifdef CONFIG_XMIT_ACK
 		pxframe->ack_report = 0;
 #endif
-
 	}
 }
 
@@ -3026,11 +3019,6 @@ struct xmit_frame* rtw_dequeue_xframe(struct xmit_priv *pxmitpriv, struct hw_xmi
 	_adapter *padapter = pxmitpriv->adapter;
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
 	int i, inx[4];
-#ifdef CONFIG_USB_HCI
-//	int j, tmp, acirp_cnt[4];
-#endif
-
-
 
 	inx[0] = 0; inx[1] = 1; inx[2] = 2; inx[3] = 3;
 
@@ -4464,11 +4452,8 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 {
 	_irqL irql;
 	struct xmit_buf *pxmitbuf;
-#ifdef CONFIG_USB_HCI
 	struct xmit_frame *pxmitframe;
-#endif
 	_queue *pqueue;
-
 
 	pxmitbuf = NULL;
 	pqueue = &pxmitpriv->pending_xmitbuf_queue;
@@ -4488,7 +4473,6 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 
 			pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
 
-#ifdef CONFIG_USB_HCI
 			pxmitframe = (struct xmit_frame*)pxmitbuf->priv_data;
 			if(pxmitframe)
 			{
@@ -4498,9 +4482,6 @@ struct xmit_buf* dequeue_pending_xmitbuf_under_survey(
 			{
 				DBG_871X("%s, !!!ERROR!!! For USB, TODO ITEM \n", __FUNCTION__);
 			}
-#else
-			type = GetFrameSubType(pxmitbuf->pbuf + TXDESC_OFFSET);
-#endif
 
 			if ((type == WIFI_PROBEREQ) ||
 				(type == WIFI_DATA_NULL) ||

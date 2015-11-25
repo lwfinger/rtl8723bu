@@ -31,8 +31,6 @@
 #define DRV_NAME "rtl8723bu"
 
 #define BT_30_SUPPORT 1
-#define CONFIG_USB_HCI	1
-
 
 #define CONFIG_IOCTL_CFG80211 1
 

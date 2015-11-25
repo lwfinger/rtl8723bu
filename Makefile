@@ -24,8 +24,6 @@ CONFIG_AUTOCFG_CP = n
 
 ########################## WIFI IC ############################
 CONFIG_RTL8723B = y
-######################### Interface ###########################
-CONFIG_USB_HCI = y
 ########################## Features ###########################
 CONFIG_POWER_SAVING = y
 CONFIG_USB_AUTOSUSPEND = n
@@ -58,10 +56,7 @@ CONFIG_DRVEXT_MODULE = n
 export TopDIR ?= $(shell pwd)
 
 ########### COMMON  #################################
-ifeq ($(CONFIG_USB_HCI), y)
 HCI_NAME = usb
-endif
-
 
 _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 			os_dep/os_intfs.o \
@@ -112,9 +107,7 @@ endif
 ########### HAL_RTL8723B #################################
 
 RTL871X = rtl8723b
-ifeq ($(CONFIG_USB_HCI), y)
 MODULE_NAME = 8723bu
-endif
 
 _HAL_INTFS_FILES += hal/HalPwrSeqCmd.o \
 					hal/Hal8723BPwrSeq.o\

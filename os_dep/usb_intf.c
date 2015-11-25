@@ -22,10 +22,6 @@
 #include <drv_types.h>
 #include <platform_ops.h>
 
-#ifndef CONFIG_USB_HCI
-#error "CONFIG_USB_HCI shall be on!\n"
-#endif
-
 #ifdef CONFIG_80211N_HT
 extern int rtw_ht_enable;
 extern int rtw_bw_mode;

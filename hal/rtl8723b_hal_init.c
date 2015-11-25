@@ -74,9 +74,7 @@ _BlockWrite(IN PADAPTER padapter, IN PVOID buffer, IN u32 buffSize)
 	u8	*bufferPtr	= (u8*)buffer;
 	u32	i=0, offset=0;
 
-#ifdef CONFIG_USB_HCI
 	blockSize_p1 = 254;
-#endif
 
 	//3 Phase #1
 	blockCount_p1 = buffSize / blockSize_p1;
@@ -90,16 +88,9 @@ _BlockWrite(IN PADAPTER padapter, IN PVOID buffer, IN u32 buffSize)
 	}
 
 	for (i = 0; i < blockCount_p1; i++) {
-#ifdef CONFIG_USB_HCI
 		ret = rtw_writeN(padapter,
 				 (FW_8723B_START_ADDRESS + i * blockSize_p1),
 				 blockSize_p1, (bufferPtr + i * blockSize_p1));
-#else
-		ret = rtw_write32(padapter,
-				  (FW_8723B_START_ADDRESS + i * blockSize_p1),
-				  le32_to_cpu(*((u32*)(bufferPtr +
-						       i * blockSize_p1))));
-#endif
 		if (ret == _FAIL) {
 			printk("====>%s %d i:%d\n", __func__, __LINE__, i);
 			goto exit;
@@ -120,7 +111,6 @@ _BlockWrite(IN PADAPTER padapter, IN PVOID buffer, IN u32 buffSize)
 				  blockCount_p2, remainSize_p2));
 		}
 
-#ifdef CONFIG_USB_HCI
 		for (i = 0; i < blockCount_p2; i++) {
 			ret = rtw_writeN(padapter,
 					 (FW_8723B_START_ADDRESS + offset +
@@ -130,7 +120,6 @@ _BlockWrite(IN PADAPTER padapter, IN PVOID buffer, IN u32 buffSize)
 			if (ret == _FAIL)
 				goto exit;
 		}
-#endif
 	}
 
 	//3 Phase #3
@@ -3521,22 +3510,12 @@ Hal_EfuseParseBTCoexistInfo_8723B(
 		tempval = hwinfo[EEPROM_RF_BT_SETTING_8723B];
 		if(tempval !=0xFF){
 			pHalData->EEPROMBluetoothAntNum = tempval & BIT(0);
-			#ifdef CONFIG_USB_HCI
 			//if(padapter->interface_type == RTW_USB)
 			pHalData->ant_path =ODM_RF_PATH_B;//s0
-			#else //SDIO or PCIE
-			// EFUSE_0xC3[6] == 0, S1(Main)-ODM_RF_PATH_A;
-			// EFUSE_0xC3[6] == 1, S0(Aux)-ODM_RF_PATH_B
-			pHalData->ant_path = (tempval & BIT(6))?ODM_RF_PATH_B:ODM_RF_PATH_A;
-			#endif
 		}
 		else{
 			pHalData->EEPROMBluetoothAntNum = Ant_x1;
-			#ifdef CONFIG_USB_HCI
 			pHalData->ant_path = ODM_RF_PATH_B;//s0
-			#else
-			pHalData->ant_path = ODM_RF_PATH_A;
-			#endif
 		}
 	}
 	else
@@ -3544,11 +3523,7 @@ Hal_EfuseParseBTCoexistInfo_8723B(
 		pHalData->EEPROMBluetoothCoexist = _FALSE;
 		pHalData->EEPROMBluetoothType = BT_RTL8723B;
 		pHalData->EEPROMBluetoothAntNum = Ant_x1;
-		#ifdef CONFIG_USB_HCI
 		pHalData->ant_path = ODM_RF_PATH_B;//s0
-		#else
-		pHalData->ant_path = ODM_RF_PATH_A;
-		#endif
 	}
 
 #ifdef CONFIG_BT_COEXIST
@@ -4221,11 +4196,9 @@ static void rtl8723b_fill_default_txdesc(
 
 		pkt_offset = 0;
 		offset = TXDESC_SIZE;
-#ifdef CONFIG_USB_HCI
 		pkt_offset = pxmitframe->pkt_offset;
 		offset += (pxmitframe->pkt_offset >> 3);
 		SET_TX_DESC_OFFSET_8723B(pbuf, TXDESC_SIZE + (pxmitframe->pkt_offset >> 3));
-#endif // !CONFIG_USB_HCI
 
 #ifdef CONFIG_TX_EARLY_MODE
 		if (pxmitframe->frame_tag == DATA_FRAMETAG) {
@@ -5367,7 +5340,6 @@ static void C2HCommandHandler(PADAPTER padapter)
 {
 	C2H_EVT_HDR	C2hEvent;
 
-#ifdef CONFIG_USB_HCI
 	HAL_DATA_TYPE	*pHalData=GET_HAL_DATA(padapter);
 
 	_rtw_memset(&C2hEvent, 0, sizeof(C2H_EVT_HDR));
@@ -5375,8 +5347,6 @@ static void C2HCommandHandler(PADAPTER padapter)
 	C2hEvent.CmdLen = (pHalData->C2hArray[USB_C2H_CMDID_OFFSET] & 0xF0) >> 4;
 	C2hEvent.CmdSeq =pHalData->C2hArray[USB_C2H_SEQ_OFFSET];
 	c2h_handler_8723b(padapter,(u8 *)&C2hEvent);
-	//process_c2h_event(padapter,&C2hEvent,&pHalData->C2hArray[USB_C2H_EVENT_OFFSET]);
-#endif
 	//REG_C2HEVT_CLEAR have done in process_c2h_event
 	return;
 exit:

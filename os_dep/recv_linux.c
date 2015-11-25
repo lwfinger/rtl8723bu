@@ -170,8 +170,6 @@ void rtw_os_recv_resource_free(struct recv_priv *precvpriv)
 int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	int res=_SUCCESS;
-
-#ifdef CONFIG_USB_HCI
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
 
@@ -200,8 +198,6 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 		return _FAIL;
 	#endif //CONFIG_USE_USB_BUFFER_ALLOC_RX
 
-#endif //CONFIG_USB_HCI
-
 	return res;
 }
 
@@ -209,11 +205,7 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 int rtw_os_recvbuf_resource_free(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	int ret = _SUCCESS;
-
-#ifdef CONFIG_USB_HCI
-
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
 
@@ -228,9 +220,6 @@ int rtw_os_recvbuf_resource_free(_adapter *padapter, struct recv_buf *precvbuf)
 		//usb_kill_urb(precvbuf->purb);
 		usb_free_urb(precvbuf->purb);
 	}
-
-#endif //CONFIG_USB_HCI
-
 
 	if(precvbuf->pskb)
 	{
@@ -663,8 +652,6 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
-#ifdef CONFIG_USB_HCI
-
 	precvbuf->ref_cnt--;
 
 	//free skb in recv_buf
@@ -678,8 +665,6 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 	}
 
-
-#endif
 }
 
 void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)

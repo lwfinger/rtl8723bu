@@ -25,14 +25,11 @@
 void rtl8723b_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);
 void rtl8723b_process_phy_info(PADAPTER padapter, void *prframe);
 
-#ifdef CONFIG_USB_HCI
 void update_recvframe_attrib(PADAPTER padapter, union recv_frame *precvframe, u8 *prxstat);
 void update_recvframe_phyinfo(union recv_frame *precvframe, struct phy_stat *pphy_info);
 int	rtl8723bu_init_recv_priv(_adapter *padapter);
 void rtl8723bu_free_recv_priv (_adapter *padapter);
 void rtl8723bu_init_recvbuf(_adapter *padapter, struct recv_buf *precvbuf);
-#endif
-
 void	rtl8723b_query_rx_desc_status(union recv_frame *precvframe, u8 *pdesc);
 
 #endif

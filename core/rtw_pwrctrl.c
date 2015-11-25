@@ -1285,8 +1285,6 @@ void LPS_Leave_check(
 	u32	start_time;
 	u8	bReady;
 
-
-
 	pwrpriv = adapter_to_pwrctl(padapter);
 
 	bReady = _FALSE;
@@ -1294,20 +1292,14 @@ void LPS_Leave_check(
 
 	rtw_yield_os();
 
-	while(1)
-	{
+	while(1) {
 		_enter_pwrlock(&pwrpriv->lock);
 
-		if ((padapter->bSurpriseRemoved == _TRUE)
-			|| (padapter->hw_init_completed == _FALSE)
-#ifdef CONFIG_USB_HCI
-			|| (padapter->bDriverStopped== _TRUE)
-#endif
-			|| (pwrpriv->pwr_mode == PS_MODE_ACTIVE)
-			)
-		{
+		if ((padapter->bSurpriseRemoved == _TRUE) ||
+		    (padapter->hw_init_completed == _FALSE) ||
+		    (padapter->bDriverStopped== _TRUE) ||
+		    (pwrpriv->pwr_mode == PS_MODE_ACTIVE))
 			bReady = _TRUE;
-		}
 
 		_exit_pwrlock(&pwrpriv->lock);
 
@@ -1321,8 +1313,6 @@ void LPS_Leave_check(
 		}
 		rtw_msleep_os(1);
 	}
-
-
 }
 
 /*
@@ -2356,7 +2346,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 
 	if(rf_off == pwrpriv->rf_pwrstate )
 	{
-#ifdef CONFIG_USB_HCI
 #ifdef CONFIG_AUTOSUSPEND
 		 if(pwrpriv->brfoffbyhw==_TRUE)
 		{
@@ -2375,7 +2364,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 			}
 		}
 		else
-#endif
 #endif
 		{
 #ifdef CONFIG_IPS

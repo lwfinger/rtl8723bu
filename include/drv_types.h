@@ -618,8 +618,6 @@ struct dvobj_priv
 
 /*-------- below is for USB INTERFACE --------*/
 
-#ifdef CONFIG_USB_HCI
-
 	u8	usb_speed; // 1.1, 2.0 or 3.0
 	u8	nr_endpoint;
 	u8	RtNumInPipes;
@@ -641,8 +639,6 @@ struct dvobj_priv
 
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
-
-#endif//CONFIG_USB_HCI
 };
 
 #define dvobj_to_pwrctl(dvobj) (&(dvobj->pwrctl_priv))
@@ -652,9 +648,7 @@ static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
 	/* todo: get interface type from dvobj and the return the dev accordingly */
 
-#ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
 }
 
 _adapter *dvobj_get_port0_adapter(struct dvobj_priv *dvobj);
@@ -973,11 +967,9 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 }
 
 // HCI Related header file
-#ifdef CONFIG_USB_HCI
 #include <usb_osintf.h>
 #include <usb_ops.h>
 #include <usb_hal.h>
-#endif
 
 #ifdef CONFIG_BT_COEXIST
 #include <rtw_btcoex.h>
