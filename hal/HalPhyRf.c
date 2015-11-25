@@ -111,11 +111,7 @@ ODM_TXPowerTrackingCallback_ThermalMeter(IN PADAPTER Adapter)
 {
 
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(Adapter);
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	PDM_ODM_T pDM_Odm = &pHalData->DM_OutSrc;
-#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PDM_ODM_T pDM_Odm = &pHalData->odmpriv;
-#endif
 
 	u1Byte	ThermalValue = 0, delta, delta_LCK, delta_IQK, p = 0, i = 0;
 	u1Byte	ThermalValue_AVG_count = 0;
@@ -146,16 +142,8 @@ ODM_TXPowerTrackingCallback_ThermalMeter(IN PADAPTER Adapter)
 	pDM_Odm->RFCalibrateInfo.bTXPowerTrackingInit = TRUE;
 
 #if (MP_DRIVER == 1)
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	// <Kordan> We should keep updating the control variable according to
-	// HalData.
-	pDM_Odm->RFCalibrateInfo.TxPowerTrackControl =
-		pHalData->TxPowerTrackControl;
-#endif
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	if (*(pDM_Odm->mp_mode) == 1)
-#endif
 		// <Kordan> RFCalibrateInfo.RegA24 will be initialized when ODM HW configuring, but MP configures with para files.
 		pDM_Odm->RFCalibrateInfo.RegA24 = 0x090e1317;
 #endif
@@ -566,32 +554,9 @@ VOID
 ODM_ResetIQKResult(IN PDM_ODM_T	pDM_Odm)
 {
 	u1Byte i;
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN || DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 
 	return;
-#else
-
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_CALIBRATION, ODM_DBG_LOUD,
-		     ("PHY_ResetIQKResult:: settings regs %d default regs %d\n",
-		      (u4Byte)(sizeof(pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting)/sizeof(IQK_MATRIX_REGS_SETTING)),
-		      IQK_Matrix_Settings_NUM));
-	//0xe94, 0xe9c, 0xea4, 0xeac, 0xeb4, 0xebc, 0xec4, 0xecc
-
-	for (i = 0; i < IQK_Matrix_Settings_NUM; i++) {
-		pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][0] =
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][2] =
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][4] =
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][6] = 0x100;
-
-		pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][1] =
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][3] =
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][5] =
-			pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].Value[0][7] = 0x0;
-
-		pDM_Odm->RFCalibrateInfo.IQKMatrixRegSetting[i].bIQKDone = FALSE;
-	}
-#endif
 }
 
 u1Byte ODM_GetRightChnlPlaceforIQK(u1Byte chnl)

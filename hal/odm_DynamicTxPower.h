@@ -52,7 +52,6 @@ odm_DynamicTxPowerNIC(
 	IN		PVOID					pDM_VOID
 	);
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 odm_DynamicTxPowerSavePowerIndex(
 	IN		PVOID					pDM_VOID
@@ -72,7 +71,6 @@ VOID
 odm_DynamicTxPower_92D(
 	IN		PVOID					pDM_VOID
 	);
-#endif
 
 VOID
 odm_DynamicTxPower(

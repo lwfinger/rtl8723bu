@@ -1683,11 +1683,7 @@ phy_SimularityCompare_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 	PDM_ODM_T	pDM_Odm = &pHalData->odmpriv;
 	u1Byte		final_candidate[2] = {0xFF, 0xFF};	//for path A and path B
 	BOOLEAN		bResult = TRUE;
-//#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-//	BOOLEAN		is2T = IS_92C_SERIAL( pHalData->VersionID);
-//#else
 	BOOLEAN		is2T = TRUE;
-//#endif
 	s4Byte tmp1 = 0,tmp2 = 0;
 
 	if (is2T)
@@ -1973,24 +1969,8 @@ phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 #endif
 
 //path B IQK
-#if 1
 	if (is2T) {
-/*
-#if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
-//		_PHY_PathAStandBy8723B(pAdapter);
-
-		// Turn Path B ADDA on
-		_PHY_PathADDAOn8723B(pAdapter, ADDA_REG, FALSE, is2T);
-#else
-//		_PHY_PathAStandBy8723B(pDM_Odm);
-
-		// Turn Path B ADDA on
-		_PHY_PathADDAOn8723B(pDM_Odm, ADDA_REG, FALSE, is2T);
-#endif
-*/
-
 //path B TX IQK
-#if 1
 		for (i = 0 ; i < retryCount; i++) {
 			PathBOK = phy_PathB_IQK_8723B(pAdapter);
 //			if(PathBOK == 0x03){
@@ -2009,28 +1989,15 @@ phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 				result[t][5] = (ODM_GetBBReg(pDM_Odm, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
 				break;
 			}
-#if 0
-			else if (i == (retryCount-1) && PathAOK == 0x01) { //Tx IQK OK
-				RT_DISP(FINIT, INIT_IQK,
-					("Path B IQK Only     Tx Success!!\n"));
-
-				result[t][0] = (ODM_GetBBReg(pDM_Odm, rTx_Power_Before_IQK_B, bMaskDWord)&0x3FF0000)>>16;
-				result[t][1] = (ODM_GetBBReg(pDM_Odm, rTx_Power_After_IQK_B, bMaskDWord)&0x3FF0000)>>16;
-			}
-#endif
 		}
-#endif
 
 //path B RX IQK
-#if 1
 		for (i = 0 ; i < retryCount; i++) {
 			PathBOK = phy_PathB_RxIQK8723B(pAdapter, is2T);
 			if(PathBOK == 0x03){
 				ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION,
 					     ODM_DBG_LOUD,
 					     ("Path B Rx IQK Success!!\n"));
-//				result[t][0] = (ODM_GetBBReg(pDM_Odm, rTx_Power_Before_IQK_A, bMaskDWord)&0x3FF0000)>>16;
-//				result[t][1] = (ODM_GetBBReg(pDM_Odm, rTx_Power_After_IQK_A, bMaskDWord)&0x3FF0000)>>16;
 				result[t][6] = (ODM_GetBBReg(pDM_Odm, rRx_Power_Before_IQK_A_2, bMaskDWord)&0x3FF0000)>>16;
 				result[t][7] = (ODM_GetBBReg(pDM_Odm, rRx_Power_After_IQK_A_2, bMaskDWord)&0x3FF0000)>>16;
 				break;
@@ -2040,7 +2007,6 @@ phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 					     ("Path B Rx IQK Fail!!\n"));
 			}
 		}
-#endif
 
 ////////Allen end /////////
 		if (PathBOK == 0x00) {
@@ -2048,7 +2014,6 @@ phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 				     ODM_DBG_LOUD, ("Path B IQK failed!!\n"));
 		}
 	}
-#endif	//pathB IQK
 
 	//Back to BB mode, load original value
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,

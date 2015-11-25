@@ -187,7 +187,6 @@ ODM_MacStatusQuery(
 	IN		BOOLEAN						bPacketToSelf,
 	IN		BOOLEAN						bPacketBeacon
 	);
-#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE|ODM_AP))
 
 HAL_STATUS
 ODM_ConfigRFWithTxPwrTrackHeaderFile(
@@ -230,7 +229,5 @@ odm_SignalScaleMapping(
 	IN OUT PDM_ODM_T pDM_Odm,
 	IN	s4Byte CurrSig
 	);
-
-#endif
 
 #endif

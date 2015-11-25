@@ -98,31 +98,9 @@ typedef enum _ODM_H2C_CMD
 // 2012/02/17 MH For non-MP compile pass only. Linux does not support workitem.
 // Suggest HW team to use thread instead of workitem. Windows also support the feature.
 //
-#if (DM_ODM_SUPPORT_TYPE != ODM_WIN)
 typedef  void *PRT_WORK_ITEM ;
 typedef  void RT_WORKITEM_HANDLE,*PRT_WORKITEM_HANDLE;
 typedef VOID (*RT_WORKITEM_CALL_BACK)(PVOID pContext);
-
-#if 0
-typedef struct tasklet_struct RT_WORKITEM_HANDLE, *PRT_WORKITEM_HANDLE;
-
-typedef struct _RT_WORK_ITEM
-{
-
-	RT_WORKITEM_HANDLE			Handle;			// Platform-dependent handle for this workitem, e.g. Ndis Workitem object.
-	PVOID						Adapter;		// Pointer to Adapter object.
-	PVOID						pContext;		// Parameter to passed to CallBackFunc().
-	RT_WORKITEM_CALL_BACK		CallbackFunc;	// Callback function of the workitem.
-	u1Byte						RefCount;		// 0: driver is going to unload, 1: No such workitem scheduled, 2: one workitem is schedueled.
-	PVOID						pPlatformExt;	// Pointer to platform-dependent extension.
-	BOOLEAN						bFree;
-	char						szID[36];		// An identity string of this workitem.
-}RT_WORK_ITEM, *PRT_WORK_ITEM;
-
-#endif
-
-
-#endif
 
 //
 // =========== Extern Variable ??? It should be forbidden.
@@ -362,18 +340,6 @@ ODM_ReleaseTimer(
 	);
 
 
-//
-// ODM FW relative API.
-//
-#if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
-VOID
-ODM_FillH2CCmd(
-	IN	PADAPTER		Adapter,
-	IN	u1Byte	ElementID,
-	IN	u4Byte	CmdLen,
-	IN	pu1Byte	pCmdBuffer
-);
-#else
 u4Byte
 ODM_FillH2CCmd(
 	IN	pu1Byte		pH2CBuffer,
@@ -384,7 +350,6 @@ ODM_FillH2CCmd(
 	IN	pu1Byte*		pCmbBuffer,
 	IN	pu1Byte		CmdStartSeq
 	);
-#endif
 
 u4Byte
 ODM_GetCurrentTime(

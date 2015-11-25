@@ -28,37 +28,21 @@
 #define	ODM_CE			0x04	//BIT2
 #define	ODM_WIN			0x08	//BIT3
 
-#define	DM_ODM_SUPPORT_TYPE			ODM_CE
-
 // Deifne HW endian support
 #define	ODM_ENDIAN_BIG	0
 #define	ODM_ENDIAN_LITTLE	1
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-#define GET_ODM(__pAdapter)	((PDM_ODM_T)(&((GET_HAL_DATA(__pAdapter))->DM_OutSrc)))
-#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 #define GET_ODM(__pAdapter)	((PDM_ODM_T)(&((GET_HAL_DATA(__pAdapter))->odmpriv)))
-#endif
 
-#if (DM_ODM_SUPPORT_TYPE != ODM_WIN)
 #define		RT_PCI_INTERFACE				1
 #define		RT_USB_INTERFACE				2
 #define		RT_SDIO_INTERFACE				3
-#endif
 
 typedef enum _HAL_STATUS{
 	HAL_STATUS_SUCCESS,
 	HAL_STATUS_FAILURE,
-	/*RT_STATUS_PENDING,
-	RT_STATUS_RESOURCE,
-	RT_STATUS_INVALID_CONTEXT,
-	RT_STATUS_INVALID_PARAMETER,
-	RT_STATUS_NOT_SUPPORT,
-	RT_STATUS_OS_API_FAILED,*/
 }HAL_STATUS,*PHAL_STATUS;
 
-
-#if( (DM_ODM_SUPPORT_TYPE == ODM_AP) ||(DM_ODM_SUPPORT_TYPE == ODM_ADSL) || (DM_ODM_SUPPORT_TYPE == ODM_CE))
 
 #define		VISTA_USB_RX_REVISE			0
 
@@ -107,101 +91,9 @@ typedef enum _RT_SPINLOCK_TYPE{
 	RT_INDIC_SPINLOCK = 41,	//protect indication
 }RT_SPINLOCK_TYPE;
 
-#endif
 
-
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	#define	STA_INFO_T			RT_WLAN_STA
-	#define	PSTA_INFO_T			PRT_WLAN_STA
-
-//    typedef unsigned long		u4Byte,*pu4Byte;
-#define CONFIG_HW_ANTENNA_DIVERSITY
-#define CONFIG_SW_ANTENNA_DIVERSITY
-
-#elif (DM_ODM_SUPPORT_TYPE == ODM_AP)
-
-	// To let ADSL/AP project compile ok; it should be removed after all conflict are solved. Added by Annie, 2011-10-07.
-	#define ADSL_AP_BUILD_WORKAROUND
-	#define AP_BUILD_WORKAROUND
-	//
-#ifdef CONFIG_ANT_SWITCH
-	#define CONFIG_HW_ANTENNA_DIVERSITY
-	#if ( defined(CONFIG_NO_2G_DIVERSITY) && defined(CONFIG_NO_5G_DIVERSITY) )
-		#define CONFIG_NOT_SUPPORT_ANTDIV
-	#elif( !defined(CONFIG_NO_2G_DIVERSITY) && defined(CONFIG_NO_5G_DIVERSITY) )
-		#define CONFIG_2G_SUPPORT_ANTDIV
-	#elif( defined(CONFIG_NO_2G_DIVERSITY) && !defined(CONFIG_NO_5G_DIVERSITY) )
-		#define CONFIG_5G_SUPPORT_ANTDIV
-	#elif( !defined(CONFIG_NO_2G_DIVERSITY) && !defined(CONFIG_NO_5G_DIVERSITY) )
-		#define CONFIG_2G5G_SUPPORT_ANTDIV
-	#endif
-#endif
-
-	#ifdef AP_BUILD_WORKAROUND
-	#include "../typedef.h"
-	#else
-	typedef void					VOID,*PVOID;
-	typedef unsigned char			BOOLEAN,*PBOOLEAN;
-	typedef unsigned char			u1Byte,*pu1Byte;
-	typedef unsigned short			u2Byte,*pu2Byte;
-	typedef unsigned int			u4Byte,*pu4Byte;
-	typedef unsigned long long		u8Byte,*pu8Byte;
-	typedef char					s1Byte,*ps1Byte;
-	typedef short					s2Byte,*ps2Byte;
-	typedef long					s4Byte,*ps4Byte;
-	typedef long long				s8Byte,*ps8Byte;
-	#endif
-
-	typedef struct rtl8192cd_priv	*prtl8192cd_priv;
-	typedef struct stat_info		STA_INFO_T,*PSTA_INFO_T;
-	typedef struct timer_list		RT_TIMER, *PRT_TIMER;
-	typedef  void *				RT_TIMER_CALL_BACK;
-
-	#define DEV_BUS_TYPE		RT_PCI_INTERFACE
-
-	#define _TRUE				1
-	#define _FALSE				0
-
-#elif (DM_ODM_SUPPORT_TYPE == ODM_ADSL)
-
-	// To let ADSL/AP project compile ok; it should be removed after all conflict are solved. Added by Annie, 2011-10-07.
-	#define ADSL_AP_BUILD_WORKAROUND
-	#define ADSL_BUILD_WORKAROUND
-	//
-
-	typedef unsigned char			BOOLEAN,*PBOOLEAN;
-	typedef unsigned char			u1Byte,*pu1Byte;
-	typedef unsigned short			u2Byte,*pu2Byte;
-	typedef unsigned int			u4Byte,*pu4Byte;
-	typedef unsigned long long		u8Byte,*pu8Byte;
-	typedef char					s1Byte,*ps1Byte;
-	typedef short					s2Byte,*ps2Byte;
-	typedef long					s4Byte,*ps4Byte;
-	typedef long long				s8Byte,*ps8Byte;
-
-	typedef struct rtl8192cd_priv	*prtl8192cd_priv;
-	typedef struct stat_info		STA_INFO_T,*PSTA_INFO_T;
-	typedef struct timer_list		RT_TIMER, *PRT_TIMER;
-	typedef  void *				RT_TIMER_CALL_BACK;
-
-	#define DEV_BUS_TYPE		RT_PCI_INTERFACE
-
-	#define _TRUE				1
-	#define _FALSE				0
-
-#elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	#include <drv_types.h>
 
-#if 0
-	typedef u8					u1Byte, *pu1Byte;
-	typedef u16					u2Byte,*pu2Byte;
-	typedef u32					u4Byte,*pu4Byte;
-	typedef u64					u8Byte,*pu8Byte;
-	typedef s8					s1Byte,*ps1Byte;
-	typedef s16					s2Byte,*ps2Byte;
-	typedef s32					s4Byte,*ps4Byte;
-	typedef s64					s8Byte,*ps8Byte;
-#else
 	#define u1Byte		u8
 	#define	pu1Byte		u8*
 
@@ -226,7 +118,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define s8Byte		s64
 	#define	ps8Byte		s64*
 
-#endif
 	#define DEV_BUS_TYPE	RT_USB_INTERFACE
 
 
@@ -256,7 +147,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define		FOR_BRAZIL_PRETEST 0
 	#define   FPGA_TWO_MAC_VERIFICATION	0
 	#define	RTL8881A_SUPPORT	0
-#endif
 
 #define READ_NEXT_PAIR(v1, v2, i) do { if (i+2 >= ArrayLen) break; i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 #define COND_ELSE  2

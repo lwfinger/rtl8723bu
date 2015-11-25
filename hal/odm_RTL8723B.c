@@ -31,81 +31,6 @@ odm8723b_DigForBtHsMode(
 	IN		PDM_ODM_T		pDM_Odm
 	)
 {
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	//PFALSE_ALARM_STATISTICS	pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
-	pDIG_T					pDM_DigTable=&pDM_Odm->DM_DigTable;
-	u1Byte					digForBtHs=0;
-	//BOOLEAN					bChkFA=FALSE;
-
-	if(pDM_Odm->bBtConnectProcess)
-	{
-		if(pDM_Odm->SupportICType&(ODM_RTL8723A))
-			digForBtHs = 0x28;
-		else
-			digForBtHs = 0x22;
-	}
-	else
-	{
-		//
-		// Decide DIG value by BT RSSI.
-		//
-		digForBtHs = pDM_Odm->btHsRssi+4;
-#if 0
-		// check if cur dig and pre dig diff is larger than 10
-
-		if(digForBtHs > pDM_DigTable->PreIGValue)
-		{
-			if( (digForBtHs - pDM_DigTable->PreIGValue) > 10)
-				pDM_DigTable->PreIGValue = digForBtHs;
-			else
-				bChkFA = TRUE;
-		}
-		else
-		{
-			if( (pDM_DigTable->PreIGValue -digForBtHs) > 10)
-				pDM_DigTable->PreIGValue = digForBtHs;
-			else
-				bChkFA = TRUE;
-		}
-		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DigForBtHsMode() : pFalseAlmCnt->Cnt_all=0x%x\n", pFalseAlmCnt->Cnt_all));
-		//Current IGI update by FA
-		if(bChkFA)
-		{
-			if(pFalseAlmCnt->Cnt_all > 0x150)
-				pDM_DigTable->PreIGValue += 2;
-			else if (pFalseAlmCnt->Cnt_all > 0x100)
-				pDM_DigTable->PreIGValue += 1;
-			else if(pFalseAlmCnt->Cnt_all < 0x20)
-				pDM_DigTable->PreIGValue -= 1;
-
-			digForBtHs = pDM_DigTable->PreIGValue;
-		}
-
-		if(digForBtHs > (pDM_Odm->btHsRssi+10))
-			digForBtHs = (pDM_Odm->btHsRssi+10);
-		else
-		{
-			if(pDM_Odm->btHsRssi < 10)
-				digForBtHs = 0x1c;
-			else
-			{
-				if(digForBtHs > (pDM_Odm->btHsRssi -10))
-					digForBtHs = (pDM_Odm->btHsRssi -10);
-			}
-		}
-#endif
-		//DIG Bound
-		if(digForBtHs > 0x3e)
-			digForBtHs = 0x3e;
-		if(digForBtHs < 0x1c)
-			digForBtHs = 0x1c;
-
-		// update Current IGI
-		pDM_DigTable->BT30_CurIGI = digForBtHs;
-	}
-	ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DigForBtHsMode() : set DigValue=0x%x\n", digForBtHs));
-	//ODM_Write_DIG(pDM_Odm, digForBtHs);
-#endif
 }
 
 VOID
@@ -121,60 +46,10 @@ odm_DIG_8723(
 	u1Byte						dm_dig_max, dm_dig_min;
 	u1Byte						CurrentIGI = pDM_DigTable->CurIGValue;
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	PADAPTER		pAdapter	= pDM_Odm->Adapter;
-#if OS_WIN_FROM_WIN7(OS_VERSION)
-	if(IsAPModeExist( pAdapter) && pAdapter->bInHctTest)
-	{
-		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() Return: Is AP mode or In HCT Test \n"));
-		return;
-	}
-#endif
-
-	if(pDM_Odm->bBtHsOperation)
-	{
-		odm8723b_DigForBtHsMode(pDM_Odm);
-	}
-
-#if 0	     // Neil Chen No RX HP for 8723
-	if(!(pDM_Odm->SupportICType &(ODM_RTL8723A|ODM_RTL8188E)))
-	{
-		if(pRX_HP_Table->RXHP_flag == 1)
-		{
-			ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() Return: In RXHP Operation \n"));
-			return;
-		}
-	}
-#endif
-
-
-#endif
-
-#if 0
-#if (DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-	prtl8192cd_priv	priv			= pDM_Odm->priv;
-	if (!((priv->up_time > 5) && (priv->up_time % 2)) )
-	{
-		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() Return: Not In DIG Operation Period \n"));
-		return;
-	}
-#endif
-#endif
-
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG()==>\n"));
 	//if(!(pDM_Odm->SupportAbility & (ODM_BB_DIG|ODM_BB_FA_CNT)))
 	if((!(pDM_Odm->SupportAbility&ODM_BB_DIG)) ||(!(pDM_Odm->SupportAbility&ODM_BB_FA_CNT)))
 	{
-#if 0
-		if(pDM_Odm->SupportPlatform & (ODM_AP|ODM_ADSL))
-		{
-			if ((pDM_Odm->SupportICType == ODM_RTL8192C) && (pDM_Odm->ExtLNA == 1))
-				CurrentIGI = 0x30; //pDM_DigTable->CurIGValue  = 0x30;
-			else
-				CurrentIGI = 0x20; //pDM_DigTable->CurIGValue  = 0x20;
-			ODM_Write_DIG(pDM_Odm, CurrentIGI);//ODM_Write_DIG(pDM_Odm, pDM_DigTable->CurIGValue);
-		}
-#endif
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() Return: SupportAbility ODM_BB_DIG or ODM_BB_FA_CNT is disabled\n"));
 		return;
 	}
@@ -199,64 +74,6 @@ odm_DIG_8723(
 	DIG_Dynamic_MIN = pDM_DigTable->DIG_Dynamic_MIN_0;
 	FirstConnect = (pDM_Odm->bLinked) && (pDM_DigTable->bMediaConnect_0 == FALSE);
 	FirstDisConnect = (!pDM_Odm->bLinked) && (pDM_DigTable->bMediaConnect_0 == TRUE);
-
-
-#if 0
-	if(pDM_Odm->SupportICType & (ODM_RTL8192C) &&(pDM_Odm->BoardType & (ODM_BOARD_EXT_LNA | ODM_BOARD_EXT_PA)))
-	{
-		if(pDM_Odm->SupportPlatform & (ODM_AP|ODM_ADSL))
-		{
-
-			dm_dig_max = DM_DIG_MAX_AP_HP;
-			dm_dig_min = DM_DIG_MIN_AP_HP;
-		}
-		else
-		{
-			dm_dig_max = DM_DIG_MAX_NIC_HP;
-			dm_dig_min = DM_DIG_MIN_NIC_HP;
-		}
-		DIG_MaxOfMin = DM_DIG_MAX_AP_HP;
-	}
-	else
-	{
-		if(pDM_Odm->SupportPlatform & (ODM_AP|ODM_ADSL))
-		{
-#if (DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-#ifdef DFS
-			if (!priv->pmib->dot11DFSEntry.disable_DFS &&
-				(OPMODE & WIFI_AP_STATE) &&
-				(((pDM_Odm->ControlChannel >= 52) &&
-				(pDM_Odm->ControlChannel <= 64)) ||
-				((pDM_Odm->ControlChannel >= 100) &&
-				(pDM_Odm->ControlChannel <= 140))))
-				dm_dig_max = 0x24;
-			else
-#endif
-			if (priv->pmib->dot11RFEntry.tx2path) {
-				if (*(pDM_Odm->pWirelessMode) == ODM_WM_B)//(priv->pmib->dot11BssType.net_work_type == WIRELESS_11B)
-					dm_dig_max = 0x2A;
-				else
-					dm_dig_max = 0x32;
-			}
-			else
-#endif
-			dm_dig_max = DM_DIG_MAX_AP;
-			dm_dig_min = DM_DIG_MIN_AP;
-			DIG_MaxOfMin = dm_dig_max;
-		}
-		else
-		{
-			if((pDM_Odm->SupportICType >= ODM_RTL8188E) && (pDM_Odm->SupportPlatform & (ODM_WIN|ODM_CE)))
-				dm_dig_max = 0x5A;
-			else
-				dm_dig_max = DM_DIG_MAX_NIC;
-
-			dm_dig_min = DM_DIG_MIN_NIC;
-			DIG_MaxOfMin = DM_DIG_MAX_AP;
-		}
-	}
-#endif   // masked by neilchen to simpily 8723B case
-
 
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): RSSI=0x%x\n",pDM_Odm->RSSI_Min));
 
@@ -459,39 +276,6 @@ odm_DIG_8723(
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): RSSI=0x%x\n",pDM_Odm->RSSI_Min));
 
 	//2 High power RSSI threshold
-#if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
-{
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pDM_Odm->Adapter);
-	//----------------------------------------------------------end for LC Mocca issue
-	if((pDM_Odm->SupportICType == ODM_RTL8723B)&& (pHalData->UndecoratedSmoothedPWDB > DM_DIG_HIGH_PWR_THRESHOLD))
-	{
-		// High power IGI lower bound
-		ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): UndecoratedSmoothedPWDB(%#x)\n", pHalData->UndecoratedSmoothedPWDB));
-		if(CurrentIGI < DM_DIG_HIGH_PWR_IGI_LOWER_BOUND)
-		{
-			ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): CurIGValue(%#x)\n", pDM_DigTable->CurIGValue));
-			//pDM_DigTable->CurIGValue = DM_DIG_HIGH_PWR_IGI_LOWER_BOUND;
-			CurrentIGI=DM_DIG_HIGH_PWR_IGI_LOWER_BOUND;
-		}
-	}
-#if 0
-	if((pDM_Odm->SupportICType & ODM_RTL8723A) &&
-			IS_WIRELESS_MODE_G(pAdapter))
-		{
-			if(pHalData->UndecoratedSmoothedPWDB > 0x28)
-			{
-				if(CurrentIGI < DM_DIG_Gmode_HIGH_PWR_IGI_LOWER_BOUND)
-				{
-					//pDM_DigTable->CurIGValue = DM_DIG_Gmode_HIGH_PWR_IGI_LOWER_BOUND;
-					CurrentIGI = DM_DIG_Gmode_HIGH_PWR_IGI_LOWER_BOUND;
-				}
-			}
-		}
-
-#endif  // end if 0
-}
-#endif
-
 	if(pDM_Odm->bBtHsOperation)
 	{
 		if(pDM_Odm->bLinked)

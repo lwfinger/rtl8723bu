@@ -33,9 +33,7 @@
 
 #define	TX_BY_REG	0
 
-#if (DM_ODM_SUPPORT_TYPE != ODM_AP)
 #define ODM_RTL8881A 0   //Just for windows driver to jointly use ODM-driver
-#endif
 
 #define ODM_ANTDIV_SUPPORT		(ODM_RTL8188E|ODM_RTL8192E|ODM_RTL8723B|ODM_RTL8821|ODM_RTL8881A|ODM_RTL8812)
 #define ODM_N_ANTDIV_SUPPORT		(ODM_RTL8188E|ODM_RTL8192E|ODM_RTL8723B)
@@ -68,42 +66,8 @@ ODM_UpdateRxIdleAnt(
 	IN		 u1Byte			Ant
 );
 
-#if (RTL8723B_SUPPORT == 1)||(RTL8821A_SUPPORT == 1)
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-VOID
-ODM_SW_AntDiv_Callback(
-	IN	PRT_TIMER			pTimer
-);
-
-VOID
-ODM_SW_AntDiv_WorkitemCallback(
-	IN	PVOID            pContext
-);
-#endif //#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-#if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 VOID
 ODM_SW_AntDiv_Callback(void *FunctionContext);
-#endif //#if (DM_ODM_SUPPORT_TYPE == ODM_CE)
-#endif
-
-#if(RTL8188E_SUPPORT == 1  || RTL8192E_SUPPORT == 1)
-#if ( !(DM_ODM_SUPPORT_TYPE == ODM_CE))
-VOID
-odm_FastAntTraining(
-	IN		PDM_ODM_T		pDM_Odm
-);
-
-VOID
-odm_FastAntTrainingCallback(
-	IN		PDM_ODM_T		pDM_Odm
-);
-
-VOID
-odm_FastAntTrainingWorkItemCallback(
-	IN		PDM_ODM_T		pDM_Odm
-);
-#endif
-#endif
 
 VOID
 ODM_Process_RSSIForAntDiv(
@@ -112,7 +76,6 @@ ODM_Process_RSSIForAntDiv(
 	IN		PODM_PACKET_INFO_T			pPktinfo
 );
 
-#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 ODM_SetTxAntByTxInfo(
 	IN		PDM_ODM_T		pDM_Odm,
@@ -120,17 +83,6 @@ ODM_SetTxAntByTxInfo(
 	IN		u1Byte			macId
 );
 
-#else// (DM_ODM_SUPPORT_TYPE == ODM_AP)
-VOID
-ODM_SetTxAntByTxInfo(
-	//IN		PDM_ODM_T		pDM_Odm,
-	struct	rtl8192cd_priv		*priv,
-	struct	tx_desc			*pdesc,
-	struct	tx_insn			*txcfg,
-	unsigned short			aid
-);
-
-#endif
-
 #endif //#if (defined(CONFIG_HW_ANTENNA_DIVERSITY))
+
 #endif //#ifndef	__ODMANTDIV_H__

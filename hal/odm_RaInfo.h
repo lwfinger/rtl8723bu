@@ -27,18 +27,10 @@
 #define		DM_RATR_STA_HIGH			1
 #define			DM_RATR_STA_MIDDLE		2
 #define			DM_RATR_STA_LOW			3
-#if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-#define		DM_RATR_STA_ULTRA_LOW	4
-#endif
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 typedef struct _Rate_Adaptive_Table_{
 	u1Byte		firstconnect;
-	#if(DM_ODM_SUPPORT_TYPE==ODM_WIN)
-	BOOLEAN		PT_collision_pre;
-	#endif
 }RA_T, *pRA_T;
-#endif
 
 
 typedef struct _ODM_RATE_ADAPTIVE
@@ -48,40 +40,22 @@ typedef struct _ODM_RATE_ADAPTIVE
 	u1Byte				LowRSSIThresh;		// if RSSI <= LowRSSIThresh	=> RATRState is DM_RATR_STA_LOW
 	u1Byte				RATRState;			// Current RSSI level, DM_RATR_STA_HIGH/DM_RATR_STA_MIDDLE/DM_RATR_STA_LOW
 
-	#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 	u1Byte				LdpcThres;			// if RSSI > LdpcThres => switch from LPDC to BCC
 	BOOLEAN				bLowerRtsRate;
-	#endif
 
-	#if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
-	u1Byte				RtsThres;
-	#elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 	BOOLEAN				bUseLdpc;
-	#else
-	u1Byte				UltraLowRSSIThresh;
-	u4Byte				LastRATR;			// RATR Register Content
-	#endif
 
 } ODM_RATE_ADAPTIVE, *PODM_RATE_ADAPTIVE;
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 odm_RSSIMonitorInit(
 	IN		PVOID		pDM_VOID
 	);
-#endif
 
 VOID
 odm_RSSIMonitorCheck(
 	IN		PVOID		 pDM_VOID
 	);
-
-#if(DM_ODM_SUPPORT_TYPE==ODM_WIN)
-VOID
-odm_RSSIDumpToRegister(
-	IN	PVOID	pDM_VOID
-	);
-#endif
 
 VOID
 odm_RSSIMonitorCheckMP(
@@ -132,29 +106,11 @@ ODM_RAStateCheck(
 	OUT		pu1Byte			pRATRState
 	);
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 VOID
 odm_RefreshBasicRateMask(
 	IN	PVOID	pDM_VOID
 	);
-#endif
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-VOID
-ODM_DynamicARFBSelect(
-	IN		PVOID			pDM_VOID,
-	IN		u1Byte			rate,
-	IN	BOOLEAN			Collision_State
-	);
-
-VOID
-ODM_RateAdaptiveStateApInit(
-	IN	PVOID		PADAPTER_VOID,
-	IN	PRT_WLAN_STA	pEntry
-	);
-#endif
-
-#if (DM_ODM_SUPPORT_TYPE == ODM_CE)
 u4Byte
 ODM_Get_Rate_Bitmap(
 	IN	PVOID		pDM_VOID,
@@ -162,6 +118,5 @@ ODM_Get_Rate_Bitmap(
 	IN	u4Byte		ra_mask,
 	IN	u1Byte		rssi_level
 	);
-#endif
 
 #endif //#ifndef	__ODMRAINFO_H__

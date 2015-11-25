@@ -29,14 +29,10 @@ odm_SetCrystalCap(
 	PDM_ODM_T					pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	PCFO_TRACKING				pCfoTrack = &pDM_Odm->DM_CfoTrack;
 	BOOLEAN						bEEPROMCheck;
-#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 	PADAPTER					Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE				*pHalData = GET_HAL_DATA(Adapter);
 
 	bEEPROMCheck = (pHalData->EEPROMVersion >= 0x01)?TRUE:FALSE;
-#else
-	bEEPROMCheck = TRUE;
-#endif
 
 	if(pCfoTrack->CrystalCap == CrystalCap)
 		return;
@@ -98,17 +94,10 @@ odm_GetDefaultCrytaltalCap(
 	PDM_ODM_T					pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	u1Byte						CrystalCap = 0x20;
 
-#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 	PADAPTER					Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE				*pHalData = GET_HAL_DATA(Adapter);
 
 	CrystalCap = pHalData->CrystalCap;
-#else
-	prtl8192cd_priv	priv		= pDM_Odm->priv;
-
-	if(priv->pmib->dot11RFEntry.xcap > 0)
-		CrystalCap = priv->pmib->dot11RFEntry.xcap;
-#endif
 
 	CrystalCap = CrystalCap & 0x3f;
 
@@ -155,21 +144,8 @@ ODM_CfoTrackingReset(
 	pCfoTrack->DefXCap = odm_GetDefaultCrytaltalCap(pDM_Odm);
 	pCfoTrack->bAdjust = TRUE;
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 	odm_SetCrystalCap(pDM_Odm, pCfoTrack->DefXCap);
 	odm_SetATCStatus(pDM_Odm, TRUE);
-#else
-	if(pCfoTrack->CrystalCap > pCfoTrack->DefXCap)
-	{
-		for(CrystalCap = pCfoTrack->CrystalCap; CrystalCap >= pCfoTrack->DefXCap; CrystalCap--)
-			odm_SetCrystalCap(pDM_Odm, CrystalCap);
-	}
-	else
-	{
-		for(CrystalCap = pCfoTrack->CrystalCap; CrystalCap <= pCfoTrack->DefXCap; CrystalCap++)
-			odm_SetCrystalCap(pDM_Odm, CrystalCap);
-	}
-#endif
 }
 
 VOID
@@ -208,11 +184,7 @@ ODM_CfoTracking(
 
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_CFO_TRACKING, ODM_DBG_LOUD, ("ODM_CfoTracking()=========> \n"));
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN && MP_DRIVER == 1)
-	if(0)
-#else
 	if(!pDM_Odm->bLinked || !pDM_Odm->bOneEntryOnly)
-#endif
 	{
 		//4 No link or more than one entry
 		ODM_CfoTrackingReset(pDM_Odm);
@@ -265,7 +237,6 @@ ODM_CfoTracking(
 				pCfoTrack->bAdjust = FALSE;
 		}
 
-#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 		//4 1.5 BT case: Disable CFO tracking
 		if(pDM_Odm->bBtEnabled)
 		{
@@ -284,7 +255,6 @@ ODM_CfoTracking(
 
 			ODM_RT_TRACE(pDM_Odm, ODM_COMP_CFO_TRACKING, ODM_DBG_LOUD, ("ODM_CfoTracking(): Crystal cap offset = %d\n", Adjust_Xtal));
 		}
-#endif
 
 		//4 1.7 Adjust Crystal Cap.
 		if(pCfoTrack->bAdjust)
@@ -304,7 +274,6 @@ ODM_CfoTracking(
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_CFO_TRACKING, ODM_DBG_LOUD, ("ODM_CfoTracking(): Crystal cap = 0x%x, Default Crystal cap = 0x%x\n",
 			pCfoTrack->CrystalCap, pCfoTrack->DefXCap));
 
-#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 		if(pDM_Odm->SupportICType & ODM_IC_11AC_SERIES)
 			return;
 
@@ -319,7 +288,6 @@ ODM_CfoTracking(
 			odm_SetATCStatus(pDM_Odm, TRUE);
 			ODM_RT_TRACE(pDM_Odm, ODM_COMP_CFO_TRACKING, ODM_DBG_LOUD, ("ODM_CfoTracking(): Enable ATC!!\n"));
 		}
-#endif
 	}
 }
 
@@ -338,13 +306,7 @@ ODM_ParsingCFO(
 	if(!(pDM_Odm->SupportAbility & ODM_BB_CFO_TRACKING))
 		return;
 
-#if ((DM_ODM_SUPPORT_TYPE == ODM_WIN) && (MP_DRIVER == 1))
-	if(1)
-#elif(DM_ODM_SUPPORT_TYPE & (ODM_WIN|ODM_CE))
 	if(pPktinfo->bPacketMatchBSSID)
-#else
-	if(pPktinfo->StationID != 0)
-#endif
 	{
 		//3 Update CFO report for path-A & path-B
 		// Only paht-A and path-B have CFO tail and short CFO
