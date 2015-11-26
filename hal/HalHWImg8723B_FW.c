@@ -21,7 +21,6 @@
 //#include "Mp_Precomp.h"
 #include "odm_precomp.h"
 
-#if (RTL8723B_SUPPORT == 1)
 #ifdef CONFIG_AP_WOWLAN
 u1Byte Array_MP_8723B_FW_AP_WoWLAN[] = {
 0x01, 0x53, 0x20, 0x00, 0x12, 0x00, 0x02, 0x00, 0x12, 0x02, 0x11, 0x28, 0x4A, 0x3C, 0x00, 0x00,
@@ -6890,4 +6889,3 @@ ODM_ReadFirmware_MP_8723B_FW_MP(
 	*((SIZE_PTR *)pFirmware) = (SIZE_PTR)Array_MP_8723B_FW_MP;
 	*pFirmwareSize = ArrayLength_MP_8723B_FW_MP;
 }
-#endif // end of HWIMG_SUPPORT

@@ -254,11 +254,7 @@ typedef struct _SW_Antenna_Switch_
 #define IQK_MAC_REG_NUM		4
 #define IQK_ADDA_REG_NUM		16
 #define IQK_BB_REG_NUM_MAX	10
-#if (RTL8192D_SUPPORT==1)
-#define IQK_BB_REG_NUM		10
-#else
 #define IQK_BB_REG_NUM		9
-#endif
 #define HP_THERMAL_NUM		8
 
 #define AVG_THERMAL_NUM		8

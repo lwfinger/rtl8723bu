@@ -20,8 +20,6 @@
 #ifndef __INC_ODM_REGCONFIG_H_8723B
 #define __INC_ODM_REGCONFIG_H_8723B
 
-#if (RTL8723B_SUPPORT == 1)
-
 void
 odm_ConfigRFReg_8723B(
 	IN	PDM_ODM_T				pDM_Odm,
@@ -91,5 +89,4 @@ odm_ConfigBB_TXPWR_LMT_8723B(
 	IN	pu1Byte		PowerLimit
     );
 
-#endif
 #endif // end of SUPPORT

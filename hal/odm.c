@@ -1377,20 +1377,9 @@ getSwingIndex(
 		pSwingTable = OFDMSwingTable_New;
 		swingTableSize = OFDM_TABLE_SIZE;
 	} else {
-#if ((RTL8812A_SUPPORT==1)||(RTL8821A_SUPPORT==1))
-		if (pDM_Odm->SupportICType == ODM_RTL8812 || pDM_Odm->SupportICType == ODM_RTL8821)
-		{
-			bbSwing = PHY_GetTxBBSwing_8812A(Adapter, pHalData->CurrentBandType, ODM_RF_PATH_A);
-			pSwingTable = TxScalingTable_Jaguar;
-			swingTableSize = TXSCALE_TABLE_SIZE;
-		}
-		else
-#endif
-		{
-			bbSwing = 0;
-			pSwingTable = OFDMSwingTable;
-			swingTableSize = OFDM_TABLE_SIZE;
-		}
+		bbSwing = 0;
+		pSwingTable = OFDMSwingTable;
+		swingTableSize = OFDM_TABLE_SIZE;
 	}
 
 	for (i = 0; i < swingTableSize; ++i) {
@@ -1672,9 +1661,7 @@ odm_SwAntDetectInit(
 	)
 {
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
-#if (RTL8723B_SUPPORT == 1)
 	pDM_SWAT_Table->SWAS_NoLink_BK_Reg92c = ODM_Read4Byte(pDM_Odm, rDPDT_control);
-#endif
 	pDM_SWAT_Table->PreAntenna = MAIN_ANT;
 	pDM_SWAT_Table->CurAntenna = MAIN_ANT;
 	pDM_SWAT_Table->SWAS_NoLink_State = 0;
@@ -1887,13 +1874,6 @@ odm_InitHybridAntDiv(
 	{
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_ANT_DIV,ODM_DBG_LOUD,("Return: Not Support HW AntDiv\n"));
 		return;
-	}
-
-	if(pDM_Odm->SupportICType & (ODM_RTL8192C | ODM_RTL8192D))
-	{
-#if ((RTL8192C_SUPPORT == 1)||(RTL8192D_SUPPORT == 1))
-		odm_InitHybridAntDiv_88C_92D(pDM_Odm);
-#endif
 	}
 }
 

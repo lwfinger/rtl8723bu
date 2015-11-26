@@ -18,7 +18,6 @@
 *
 ******************************************************************************/
 
-#if (RTL8723B_SUPPORT == 1)
 #ifndef __INC_MP_BB_HW_IMG_8723B_H
 #define __INC_MP_BB_HW_IMG_8723B_H
 
@@ -54,4 +53,3 @@ ODM_ReadAndConfig_MP_8723B_PHY_REG_PG( // TC: Test Chip, MP: MP Chip
 u4Byte ODM_GetVersion_MP_8723B_PHY_REG_PG(void);
 
 #endif
-#endif // end of HWIMG_SUPPORT

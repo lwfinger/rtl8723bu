@@ -21,7 +21,6 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723B_SUPPORT == 1)
 static BOOLEAN
 CheckPositive(
     IN  PDM_ODM_T     pDM_Odm,
@@ -634,7 +633,3 @@ ODM_ReadAndConfig_MP_8723B_PHY_REG_PG(
 	    odm_ConfigBB_PHY_REG_PG_8723B(pDM_Odm, v1, v2, v3, v4, v5, v6);
 	}
 }
-
-
-
-#endif // end of HWIMG_SUPPORT

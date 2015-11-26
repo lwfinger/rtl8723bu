@@ -24,8 +24,6 @@
 
 #include "odm_precomp.h"
 
-#if (RTL8723B_SUPPORT == 1)
-
 VOID
 odm8723b_DigForBtHsMode(
 	IN		PDM_ODM_T		pDM_Odm
@@ -349,5 +347,3 @@ odm_CCKRSSI_8723B(
 	}
 	return	rx_pwr_all;
 }
-
-#endif		// end if RTL8723B
