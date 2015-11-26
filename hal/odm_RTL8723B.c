@@ -25,13 +25,6 @@
 #include "odm_precomp.h"
 
 VOID
-odm8723b_DigForBtHsMode(
-	IN		PDM_ODM_T		pDM_Odm
-	)
-{
-}
-
-VOID
 odm_DIG_8723(
 	IN		PDM_ODM_T		pDM_Odm
 	)
