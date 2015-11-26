@@ -149,7 +149,7 @@ typedef	struct tag_HAL_VERSION
 //----------------------------------------------------------------------------
 #define IS_81XXC_TEST_CHIP(version)		((IS_81XXC(version) && (!IS_NORMAL_CHIP(version)))? TRUE: FALSE)
 
-#define IS_92C_SERIAL(version)						((IS_81XXC(version) && IS_2T2R(version)) ? TRUE : FALSE)
+#define IS_92C_SERIAL(version)			FALSE	// ((IS_81XXC(version) && IS_2T2R(version)) ? TRUE : FALSE)
 #define IS_81xxC_VENDOR_UMC_A_CUT(version)	(IS_81XXC(version)?(IS_CHIP_VENDOR_UMC(version) ? (IS_A_CUT(version) ? TRUE : FALSE) : FALSE): FALSE)
 #define IS_81xxC_VENDOR_UMC_B_CUT(version)	(IS_81XXC(version)?(IS_CHIP_VENDOR_UMC(version) ? (IS_B_CUT(version) ? TRUE : FALSE) : FALSE): FALSE)
 #define IS_81xxC_VENDOR_UMC_C_CUT(version)	(IS_81XXC(version)?(IS_CHIP_VENDOR_UMC(version) ? (IS_C_CUT(version) ? TRUE : FALSE) : FALSE): FALSE)

@@ -48,8 +48,8 @@
 //3 Tx Power Tracking
 //3============================================================
 
-void setIqkMatrix_8723B(PDM_ODM_T pDM_Odm, u1Byte OFDM_index,
-			u1Byte RFPath, s4Byte IqkResult_X, s4Byte IqkResult_Y)
+static void setIqkMatrix_8723B(PDM_ODM_T pDM_Odm, u1Byte OFDM_index,
+			       u1Byte RFPath, s4Byte IqkResult_X, s4Byte IqkResult_Y)
 {
 	s4Byte ele_A = 0, ele_D, ele_C = 0, value32;
 
@@ -145,7 +145,7 @@ void setIqkMatrix_8723B(PDM_ODM_T pDM_Odm, u1Byte OFDM_index,
 		      (u4Byte)IqkResult_X, (u4Byte)IqkResult_Y));
 }
 
-VOID
+static VOID
 setCCKFilterCoefficient(PDM_ODM_T pDM_Odm, u1Byte CCKSwingIndex)
 {
 	if (!pDM_Odm->RFCalibrateInfo.bCCKinCH14) {
@@ -453,7 +453,7 @@ ODM_TxPwrTrackSetPwr_8723B(PDM_ODM_T pDM_Odm, PWRTRACK_METHOD Method,
 	}
 }
 
-VOID
+static VOID
 GetDeltaSwingTable_8723B(IN PDM_ODM_T pDM_Odm,
 			 OUT pu1Byte *TemperatureUP_A,
 			 OUT pu1Byte *TemperatureDOWN_A,
@@ -522,7 +522,7 @@ void ConfigureTxpowerTrack_8723B(PTXPWRTRACK_CFG pConfig)
 #define MAX_TOLERANCE		5
 #define IQK_DELAY_TIME		1		//ms
 
-u1Byte			//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
+static u1Byte			//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
 phy_PathA_IQK_8723B(IN PADAPTER pAdapter,
 		    IN BOOLEAN configPathB, IN u1Byte RF_Path)
 {
@@ -646,7 +646,7 @@ phy_PathA_IQK_8723B(IN PADAPTER pAdapter,
 	return result;
 }
 
-u1Byte			//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
+static u1Byte			//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
 phy_PathA_RxIQK8723B(IN PADAPTER pAdapter,
 		     IN BOOLEAN configPathB, IN u1Byte RF_Path)
 {
@@ -885,7 +885,7 @@ phy_PathA_RxIQK8723B(IN PADAPTER pAdapter,
 	return result;
 }
 
-u1Byte				//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
+static u1Byte				//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
 phy_PathB_IQK_8723B(IN PADAPTER pAdapter)
 {
 	u4Byte regEAC, regE94, regE9C, tmp, Path_SEL_BB/*, regEC4, regECC, Path_SEL_BB*/;
@@ -1002,7 +1002,7 @@ phy_PathB_IQK_8723B(IN PADAPTER pAdapter)
 	return result;
 }
 
-u1Byte			//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
+static u1Byte			//bit0 = 1 => Tx OK, bit1 = 1 => Rx OK
 phy_PathB_RxIQK8723B(IN PADAPTER pAdapter, IN BOOLEAN configPathB)
 {
 	u4Byte regE94, regE9C, regEA4, regEAC, u4tmp, tmp, Path_SEL_BB;
@@ -1239,7 +1239,7 @@ phy_PathB_RxIQK8723B(IN PADAPTER pAdapter, IN BOOLEAN configPathB)
 	return result;
 }
 
-VOID
+static VOID
 _PHY_PathAFillIQKMatrix8723B(IN PADAPTER pAdapter, IN BOOLEAN bIQKOK,
 			     IN s4Byte result[][8], IN u1Byte final_candidate,
 			     IN BOOLEAN bTxOnly)
@@ -1337,7 +1337,7 @@ _PHY_PathAFillIQKMatrix8723B(IN PADAPTER pAdapter, IN BOOLEAN bIQKOK,
 	}
 }
 
-VOID
+static VOID
 _PHY_PathBFillIQKMatrix8723B(IN PADAPTER pAdapter, IN BOOLEAN bIQKOK,
 			     IN s4Byte result[][8], IN u1Byte final_candidate,
 			     IN BOOLEAN bTxOnly)
@@ -1501,7 +1501,7 @@ ODM_SetIQCbyRFpath(IN PDM_ODM_T pDM_Odm, IN u4Byte RFpath)
 	}
 }
 
-BOOLEAN
+static BOOLEAN
 ODM_CheckPowerStatus(
 	IN	PADAPTER		Adapter)
 {
@@ -1532,7 +1532,7 @@ ODM_CheckPowerStatus(
 	return	TRUE;
 }
 
-VOID
+static VOID
 _PHY_SaveADDARegisters8723B(IN PADAPTER pAdapter, IN pu4Byte ADDAReg,
 			    IN pu4Byte ADDABackup, IN u4Byte RegisterNum)
 {
@@ -1550,7 +1550,7 @@ _PHY_SaveADDARegisters8723B(IN PADAPTER pAdapter, IN pu4Byte ADDAReg,
 	}
 }
 
-VOID
+static VOID
 _PHY_SaveMACRegisters8723B(IN PADAPTER pAdapter,
 			   IN pu4Byte MACReg, IN pu4Byte MACBackup)
 {
@@ -1566,7 +1566,7 @@ _PHY_SaveMACRegisters8723B(IN PADAPTER pAdapter,
 	MACBackup[i] = ODM_Read4Byte(pDM_Odm, MACReg[i]);
 }
 
-VOID
+static VOID
 _PHY_ReloadADDARegisters8723B(IN PADAPTER pAdapter, IN pu4Byte ADDAReg,
 			      IN pu4Byte ADDABackup, IN u4Byte RegiesterNum)
 {
@@ -1581,7 +1581,7 @@ _PHY_ReloadADDARegisters8723B(IN PADAPTER pAdapter, IN pu4Byte ADDAReg,
 	}
 }
 
-VOID
+static VOID
 _PHY_ReloadMACRegisters8723B(IN PADAPTER pAdapter,
 			     IN pu4Byte MACReg, IN pu4Byte MACBackup)
 {
@@ -1597,7 +1597,7 @@ _PHY_ReloadMACRegisters8723B(IN PADAPTER pAdapter,
 	ODM_Write4Byte(pDM_Odm, MACReg[i], MACBackup[i]);
 }
 
-VOID
+static VOID
 _PHY_PathADDAOn8723B(IN PADAPTER pAdapter, IN pu4Byte ADDAReg,
 		     IN BOOLEAN isPathAOn, IN BOOLEAN is2T)
 {
@@ -1623,7 +1623,7 @@ _PHY_PathADDAOn8723B(IN PADAPTER pAdapter, IN pu4Byte ADDAReg,
 
 }
 
-VOID
+static VOID
 _PHY_MACSettingCalibration8723B(IN PADAPTER pAdapter,
 				IN pu4Byte MACReg, IN pu4Byte MACBackup)
 {
@@ -1642,7 +1642,7 @@ _PHY_MACSettingCalibration8723B(IN PADAPTER pAdapter,
 	ODM_Write1Byte(pDM_Odm, MACReg[i], (u1Byte)(MACBackup[i]&(~BIT5)));
 }
 
-VOID
+static VOID
 _PHY_PathAStandBy8723B(IN PADAPTER pAdapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -1659,7 +1659,7 @@ _PHY_PathAStandBy8723B(IN PADAPTER pAdapter)
 	ODM_SetBBReg(pDM_Odm, rFPGA0_IQK, bMaskH3Bytes, 0x808000);
 }
 
-VOID
+static VOID
 _PHY_PIModeSwitch8723B(IN PADAPTER pAdapter, IN BOOLEAN PIMode)
 {
 	u4Byte mode;
@@ -1674,7 +1674,7 @@ _PHY_PIModeSwitch8723B(IN PADAPTER pAdapter, IN BOOLEAN PIMode)
 	ODM_SetBBReg(pDM_Odm, rFPGA0_XB_HSSIParameter1, bMaskDWord, mode);
 }
 
-BOOLEAN
+static BOOLEAN
 phy_SimularityCompare_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 			    IN u1Byte c1, IN u1Byte c2)
 {
@@ -1773,7 +1773,7 @@ phy_SimularityCompare_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 	}
 }
 
-VOID
+static VOID
 phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 		      IN u1Byte t, IN BOOLEAN is2T, IN u1Byte RF_Path)
 {
@@ -2058,7 +2058,7 @@ phy_IQCalibrate_8723B(IN PADAPTER pAdapter, IN s4Byte result[][8],
 		     ("phy_IQCalibrate_8723B() <==\n"));
 }
 
-VOID
+static VOID
 phy_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm, IN BOOLEAN is2T)
 {
 	u1Byte	tmpReg;
@@ -2138,7 +2138,7 @@ phy_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm, IN BOOLEAN is2T)
 #define	APK_CURVE_REG_NUM	4
 #define	PATH_NUM		2
 
-VOID
+static VOID
 phy_APCalibrate_8723B(IN PADAPTER pAdapter, IN s1Byte delta, IN BOOLEAN is2T)
 {
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(pAdapter);
@@ -2994,7 +2994,7 @@ PHY_APCalibrate_8723B(IN PADAPTER pAdapter, IN s1Byte delta)
 	}
 }
 
-VOID phy_SetRFPathSwitch_8723B(IN PADAPTER pAdapter,
+static VOID phy_SetRFPathSwitch_8723B(IN PADAPTER pAdapter,
 			       IN BOOLEAN bMain, IN BOOLEAN is2T)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
