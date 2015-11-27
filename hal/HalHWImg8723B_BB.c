@@ -110,7 +110,7 @@ CheckNegative(
 *                           AGC_TAB.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8723B_AGC_TAB[] = {
+static u4Byte Array_MP_8723B_AGC_TAB[] = {
 		0xC78, 0xFD000001,
 		0xC78, 0xFC010001,
 		0xC78, 0xFB020001,
@@ -323,7 +323,7 @@ ODM_GetVersion_MP_8723B_AGC_TAB(void)
 *                           PHY_REG.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8723B_PHY_REG[] = {
+static u4Byte Array_MP_8723B_PHY_REG[] = {
 		0x800, 0x80040000,
 		0x804, 0x00000003,
 		0x808, 0x0000FC00,
@@ -598,7 +598,7 @@ ODM_GetVersion_MP_8723B_PHY_REG(void)
 *                           PHY_REG_PG.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8723B_PHY_REG_PG[] = {
+static u4Byte Array_MP_8723B_PHY_REG_PG[] = {
 	0, 0, 0, 0x00000e08, 0x0000ff00, 0x00003800,
 	0, 0, 0, 0x0000086c, 0xffffff00, 0x32343600,
 	0, 0, 0, 0x00000e00, 0xffffffff, 0x40424444,
