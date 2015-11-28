@@ -38,7 +38,7 @@
 #define Valid_Max			10
 #define ValidCnt				5
 
-s2Byte odm_InbandNoise_Monitor_NSeries(PDM_ODM_T	pDM_Odm,u8 bPauseDIG,u8 IGIValue,u32 max_time)
+static s2Byte odm_InbandNoise_Monitor_NSeries(PDM_ODM_T	pDM_Odm,u8 bPauseDIG,u8 IGIValue,u32 max_time)
 {
 	u4Byte				tmp4b;
 	u1Byte				max_rf_path=0,rf_path;
