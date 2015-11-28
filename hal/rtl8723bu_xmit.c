@@ -75,97 +75,13 @@ void _dbg_dump_tx_info(_adapter	*padapter,int frame_tag,struct tx_desc *ptxdesc)
 
 }
 
-int urb_zero_packet_chk(_adapter *padapter, int sz)
+static int urb_zero_packet_chk(_adapter *padapter, int sz)
 {
 	u8 blnSetTxDescOffset;
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(padapter);
 	blnSetTxDescOffset = (((sz + TXDESC_SIZE) %  pHalData->UsbBulkOutSize) ==0)?1:0;
 
 	return blnSetTxDescOffset;
-}
-void fill_txdesc_sectype(struct pkt_attrib *pattrib, struct tx_desc *ptxdesc)
-{
-	if ((pattrib->encrypt > 0) && !pattrib->bswenc)
-	{
-		switch (pattrib->encrypt)
-		{
-			//SEC_TYPE
-			case _WEP40_:
-			case _WEP104_:
-					ptxdesc->txdw1 |= cpu_to_le32((0x01<<22)&0x00c00000);
-					break;
-			case _TKIP_:
-			case _TKIP_WTMIC_:
-					//ptxdesc->txdw1 |= cpu_to_le32((0x02<<22)&0x00c00000);
-					ptxdesc->txdw1 |= cpu_to_le32((0x01<<22)&0x00c00000);
-					break;
-			case _AES_:
-					ptxdesc->txdw1 |= cpu_to_le32((0x03<<22)&0x00c00000);
-					break;
-			case _NO_PRIVACY_:
-			default:
-					break;
-
-		}
-
-	}
-
-}
-
-void fill_txdesc_vcs(struct pkt_attrib *pattrib, u32 *pdw)
-{
-	//DBG_8192C("cvs_mode=%d\n", pattrib->vcs_mode);
-
-	switch(pattrib->vcs_mode)
-	{
-		case RTS_CTS:
-			*pdw |= cpu_to_le32(BIT(12));
-			break;
-		case CTS_TO_SELF:
-			*pdw |= cpu_to_le32(BIT(11));
-			break;
-		case NONE_VCS:
-		default:
-			break;
-	}
-
-	if(pattrib->vcs_mode) {
-		*pdw |= cpu_to_le32(BIT(13));
-
-		// Set RTS BW
-		if(pattrib->ht_en)
-		{
-			*pdw |= (pattrib->bwmode&CHANNEL_WIDTH_40)?	cpu_to_le32(BIT(27)):0;
-
-			if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
-				*pdw |= cpu_to_le32((0x01<<28)&0x30000000);
-			else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
-				*pdw |= cpu_to_le32((0x02<<28)&0x30000000);
-			else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)
-				*pdw |= 0;
-			else
-				*pdw |= cpu_to_le32((0x03<<28)&0x30000000);
-		}
-	}
-}
-
-void fill_txdesc_phy(struct pkt_attrib *pattrib, u32 *pdw)
-{
-	//DBG_8192C("bwmode=%d, ch_off=%d\n", pattrib->bwmode, pattrib->ch_offset);
-
-	if(pattrib->ht_en)
-	{
-		*pdw |= (pattrib->bwmode&CHANNEL_WIDTH_40)?	cpu_to_le32(BIT(25)):0;
-
-		if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_LOWER)
-			*pdw |= cpu_to_le32((0x01<<20)&0x003f0000);
-		else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_UPPER)
-			*pdw |= cpu_to_le32((0x02<<20)&0x003f0000);
-		else if(pattrib->ch_offset == HAL_PRIME_CHNL_OFFSET_DONT_CARE)
-			*pdw |= 0;
-		else
-			*pdw |= cpu_to_le32((0x03<<20)&0x003f0000);
-	}
 }
 
 static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bagg_pkt)
@@ -175,21 +91,6 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 
 	_adapter			*padapter = pxmitframe->padapter;
 	struct tx_desc	*ptxdesc = (struct tx_desc *)pmem;
-#if 0
-	uint	qsel;
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
-
-	struct ht_priv		*phtpriv = &pmlmepriv->htpriv;
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	sint	bmcst = IS_MCAST(pattrib->ra);
-#ifdef CONFIG_P2P
-	struct wifidirect_info*	pwdinfo = &padapter->wdinfo;
-#endif //CONFIG_P2P
-#endif
 #ifndef CONFIG_USE_USB_BUFFER_ALLOC_TX
 	if((_FALSE == bagg_pkt) && (urb_zero_packet_chk(padapter, sz)==0))
 	{
