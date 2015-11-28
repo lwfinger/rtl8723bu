@@ -527,7 +527,7 @@ odm_Adaptivity(
 		ODM_SetBBReg(pDM_Odm, rFPGA0_XB_LSSIReadBack, 0xFFFF, ((u1Byte)TH_H2L_dmc<<8) | (u1Byte)TH_L2H_dmc);
 }
 
-int
+static int
 getIGIForDiff(int value_IGI)
 {
 	#define ONERCCA_LOW_TH		0x30
