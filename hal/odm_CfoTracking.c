@@ -20,7 +20,7 @@
 
 #include "odm_precomp.h"
 
-VOID
+static VOID
 odm_SetCrystalCap(
 	IN		PVOID					pDM_VOID,
 	IN		u1Byte					CrystalCap
@@ -86,7 +86,7 @@ odm_SetCrystalCap(
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_CFO_TRACKING, ODM_DBG_LOUD, ("odm_SetCrystalCap(): CrystalCap = 0x%x\n", CrystalCap));
 }
 
-u1Byte
+static u1Byte
 odm_GetDefaultCrytaltalCap(
 	IN		PVOID					pDM_VOID
 )
@@ -104,7 +104,7 @@ odm_GetDefaultCrytaltalCap(
 	return CrystalCap;
 }
 
-VOID
+static VOID
 odm_SetATCStatus(
 	IN		PVOID					pDM_VOID,
 	IN		BOOLEAN					ATCStatus
@@ -120,7 +120,7 @@ odm_SetATCStatus(
 	pCfoTrack->bATCStatus = ATCStatus;
 }
 
-BOOLEAN
+static BOOLEAN
 odm_GetATCStatus(
 	IN		PVOID					pDM_VOID
 )
