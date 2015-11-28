@@ -101,7 +101,7 @@ static BOOLEAN HalUsbSetQueuePipeMapping8723BUsb(
 
 }
 
-void rtl8723bu_interface_configure(_adapter *padapter)
+static void rtl8723bu_interface_configure(_adapter *padapter)
 {
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(padapter);
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
@@ -373,7 +373,7 @@ static void _InitTxBufferBoundary(PADAPTER padapter)
 }
 
 
-VOID
+static VOID
 _InitTransferPageSize_8723bu(
 	  PADAPTER Adapter
 	)
@@ -1058,7 +1058,7 @@ HwSuspendModeEnable92Cu(
 	}
 
 }	// HwSuspendModeEnable92Cu
-rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
+static rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
 {
 	//HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(pAdapter);
 	u8	val8;
@@ -1082,7 +1082,7 @@ rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
 
 void _ps_open_RF(_adapter *padapter);
 
-u32 rtl8723bu_hal_init(PADAPTER padapter)
+static u32 rtl8723bu_hal_init(PADAPTER padapter)
 {
 	u8	value8 = 0, u1bRegCR;
 	u32	boundary, status = _SUCCESS;
@@ -1964,7 +1964,7 @@ static void rtl8723bu_hw_power_down(_adapter *padapter)
 // Description: RTL8723e card disable power sequence v003 which suggested by Scott.
 // First created by tynli. 2011.01.28.
 //
-VOID
+static VOID
 CardDisableRTL8723U(
 	PADAPTER			Adapter
 )
@@ -2003,7 +2003,7 @@ CardDisableRTL8723U(
 }
 
 
-u32 rtl8723bu_hal_deinit(PADAPTER padapter)
+static u32 rtl8723bu_hal_deinit(PADAPTER padapter)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -2020,7 +2020,7 @@ u32 rtl8723bu_hal_deinit(PADAPTER padapter)
 }
 
 
-unsigned int rtl8723bu_inirp_init(PADAPTER Adapter)
+static unsigned int rtl8723bu_inirp_init(PADAPTER Adapter)
 {
 	u8 i;
 	struct recv_buf *precvbuf;
@@ -2082,7 +2082,7 @@ exit:
 
 }
 
-unsigned int rtl8723bu_inirp_deinit(PADAPTER Adapter)
+static unsigned int rtl8723bu_inirp_deinit(PADAPTER Adapter)
 {
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	u32 (*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
@@ -2137,8 +2137,8 @@ _ReadIDs(
 
 	if(_FALSE == AutoloadFail){
 		// VID, PID
-		pHalData->EEPROMVID = le16_to_cpu( *(u16 *)&PROMContent[EEPROM_VID_8723BU]);
-		pHalData->EEPROMPID = le16_to_cpu( *(u16 *)&PROMContent[EEPROM_PID_8723BU]);
+		pHalData->EEPROMVID = le16_to_cpu( *(__le16 *)&PROMContent[EEPROM_VID_8723BU]);
+		pHalData->EEPROMPID = le16_to_cpu( *(__le16 *)&PROMContent[EEPROM_PID_8723BU]);
 
 		// Customer ID, 0x00 and 0xff are reserved for Realtek.
 		pHalData->EEPROMCustomerID = *(u8 *)&PROMContent[EEPROM_CUSTOMER_ID_92C];
@@ -2393,7 +2393,7 @@ static void _ReadPSSetting(IN PADAPTER Adapter,IN u8*PROMContent,IN u8	AutoloadF
 
 
 
-VOID
+static VOID
 Hal_EfuseParsePIDVID_8723BU(
 	IN	PADAPTER		pAdapter,
 	IN	u8*			hwinfo,
@@ -2410,8 +2410,8 @@ Hal_EfuseParsePIDVID_8723BU(
 	else
 	{
 			// VID, PID
-		pHalData->EEPROMVID = le16_to_cpu(*(u16*)&hwinfo[EEPROM_VID_8723BU]);
-		pHalData->EEPROMPID = le16_to_cpu(*(u16*)&hwinfo[EEPROM_PID_8723BU]);
+		pHalData->EEPROMVID = le16_to_cpu(*(__le16 *)&hwinfo[EEPROM_VID_8723BU]);
+		pHalData->EEPROMPID = le16_to_cpu(*(__le16 *)&hwinfo[EEPROM_PID_8723BU]);
 
 	}
 
@@ -2692,7 +2692,7 @@ _ReadRFType(IN PADAPTER Adapter)
 //
 //	Added by Roger, 2010.11.23.
 //
-void
+static void
 hal_EfuseCellSel(
 	IN	PADAPTER	Adapter
 	)
@@ -2760,7 +2760,7 @@ static void rtl8723bu_trigger_gpio_0(_adapter *padapter)
  * If variable not handled here,
  * some variables will be processed in SetHwReg8723A()
  */
-void SetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
+static void SetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 
@@ -2799,7 +2799,7 @@ void SetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
  * If variable not handled here,
  * some variables will be processed in GetHwReg8723A()
  */
-void GetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
+static void GetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 
@@ -2815,7 +2815,7 @@ void GetHwReg8723BU(PADAPTER Adapter, u8 variable, u8* val)
 
 }
 #ifdef CONFIG_C2H_PACKET_EN
-void SetHwRegWithBuf8723B(PADAPTER padapter, u8 variable, u8 *pbuf, int len)
+static void SetHwRegWithBuf8723B(PADAPTER padapter, u8 variable, u8 *pbuf, int len)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);
 
@@ -2838,7 +2838,7 @@ void SetHwRegWithBuf8723B(PADAPTER padapter, u8 variable, u8 *pbuf, int len)
 //	Description:
 //		Query setting of specified variable.
 //
-u8
+static u8
 GetHalDefVar8723BUsb(
 	IN	PADAPTER				Adapter,
 	IN	HAL_DEF_VARIABLE		eVariable,
@@ -2887,7 +2887,7 @@ GetHalDefVar8723BUsb(
 //	Description:
 //		Change default setting of specified variable.
 //
-u8
+static u8
 SetHalDefVar8723BUsb(
 	IN	PADAPTER				Adapter,
 	IN	HAL_DEF_VARIABLE		eVariable,
@@ -2905,22 +2905,6 @@ SetHalDefVar8723BUsb(
 	}
 
 	return bResult;
-}
-
-void _update_response_rate(_adapter *padapter,unsigned int mask)
-{
-	u8	RateIndex = 0;
-	// Set RRSR rate table.
-	rtw_write8(padapter, REG_RRSR, mask&0xff);
-	rtw_write8(padapter,REG_RRSR+1, (mask>>8)&0xff);
-
-	// Set RTS initial rate
-	while(mask > 0x1)
-	{
-		mask = (mask>> 1);
-		RateIndex++;
-	}
-	rtw_write8(padapter, REG_INIRTS_RATE_SEL, RateIndex);
 }
 
 static void rtl8723bu_init_default_value(PADAPTER padapter)
