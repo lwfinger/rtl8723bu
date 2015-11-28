@@ -25,7 +25,7 @@
 #include "odm_precomp.h"
 
 
-const u2Byte dB_Invert_Table[8][12] = {
+static const u2Byte dB_Invert_Table[8][12] = {
 	{	1,		1,		1,		2,		2,		2,		2,		3,		3,		3,		4,		4},
 	{	4,		5,		6,		6,		7,		8,		9,		10,		11,		13,		14,		16},
 	{	18,		20,		22,		25,		28,		32,		35,		40,		45,		50,		56,		63},
@@ -1357,7 +1357,7 @@ odm_TXPowerTrackingInit(
 	odm_TXPowerTrackingThermalMeterInit(pDM_Odm);
 }
 
-u1Byte
+static u1Byte
 getSwingIndex(
 	IN	PDM_ODM_T	pDM_Odm
 	)
@@ -1784,7 +1784,7 @@ VOID odm_SwAntDivChkAntSwitch(
 	IN		PDM_ODM_T		pDM_Odm,
 	IN		u1Byte			Step
 	) {}
-VOID ODM_SwAntDivResetBeforeLink(	IN		PDM_ODM_T		pDM_Odm	){}
+static VOID ODM_SwAntDivResetBeforeLink(	IN		PDM_ODM_T		pDM_Odm	){}
 VOID ODM_SwAntDivRestAfterLink(	IN		PDM_ODM_T		pDM_Odm	){}
 VOID odm_SwAntDetectInit(	IN		PDM_ODM_T		pDM_Odm){}
 VOID odm_SwAntDivChkAntSwitchCallback(void *FunctionContext){}
@@ -2114,7 +2114,7 @@ odm_HwAntDiv(
 
 VOID odm_InitHybridAntDiv(	IN PDM_ODM_T	pDM_Odm		){}
 VOID odm_HwAntDiv(	IN	PDM_ODM_T	pDM_Odm){}
-VOID ODM_SetTxAntByTxInfo_88C_92D(	IN		PDM_ODM_T		pDM_Odm){ }
+static VOID ODM_SetTxAntByTxInfo_88C_92D(	IN		PDM_ODM_T		pDM_Odm){ }
 
 #endif //#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
 
@@ -2191,7 +2191,7 @@ ConvertTo_dB(
 
 //Remove PathDiversity related function to odm_PathDiv.c
 
-VOID
+static VOID
 odm_PHY_SaveAFERegisters(
 	IN	PDM_ODM_T	pDM_Odm,
 	IN	pu4Byte		AFEReg,
@@ -2205,7 +2205,7 @@ odm_PHY_SaveAFERegisters(
 		AFEBackup[i] = ODM_GetBBReg(pDM_Odm, AFEReg[i], bMaskDWord);
 }
 
-VOID
+static VOID
 odm_PHY_ReloadAFERegisters(
 	IN	PDM_ODM_T	pDM_Odm,
 	IN	pu4Byte		AFEReg,
@@ -2651,7 +2651,7 @@ ODM_SingleDualAntennaDetection(
 
 }
 
-VOID
+static VOID
 odm_Set_RA_DM_ARFB_by_Noisy(
 	IN	PDM_ODM_T	pDM_Odm
 )
