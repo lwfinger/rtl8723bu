@@ -41,7 +41,7 @@
 #define GET_VERSION(ic, txt) (pDM_Odm->bIsMPChip?GET_VERSION_MP(ic,txt):GET_VERSION_TC(ic,txt))
 
 
-u1Byte
+static u1Byte
 odm_QueryRxPwrPercentage(
 	IN		s1Byte		AntPower
 	)
@@ -65,7 +65,7 @@ odm_QueryRxPwrPercentage(
 // 2012/01/12 MH MOve some signal strength smooth method to MP HAL layer.
 // IF other SW team do not support the feature, remove this section.??
 //
-s4Byte
+static s4Byte
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
 	IN OUT PDM_ODM_T pDM_Odm,
 	s4Byte CurrSig
@@ -75,7 +75,7 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Lenovo(
 	return RetSig;
 }
 
-s4Byte
+static s4Byte
 odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
 	IN OUT PDM_ODM_T pDM_Odm,
 	s4Byte CurrSig
@@ -86,7 +86,7 @@ odm_SignalScaleMapping_92CSeries_patch_RT_CID_819x_Netcore(
 }
 
 
-s4Byte
+static s4Byte
 odm_SignalScaleMapping_92CSeries(
 	IN OUT PDM_ODM_T pDM_Odm,
 	IN s4Byte CurrSig
@@ -247,7 +247,7 @@ odm_Cfo(
 }
 
 
-VOID
+static VOID
 odm_RxPhyStatus92CSeries_Parsing(
 	IN OUT	PDM_ODM_T					pDM_Odm,
 	OUT		PODM_PHY_INFO_T			pPhyInfo,
@@ -628,7 +628,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 
 #if	ODM_IC_11AC_SERIES_SUPPORT
 
-VOID
+static VOID
 odm_RxPhyStatusJaguarSeries_Parsing(
 	IN OUT	PDM_ODM_T					pDM_Odm,
 	OUT		PODM_PHY_INFO_T			pPhyInfo,
@@ -995,7 +995,7 @@ odm_Init_RSSIForDM(
 
 }
 
-VOID
+static VOID
 odm_Process_RSSIForDM(
 	IN OUT	PDM_ODM_T					pDM_Odm,
 	IN		PODM_PHY_INFO_T				pPhyInfo,
@@ -1193,7 +1193,7 @@ odm_Process_RSSIForDM(
 //
 // Endianness before calling this API
 //
-VOID
+static VOID
 ODM_PhyStatusQuery_92CSeries(
 	IN OUT	PDM_ODM_T					pDM_Odm,
 	OUT		PODM_PHY_INFO_T				pPhyInfo,
@@ -1221,7 +1221,7 @@ ODM_PhyStatusQuery_92CSeries(
 //
 // Endianness before calling this API
 //
-VOID
+static VOID
 ODM_PhyStatusQuery_JaguarSeries(
 	IN OUT	PDM_ODM_T					pDM_Odm,
 	OUT		PODM_PHY_INFO_T			pPhyInfo,
