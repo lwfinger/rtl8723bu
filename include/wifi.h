@@ -725,12 +725,12 @@ typedef	enum _ELEMENT_ID{
  * described in 802.11n draft section 7.2.1.7.1
  */
 struct rtw_ieee80211_bar {
-	unsigned short frame_control;
-	unsigned short duration;
+	__le16 frame_control;
+	__le16 duration;
 	unsigned char ra[6];
 	unsigned char ta[6];
-	unsigned short control;
-	unsigned short start_seq_num;
+	__le16 control;
+	__le16 start_seq_num;
 } __attribute__((packed));
 
 /* 802.11 BAR control masks */
@@ -748,7 +748,7 @@ struct rtw_ieee80211_ht_cap {
 	unsigned short	cap_info;
 	unsigned char	ampdu_params_info;
 	unsigned char	supp_mcs_set[16];
-	unsigned short	extended_ht_cap_info;
+	__le16	extended_ht_cap_info;
 	unsigned int		tx_BF_cap_info;
 	unsigned char	       antenna_selection_info;
 } __attribute__ ((packed));
@@ -762,8 +762,8 @@ struct rtw_ieee80211_ht_cap {
 struct ieee80211_ht_addt_info {
 	unsigned char	control_chan;
 	unsigned char		ht_param;
-	unsigned short	operation_mode;
-	unsigned short	stbc_param;
+	__le16	operation_mode;
+	__le16	stbc_param;
 	unsigned char		basic_set[16];
 } __attribute__ ((packed));
 
@@ -774,11 +774,11 @@ struct HT_caps_element
 	{
 		struct
 		{
-			unsigned short	HT_caps_info;
+			__le16	HT_caps_info;
 			unsigned char	AMPDU_para;
 			unsigned char	MCS_rate[16];
-			unsigned short	HT_ext_caps;
-			unsigned int	Beamforming_caps;
+			__le16	HT_ext_caps;
+			__le16	Beamforming_caps;
 			unsigned char	ASEL_caps;
 		} HT_cap_element;
 		unsigned char HT_cap[26];
@@ -796,7 +796,7 @@ struct AC_param
 {
 	unsigned char		ACI_AIFSN;
 	unsigned char		CW;
-	unsigned short	TXOP_limit;
+	__le16	TXOP_limit;
 }  __attribute__ ((packed));
 
 struct WMM_para_element
@@ -809,9 +809,9 @@ struct WMM_para_element
 struct ADDBA_request
 {
 	unsigned char		dialog_token;
-	unsigned short	BA_para_set;
-	unsigned short	BA_timeout_value;
-	unsigned short	BA_starting_seqctrl;
+	__le16	BA_para_set;
+	__le16	BA_timeout_value;
+	__le16	BA_starting_seqctrl;
 }  __attribute__ ((packed));
 
 typedef enum _HT_CAP_AMPDU_FACTOR {
