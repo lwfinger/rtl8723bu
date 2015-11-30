@@ -820,7 +820,7 @@ PHY_BBConfig8723B(IN PADAPTER Adapter)
 	return rtStatus;
 }
 
-void phy_LCK_8723B(IN PADAPTER Adapter)
+static void phy_LCK_8723B(IN PADAPTER Adapter)
 {
 	PHY_SetRFReg(Adapter, RF_PATH_A, 0xB0, bRFRegOffsetMask, 0xDFBE0);
 	PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, 0x8C01);
@@ -916,7 +916,7 @@ PHY_ConfigRFWithParaFile_8723B(IN PADAPTER Adapter, IN u8 *pFileName,
  *
  * Note:		Delay may be required for RF configuration
  *---------------------------------------------------------------------------*/
-void phy_PowerIndexCheck8723B(
+static void phy_PowerIndexCheck8723B(
 	IN	PADAPTER		Adapter,
 	IN	u8			channel,
 	IN OUT u8		*cckPowerLevel,
@@ -1047,7 +1047,7 @@ PHY_SetTxPowerIndex_8723B(
 	}
 }
 
-u8
+static u8
 phy_GetCurrentTxNum_8723B(IN PADAPTER pAdapter)
 {
 	return RF_TX_NUM_NONIMPLEMENT;
@@ -1132,7 +1132,7 @@ PHY_GetTxPowerLevel8723B(IN PADAPTER Adapter, OUT s32 *powerlevel)
 
 
 // <20130321, VincentLan> A workaround to eliminate the 2440MHz & 2480MHz spur of 8723B. (Asked by Rock.)
-VOID
+static VOID
 phy_SpurCalibration_8723B(IN PADAPTER pAdapter,
 			  IN u1Byte ToChannel, IN u1Byte threshold)
 {
@@ -1294,7 +1294,7 @@ phy_SpurCalibration_8723B(IN PADAPTER pAdapter,
 	ODM_SetBBReg(pDM_Odm, 0xD2C, BIT28, 0x0);	//disable CSI mask
 }
 
-VOID
+static VOID
 phy_SetRegBW_8723B(IN PADAPTER Adapter, CHANNEL_WIDTH CurrentBW)
 {
 	u16 RegRfMod_BW, u2tmp = 0;
@@ -1325,7 +1325,7 @@ phy_SetRegBW_8723B(IN PADAPTER Adapter, CHANNEL_WIDTH CurrentBW)
 	}
 }
 
-u8
+static u8
 phy_GetSecondaryChnl_8723B(IN PADAPTER Adapter)
 {
 	u8 SCSettingOf40 = 0, SCSettingOf20 = 0;
@@ -1389,7 +1389,7 @@ phy_GetSecondaryChnl_8723B(IN PADAPTER Adapter)
 	return (SCSettingOf40 << 4) | SCSettingOf20;
 }
 
-VOID
+static VOID
 phy_PostSetBwMode8723B(IN PADAPTER Adapter)
 {
 	u1Byte SubChnlNum = 0;
@@ -1447,7 +1447,7 @@ phy_PostSetBwMode8723B(IN PADAPTER Adapter)
 	PHY_RF6052SetBandwidth8723B(Adapter, pHalData->CurrentChannelBW);
 }
 
-VOID
+static VOID
 phy_SwChnl8723B(IN PADAPTER pAdapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
@@ -1468,7 +1468,7 @@ phy_SwChnl8723B(IN PADAPTER pAdapter)
 	//phy_SpurCalibration_8723B(pAdapter, channelToSW, 0x16);
 }
 
-VOID
+static VOID
 phy_SwChnlAndSetBwMode8723B(IN PADAPTER Adapter)
 {
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(Adapter);
@@ -1498,7 +1498,7 @@ phy_SwChnlAndSetBwMode8723B(IN PADAPTER Adapter)
 	PHY_SetTxPowerLevel8723B(Adapter, pHalData->CurrentChannel);
 }
 
-VOID
+static VOID
 PHY_HandleSwChnlAndSetBW8723B(
 	IN	PADAPTER			Adapter,
 	IN	BOOLEAN				bSwitchChannel,
