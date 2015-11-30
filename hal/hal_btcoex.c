@@ -28,7 +28,7 @@
 //====================================
 //		Global variables
 //====================================
-const char *const BtProfileString[] =
+static const char *const BtProfileString[] =
 {
 	"NONE",
 	"A2DP",
@@ -37,7 +37,7 @@ const char *const BtProfileString[] =
 	"SCO",
 };
 
-const char *const BtSpecString[] =
+static const char *const BtSpecString[] =
 {
 	"1.0b",
 	"1.1",
@@ -48,13 +48,13 @@ const char *const BtSpecString[] =
 	"4.0",
 };
 
-const char *const BtLinkRoleString[] =
+static const char *const BtLinkRoleString[] =
 {
 	"Master",
 	"Slave",
 };
 
-const char *const h2cStaString[] =
+static const char *const h2cStaString[] =
 {
 	"successful",
 	"h2c busy",
@@ -62,7 +62,7 @@ const char *const h2cStaString[] =
 	"fw not read",
 };
 
-const char *const ioStaString[] =
+static const char *const ioStaString[] =
 {
 	"success",
 	"can not IO",
@@ -78,11 +78,11 @@ const char *const ioStaString[] =
 };
 
 BTC_COEXIST GLBtCoexist;
-u8 GLBtcWiFiInScanState;
-u8 GLBtcWiFiInIQKState;
+static u8 GLBtcWiFiInScanState;
+static u8 GLBtcWiFiInIQKState;
 
 u32 GLBtcDbgType[BTC_MSG_MAX];
-u8 GLBtcDbgBuf[BT_TMP_BUF_SIZE];
+static u8 GLBtcDbgBuf[BT_TMP_BUF_SIZE];
 
 typedef struct _btcoexdbginfo
 {
@@ -91,7 +91,7 @@ typedef struct _btcoexdbginfo
 	u32 len; // now used length
 } BTCDBGINFO, *PBTCDBGINFO;
 
-BTCDBGINFO GLBtcDbgInfo;
+static BTCDBGINFO GLBtcDbgInfo;
 
 #define	BT_Operation(Adapter)						_FALSE
 
@@ -201,7 +201,7 @@ static void halbtcoutsrc_LeaveLps(PBTC_COEXIST pBtCoexist)
 	rtw_btcoex_LPS_Leave(padapter);
 }
 
-void halbtcoutsrc_EnterLps(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_EnterLps(PBTC_COEXIST pBtCoexist)
 {
 	PADAPTER padapter;
 
@@ -214,7 +214,7 @@ void halbtcoutsrc_EnterLps(PBTC_COEXIST pBtCoexist)
 	rtw_btcoex_LPS_Enter(padapter);
 }
 
-void halbtcoutsrc_NormalLps(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_NormalLps(PBTC_COEXIST pBtCoexist)
 {
 	PADAPTER padapter;
 
@@ -243,7 +243,7 @@ void halbtcoutsrc_NormalLps(PBTC_COEXIST pBtCoexist)
  *  Constraint:
  *	   1. this function will request pwrctrl->lock
  */
-void halbtcoutsrc_LeaveLowPower(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_LeaveLowPower(PBTC_COEXIST pBtCoexist)
 {
 #ifdef CONFIG_LPS_LCLK
 	PADAPTER padapter;
@@ -284,7 +284,7 @@ void halbtcoutsrc_LeaveLowPower(PBTC_COEXIST pBtCoexist)
  *  Constraint:
  *	   1. this function will request pwrctrl->lock
  */
-void halbtcoutsrc_NormalLowPower(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_NormalLowPower(PBTC_COEXIST pBtCoexist)
 {
 #ifdef CONFIG_LPS_LCLK
 	PADAPTER padapter;
@@ -295,7 +295,7 @@ void halbtcoutsrc_NormalLowPower(PBTC_COEXIST pBtCoexist)
 #endif // CONFIG_LPS_LCLK
 }
 
-void halbtcoutsrc_DisableLowPower(PBTC_COEXIST pBtCoexist, u8 bLowPwrDisable)
+static void halbtcoutsrc_DisableLowPower(PBTC_COEXIST pBtCoexist, u8 bLowPwrDisable)
 {
 	pBtCoexist->btInfo.bBtDisableLowPwr = bLowPwrDisable;
 	if (bLowPwrDisable)
@@ -304,7 +304,7 @@ void halbtcoutsrc_DisableLowPower(PBTC_COEXIST pBtCoexist, u8 bLowPwrDisable)
 		halbtcoutsrc_NormalLowPower(pBtCoexist);	// original 32k low power behavior.
 }
 
-void halbtcoutsrc_AggregationCheck(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_AggregationCheck(PBTC_COEXIST pBtCoexist)
 {
 	PADAPTER padapter;
 	BOOLEAN bNeedToAct;
@@ -342,7 +342,7 @@ void halbtcoutsrc_AggregationCheck(PBTC_COEXIST pBtCoexist)
 	}
 }
 
-u8 halbtcoutsrc_IsWifiBusy(PADAPTER padapter)
+static u8 halbtcoutsrc_IsWifiBusy(PADAPTER padapter)
 {
 	struct mlme_priv *pmlmepriv;
 
@@ -409,7 +409,7 @@ static u32 _halbtcoutsrc_GetWifiLinkStatus(PADAPTER padapter)
 	return portConnectedStatus;
 }
 
-u32 halbtcoutsrc_GetWifiLinkStatus(PBTC_COEXIST pBtCoexist)
+static u32 halbtcoutsrc_GetWifiLinkStatus(PBTC_COEXIST pBtCoexist)
 {
 	//=================================
 	// return value:
@@ -451,7 +451,7 @@ u32 halbtcoutsrc_GetWifiLinkStatus(PBTC_COEXIST pBtCoexist)
 	return retVal;
 }
 
-u32 halbtcoutsrc_GetBtPatchVer(PBTC_COEXIST pBtCoexist)
+static u32 halbtcoutsrc_GetBtPatchVer(PBTC_COEXIST pBtCoexist)
 {
 	u16 btRealFwVer = 0x0;
 	u8 btFwVer = 0x0;
@@ -487,7 +487,7 @@ u32 halbtcoutsrc_GetBtPatchVer(PBTC_COEXIST pBtCoexist)
 	return pBtCoexist->btInfo.btRealFwVer;
 }
 
-s32 halbtcoutsrc_GetWifiRssi(PADAPTER padapter)
+static s32 halbtcoutsrc_GetWifiRssi(PADAPTER padapter)
 {
 	PHAL_DATA_TYPE pHalData;
 	s32 UndecoratedSmoothedPWDB = 0;
@@ -520,7 +520,7 @@ static u8 halbtcoutsrc_GetWifiScanAPNum(PADAPTER padapter)
 	return scan_AP_num;
 }
 
-u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
+static u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -737,7 +737,7 @@ u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 	return ret;
 }
 
-u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
+static u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -932,7 +932,7 @@ u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
 	return ret;
 }
 
-void halbtcoutsrc_DisplayCoexStatistics(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_DisplayCoexStatistics(PBTC_COEXIST pBtCoexist)
 {
 #if 0
 	PADAPTER padapter = (PADAPTER)pBtCoexist->Adapter;
@@ -1000,7 +1000,7 @@ void halbtcoutsrc_DisplayCoexStatistics(PBTC_COEXIST pBtCoexist)
 #endif
 }
 
-void halbtcoutsrc_DisplayBtLinkInfo(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_DisplayBtLinkInfo(PBTC_COEXIST pBtCoexist)
 {
 #if 0
 	PADAPTER padapter = (PADAPTER)pBtCoexist->Adapter;
@@ -1032,7 +1032,7 @@ void halbtcoutsrc_DisplayBtLinkInfo(PBTC_COEXIST pBtCoexist)
 #endif
 }
 
-void halbtcoutsrc_DisplayFwPwrModeCmd(PBTC_COEXIST pBtCoexist)
+static void halbtcoutsrc_DisplayFwPwrModeCmd(PBTC_COEXIST pBtCoexist)
 {
 	u8 *cliBuf = pBtCoexist->cliBuf;
 
@@ -1046,7 +1046,7 @@ void halbtcoutsrc_DisplayFwPwrModeCmd(PBTC_COEXIST pBtCoexist)
 //====================================
 //		IO related function
 //====================================
-u8 halbtcoutsrc_Read1Byte(void *pBtcContext, u32 RegAddr)
+static u8 halbtcoutsrc_Read1Byte(void *pBtcContext, u32 RegAddr)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1058,7 +1058,7 @@ u8 halbtcoutsrc_Read1Byte(void *pBtcContext, u32 RegAddr)
 	return rtw_read8(padapter, RegAddr);
 }
 
-u16 halbtcoutsrc_Read2Byte(void *pBtcContext, u32 RegAddr)
+static u16 halbtcoutsrc_Read2Byte(void *pBtcContext, u32 RegAddr)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1070,7 +1070,7 @@ u16 halbtcoutsrc_Read2Byte(void *pBtcContext, u32 RegAddr)
 	return	rtw_read16(padapter, RegAddr);
 }
 
-u32 halbtcoutsrc_Read4Byte(void *pBtcContext, u32 RegAddr)
+static u32 halbtcoutsrc_Read4Byte(void *pBtcContext, u32 RegAddr)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1082,7 +1082,7 @@ u32 halbtcoutsrc_Read4Byte(void *pBtcContext, u32 RegAddr)
 	return	rtw_read32(padapter, RegAddr);
 }
 
-void halbtcoutsrc_Write1Byte(void *pBtcContext, u32 RegAddr, u8 Data)
+static void halbtcoutsrc_Write1Byte(void *pBtcContext, u32 RegAddr, u8 Data)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1094,7 +1094,7 @@ void halbtcoutsrc_Write1Byte(void *pBtcContext, u32 RegAddr, u8 Data)
 	rtw_write8(padapter, RegAddr, Data);
 }
 
-void halbtcoutsrc_BitMaskWrite1Byte(void *pBtcContext, u32 regAddr, u8 bitMask, u8 data1b)
+static void halbtcoutsrc_BitMaskWrite1Byte(void *pBtcContext, u32 regAddr, u8 bitMask, u8 data1b)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1124,7 +1124,7 @@ void halbtcoutsrc_BitMaskWrite1Byte(void *pBtcContext, u32 regAddr, u8 bitMask, 
 	rtw_write8(padapter, regAddr, data1b);
 }
 
-void halbtcoutsrc_Write2Byte(void *pBtcContext, u32 RegAddr, u16 Data)
+static void halbtcoutsrc_Write2Byte(void *pBtcContext, u32 RegAddr, u16 Data)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1136,7 +1136,7 @@ void halbtcoutsrc_Write2Byte(void *pBtcContext, u32 RegAddr, u16 Data)
 	rtw_write16(padapter, RegAddr, Data);
 }
 
-void halbtcoutsrc_Write4Byte(void *pBtcContext, u32 RegAddr, u32 Data)
+static void halbtcoutsrc_Write4Byte(void *pBtcContext, u32 RegAddr, u32 Data)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1148,7 +1148,7 @@ void halbtcoutsrc_Write4Byte(void *pBtcContext, u32 RegAddr, u32 Data)
 	rtw_write32(padapter, RegAddr, Data);
 }
 
-void halbtcoutsrc_WriteLocalReg1Byte(void *pBtcContext, u32 RegAddr, u8 Data)
+static void halbtcoutsrc_WriteLocalReg1Byte(void *pBtcContext, u32 RegAddr, u8 Data)
 {
 	PBTC_COEXIST		pBtCoexist=(PBTC_COEXIST)pBtcContext;
 	PADAPTER			Adapter=pBtCoexist->Adapter;
@@ -1163,7 +1163,7 @@ void halbtcoutsrc_WriteLocalReg1Byte(void *pBtcContext, u32 RegAddr, u8 Data)
 	}
 }
 
-void halbtcoutsrc_SetBbReg(void *pBtcContext, u32 RegAddr, u32 BitMask, u32 Data)
+static void halbtcoutsrc_SetBbReg(void *pBtcContext, u32 RegAddr, u32 BitMask, u32 Data)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1176,7 +1176,7 @@ void halbtcoutsrc_SetBbReg(void *pBtcContext, u32 RegAddr, u32 BitMask, u32 Data
 }
 
 
-u32 halbtcoutsrc_GetBbReg(void *pBtcContext, u32 RegAddr, u32 BitMask)
+static u32 halbtcoutsrc_GetBbReg(void *pBtcContext, u32 RegAddr, u32 BitMask)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1188,7 +1188,7 @@ u32 halbtcoutsrc_GetBbReg(void *pBtcContext, u32 RegAddr, u32 BitMask)
 	return PHY_QueryBBReg(padapter, RegAddr, BitMask);
 }
 
-void halbtcoutsrc_SetRfReg(void *pBtcContext, u8 eRFPath, u32 RegAddr, u32 BitMask, u32 Data)
+static void halbtcoutsrc_SetRfReg(void *pBtcContext, u8 eRFPath, u32 RegAddr, u32 BitMask, u32 Data)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1200,7 +1200,7 @@ void halbtcoutsrc_SetRfReg(void *pBtcContext, u8 eRFPath, u32 RegAddr, u32 BitMa
 	PHY_SetRFReg(padapter, eRFPath, RegAddr, BitMask, Data);
 }
 
-u32 halbtcoutsrc_GetRfReg(void *pBtcContext, u8 eRFPath, u32 RegAddr, u32 BitMask)
+static u32 halbtcoutsrc_GetRfReg(void *pBtcContext, u8 eRFPath, u32 RegAddr, u32 BitMask)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1212,7 +1212,7 @@ u32 halbtcoutsrc_GetRfReg(void *pBtcContext, u8 eRFPath, u32 RegAddr, u32 BitMas
 	return PHY_QueryRFReg(padapter, eRFPath, RegAddr, BitMask);
 }
 
-void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
+static void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1242,13 +1242,13 @@ void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
 	rtw_hal_fill_h2c_cmd(padapter, 0x67, 4, &(CmdBuffer2[0]));
 }
 
-u32 halbtcoutsrc_GetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr)
+static u32 halbtcoutsrc_GetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr)
 {
 	/* To be implemented. Always return 0 temporarily */
 	return 0;
 }
 
-void halbtcoutsrc_FillH2cCmd(void *pBtcContext, u8 elementId, u32 cmdLen, u8 *pCmdBuffer)
+static void halbtcoutsrc_FillH2cCmd(void *pBtcContext, u8 elementId, u32 cmdLen, u8 *pCmdBuffer)
 {
 	PBTC_COEXIST pBtCoexist;
 	PADAPTER padapter;
@@ -1260,7 +1260,7 @@ void halbtcoutsrc_FillH2cCmd(void *pBtcContext, u8 elementId, u32 cmdLen, u8 *pC
 	rtw_hal_fill_h2c_cmd(padapter, elementId, cmdLen, pCmdBuffer);
 }
 
-void halbtcoutsrc_DisplayDbgMsg(void *pBtcContext, u8 dispType)
+static void halbtcoutsrc_DisplayDbgMsg(void *pBtcContext, u8 dispType)
 {
 	PBTC_COEXIST pBtCoexist;
 
@@ -1282,7 +1282,7 @@ void halbtcoutsrc_DisplayDbgMsg(void *pBtcContext, u8 dispType)
 	}
 }
 
-u8 halbtcoutsrc_UnderIps(PBTC_COEXIST pBtCoexist)
+static u8 halbtcoutsrc_UnderIps(PBTC_COEXIST pBtCoexist)
 {
 	PADAPTER padapter;
 	struct pwrctrl_priv *pwrpriv;
@@ -1316,7 +1316,7 @@ u8 halbtcoutsrc_UnderIps(PBTC_COEXIST pBtCoexist)
 //====================================
 //		Extern functions called by other module
 //====================================
-u8 EXhalbtcoutsrc_BindBtCoexWithAdapter(void *padapter)
+static u8 EXhalbtcoutsrc_BindBtCoexWithAdapter(void *padapter)
 {
 	PBTC_COEXIST		pBtCoexist=&GLBtCoexist;
 	u1Byte	antNum=2, chipType;
@@ -1636,7 +1636,7 @@ void EXhalbtcoutsrc_HaltNotify(PBTC_COEXIST pBtCoexist)
 	pBtCoexist->bBinded = FALSE;
 }
 
-void EXhalbtcoutsrc_SwitchBtTRxMask(PBTC_COEXIST pBtCoexist)
+static void EXhalbtcoutsrc_SwitchBtTRxMask(PBTC_COEXIST pBtCoexist)
 {
 	if (pBtCoexist->boardInfo.btdmAntNum == 2)
 		halbtcoutsrc_SetBtReg(pBtCoexist, 0, 0x3c, 0x01); //BT goto standby while GNT_BT 1-->0
