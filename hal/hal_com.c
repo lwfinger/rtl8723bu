@@ -2034,7 +2034,7 @@ void Hal_GetPhyEfuseMACAddr(PADAPTER padapter, u8* mac_addr) {
 #endif //CONFIG_EFUSE_CONFIG_FILE
 
 #ifdef CONFIG_RF_GAIN_OFFSET
-u32 Array_kfreemap[] = {
+static u32 Array_kfreemap[] = {
 0x08,0xe,
 0x06,0xc,
 0x04,0xa,
