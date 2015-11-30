@@ -1180,7 +1180,7 @@ void rtl8723b_set_FwMacIdConfig_cmd(_adapter* padapter, u8 mac_id, u8 raid, u8 b
 
 }
 
-void rtl8723b_set_FwRssiSetting_cmd(_adapter*padapter, u8 *param)
+static void rtl8723b_set_FwRssiSetting_cmd(_adapter*padapter, u8 *param)
 {
 	u8 u1H2CRssiSettingParm[H2C_RSSI_SETTING_LEN]={0};
 	u8 mac_id = *param;
@@ -1201,7 +1201,7 @@ void rtl8723b_set_FwRssiSetting_cmd(_adapter*padapter, u8 *param)
 
 }
 
-void rtl8723b_set_FwAPReqRPT_cmd(PADAPTER padapter, u32 need_ack)
+static void rtl8723b_set_FwAPReqRPT_cmd(PADAPTER padapter, u32 need_ack)
 {
 	u8 u1H2CApReqRptParm[H2C_AP_REQ_TXRPT_LEN]={0};
 	u8 macid1 = 1, macid2 = 0;

@@ -2407,7 +2407,7 @@ static void rtl8723b_SetBeaconRelatedRegisters(PADAPTER padapter)
 	rtw_write8(padapter, bcn_ctrl_reg, val8);
 }
 
-void rtl8723b_GetHalODMVar(
+static void rtl8723b_GetHalODMVar(
 	PADAPTER				Adapter,
 	HAL_ODM_VARIABLE		eVariable,
 	PVOID					pValue1,
@@ -2422,7 +2422,7 @@ void rtl8723b_GetHalODMVar(
 	}
 }
 
-void rtl8723b_SetHalODMVar(
+static void rtl8723b_SetHalODMVar(
 	PADAPTER				Adapter,
 	HAL_ODM_VARIABLE		eVariable,
 	PVOID					pValue1,
@@ -2436,7 +2436,7 @@ void rtl8723b_SetHalODMVar(
 			break;
 	}
 }
-void hal_notch_filter_8723b(_adapter *adapter, bool enable)
+static void hal_notch_filter_8723b(_adapter *adapter, bool enable)
 {
 	if (enable) {
 		DBG_871X("Enable notch filter\n");
@@ -2447,7 +2447,7 @@ void hal_notch_filter_8723b(_adapter *adapter, bool enable)
 	}
 }
 
-u8 rtl8723b_MRateIdxToARFRId(PADAPTER padapter, u8 rate_idx)
+static u8 rtl8723b_MRateIdxToARFRId(PADAPTER padapter, u8 rate_idx)
 {
 	u8 ret = 0;
 	RT_RF_TYPE_DEF_E rftype = (RT_RF_TYPE_DEF_E)GET_RF_TYPE(padapter);
@@ -2508,7 +2508,7 @@ u8 rtl8723b_MRateIdxToARFRId(PADAPTER padapter, u8 rate_idx)
 	return ret;
 }
 
-void UpdateHalRAMask8723B(PADAPTER padapter, u32 mac_id, u8 rssi_level)
+static void UpdateHalRAMask8723B(PADAPTER padapter, u32 mac_id, u8 rssi_level)
 {
 	u32	mask,rate_bitmap;
 	u8	shortGIrate = _FALSE;
@@ -2791,7 +2791,7 @@ s32 rtl8723b_InitLLTTable(PADAPTER padapter)
 	return ret;
 }
 
-void _DisableGPIO(PADAPTER	padapter)
+static void _DisableGPIO(PADAPTER	padapter)
 {
 /***************************************
 j. GPIO_PIN_CTRL 0x44[31:0]=0x000		//
@@ -2824,7 +2824,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 	rtw_write16(padapter, REG_LEDCFG0, 0x8080);
 } //end of _DisableGPIO()
 
-void _DisableRFAFEAndResetBB8192C(PADAPTER padapter)
+static void _DisableRFAFEAndResetBB8192C(PADAPTER padapter)
 {
 /**************************************
 a.	TXPAUSE 0x522[7:0] = 0xFF             //Pause MAC TX queue
@@ -2856,12 +2856,12 @@ e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 //	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> RF off and reset BB.\n"));
 }
 
-void _DisableRFAFEAndResetBB(PADAPTER padapter)
+static void _DisableRFAFEAndResetBB(PADAPTER padapter)
 {
 	_DisableRFAFEAndResetBB8192C(padapter);
 }
 
-void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
+static void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 
@@ -2984,12 +2984,12 @@ void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 
 }
 
-void _ResetDigitalProcedure1(PADAPTER padapter, BOOLEAN bWithoutHWSM)
+static void _ResetDigitalProcedure1(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 {
 	_ResetDigitalProcedure1_92C(padapter, bWithoutHWSM);
 }
 
-void _ResetDigitalProcedure2(PADAPTER padapter)
+static void _ResetDigitalProcedure2(PADAPTER padapter)
 {
 	//HAL_DATA_TYPE		*pHalData	= GET_HAL_DATA(padapter);
 /*****************************
@@ -3006,7 +3006,7 @@ m.	SYS_ISO_CTRL 0x01[7:0] = 0x83			// isolated ELDR to PON
 	rtw_write8(padapter, REG_SYS_ISO_CTRL+1, 0x82); //modify to 0x82 by Scott.
 }
 
-void _DisableAnalog(PADAPTER padapter, BOOLEAN bWithoutHWSM)
+static void _DisableAnalog(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 {
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(padapter);
 	u16 value16 = 0;
@@ -3113,7 +3113,7 @@ s32 CardDisableWithoutHWSM(PADAPTER padapter)
 	return rtStatus;
 }
 
-BOOLEAN
+static BOOLEAN
 Hal_GetChnlGroup8723B(
 	IN	u8 Channel,
 	OUT u8 *pGroup
@@ -3216,7 +3216,7 @@ Hal_EfuseParseIDCode(
 
 
 	// Checl 0x8129 again for making sure autoload status!!
-	EEPROMId = le16_to_cpu(*((u16*)hwinfo));
+	EEPROMId = le16_to_cpu(*((__le16 *)hwinfo));
 	if (EEPROMId != RTL_EEPROM_ID)
 	{
 		DBG_8192C("EEPROM ID(%#x) is invalid!!\n", EEPROMId);
@@ -3278,7 +3278,7 @@ Hal_GetChnlGroup(
 	return group;
 }
 
-void
+static void
 Hal_ReadPowerValueFromPROM_8723B(
 	IN	PADAPTER		Adapter,
 	IN	PTxPowerInfo24G	pwrInfo24G,
@@ -3920,9 +3920,9 @@ u8	SCMapping_8723B(PADAPTER Adapter, struct pkt_attrib *pattrib)
 	return SCSettingOfDesc;
 }
 
-void rtl8723b_cal_txdesc_chksum(struct tx_desc *ptxdesc)
+static void rtl8723b_cal_txdesc_chksum(struct tx_desc *ptxdesc)
 {
-	u16	*usPtr = (u16*)ptxdesc;
+	__le16	*usPtr = (__le16 *)ptxdesc;
 	u32 count;
 	u32 index;
 	u16 checksum = 0;
