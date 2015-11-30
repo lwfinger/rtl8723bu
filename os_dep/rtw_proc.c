@@ -135,7 +135,7 @@ static int proc_get_mstat(struct seq_file *m, void *v)
 * rtw_drv_proc:
 * init/deinit when register/unregister driver
 */
-const struct rtw_proc_hdl drv_proc_hdls [] = {
+static const struct rtw_proc_hdl drv_proc_hdls [] = {
 	{"ver_info", proc_get_drv_version, NULL},
 	{"log_level", proc_get_log_level, proc_set_log_level},
 #ifdef DBG_MEM_ALLOC
@@ -143,7 +143,7 @@ const struct rtw_proc_hdl drv_proc_hdls [] = {
 #endif /* DBG_MEM_ALLOC */
 };
 
-const int drv_proc_hdls_num = sizeof(drv_proc_hdls) / sizeof(struct rtw_proc_hdl);
+static const int drv_proc_hdls_num = sizeof(drv_proc_hdls) / sizeof(struct rtw_proc_hdl);
 
 static int rtw_drv_proc_open(struct inode *inode, struct file *file)
 {
@@ -288,7 +288,7 @@ static ssize_t proc_set_linked_info_dump(struct file *file, const char __user *b
 
 }
 
-int proc_get_rx_info(struct seq_file *m, void *v)
+static int proc_get_rx_info(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
@@ -307,7 +307,7 @@ int proc_get_rx_info(struct seq_file *m, void *v)
 }
 
 
-ssize_t proc_reset_rx_info(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
+static ssize_t proc_reset_rx_info(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
 {
 	struct net_device *dev = data;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
@@ -407,7 +407,7 @@ static int proc_get_cam_cache(struct seq_file *m, void *v)
 }
 
 #ifdef CONFIG_BT_COEXIST
-ssize_t proc_set_btinfo_evt(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
+static ssize_t proc_set_btinfo_evt(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
 {
 	struct net_device *dev = data;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
@@ -442,7 +442,7 @@ ssize_t proc_set_btinfo_evt(struct file *file, const char __user *buffer, size_t
 * rtw_adapter_proc:
 * init/deinit when register/unregister net_device
 */
-const struct rtw_proc_hdl adapter_proc_hdls [] = {
+static const struct rtw_proc_hdl adapter_proc_hdls [] = {
 	{"write_reg", proc_get_dummy, proc_set_write_reg},
 	{"read_reg", proc_get_read_reg, proc_set_read_reg},
 	{"fwstate", proc_get_fwstate, NULL},
@@ -519,7 +519,7 @@ const struct rtw_proc_hdl adapter_proc_hdls [] = {
 #endif
 };
 
-const int adapter_proc_hdls_num = sizeof(adapter_proc_hdls) / sizeof(struct rtw_proc_hdl);
+static const int adapter_proc_hdls_num = sizeof(adapter_proc_hdls) / sizeof(struct rtw_proc_hdl);
 
 static int rtw_adapter_proc_open(struct inode *inode, struct file *file)
 {
@@ -618,7 +618,7 @@ ssize_t proc_set_odm_dbg_level(struct file *file, const char __user *buffer, siz
 	return count;
 }
 
-int proc_get_odm_ability(struct seq_file *m, void *v)
+static int proc_get_odm_ability(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(dev);
@@ -628,7 +628,7 @@ int proc_get_odm_ability(struct seq_file *m, void *v)
 	return 0;
 }
 
-ssize_t proc_set_odm_ability(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
+static ssize_t proc_set_odm_ability(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data)
 {
 	struct net_device *dev = data;
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(dev);
@@ -695,14 +695,14 @@ ssize_t proc_set_odm_adaptivity(struct file *file, const char __user *buffer, si
 * rtw_odm_proc:
 * init/deinit when register/unregister net_device, along with rtw_adapter_proc
 */
-const struct rtw_proc_hdl odm_proc_hdls [] = {
+static const struct rtw_proc_hdl odm_proc_hdls [] = {
 	{"dbg_comp", proc_get_odm_dbg_comp, proc_set_odm_dbg_comp},
 	{"dbg_level", proc_get_odm_dbg_level, proc_set_odm_dbg_level},
 	{"ability", proc_get_odm_ability, proc_set_odm_ability},
 	{"adaptivity", proc_get_odm_adaptivity, proc_set_odm_adaptivity},
 };
 
-const int odm_proc_hdls_num = sizeof(odm_proc_hdls) / sizeof(struct rtw_proc_hdl);
+static const int odm_proc_hdls_num = sizeof(odm_proc_hdls) / sizeof(struct rtw_proc_hdl);
 
 static int rtw_odm_proc_open(struct inode *inode, struct file *file)
 {
@@ -733,7 +733,7 @@ static const struct file_operations rtw_odm_proc_fops = {
 	.write = rtw_odm_proc_write,
 };
 
-struct proc_dir_entry *rtw_odm_proc_init(struct net_device *dev)
+static struct proc_dir_entry *rtw_odm_proc_init(struct net_device *dev)
 {
 	struct proc_dir_entry *dir_odm = NULL;
 	struct proc_dir_entry *entry = NULL;
@@ -770,7 +770,7 @@ exit:
 	return dir_odm;
 }
 
-void rtw_odm_proc_deinit(_adapter	*adapter)
+static void rtw_odm_proc_deinit(_adapter	*adapter)
 {
 	struct proc_dir_entry *dir_odm = NULL;
 	int i;
