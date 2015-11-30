@@ -40,7 +40,7 @@
 
 extern void macstr2num(u8 *dst, u8 *src);
 
-const char *android_wifi_cmd_str[ANDROID_WIFI_CMD_MAX] = {
+static const char *android_wifi_cmd_str[ANDROID_WIFI_CMD_MAX] = {
 	"START",
 	"STOP",
 	"SCAN-ACTIVE",
@@ -139,15 +139,15 @@ char pno_in_example[] = {
 
 typedef struct android_wifi_priv_cmd {
 	char *buf;
-	int used_len;
-	int total_len;
+	unsigned long used_len;
+	unsigned long total_len;
 } android_wifi_priv_cmd;
 
 #ifdef CONFIG_COMPAT
 typedef struct compat_android_wifi_priv_cmd {
 	compat_uptr_t buf;
-	int used_len;
-	int total_len;
+	unsigned long used_len;
+	unsigned long total_len;
 } compat_android_wifi_priv_cmd;
 #endif /* CONFIG_COMPAT */
 
@@ -161,7 +161,7 @@ typedef struct compat_android_wifi_priv_cmd {
  */
 static int g_wifi_on = _TRUE;
 
-unsigned int oob_irq;
+static unsigned int oob_irq;
 
 #ifdef CONFIG_PNO_SUPPORT
 /*
@@ -348,7 +348,7 @@ int rtw_android_cmdstr_to_num(char *cmdstr)
 	return cmd_num;
 }
 
-int rtw_android_get_rssi(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_rssi(struct net_device *net, char *command, int total_len)
 {
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(net);
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
@@ -363,7 +363,7 @@ int rtw_android_get_rssi(struct net_device *net, char *command, int total_len)
 	return bytes_written;
 }
 
-int rtw_android_get_link_speed(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_link_speed(struct net_device *net, char *command, int total_len)
 {
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(net);
 	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
@@ -377,7 +377,7 @@ int rtw_android_get_link_speed(struct net_device *net, char *command, int total_
 	return bytes_written;
 }
 
-int rtw_android_get_macaddr(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_macaddr(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	int bytes_written = 0;
@@ -386,7 +386,7 @@ int rtw_android_get_macaddr(struct net_device *net, char *command, int total_len
 	return bytes_written;
 }
 
-int rtw_android_set_country(struct net_device *net, char *command, int total_len)
+static int rtw_android_set_country(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	char *country_code = command + strlen(android_wifi_cmd_str[ANDROID_WIFI_CMD_COUNTRY]) + 1;
@@ -397,7 +397,7 @@ int rtw_android_set_country(struct net_device *net, char *command, int total_len
 	return (ret==_SUCCESS)?0:-1;
 }
 
-int rtw_android_get_p2p_dev_addr(struct net_device *net, char *command, int total_len)
+static int rtw_android_get_p2p_dev_addr(struct net_device *net, char *command, int total_len)
 {
 	int bytes_written = 0;
 
@@ -408,7 +408,7 @@ int rtw_android_get_p2p_dev_addr(struct net_device *net, char *command, int tota
 	return bytes_written;
 }
 
-int rtw_android_set_block(struct net_device *net, char *command, int total_len)
+static int rtw_android_set_block(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	char *block_value = command + strlen(android_wifi_cmd_str[ANDROID_WIFI_CMD_BLOCK]) + 1;
@@ -420,7 +420,7 @@ int rtw_android_set_block(struct net_device *net, char *command, int total_len)
 	return 0;
 }
 
-int rtw_android_setband(struct net_device *net, char *command, int total_len)
+static int rtw_android_setband(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	char *arg = command + strlen(android_wifi_cmd_str[ANDROID_WIFI_CMD_SETBAND]) + 1;
@@ -433,7 +433,7 @@ int rtw_android_setband(struct net_device *net, char *command, int total_len)
 	return (ret==_SUCCESS)?0:-1;
 }
 
-int rtw_android_getband(struct net_device *net, char *command, int total_len)
+static int rtw_android_getband(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	int bytes_written = 0;
@@ -465,7 +465,7 @@ static const char *get_miracast_mode_str(int mode)
 	return miracast_mode_str[mode];
 }
 
-int rtw_android_set_miracast_mode(struct net_device *net, char *command, int total_len)
+static int rtw_android_set_miracast_mode(struct net_device *net, char *command, int total_len)
 {
 	_adapter *adapter = (_adapter *)rtw_netdev_priv(net);
 	char *arg = command + strlen(android_wifi_cmd_str[ANDROID_WIFI_CMD_MIRACAST]) + 1;
@@ -483,7 +483,7 @@ int rtw_android_set_miracast_mode(struct net_device *net, char *command, int tot
 	return (ret==_SUCCESS)?0:-1;
 }
 
-int get_int_from_command( char* pcmd )
+static int get_int_from_command( char* pcmd )
 {
 	int i = 0;
 
