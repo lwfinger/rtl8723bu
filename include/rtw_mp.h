@@ -678,5 +678,9 @@ extern void MP_PHY_SetRFPathSwitch(PADAPTER pAdapter ,BOOLEAN bMain);
 extern ULONG mpt_ProQueryCalTxPower(PADAPTER	pAdapter,u8 RfPath);
 extern void MPT_PwrCtlDM(PADAPTER padapter, u32 bstart);
 extern u8 MptToMgntRate(u32	MptRateIdx);
+extern void indicate_wx_scan_complete_event(_adapter *padapter);
+extern void rtw_indicate_wx_assoc_event(_adapter *padapter);
+extern void rtw_indicate_wx_disassoc_event(_adapter *padapter);
+
 
 #endif //_RTW_MP_H_

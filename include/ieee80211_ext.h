@@ -177,50 +177,50 @@ enum ieee80211_back_parties {
 };
 
 struct ieee80211_mgmt {
-	u16 frame_control;
-	u16 duration;
+	__le16 frame_control;
+	__le16 duration;
 	u8 da[6];
 	u8 sa[6];
 	u8 bssid[6];
-	u16 seq_ctrl;
+	__le16 seq_ctrl;
 	union {
 		struct {
-			u16 auth_alg;
-			u16 auth_transaction;
-			u16 status_code;
+			__le16 auth_alg;
+			__le16 auth_transaction;
+			__le16 status_code;
 			/* possibly followed by Challenge text */
 			u8 variable[0];
 		}  __attribute__ ((packed)) auth;
 		struct {
-			u16 reason_code;
+			__le16 reason_code;
 		}  __attribute__ ((packed)) deauth;
 		struct {
-			u16 capab_info;
-			u16 listen_interval;
+			__le16 capab_info;
+			__le16 listen_interval;
 			/* followed by SSID and Supported rates */
 			u8 variable[0];
 		}  __attribute__ ((packed)) assoc_req;
 		struct {
-			u16 capab_info;
-			u16 status_code;
-			u16 aid;
+			__le16 capab_info;
+			__le16 status_code;
+			__le16 aid;
 			/* followed by Supported rates */
 			u8 variable[0];
 		}  __attribute__ ((packed)) assoc_resp, reassoc_resp;
 		struct {
-			u16 capab_info;
-			u16 listen_interval;
+			__le16 capab_info;
+			__le16 listen_interval;
 			u8 current_ap[6];
 			/* followed by SSID and Supported rates */
 			u8 variable[0];
 		}  __attribute__ ((packed)) reassoc_req;
 		struct {
-			u16 reason_code;
+			__le16 reason_code;
 		}  __attribute__ ((packed)) disassoc;
 		struct {
 			__le64 timestamp;
-			u16 beacon_int;
-			u16 capab_info;
+			__le16 beacon_int;
+			__le16 capab_info;
 			/* followed by some of SSID, Supported rates,
 			 * FH Params, DS Params, CF Params, IBSS Params, TIM */
 			u8 variable[0];
@@ -231,8 +231,8 @@ struct ieee80211_mgmt {
 		}  __attribute__ ((packed)) probe_req;
 		struct {
 			__le64 timestamp;
-			u16 beacon_int;
-			u16 capab_info;
+			__le16 beacon_int;
+			__le16 capab_info;
 			/* followed by some of SSID, Supported rates,
 			 * FH Params, DS Params, CF Params, IBSS Params */
 			u8 variable[0];
@@ -246,39 +246,24 @@ struct ieee80211_mgmt {
 					u8 status_code;
 					u8 variable[0];
 				}  __attribute__ ((packed)) wme_action;
-#if 0
-				struct{
-					u8 action_code;
-					u8 element_id;
-					u8 length;
-					struct ieee80211_channel_sw_ie sw_elem;
-				}  __attribute__ ((packed)) chan_switch;
 				struct{
 					u8 action_code;
 					u8 dialog_token;
-					u8 element_id;
-					u8 length;
-					struct ieee80211_msrment_ie msr_elem;
-				}  __attribute__ ((packed)) measurement;
-#endif
-				struct{
-					u8 action_code;
-					u8 dialog_token;
-					u16 capab;
-					u16 timeout;
-					u16 start_seq_num;
+					__le16 capab;
+					__le16 timeout;
+					__le16 start_seq_num;
 				}  __attribute__ ((packed)) addba_req;
 				struct{
 					u8 action_code;
 					u8 dialog_token;
-					u16 status;
-					u16 capab;
-					u16 timeout;
+					__le16 status;
+					__le16 capab;
+					__le16 timeout;
 				}  __attribute__ ((packed)) addba_resp;
 				struct{
 					u8 action_code;
-					u16 params;
-					u16 reason_code;
+					__le16 params;
+					__le16 reason_code;
 				}  __attribute__ ((packed)) delba;
 				struct{
 					u8 action_code;

@@ -22,7 +22,7 @@
 #define _MLME_OSDEP_C_
 
 #include <drv_types.h>
-
+#include <rtw_mp_ioctl.h>
 
 #ifdef RTK_DMP_PLATFORM
 void Linkup_workitem_callback(struct work_struct *work)
@@ -141,9 +141,6 @@ void rtw_init_mlme_timer(_adapter *padapter)
 
 }
 
-extern void rtw_indicate_wx_assoc_event(_adapter *padapter);
-extern void rtw_indicate_wx_disassoc_event(_adapter *padapter);
-
 void rtw_os_indicate_connect(_adapter *adapter)
 {
 	struct mlme_priv *pmlmepriv = &(adapter->mlmepriv);
@@ -173,7 +170,6 @@ void rtw_os_indicate_connect(_adapter *adapter)
 
 }
 
-extern void indicate_wx_scan_complete_event(_adapter *padapter);
 void rtw_os_indicate_scan_done( _adapter *padapter, bool aborted)
 {
 #ifdef CONFIG_IOCTL_CFG80211

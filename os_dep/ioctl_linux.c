@@ -65,7 +65,7 @@ extern u8 str_2char2num(u8 hch, u8 lch);
 extern void macstr2num(u8 *dst, u8 *src);
 extern u8 convert_ip_addr(u8 hch, u8 mch, u8 lch);
 
-u32 rtw_rates[] = {1000000,2000000,5500000,11000000,
+static u32 rtw_rates[] = {1000000,2000000,5500000,11000000,
 	6000000,9000000,12000000,18000000,24000000,36000000,48000000,54000000};
 
 static const char * const iw_operation_mode[] =
@@ -315,6 +315,7 @@ static char *translate_scan(_adapter *padapter,
 #ifdef CONFIG_P2P
 	struct wifidirect_info	*pwdinfo = &padapter->wdinfo;
 #endif //CONFIG_P2P
+	__le16 le_tmp;
 
 #ifdef CONFIG_P2P
 #ifdef CONFIG_WFD
@@ -498,8 +499,8 @@ static char *translate_scan(_adapter *padapter,
 	else
 	{
         iwe.cmd = SIOCGIWMODE;
-		_rtw_memcpy((u8 *)&cap, rtw_get_capability_from_ie(pnetwork->network.IEs), 2);
-		cap = le16_to_cpu(cap);
+		_rtw_memcpy((u8 *)&le_tmp, rtw_get_capability_from_ie(pnetwork->network.IEs), 2);
+		cap = le16_to_cpu(le_tmp);
 	}
 
 	if(cap & (WLAN_CAPABILITY_IBSS |WLAN_CAPABILITY_BSS)){
@@ -2002,7 +2003,7 @@ struct	iw_mlme
 
 	DBG_871X("%s\n", __FUNCTION__);
 
-	reason = cpu_to_le16(mlme->reason_code);
+	reason = le16_to_cpu(mlme->reason_code);
 
 
 	DBG_871X("%s, cmd=%d, reason=%d\n", __FUNCTION__, mlme->cmd, reason);
@@ -4622,15 +4623,16 @@ static int rtw_p2p_get_wps_configmethod(struct net_device *dev,
 		{
 			u8 *wpsie;
 			uint	wpsie_len = 0;
+			__be16 be_tmp;
 
 			//	The mac address is matched.
 
 			if ( (wpsie=rtw_get_wps_ie_from_scan_queue( &pnetwork->network.IEs[0], pnetwork->network.IELength, NULL, &wpsie_len, pnetwork->network.Reserved[0])) )
 			{
-				rtw_get_wps_attr_content(wpsie, wpsie_len, WPS_ATTR_CONF_METHOD, (u8 *)&attr_content, &attr_contentlen);
+				rtw_get_wps_attr_content(wpsie, wpsie_len, WPS_ATTR_CONF_METHOD, (u8 *)&be_tmp, &attr_contentlen);
 				if (attr_contentlen)
 				{
-					attr_content = be16_to_cpu(attr_content);
+					attr_content = be16_to_cpu(be_tmp);
 					sprintf(attr_content_str, "\n\nM=%.4d", attr_content);
 					blnMatch = 1;
 				}
@@ -4860,9 +4862,10 @@ static int rtw_p2p_get_device_type(struct net_device *dev,
 				if (dev_type_len)
 				{
 					u16	type = 0;
+					__be16 be_tmp;
 
-					_rtw_memcpy(&type, dev_type, 2);
-					type = be16_to_cpu(type);
+					_rtw_memcpy(&be_tmp, dev_type, 2);
+					type = be16_to_cpu(be_tmp);
 					sprintf(dev_type_str, "\n\nN=%.2d", type);
 					blnMatch = 1;
 				}
@@ -6771,6 +6774,8 @@ static int rtw_dbg_port(struct net_device *dev,
 				}
 					break;
 				#endif //CONFIG_IOL
+				default:
+					break;
 			}
 			break;
 		case 0x79:
