@@ -118,23 +118,18 @@ int rtw_IOL_append_LLT_cmd(struct xmit_frame *xmit_frame, u8 page_boundary)
 {
 	return _SUCCESS;
 }
+
 int _rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, u8 mask)
 {
 	struct ioreg_cfg cmd = {8,IOREG_CMD_WB_REG,0x0, 0x0,0x0};
 
-	//RTW_PUT_LE16((u8*)&cmd.address, addr);
-	//RTW_PUT_LE32((u8*)&cmd.value, (u32)value);
 	cmd.address = cpu_to_le16(addr);
 	cmd.data = cpu_to_le32(value);
 
-	if(mask!=0xFF)
-	{
+	if(mask!=0xFF) {
 		cmd.length = 12;
-		//RTW_PUT_LE32((u8*)&cmd.mask, (u32)mask);
 		cmd.mask = cpu_to_le32(mask);
 	}
-
-	//DBG_871X("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FUNCTION__, addr,value,mask);
 
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, cmd.length);
 
@@ -143,76 +138,53 @@ int _rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr, u16 value, u
 {
 	struct ioreg_cfg cmd = {8,IOREG_CMD_WW_REG,0x0, 0x0,0x0};
 
-	//RTW_PUT_LE16((u8*)&cmd.address, addr);
-	//RTW_PUT_LE32((u8*)&cmd.value, (u32)value);
 	cmd.address = cpu_to_le16(addr);
 	cmd.data = cpu_to_le32(value);
 
-	if(mask!=0xFFFF)
-	{
+	if(mask!=0xFFFF) {
 		cmd.length = 12;
-		//RTW_PUT_LE32((u8*)&cmd.mask, (u32)mask);
 		cmd.mask =  cpu_to_le32(mask);
 	}
 
-	//DBG_871X("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FUNCTION__, addr,value,mask);
-
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, cmd.length);
-
 }
+
 int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value, u32 mask)
 {
 	struct ioreg_cfg cmd = {8,IOREG_CMD_WD_REG,0x0, 0x0,0x0};
 
-	//RTW_PUT_LE16((u8*)&cmd.address, addr);
-	//RTW_PUT_LE32((u8*)&cmd.value, (u32)value);
 	cmd.address = cpu_to_le16(addr);
 	cmd.data = cpu_to_le32(value);
 
-	if(mask!=0xFFFFFFFF)
-	{
+	if(mask!=0xFFFFFFFF) {
 		cmd.length = 12;
-		//RTW_PUT_LE32((u8*)&cmd.mask, (u32)mask);
 		cmd.mask =  cpu_to_le32(mask);
 	}
 
-	//DBG_871X("%s addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FU2NCTION__, addr,value,mask);
-
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, cmd.length);
-
 }
 
 int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path, u16 addr, u32 value, u32 mask)
 {
 	struct ioreg_cfg cmd = {8,IOREG_CMD_W_RF,0x0, 0x0,0x0};
 
-	//RTW_PUT_LE16((u8*)&cmd.address, addr);
-	//RTW_PUT_LE32((u8*)&cmd.value, (u32)value);
 	cmd.address = (rf_path<<8) |((addr) &0xFF);
 	cmd.data = cpu_to_le32(value);
 
-	if(mask!=0x000FFFFF)
-	{
+	if(mask!=0x000FFFFF) {
 		cmd.length = 12;
-		//RTW_PUT_LE32((u8*)&cmd.mask, (u32)mask);
 		cmd.mask =  cpu_to_le32(mask);
 	}
 
-	//DBG_871X("%s rf_path:0x%02x addr:0x%04x,value:0x%08x,mask:0x%08x\n", __FU2NCTION__,rf_path, addr,value,mask);
-
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, cmd.length);
-
 }
-
-
 
 int rtw_IOL_append_DELAY_US_cmd(struct xmit_frame *xmit_frame, u16 us)
 {
 	struct ioreg_cfg cmd = {4,IOREG_CMD_DELAY_US,0x0, 0x0,0x0};
-	//RTW_PUT_LE16((u8*)&cmd.address, us);
+
 	cmd.address = cpu_to_le16(us);
 
-	//DBG_871X("%s %u\n", __FUNCTION__, us);
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, 4);
 }
 
@@ -220,17 +192,16 @@ int rtw_IOL_append_DELAY_MS_cmd(struct xmit_frame *xmit_frame, u16 ms)
 {
 	struct ioreg_cfg cmd = {4,IOREG_CMD_DELAY_US,0x0, 0x0,0x0};
 
-	//RTW_PUT_LE16((u8*)&cmd.address, ms);
 	cmd.address = cpu_to_le16(ms);
 
-	//DBG_871X("%s %u\n", __FUNCTION__, ms);
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, 4);
 }
+
 int rtw_IOL_append_END_cmd(struct xmit_frame *xmit_frame)
 {
 	struct ioreg_cfg cmd = {4,IOREG_CMD_END,0xFFFF, 0xFF,0x0};
-	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, 4);
 
+	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, 4);
 }
 
 u8 rtw_IOL_cmd_boundary_handle(struct xmit_frame *pxmit_frame)
@@ -240,7 +211,6 @@ u8 rtw_IOL_cmd_boundary_handle(struct xmit_frame *pxmit_frame)
 		rtw_IOL_append_END_cmd(pxmit_frame);
 		pxmit_frame->attrib.pktlen = ((((pxmit_frame->attrib.pktlen+32)/256)+1)*256 );
 
-		//printk("==> %s, pktlen(%d)\n",__FUNCTION__,pxmit_frame->attrib.pktlen);
 		pxmit_frame->attrib.last_txcmdsz = pxmit_frame->attrib.pktlen;
 		is_cmd_bndy = _TRUE;
 	}
@@ -336,8 +306,6 @@ int rtw_IOL_append_DELAY_US_cmd(struct xmit_frame *xmit_frame, u16 us)
 
 	RTW_PUT_BE32((u8*)&cmd.value, (u32)us);
 
-	//DBG_871X("%s %u\n", __FUNCTION__, us);
-
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, 8);
 }
 
@@ -347,8 +315,6 @@ int rtw_IOL_append_DELAY_MS_cmd(struct xmit_frame *xmit_frame, u16 ms)
 
 	RTW_PUT_BE32((u8*)&cmd.value, (u32)ms);
 
-	//DBG_871X("%s %u\n", __FUNCTION__, ms);
-
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&cmd, 8);
 }
 
@@ -356,9 +322,7 @@ int rtw_IOL_append_END_cmd(struct xmit_frame *xmit_frame)
 {
 	IOL_CMD end_cmd = {0x0, IOL_CMD_END, 0x0, 0x0};
 
-
 	return rtw_IOL_append_cmds(xmit_frame, (u8*)&end_cmd, 8);
-
 }
 
 int rtw_IOL_exec_cmd_array_sync(PADAPTER adapter, u8 *IOL_cmds, u32 cmd_num, u32 max_wating_ms)
@@ -380,8 +344,5 @@ int rtw_IOL_exec_empty_cmds_sync(ADAPTER *adapter, u32 max_wating_ms)
 	return rtw_IOL_exec_cmd_array_sync(adapter, (u8*)&end_cmd, 1, max_wating_ms);
 }
 #endif //CONFIG_IOL_NEW_GENERATION
-
-
-
 
 #endif //CONFIG_IOL

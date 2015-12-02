@@ -81,26 +81,7 @@ struct recv_reorder_ctrl
 
 struct	stainfo_rxcache	{
 	u16	tid_rxseq[16];
-/*
-	unsigned short	tid0_rxseq;
-	unsigned short	tid1_rxseq;
-	unsigned short	tid2_rxseq;
-	unsigned short	tid3_rxseq;
-	unsigned short	tid4_rxseq;
-	unsigned short	tid5_rxseq;
-	unsigned short	tid6_rxseq;
-	unsigned short	tid7_rxseq;
-	unsigned short	tid8_rxseq;
-	unsigned short	tid9_rxseq;
-	unsigned short	tid10_rxseq;
-	unsigned short	tid11_rxseq;
-	unsigned short	tid12_rxseq;
-	unsigned short	tid13_rxseq;
-	unsigned short	tid14_rxseq;
-	unsigned short	tid15_rxseq;
-*/
 };
-
 
 struct smooth_rssi_data {
 	u32	elements[100];	//array to store values
@@ -201,13 +182,6 @@ struct rx_pkt_attrib	{
 	u8	pkt_rpt_type;
 	u32	MacIDValidEntry[2];	// 64 bits present 64 entry.
 
-/*
-	u8	signal_qual;
-	s8	rx_mimo_signal_qual[2];
-	u8	signal_strength;
-	u32	RxPWDBAll;
-	s32	RecvSignalPower;
-*/
 	struct phy_info phy_info;
 };
 
@@ -224,16 +198,13 @@ struct rx_pkt_attrib	{
 #define RXDESC_SIZE	24
 #define RXDESC_OFFSET RXDESC_SIZE
 
-struct recv_stat
-{
-	unsigned int rxdw0;
-
-	unsigned int rxdw1;
+struct recv_stat {
+	__le32 rxdw0;
+	__le32 rxdw1;
 
 #ifndef BUF_DESC_ARCH
-	unsigned int rxdw4;
-
-	unsigned int rxdw5;
+	__le32 rxdw4;
+	__le32 rxdw5;
 
 #endif //if BUF_DESC_ARCH is defined, rx_buf_desc occupy 4 double words
 };
