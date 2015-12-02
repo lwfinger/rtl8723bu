@@ -416,20 +416,20 @@ int rtw_generate_ie(struct registry_priv *pregistrypriv)
 	ie += sz;
 
 	//beacon interval : 2bytes
-	*(u16*)ie = cpu_to_le16((u16)pdev_network->Configuration.BeaconPeriod);//BCN_INTERVAL;
+	*(__le16*)ie = cpu_to_le16((u16)pdev_network->Configuration.BeaconPeriod);//BCN_INTERVAL;
 	sz += 2;
 	ie += 2;
 
 	//capability info
-	*(u16*)ie = 0;
+	*(__le16*)ie = 0;
 
-	*(u16*)ie |= cpu_to_le16(cap_IBSS);
+	*(__le16*)ie |= cpu_to_le16(cap_IBSS);
 
 	if(pregistrypriv->preamble == PREAMBLE_SHORT)
-		*(u16*)ie |= cpu_to_le16(cap_ShortPremble);
+		*(__le16*)ie |= cpu_to_le16(cap_ShortPremble);
 
 	if (pdev_network->Privacy)
-		*(u16*)ie |= cpu_to_le16(cap_Privacy);
+		*(__le16*)ie |= cpu_to_le16(cap_Privacy);
 
 	sz += 2;
 	ie += 2;
@@ -509,7 +509,7 @@ unsigned char *rtw_get_wpa_ie(unsigned char *pie, int *wpa_ie_len, int limit)
 		pbuf = rtw_get_ie(pbuf, _WPA_IE_ID_, &len, limit_new);
 
 		if (pbuf) {
-
+			__le16 le_tmp;
 			//check if oui matches...
 			if (_rtw_memcmp((pbuf + 2), wpa_oui_type, sizeof (wpa_oui_type)) == _FALSE) {
 
@@ -517,9 +517,9 @@ unsigned char *rtw_get_wpa_ie(unsigned char *pie, int *wpa_ie_len, int limit)
 			}
 
 			//check version...
-			_rtw_memcpy((u8 *)&val16, (pbuf + 6), sizeof(val16));
+			_rtw_memcpy((u8 *)&le_tmp, (pbuf + 6), sizeof(val16));
 
-			val16 = le16_to_cpu(val16);
+			val16 = le16_to_cpu(le_tmp);
 			if (val16 != 0x0001)
 				goto check_next_ie;
 
@@ -1343,7 +1343,7 @@ void macstr2num(u8 *dst, u8 *src)
 	}
 }
 
-u8 convert_ip_addr(u8 hch, u8 mch, u8 lch)
+static u8 convert_ip_addr(u8 hch, u8 mch, u8 lch)
 {
     return ((key_char2num(hch) * 100) + (key_char2num(mch) * 10 ) + key_char2num(lch));
 }
@@ -1992,7 +1992,7 @@ int ieee80211_get_hdrlen(u16 fc)
 	return hdrlen;
 }
 
-int rtw_get_cipher_info(struct wlan_network *pnetwork)
+static int rtw_get_cipher_info(struct wlan_network *pnetwork)
 {
 	u32 wpa_ielen;
 	unsigned char *pbuf;
@@ -2043,9 +2043,10 @@ void rtw_get_bcn_info(struct wlan_network *pnetwork)
 	struct rtw_ieee80211_ht_cap *pht_cap = NULL;
 	unsigned int		len;
 	unsigned char		*p;
+	__le16 le_tmp;
 
-	_rtw_memcpy((u8 *)&cap, rtw_get_capability_from_ie(pnetwork->network.IEs), 2);
-	cap = le16_to_cpu(cap);
+	_rtw_memcpy((u8 *)&le_tmp, rtw_get_capability_from_ie(pnetwork->network.IEs), 2);
+	cap = le16_to_cpu(le_tmp);
 	if (cap & WLAN_CAPABILITY_PRIVACY) {
 		bencrypt = 1;
 		pnetwork->network.Privacy = 1;
