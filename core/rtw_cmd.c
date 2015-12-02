@@ -2452,7 +2452,7 @@ u8 traffic_status_watchdog(_adapter *padapter, u8 from_timer)
 
 }
 
-void dynamic_chk_wk_hdl(_adapter *padapter)
+static void dynamic_chk_wk_hdl(_adapter *padapter)
 {
 	struct mlme_priv *pmlmepriv;
 	pmlmepriv = &(padapter->mlmepriv);
@@ -2629,7 +2629,7 @@ exit:
 
 }
 
-void rtw_dm_in_lps_hdl(_adapter*padapter)
+static void rtw_dm_in_lps_hdl(_adapter*padapter)
 {
 	rtw_hal_set_hwreg(padapter, HW_VAR_DM_IN_LPS, NULL);
 }
@@ -2670,7 +2670,7 @@ exit:
 
 }
 
-void rtw_lps_change_dtim_hdl(_adapter *padapter, u8 dtim)
+static void rtw_lps_change_dtim_hdl(_adapter *padapter, u8 dtim)
 {
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 
@@ -2850,7 +2850,7 @@ exit:
 }
 #endif
 
-void rtw_dm_ra_mask_hdl(_adapter *padapter, struct sta_info *psta)
+static void rtw_dm_ra_mask_hdl(_adapter *padapter, struct sta_info *psta)
 {
 	if (psta) {
 		set_sta_rate(padapter, psta);
@@ -2893,18 +2893,18 @@ exit:
 
 }
 
-void power_saving_wk_hdl(_adapter *padapter)
+static void power_saving_wk_hdl(_adapter *padapter)
 {
 	 rtw_ps_processor(padapter);
 }
 
 //add for CONFIG_IEEE80211W, none 11w can use it
-void reset_securitypriv_hdl(_adapter *padapter)
+static void reset_securitypriv_hdl(_adapter *padapter)
 {
 	 rtw_reset_securitypriv(padapter);
 }
 
-void free_assoc_resources_hdl(_adapter *padapter)
+static void free_assoc_resources_hdl(_adapter *padapter)
 {
 	 rtw_free_assoc_resources(padapter, 1);
 }
@@ -3117,7 +3117,7 @@ struct btinfo {
 	u8 rsvd_7;
 };
 
-void btinfo_evt_dump(void *sel, void *buf)
+static void btinfo_evt_dump(void *sel, void *buf)
 {
 	struct btinfo *info = (struct btinfo *)buf;
 
@@ -3296,7 +3296,7 @@ exit:
 }
 //#endif //CONFIG_C2H_PACKET_EN
 
-s32 c2h_evt_hdl(_adapter *adapter, u8 *c2h_evt, c2h_id_filter filter)
+static s32 c2h_evt_hdl(_adapter *adapter, u8 *c2h_evt, c2h_id_filter filter)
 {
 	s32 ret = _FAIL;
 	u8 buf[16];
@@ -3722,13 +3722,9 @@ void rtw_setassocsta_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 
 exit:
 	rtw_free_cmd_obj(pcmd);
-
-
 }
 
-void rtw_getrttbl_cmd_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
+static void rtw_getrttbl_cmd_cmdrsp_callback(_adapter*	padapter,  struct cmd_obj *pcmd)
 {
-
-
 	rtw_free_cmd_obj(pcmd);
 }
