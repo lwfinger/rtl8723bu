@@ -20,7 +20,7 @@
 #define _IOCTL_LINUX_C_
 
 #include <drv_types.h>
-
+#include <hal_data.h>
 #include <rtw_mp_ioctl.h>
 #include "../hal/odm_precomp.h"
 
@@ -31,20 +31,12 @@
 #define  iwe_stream_add_point(a, b, c, d, e)  iwe_stream_add_point(b, c, d, e)
 #endif
 
-#ifdef CONFIG_80211N_HT
-extern int rtw_ht_enable;
-#endif
-
 
 #define RTL_IOCTL_WPA_SUPPLICANT	SIOCIWFIRSTPRIV+30
 
 #define SCAN_ITEM_SIZE 768
 #define MAX_CUSTOM_LEN 64
 #define RATE_COUNT 4
-
-#ifdef CONFIG_GLOBAL_UI_PID
-extern int ui_pid[3];
-#endif
 
 // combo scan
 #define WEXT_CSCAN_AMOUNT 9

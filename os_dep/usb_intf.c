@@ -20,20 +20,18 @@
 #define _HCI_INTF_C_
 
 #include <drv_types.h>
+#include <hal_data.h>
 #include <platform_ops.h>
 
 #ifdef CONFIG_80211N_HT
 extern int rtw_ht_enable;
-extern int rtw_bw_mode;
-extern int rtw_ampdu_enable;//for enable tx_ampdu
 #endif
 
 #ifdef CONFIG_GLOBAL_UI_PID
-static int ui_pid[3] = {0, 0, 0};
+int ui_pid[3] = {0, 0, 0};
 #endif
 
 
-extern int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
 static int rtw_suspend(struct usb_interface *intf, pm_message_t message);
 static int rtw_resume(struct usb_interface *intf);
 

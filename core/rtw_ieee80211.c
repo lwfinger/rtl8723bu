@@ -20,6 +20,7 @@
 #define _IEEE80211_C
 
 #include <drv_types.h>
+#include <hal_data.h>
 
 
 u8 RTW_WPA_OUI_TYPE[] = { 0x00, 0x50, 0xf2, 1 };
@@ -1347,7 +1348,6 @@ u8 convert_ip_addr(u8 hch, u8 mch, u8 lch)
     return ((key_char2num(hch) * 100) + (key_char2num(mch) * 10 ) + key_char2num(lch));
 }
 
-extern char* rtw_initmac;
 void rtw_macaddr_cfg(u8 *mac_addr)
 {
 	u8 mac[ETH_ALEN];
