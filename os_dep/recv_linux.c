@@ -20,6 +20,7 @@
 #define _RECV_OSDEP_C_
 
 #include <drv_types.h>
+#include <hal_data.h>
 
 int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 *pdata, _pkt *pskb)
 {
@@ -362,7 +363,6 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 
 		if( br_port && (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) )
 		{
-			int nat25_handle_frame(_adapter *priv, struct sk_buff *skb);
 			if (nat25_handle_frame(padapter, pkt) == -1) {
 				//priv->ext_stats.rx_data_drops++;
 				//DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n");

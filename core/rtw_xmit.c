@@ -20,6 +20,7 @@
 #define _RTW_XMIT_C_
 
 #include <drv_types.h>
+#include <hal_data.h>
 
 static u8 P802_1H_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0xf8 };
 static u8 RFC1042_OUI[P80211_OUI_LEN] = { 0x00, 0x00, 0x00 };
@@ -3366,7 +3367,6 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 	_irqL irqL;
 	//if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE)
 	{
-		void dhcp_flag_bcast(_adapter *priv, struct sk_buff *skb);
 		int res, is_vlan_tag=0, i, do_nat25=1;
 		unsigned short vlan_hdr=0;
 		void *br_port = NULL;
@@ -3411,8 +3411,6 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 
 			if (*((unsigned short *)(skb->data+MACADDRLEN*2)) == __constant_htons(ETH_P_IP)) {
 				if (memcmp(padapter->scdb_mac, skb->data+MACADDRLEN, MACADDRLEN)) {
-					void *scdb_findEntry(_adapter *priv, unsigned char *macAddr, unsigned char *ipAddr);
-
 					if ((padapter->scdb_entry = (struct nat25_network_db_entry *)scdb_findEntry(padapter,
 								skb->data+MACADDRLEN, skb->data+WLAN_ETHHDR_LEN+12)) != NULL) {
 						memcpy(padapter->scdb_mac, skb->data+MACADDRLEN, MACADDRLEN);
@@ -3436,7 +3434,6 @@ int rtw_br_client_tx(_adapter *padapter, struct sk_buff **pskb)
 #endif // 1
 			if (do_nat25)
 			{
-				int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method);
 				if (nat25_db_handle(padapter, skb, NAT25_CHECK) == 0) {
 					struct sk_buff *newskb;
 

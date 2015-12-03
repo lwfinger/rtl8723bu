@@ -20,7 +20,7 @@
 #define _RTW_MLME_C_
 
 #include <drv_types.h>
-
+#include <hal_data.h>
 
 extern void indicate_wx_scan_complete_event(_adapter *padapter);
 extern u8 rtw_do_join(_adapter * padapter);
@@ -2775,7 +2775,6 @@ void rtw_dynamic_check_timer_handlder(_adapter *adapter)
 		&& (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) )
 	{
 		// expire NAT2.5 entry
-		void nat25_db_expire(_adapter *priv);
 		nat25_db_expire(adapter);
 
 		if (adapter->pppoe_connection_in_progress > 0) {

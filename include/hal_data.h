@@ -574,5 +574,10 @@ typedef struct hal_com_data HAL_DATA_TYPE, *PHAL_DATA_TYPE;
 #endif
 
 int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
+void *scdb_findEntry(_adapter *priv, unsigned char *macAddr, unsigned char *ipAddr);
+void dhcp_flag_bcast(_adapter *priv, struct sk_buff *skb);
+int nat25_handle_frame(_adapter *priv, struct sk_buff *skb);
+int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method);
+void nat25_db_expire(_adapter *priv);
 
 #endif //__HAL_DATA_H__

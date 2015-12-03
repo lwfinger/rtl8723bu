@@ -88,7 +88,7 @@ static __inline__ unsigned char *__nat25_find_pppoe_tag(struct pppoe_hdr *ph, un
 			return cur_ptr;
 		cur_ptr = cur_ptr + TAG_HDR_LEN + tagLen;
 	}
-	return 0;
+	return NULL;
 }
 
 
@@ -772,8 +772,10 @@ static int checkIPMcAndReplace(_adapter *priv, struct sk_buff *skb, unsigned int
 
 int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 {
-	unsigned short protocol;
+	u16 protocol;
+	__be16 be_tmp;
 	unsigned char networkAddr[MAX_NETWORK_ADDR_LEN];
+	unsigned int tmp;
 
 	if(skb == NULL)
 		return -1;
@@ -781,12 +783,13 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	if((method <= NAT25_MIN) || (method >= NAT25_MAX))
 		return -1;
 
-	protocol = *((unsigned short *)(skb->data + 2 * ETH_ALEN));
+	be_tmp = *((__be16 *)(skb->data + 2 * ETH_ALEN));
+	protocol = be16_to_cpu(be_tmp);
 
 	/*---------------------------------------------------*/
 	/*                 Handle IP frame                   */
 	/*---------------------------------------------------*/
-	if(protocol == __constant_htons(ETH_P_IP))
+	if (protocol == ETH_P_IP)
 	{
 		struct iphdr* iph = (struct iphdr *)(skb->data + ETH_HLEN);
 
@@ -807,8 +810,9 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 					//in class A, B, C, host address is all zero or all one is illegal
 					if (iph->saddr == 0)
 						return 0;
-					DEBUG_INFO("NAT25: Insert IP, SA=%08x, DA=%08x\n", iph->saddr, iph->daddr);
-					__nat25_generate_ipv4_network_addr(networkAddr, &iph->saddr);
+					tmp = be32_to_cpu(iph->saddr);
+					DEBUG_INFO("NAT25: Insert IP, SA =%08x, DA =%08x\n", tmp, iph->daddr);
+					__nat25_generate_ipv4_network_addr(networkAddr, &tmp);
 					//record source IP address and , source mac address into db
 					__nat25_db_network_insert(priv, skb->data+ETH_ALEN, networkAddr);
 
@@ -827,7 +831,8 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 							(OPMODE & WIFI_ADHOC_STATE)))
 #endif
 					{
-						__nat25_generate_ipv4_network_addr(networkAddr, &iph->daddr);
+						tmp = be32_to_cpu(iph->daddr);
+						__nat25_generate_ipv4_network_addr(networkAddr, &tmp);
 
 						if (!__nat25_db_network_lookup_and_replace(priv, skb, networkAddr)) {
 							if (*((unsigned char *)&iph->daddr + 3) == 0xff) {
@@ -857,7 +862,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	/*---------------------------------------------------*/
 	/*                 Handle ARP frame                  */
 	/*---------------------------------------------------*/
-	else if(protocol == __constant_htons(ETH_P_ARP))
+	else if (protocol == ETH_P_ARP)
 	{
 		struct arphdr *arp = (struct arphdr *)(skb->data + ETH_HLEN);
 		unsigned char *arp_ptr = (unsigned char *)(arp + 1);
@@ -921,8 +926,8 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	/*---------------------------------------------------*/
 	/*         Handle IPX and Apple Talk frame           */
 	/*---------------------------------------------------*/
-	else if((protocol == __constant_htons(ETH_P_IPX)) ||
-		(protocol <= __constant_htons(ETH_FRAME_LEN)))
+	else if ((protocol == ETH_P_IPX) ||
+		 (protocol <= ETH_FRAME_LEN))
 	{
 		unsigned char ipx_header[2] = {0xFF, 0xFF};
 		struct ipxhdr	*ipx = NULL;
@@ -930,20 +935,14 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 		struct ddpehdr	*ddp = NULL;
 		unsigned char *framePtr = skb->data + ETH_HLEN;
 
-		if(protocol == __constant_htons(ETH_P_IPX))
-		{
+		if (protocol == ETH_P_IPX) {
 			DEBUG_INFO("NAT25: Protocol=IPX (Ethernet II)\n");
 			ipx = (struct ipxhdr *)framePtr;
-		}
-		else if(protocol <= __constant_htons(ETH_FRAME_LEN))
-		{
-			if(!memcmp(ipx_header, framePtr, 2))
-			{
+		} else if (protocol <= ETH_FRAME_LEN) {
+			if(!memcmp(ipx_header, framePtr, 2)) {
 				DEBUG_INFO("NAT25: Protocol=IPX (Ethernet 802.3)\n");
 				ipx = (struct ipxhdr *)framePtr;
-			}
-			else
-			{
+			} else {
 				unsigned char ipx_8022_type =  0xE0;
 				unsigned char snap_8022_type = 0xAA;
 
@@ -1185,11 +1184,11 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	/*---------------------------------------------------*/
 	/*                Handle PPPoE frame                 */
 	/*---------------------------------------------------*/
-	else if((protocol == __constant_htons(ETH_P_PPP_DISC)) ||
-		(protocol == __constant_htons(ETH_P_PPP_SES)))
+	else if ((protocol == ETH_P_PPP_DISC) ||
+		 (protocol == ETH_P_PPP_SES))
 	{
 		struct pppoe_hdr *ph = (struct pppoe_hdr *)(skb->data + ETH_HLEN);
-		unsigned short *pMagic;
+		__be16 *pMagic;
 
 		switch(method)
 		{
@@ -1284,7 +1283,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 						unsigned short tagType, tagLen;
 						int offset=0;
 
-						if((ptr = __nat25_find_pppoe_tag(ph, ntohs(PTT_RELAY_SID))) == 0) {
+						if(!(ptr = __nat25_find_pppoe_tag(ph, ntohs(PTT_RELAY_SID)))) {
 							DEBUG_ERR("Fail to find PTT_RELAY_SID in FADO!\n");
 							return -1;
 						}
@@ -1298,7 +1297,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 							return -1;
 						}
 
-						pMagic = (unsigned short *)tag->tag_data;
+						pMagic = (__be16 *)tag->tag_data;
 						if (ntohs(*pMagic) != MAGIC_CODE) {
 							DEBUG_ERR("Can't find MAGIC_CODE in %s packet!\n",
 								(ph->code == PADO_CODE ? "PADO" : "PADS"));
@@ -1354,7 +1353,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	/*---------------------------------------------------*/
 	/*                 Handle EAP frame                  */
 	/*---------------------------------------------------*/
-	else if(protocol == __constant_htons(0x888e))
+	else if(protocol == 0x888e)
 	{
 		switch(method)
 		{
@@ -1375,8 +1374,8 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	/*---------------------------------------------------*/
 	/*         Handle C-Media proprietary frame          */
 	/*---------------------------------------------------*/
-	else if((protocol == __constant_htons(0xe2ae)) ||
-		(protocol == __constant_htons(0xe2af)))
+	else if((protocol == 0xe2ae) ||
+		(protocol == 0xe2af))
 	{
 		switch(method)
 		{
@@ -1398,7 +1397,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	/*         Handle IPV6 frame								  */
 	/*---------------------------------------------------*/
 #ifdef CL_IPV6_PASS
-	else if(protocol == __constant_htons(ETH_P_IPV6))
+	else if(protocol == ETH_P_IPV6)
 	{
 		struct ipv6hdr *iph = (struct ipv6hdr *)(skb->data + ETH_HLEN);
 
@@ -1499,7 +1498,7 @@ int nat25_handle_frame(_adapter *priv, struct sk_buff *skb)
 		int is_vlan_tag=0, i, retval=0;
 		unsigned short vlan_hdr=0;
 
-		if (*((unsigned short *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_8021Q)) {
+		if (*((__be16 *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_8021Q)) {
 			is_vlan_tag = 1;
 			vlan_hdr = *((unsigned short *)(skb->data+ETH_ALEN*2+2));
 			for (i=0; i<6; i++)
@@ -1517,7 +1516,7 @@ int nat25_handle_frame(_adapter *priv, struct sk_buff *skb)
 			 *	corresponding network protocol is NOT support.
 			 */
 			if (!priv->ethBrExtInfo.nat25sc_disable &&
-				(*((unsigned short *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_IP)) &&
+				(*((__be16 *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_IP)) &&
 				!memcmp(priv->scdb_ip, skb->data+ETH_HLEN+16, 4)) {
 				memcpy(skb->data, priv->scdb_mac, ETH_ALEN);
 
@@ -1530,9 +1529,9 @@ int nat25_handle_frame(_adapter *priv, struct sk_buff *skb)
 			}
 		}
 		else {
-			if (((*((unsigned short *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_IP)) &&
+			if (((*((__be16 *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_IP)) &&
 					!memcmp(priv->br_ip, skb->data+ETH_HLEN+16, 4)) ||
-				((*((unsigned short *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_ARP)) &&
+				((*((__be16 *)(skb->data+ETH_ALEN*2)) == __constant_htons(ETH_P_ARP)) &&
 					!memcmp(priv->br_ip, skb->data+ETH_HLEN+24, 4))) {
 				// for traffic to upper TCP/IP
 				retval = nat25_db_handle(priv, skb, NAT25_LOOKUP);
@@ -1543,7 +1542,7 @@ int nat25_handle_frame(_adapter *priv, struct sk_buff *skb)
 			skb_push(skb, 4);
 			for (i=0; i<6; i++)
 				*((unsigned short *)(skb->data+i*2)) = *((unsigned short *)(skb->data+4+i*2));
-			*((unsigned short *)(skb->data+ETH_ALEN*2)) = __constant_htons(ETH_P_8021Q);
+			*((__be16 *)(skb->data+ETH_ALEN*2)) = __constant_htons(ETH_P_8021Q);
 			*((unsigned short *)(skb->data+ETH_ALEN*2+2)) = vlan_hdr;
 		}
 
@@ -1555,38 +1554,6 @@ int nat25_handle_frame(_adapter *priv, struct sk_buff *skb)
 
 	return 0;
 }
-
-#if 0
-void mac_clone(_adapter *priv, unsigned char *addr)
-{
-	struct sockaddr sa;
-
-	memcpy(sa.sa_data, addr, ETH_ALEN);
-	DEBUG_INFO("MAC Clone: Addr=%02x%02x%02x%02x%02x%02x\n",
-		addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
-	rtl8192cd_set_hwaddr(priv->dev, &sa);
-}
-
-
-int mac_clone_handle_frame(_adapter *priv, struct sk_buff *skb)
-{
-	if(priv->ethBrExtInfo.macclone_enable && !priv->macclone_completed)
-	{
-		if(!(skb->data[ETH_ALEN] & 1))	//// check any other particular MAC add
-		{
-                        if(memcmp(skb->data+ETH_ALEN, GET_MY_HWADDR(priv), ETH_ALEN) &&
-				((priv->dev->br_port) &&
-				 memcmp(skb->data+ETH_ALEN, priv->br_mac, ETH_ALEN)))
-			{
-				mac_clone(priv, skb->data+ETH_ALEN);
-				priv->macclone_completed = 1;
-			}
-		}
-	}
-
-	return 0;
-}
-#endif // 0
 
 #define SERVER_PORT			67
 #define CLIENT_PORT			68
@@ -1600,7 +1567,7 @@ struct dhcpMessage {
 	u_int8_t hops;
 	u_int32_t xid;
 	u_int16_t secs;
-	u_int16_t flags;
+	__be16 flags;
 	u_int32_t ciaddr;
 	u_int32_t yiaddr;
 	u_int32_t siaddr;
@@ -1608,7 +1575,7 @@ struct dhcpMessage {
 	u_int8_t chaddr[16];
 	u_int8_t sname[64];
 	u_int8_t file[128];
-	u_int32_t cookie;
+	__be32 cookie;
 	u_int8_t options[308]; /* 312 - cookie */
 };
 
@@ -1619,7 +1586,7 @@ void dhcp_flag_bcast(_adapter *priv, struct sk_buff *skb)
 
 	if(!priv->ethBrExtInfo.dhcp_bcst_disable)
 	{
-		unsigned short protocol = *((unsigned short *)(skb->data + 2 * ETH_ALEN));
+		__be16 protocol = *((__be16 *)(skb->data + 2 * ETH_ALEN));
 
 		if(protocol == __constant_htons(ETH_P_IP)) // IP
 		{
@@ -1634,8 +1601,9 @@ void dhcp_flag_bcast(_adapter *priv, struct sk_buff *skb)
 				{
 					struct dhcpMessage *dhcph =
 						(struct dhcpMessage *)((SIZE_PTR)udph + sizeof(struct udphdr));
+					u32 cookie = be32_to_cpu(dhcph->cookie);
 
-					if(dhcph->cookie == __constant_htonl(DHCP_MAGIC)) // match magic word
+					if(cookie == DHCP_MAGIC) // match magic word
 					{
 						if(!(dhcph->flags & htons(BROADCAST_FLAG))) // if not broadcast
 						{
