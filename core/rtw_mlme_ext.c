@@ -20,6 +20,7 @@
 #define _RTW_MLME_EXT_C_
 
 #include <drv_types.h>
+#include <hal_data.h>
 #ifdef CONFIG_IOCTL_CFG80211
 #include <rtw_wifi_regd.h>
 #endif //CONFIG_IOCTL_CFG80211
@@ -107,9 +108,6 @@ unsigned char	WFD_OUI[] = {0x50,0x6F,0x9A,0x0A};
 
 unsigned char	WMM_INFO_OUI[] = {0x00, 0x50, 0xf2, 0x02, 0x00, 0x01};
 unsigned char	WMM_PARA_OUI[] = {0x00, 0x50, 0xf2, 0x02, 0x01, 0x01};
-
-extern unsigned char REALTEK_96B_IE[];
-
 
 /********************************************************
 ChannelPlan definitions

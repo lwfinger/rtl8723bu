@@ -579,5 +579,6 @@ void dhcp_flag_bcast(_adapter *priv, struct sk_buff *skb);
 int nat25_handle_frame(_adapter *priv, struct sk_buff *skb);
 int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method);
 void nat25_db_expire(_adapter *priv);
+extern unsigned char REALTEK_96B_IE[];
 
 #endif //__HAL_DATA_H__
