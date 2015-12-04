@@ -732,7 +732,7 @@ union recv_frame * portctrl(_adapter *adapter,union recv_frame * precv_frame)
 	u16	ether_type=0;
 	u16  eapol_type = 0x888e;//for Funia BD's WPA issue
 	struct rx_pkt_attrib *pattrib;
-
+	__be16 be_tmp;
 
 
 	pstapriv = &adapter->stapriv;
@@ -762,20 +762,17 @@ union recv_frame * portctrl(_adapter *adapter,union recv_frame * precv_frame)
 
 			//get ether_type
 			ptr=ptr+pfhdr->attrib.hdrlen+pfhdr->attrib.iv_len+LLC_HEADER_SIZE;
-			_rtw_memcpy(&ether_type,ptr, 2);
-			ether_type= ntohs((unsigned short )ether_type);
+			_rtw_memcpy(&be_tmp, ptr, 2);
+			ether_type = be16_to_cpu(be_tmp);
 
 		        if (ether_type == eapol_type) {
 				prtnframe=precv_frame;
-			}
-			else {
+			} else {
 				//free this frame
 				rtw_free_recvframe(precv_frame, &adapter->recvpriv.free_recv_queue);
 				prtnframe=NULL;
 			}
-		}
-		else
-		{
+		} else {
 			//allowed
 			//check decryption status, and decrypt the frame if needed
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("########portctrl:psta->ieee8021x_blocked==0\n"));
@@ -2371,6 +2368,7 @@ sint wlanhdr_to_ethhdr ( union recv_frame *precvframe)
 {
 	sint	rmv_len;
 	u16	eth_type, len;
+	__be16 be_tmp;
 	u8	bsnaphdr;
 	u8	*psnap_type;
 	struct ieee80211_snap_hdr	*psnap;
@@ -2410,8 +2408,8 @@ sint wlanhdr_to_ethhdr ( union recv_frame *precvframe)
 
 	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("\n===pattrib->hdrlen: %x,  pattrib->iv_len:%x ===\n\n", pattrib->hdrlen,  pattrib->iv_len));
 
-	_rtw_memcpy(&eth_type, ptr+rmv_len, 2);
-	eth_type= ntohs((unsigned short )eth_type); //pattrib->ether_type
+	_rtw_memcpy(&be_tmp, ptr+rmv_len, 2);
+	eth_type= ntohs(be_tmp); //pattrib->ether_type
 	pattrib->eth_type = eth_type;
 
 #ifdef CONFIG_AUTO_AP_MODE
@@ -2469,8 +2467,8 @@ sint wlanhdr_to_ethhdr ( union recv_frame *precvframe)
 	_rtw_memcpy(ptr+ETH_ALEN, pattrib->src, ETH_ALEN);
 
 	if(!bsnaphdr) {
-		len = htons(len);
-		_rtw_memcpy(ptr+12, &len, 2);
+		be_tmp = htons(len);
+		_rtw_memcpy(ptr+12, &be_tmp, 2);
 	}
 
 
@@ -2858,7 +2856,7 @@ union recv_frame* recvframe_chk_defrag(PADAPTER padapter, union recv_frame *prec
 
 }
 
-int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
+static int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 {
 	int	a_len, padding_len;
 	u16	nSubframe_Length;
@@ -3277,26 +3275,21 @@ int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 	_queue *ppending_recvframe_queue = &preorder_ctrl->pending_recvframe_queue;
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
+	int ret = _FAIL;
 
 	DBG_COUNTER(padapter->rx_logs.core_rx_post_indicate_reoder);
 
-	if(!pattrib->amsdu)
-	{
+	if(!pattrib->amsdu) {
 		//s1.
 		wlanhdr_to_ethhdr(prframe);
 
-		//if ((pattrib->qos!=1) /*|| pattrib->priority!=0 || IS_MCAST(pattrib->ra)*/
-		//	|| (pattrib->eth_type==0x0806) || (pattrib->ack_policy!=0))
-		if (pattrib->qos!=1)
-		{
+		if (pattrib->qos!=1) {
 			if ((padapter->bDriverStopped == _FALSE) &&
-			    (padapter->bSurpriseRemoved == _FALSE))
-			{
+			    (padapter->bSurpriseRemoved == _FALSE)) {
 				RT_TRACE(_module_rtl871x_recv_c_, _drv_notice_, ("@@@@  recv_indicatepkt_reorder -recv_func recv_indicatepkt\n" ));
 
 				rtw_recv_indicatepkt(padapter, prframe);
 				return _SUCCESS;
-
 			}
 
 			#ifdef DBG_RX_DROP_FRAME
@@ -3307,8 +3300,7 @@ int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 
 		}
 
-		if (preorder_ctrl->enable == _FALSE)
-		{
+		if (preorder_ctrl->enable == _FALSE) {
 			//indicate this recv_frame
 			preorder_ctrl->indicate_seq = pattrib->seq_num;
 			#ifdef DBG_RX_SEQ
@@ -3333,11 +3325,9 @@ int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 		return _SUCCESS;
 #endif
 
-	}
-	else if(pattrib->amsdu==1) //temp filter -> means didn't support A-MSDUs in a A-MPDU
+	} else if(pattrib->amsdu==1) //temp filter -> means didn't support A-MSDUs in a A-MPDU
 	{
-		if (preorder_ctrl->enable == _FALSE)
-		{
+		if (preorder_ctrl->enable == _FALSE) {
 			preorder_ctrl->indicate_seq = pattrib->seq_num;
 			#ifdef DBG_RX_SEQ
 			DBG_871X("DBG_RX_SEQ %s:%d IndicateSeq: %d, NewSeq: %d\n", __FUNCTION__, __LINE__,
@@ -3361,10 +3351,6 @@ int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 			return retval;
 		}
 	}
-	else
-	{
-
-	}
 
 	SPIN_LOCK_BH(ppending_recvframe_queue->lock, &irql);
 
@@ -3373,36 +3359,18 @@ int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 		  preorder_ctrl->indicate_seq, pattrib->seq_num));
 
 	//s2. check if winstart_b(indicate_seq) needs to been updated
-	if(!check_indicate_seq(preorder_ctrl, pattrib->seq_num))
-	{
+	if(!check_indicate_seq(preorder_ctrl, pattrib->seq_num)) {
 		pdbgpriv->dbg_rx_ampdu_drop_count++;
-		//pHTInfo->RxReorderDropCounter++;
-		//ReturnRFDList(Adapter, pRfd);
-		//RT_TRACE(COMP_RX_REORDER, DBG_TRACE, ("RxReorderIndicatePacket() ==> Packet Drop!!\n"));
-		//_exit_critical_ex(&ppending_recvframe_queue->lock, &irql);
-		//return _FAIL;
 
 		#ifdef DBG_RX_DROP_FRAME
 		DBG_871X("DBG_RX_DROP_FRAME %s check_indicate_seq fail\n", __FUNCTION__);
 		#endif
-#if 0
-		rtw_recv_indicatepkt(padapter, prframe);
-
-		SPIN_UNLOCK_BH(ppending_recvframe_queue->lock, &irql);
-
-		goto _success_exit;
-#else
 		goto _err_exit;
-#endif
 	}
 
 
 	//s3. Insert all packet into Reorder Queue to maintain its ordering.
-	if(!enqueue_reorder_recvframe(preorder_ctrl, prframe))
-	{
-		//DbgPrint("recv_indicatepkt_reorder, enqueue_reorder_recvframe fail!\n");
-		//_exit_critical_ex(&ppending_recvframe_queue->lock, &irql);
-		//return _FAIL;
+	if(!enqueue_reorder_recvframe(preorder_ctrl, prframe)) {
 		#ifdef DBG_RX_DROP_FRAME
 		DBG_871X("DBG_RX_DROP_FRAME %s enqueue_reorder_recvframe fail\n", __FUNCTION__);
 		#endif
@@ -3420,28 +3388,21 @@ int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 	// 2. All packets with SeqNum larger than or equal to WinStart => Buffer it.
 	//
 
-	//recv_indicatepkts_in_order(padapter, preorder_ctrl, _TRUE);
-	if(recv_indicatepkts_in_order(padapter, preorder_ctrl, _FALSE)==_TRUE)
-	{
+	if(recv_indicatepkts_in_order(padapter, preorder_ctrl, _FALSE)==_TRUE) {
 		_set_timer(&preorder_ctrl->reordering_ctrl_timer, REORDER_WAIT_TIME);
-		SPIN_UNLOCK_BH(ppending_recvframe_queue->lock, &irql);
-	}
-	else
-	{
-		SPIN_UNLOCK_BH(ppending_recvframe_queue->lock, &irql);
+	} else {
 		_cancel_timer_ex(&preorder_ctrl->reordering_ctrl_timer);
 	}
 
-
 _success_exit:
 
-	return _SUCCESS;
+	ret = _SUCCESS;
 
 _err_exit:
 
         SPIN_UNLOCK_BH(ppending_recvframe_queue->lock, &irql);
 
-	return _FAIL;
+	return ret;
 }
 
 
@@ -3549,7 +3510,7 @@ int process_recv_indicatepkts(_adapter *padapter, union recv_frame *prframe)
 
 }
 
-int recv_func_prehandle(_adapter *padapter, union recv_frame *rframe)
+static int recv_func_prehandle(_adapter *padapter, union recv_frame *rframe)
 {
 	int ret = _SUCCESS;
 	struct rx_pkt_attrib *pattrib = &rframe->u.hdr.attrib;
@@ -3571,7 +3532,7 @@ exit:
 	return ret;
 }
 
-int recv_func_posthandle(_adapter *padapter, union recv_frame *prframe)
+static int recv_func_posthandle(_adapter *padapter, union recv_frame *prframe)
 {
 	int ret = _SUCCESS;
 	union recv_frame *orig_prframe = prframe;
