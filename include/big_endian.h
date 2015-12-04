@@ -20,13 +20,6 @@
 #ifndef _LINUX_BYTEORDER_BIG_ENDIAN_H
 #define _LINUX_BYTEORDER_BIG_ENDIAN_H
 
-#ifndef __BIG_ENDIAN
-#define __BIG_ENDIAN 4321
-#endif
-#ifndef __BIG_ENDIAN_BITFIELD
-#define __BIG_ENDIAN_BITFIELD
-#endif
-
 #include <swab.h>
 
 #define __constant_htonl(x) ((__u32)(x))

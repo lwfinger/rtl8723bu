@@ -113,14 +113,12 @@ struct ip_options {
 #define optlength(opt) (sizeof(struct ip_options) + opt->optlen)
 
 struct iphdr {
-#if defined(__LITTLE_ENDIAN_BITFIELD)
+#if defined(__LITTLE_ENDIAN)
 	__u8	ihl:4,
 		version:4;
-#elif defined (__BIG_ENDIAN_BITFIELD)
+#else
 	__u8	version:4,
 		ihl:4;
-#else
-#error	"Please fix <asm/byteorder.h>"
 #endif
 	__u8	tos;
 	__u16	tot_len;

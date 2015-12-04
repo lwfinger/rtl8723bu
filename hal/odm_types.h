@@ -28,10 +28,6 @@
 #define	ODM_CE			0x04	//BIT2
 #define	ODM_WIN			0x08	//BIT3
 
-// Deifne HW endian support
-#define	ODM_ENDIAN_BIG	0
-#define	ODM_ENDIAN_LITTLE	1
-
 #define GET_ODM(__pAdapter)	((PDM_ODM_T)(&((GET_HAL_DATA(__pAdapter))->odmpriv)))
 
 #define		RT_PCI_INTERFACE				1
@@ -119,13 +115,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 	#define	ps8Byte		s64*
 
 	#define DEV_BUS_TYPE	RT_USB_INTERFACE
-
-
-	#if defined(__LITTLE_ENDIAN)
-		#define	ODM_ENDIAN_TYPE			ODM_ENDIAN_LITTLE
-	#else
-		#define	ODM_ENDIAN_TYPE			ODM_ENDIAN_BIG
-	#endif
 
 	typedef struct timer_list		RT_TIMER, *PRT_TIMER;
 	typedef  void *				RT_TIMER_CALL_BACK;
