@@ -195,7 +195,7 @@
 	}while(0)
 
 #if defined(_seqdump)
-#define RTW_DBGDUMP 0 /* 'stream' for _dbgdump */
+#define RTW_DBGDUMP NULL /* 'stream' for _dbgdump */
 
 /* dump message to selected 'stream' */
 #define DBG_871X_SEL(sel, fmt, arg...) \
