@@ -3427,7 +3427,7 @@ Hal_EfuseParseTxPowerInfo_8723B(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	TxPowerInfo24G	pwrInfo24G;
-	u8			rfPath, ch, group, TxCount=1;
+	u8			rfPath, ch, group = 0, TxCount=1;
 
 //	RT_TRACE(_module_hci_hal_init_c_, _drv_notice_, ("%s(): AutoLoadFail = %d\n", __func__, AutoLoadFail));
 	Hal_ReadPowerValueFromPROM_8723B(padapter, &pwrInfo24G, PROMContent, AutoLoadFail);
