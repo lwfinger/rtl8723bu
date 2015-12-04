@@ -608,24 +608,20 @@ u16 rtw_recv_select_queue(struct sk_buff *skb)
 {
 	struct iphdr *piphdr;
 	unsigned int dscp;
-	u16	eth_type;
+	__be16	eth_type;
 	u32 priority;
 	u8 *pdata = skb->data;
 
 	_rtw_memcpy(&eth_type, pdata+(ETH_ALEN<<1), 2);
 
 	switch (eth_type) {
-		case htons(ETH_P_IP):
-
-			piphdr = (struct iphdr *)(pdata+ETH_HLEN);
-
-			dscp = piphdr->tos & 0xfc;
-
-			priority = dscp >> 5;
-
-			break;
-		default:
-			priority = 0;
+	case htons(ETH_P_IP):
+		piphdr = (struct iphdr *)(pdata+ETH_HLEN);
+		dscp = piphdr->tos & 0xfc;
+		priority = dscp >> 5;
+		break;
+	default:
+		priority = 0;
 	}
 
 	return rtw_1d_to_queue[priority];
@@ -2388,7 +2384,7 @@ void rtw_ips_dev_unload(_adapter *padapter)
 #endif //#ifdef DBG_CONFIG_ERROR_DETECT
 #endif //defined(CONFIG_SWLPS_IN_IPS) || defined(CONFIG_FWLPS_IN_IPS)
 	{
-		rtw_hal_set_hwreg(padapter, HW_VAR_FIFO_CLEARN_UP, 0);
+		rtw_hal_set_hwreg(padapter, HW_VAR_FIFO_CLEARN_UP, NULL);
 
 		if (padapter->intf_stop)
 		{

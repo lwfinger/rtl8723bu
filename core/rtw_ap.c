@@ -95,7 +95,7 @@ static void update_BCNTIM(_adapter *padapter)
 	if(_TRUE)
 	{
 		u8 *p, *dst_ie, *premainder_ie=NULL, *pbackup_remainder_ie=NULL;
-		u16 tim_bitmap_le;
+		__le16 tim_bitmap_le;
 		uint offset, tmp_len, tim_ielen, tim_ie_offset, remainder_ielen;
 
 		tim_bitmap_le = cpu_to_le16(pstapriv->tim_bitmap);
@@ -170,19 +170,14 @@ static void update_BCNTIM(_adapter *padapter)
 		else
 			*dst_ie++ = 0;
 
-		if(tim_ielen==4)
-		{
-			u8 pvb=0;
-
-			if(pstapriv->tim_bitmap&0x00fe)
-				pvb = (u8)tim_bitmap_le;
-			else if(pstapriv->tim_bitmap&0xff00)
-				pvb = (u8)(tim_bitmap_le>>8);
+		if (tim_ielen == 4) {
+			if (pstapriv->tim_bitmap & 0xff00)
+				*dst_ie++ = (le16_to_cpu(tim_bitmap_le) >> 8); /* This is probably wrong */
 			else
-				pvb = (u8)tim_bitmap_le;
-
-			*dst_ie++ = pvb;
-
+				*dst_ie++ = *(u8 *)&tim_bitmap_le;
+		} else if (tim_ielen == 5) {
+			memcpy(dst_ie, &tim_bitmap_le, 2);
+			dst_ie += 2;
 		}
 		else if(tim_ielen==5)
 		{
@@ -963,8 +958,8 @@ void update_sta_info_apmode(_adapter *padapter, struct sta_info *psta)
 	struct ht_priv	*phtpriv_sta = &psta->htpriv;
 #endif //CONFIG_80211N_HT
 	u8	cur_ldpc_cap=0, cur_stbc_cap=0, cur_beamform_cap=0;
-	//set intf_tag to if1
-	//psta->intf_tag = 0;
+	u16 sta_cap_info;
+	u16 ap_cap_info;
 
         DBG_871X("%s\n",__FUNCTION__);
 
@@ -991,12 +986,13 @@ void update_sta_info_apmode(_adapter *padapter, struct sta_info *psta)
 	{
 		//check if sta supports rx ampdu
 		phtpriv_sta->ampdu_enable = phtpriv_ap->ampdu_enable;
+		sta_cap_info = le16_to_cpu(phtpriv_sta->ht_cap.cap_info);
+		ap_cap_info = le16_to_cpu(phtpriv_ap->ht_cap.cap_info);
 
 		phtpriv_sta->rx_ampdu_min_spacing = (phtpriv_sta->ht_cap.ampdu_params_info&IEEE80211_HT_CAP_AMPDU_DENSITY)>>2;
 
 		// bwmode
-		if((phtpriv_sta->ht_cap.cap_info & phtpriv_ap->ht_cap.cap_info) & cpu_to_le16(IEEE80211_HT_CAP_SUP_WIDTH))
-		{
+		if((sta_cap_info & ap_cap_info) & IEEE80211_HT_CAP_SUP_WIDTH) {
 			psta->bw_mode = CHANNEL_WIDTH_40;
 		}
 		else
@@ -1195,7 +1191,7 @@ static void update_hw_ht_param(_adapter *padapter)
 	//
 	// Config SM Power Save setting
 	//
-	pmlmeinfo->SM_PS = (pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info & 0x0C) >> 2;
+	pmlmeinfo->SM_PS = (le16_to_cpu(pmlmeinfo->HT_caps.u.HT_cap_element.HT_caps_info) & 0x0C) >> 2;
 	if(pmlmeinfo->SM_PS == WLAN_HT_CAP_SM_PS_STATIC)
 	{
 		/*u8 i;
@@ -1738,24 +1734,24 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
 		rtw_ht_use_default_setting(padapter);
 
 		if (pmlmepriv->htpriv.sgi_20m == _FALSE)
-			pht_cap->cap_info &= ~(IEEE80211_HT_CAP_SGI_20);
+			pht_cap->cap_info &= cpu_to_le16(~(IEEE80211_HT_CAP_SGI_20));
 
 		if (pmlmepriv->htpriv.sgi_40m == _FALSE)
-			pht_cap->cap_info &= ~(IEEE80211_HT_CAP_SGI_40);
+			pht_cap->cap_info &= cpu_to_le16(~(IEEE80211_HT_CAP_SGI_40));
 
 		if (!TEST_FLAG(pmlmepriv->htpriv.ldpc_cap, LDPC_HT_ENABLE_RX))
 		{
-			pht_cap->cap_info &= ~(IEEE80211_HT_CAP_LDPC_CODING);
+			pht_cap->cap_info &= cpu_to_le16(~(IEEE80211_HT_CAP_LDPC_CODING));
 		}
 
 		if (!TEST_FLAG(pmlmepriv->htpriv.stbc_cap, STBC_HT_ENABLE_TX))
 		{
-			pht_cap->cap_info &= ~(IEEE80211_HT_CAP_TX_STBC);
+			pht_cap->cap_info &= cpu_to_le16(~(IEEE80211_HT_CAP_TX_STBC));
 		}
 
 		if (!TEST_FLAG(pmlmepriv->htpriv.stbc_cap, STBC_HT_ENABLE_RX))
 		{
-			pht_cap->cap_info &= ~(IEEE80211_HT_CAP_RX_STBC_3R);
+			pht_cap->cap_info &= cpu_to_le16(~(IEEE80211_HT_CAP_RX_STBC_3R));
 		}
 
 		pht_cap->ampdu_params_info &= ~(IEEE80211_HT_CAP_AMPDU_FACTOR|IEEE80211_HT_CAP_AMPDU_DENSITY);
@@ -1767,7 +1763,7 @@ int rtw_check_beacon_data(_adapter *padapter, u8 *pbuf,  int len)
 		}
 		else
 		{
-			pht_cap->ampdu_params_info |= (IEEE80211_HT_CAP_AMPDU_DENSITY&0x00);
+			pht_cap->ampdu_params_info |= IEEE80211_HT_CAP_AMPDU_DENSITY&0x00;
 		}
 
 		rtw_hal_get_def_var(padapter, HW_VAR_MAX_RX_AMPDU_FACTOR, &max_rx_ampdu_factor);
@@ -2516,7 +2512,7 @@ static int rtw_ht_operation_update(_adapter *padapter)
 	if (pmlmepriv->num_sta_no_ht ||
 	    (pmlmepriv->ht_op_mode & HT_INFO_OPERATION_MODE_NON_GF_DEVS_PRESENT))
 		new_op_mode = OP_MODE_MIXED;
-	else if ((phtpriv_ap->ht_cap.cap_info & IEEE80211_HT_CAP_SUP_WIDTH)
+	else if ((phtpriv_ap->ht_cap.cap_info & cpu_to_le16(IEEE80211_HT_CAP_SUP_WIDTH))
 		 && pmlmepriv->num_sta_ht_20mhz)
 		new_op_mode = OP_MODE_20MHZ_HT_STA_ASSOCED;
 	else if (pmlmepriv->olbc_ht)
