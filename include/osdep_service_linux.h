@@ -209,21 +209,12 @@ extern ulong locked_jiffies_bh;
 
 #define SPIN_LOCK_BH(_LOCK, _IRQL)				\
 	{							\
-		_LOCK##_set = jiffies;				\
 		spin_lock_bh(&_LOCK);				\
-		if (jiffies - _LOCK##_set > lock_jiffies_bh) {	\
-			lock_jiffies_bh = jiffies - _LOCK##_set;	\
-			pr_info("ms waiting to acquire lock_bh  = %d\n", jiffies_to_msecs(lock_jiffies_bh)); \
-		}						\
 	}
 
 #define SPIN_UNLOCK_BH(_LOCK, _IRQL)				\
 	{							\
 		spin_unlock_bh(&_LOCK);				\
-		if (jiffies - _LOCK##_set > locked_jiffies_bh) {   \
-			locked_jiffies_bh = jiffies - _LOCK##_set;	\
-			pr_info("ms lock_bh is held  = %d\n", jiffies_to_msecs(locked_jiffies_bh)); \
-		}						\
 	}
 
 #define SPIN_LOCK(_LOCK)					\
