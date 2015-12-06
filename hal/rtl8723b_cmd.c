@@ -72,7 +72,7 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 	s32 ret = _FAIL;
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
-	__le32 le_tmp;
+	__le32 le_tmp = 0;
 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pHalData = GET_HAL_DATA(padapter);
@@ -115,10 +115,10 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 
 		if(CmdLen<=3)
 		{
-			_rtw_memcpy((u8*)(&h2c_cmd)+1, pCmdBuffer, CmdLen );
+			_rtw_memcpy((u8*)(&le_tmp)+1, pCmdBuffer, CmdLen );
 		}
 		else{
-			_rtw_memcpy((u8*)(&h2c_cmd)+1, pCmdBuffer, 3);
+			_rtw_memcpy((u8*)(&le_tmp)+1, pCmdBuffer, 3);
 			_rtw_memcpy((u8*)(&h2c_cmd_ex), pCmdBuffer+3, CmdLen-3);
 //			*(u8*)(&h2c_cmd) |= BIT(7);
 		}
