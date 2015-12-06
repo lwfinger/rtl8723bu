@@ -67,12 +67,12 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 	u32	msgbox_addr;
 	u32 msgbox_ex_addr=0;
 	PHAL_DATA_TYPE pHalData;
-	u32	h2c_cmd = 0;
+	u32	h2c_cmd;
 	u32	h2c_cmd_ex = 0;
 	s32 ret = _FAIL;
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
-	__le32 le_tmp = 0;
+	__le32 le_tmp, le_tmp2;
 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pHalData = GET_HAL_DATA(padapter);
@@ -84,7 +84,6 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 		pdbgpriv->dbg_h2c_leave32k_fail_cnt++;
 	}
 
-	//DBG_871X("H2C ElementID=%02x , pHalData->LastHMEBoxNum=%02x\n", ElementID, pHalData->LastHMEBoxNum);
 #endif //DBG_CHECK_FW_PS_STATE_H2C
 #endif //DBG_CHECK_FW_PS_STATE
 	_enter_critical_mutex(&(adapter_to_dvobj(padapter)->h2c_fwcmd_mutex), NULL);
@@ -92,7 +91,7 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 	if (!pCmdBuffer) {
 		goto exit;
 	}
-	if(CmdLen > RTL8723B_MAX_CMD_LEN) {
+	if (CmdLen > RTL8723B_MAX_CMD_LEN) {
 		goto exit;
 	}
 	if (padapter->bSurpriseRemoved == _TRUE)
@@ -108,38 +107,29 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 			DBG_871X("MAC_1C0=%08x, MAC_1C4=%08x, MAC_1C8=%08x, MAC_1CC=%08x\n", rtw_read32(padapter, 0x1c0), rtw_read32(padapter, 0x1c4)
 				, rtw_read32(padapter, 0x1c8), rtw_read32(padapter, 0x1cc));
 #endif //DBG_CHECK_FW_PS_STATE
-			//DBG_8192C(" 0x1c0: 0x%8x\n", rtw_read32(padapter, 0x1c0));
-			//DBG_8192C(" 0x1c4: 0x%8x\n", rtw_read32(padapter, 0x1c4));
 			goto exit;
 		}
 
-		if(CmdLen<=3)
-		{
+		if (CmdLen <= 3) {
 			_rtw_memcpy((u8*)(&le_tmp)+1, pCmdBuffer, CmdLen );
-		}
-		else{
+		} else {
 			_rtw_memcpy((u8*)(&le_tmp)+1, pCmdBuffer, 3);
-			_rtw_memcpy((u8*)(&h2c_cmd_ex), pCmdBuffer+3, CmdLen-3);
-//			*(u8*)(&h2c_cmd) |= BIT(7);
+			_rtw_memcpy((u8*)(&le_tmp2), pCmdBuffer+3, CmdLen-3);
 		}
 
 		*(u8*)(&le_tmp) |= ElementID;
 
-		if(CmdLen>3){
+		if(CmdLen>3) {
 			msgbox_ex_addr = REG_HMEBOX_EXT0_8723B + (h2c_box_num *RTL8723B_EX_MESSAGE_BOX_SIZE);
-			h2c_cmd_ex = le32_to_cpu(le_tmp);
+			h2c_cmd_ex = le32_to_cpu(le_tmp2);
 			rtw_write32(padapter, msgbox_ex_addr, h2c_cmd_ex);
 		}
 		msgbox_addr =REG_HMEBOX_0 + (h2c_box_num *MESSAGE_BOX_SIZE);
 		h2c_cmd = le32_to_cpu(le_tmp);
 		rtw_write32(padapter,msgbox_addr, h2c_cmd);
 
-		//DBG_8192C("MSG_BOX:%d, CmdLen(%d), CmdID(0x%x), reg:0x%x =>h2c_cmd:0x%.8x, reg:0x%x =>h2c_cmd_ex:0x%.8x\n"
-		//	,pHalData->LastHMEBoxNum , CmdLen, ElementID, msgbox_addr, h2c_cmd, msgbox_ex_addr, h2c_cmd_ex);
-
 		pHalData->LastHMEBoxNum = (h2c_box_num+1) % MAX_H2C_BOX_NUMS;
-
-	}while(0);
+	} while (0);
 
 	ret = _SUCCESS;
 
