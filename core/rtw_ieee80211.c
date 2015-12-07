@@ -212,8 +212,8 @@ inline u8 *rtw_set_ie_mesh_ch_switch_parm(u8 *buf, u32 *buf_len, u8 ttl,
 
 	ie_data[0] = ttl;
 	ie_data[1] = flags;
-	RTW_PUT_LE16((u8*)&ie_data[2], reason);
-	RTW_PUT_LE16((u8*)&ie_data[4], precedence);
+	*(u16 *)(ie_data+2) = cpu_to_le16(reason);
+	*(u16 *)(ie_data+4) = cpu_to_le16(precedence);
 
 	return rtw_set_ie(buf, 0x118,  6, ie_data, buf_len);
 }
@@ -408,8 +408,6 @@ int rtw_generate_ie(struct registry_priv *pregistrypriv)
 	int	sz = 0, rateLen;
 	WLAN_BSSID_EX*	pdev_network = &pregistrypriv->dev_network;
 	u8*	ie = pdev_network->IEs;
-
-
 
 	//timestamp will be inserted by hardware
 	sz += 8;
@@ -634,10 +632,8 @@ int rtw_parse_wpa_ie(u8* wpa_ie, int wpa_ie_len, int *group_cipher, int *pairwis
 
 
 	//pairwise_cipher
-	if (left >= 2)
-	{
-                //count = le16_to_cpu(*(u16*)pos);
-		count = RTW_GET_LE16(pos);
+	if (left >= 2) {
+		count = get_unaligned_le16(pos);
 		pos += 2;
 		left -= 2;
 
@@ -712,10 +708,8 @@ int rtw_parse_wpa2_ie(u8* rsn_ie, int rsn_ie_len, int *group_cipher, int *pairwi
 	}
 
 	//pairwise_cipher
-	if (left >= 2)
-	{
-	        //count = le16_to_cpu(*(u16*)pos);
-		count = RTW_GET_LE16(pos);
+	if (left >= 2) {
+		count = get_unaligned_le16(pos);
 		pos += 2;
 		left -= 2;
 
@@ -1636,7 +1630,7 @@ u8 *rtw_get_p2p_attr(u8 *p2p_ie, uint p2p_ielen, u8 target_attr_id ,u8 *buf_attr
 	{
 		// 3 = 1(Attribute ID) + 2(Length)
 		u8 attr_id = *attr_ptr;
-		u16 attr_data_len = RTW_GET_LE16(attr_ptr + 1);
+		u16 attr_data_len = get_unaligned_le16(attr_ptr + 1);
 		u16 attr_len = attr_data_len + 3;
 
 		//DBG_871X("%s attr_ptr:%p, id:%u, length:%u\n", __FUNCTION__, attr_ptr, attr_id, attr_data_len);
