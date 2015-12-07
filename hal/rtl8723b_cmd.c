@@ -72,7 +72,8 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 	s32 ret = _FAIL;
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
-	__le32 le_tmp, le_tmp2;
+	__le32 le_tmp = 0;
+	__le32 le_tmp2 = 0;
 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pHalData = GET_HAL_DATA(padapter);
