@@ -72,7 +72,7 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 	s32 ret = _FAIL;
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
-	__le32 le_tmp, le_tmp2;
+	__le32 le_tmp;
 
 	padapter = GET_PRIMARY_ADAPTER(padapter);
 	pHalData = GET_HAL_DATA(padapter);
@@ -110,20 +110,17 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 			goto exit;
 		}
 
-		if (CmdLen <= 3) {
-			_rtw_memcpy((u8*)(&le_tmp)+1, pCmdBuffer, CmdLen );
-		} else {
-			_rtw_memcpy((u8*)(&le_tmp)+1, pCmdBuffer, 3);
-			_rtw_memcpy((u8*)(&le_tmp2), pCmdBuffer+3, CmdLen-3);
-		}
-
-		*(u8*)(&le_tmp) |= ElementID;
-
-		if(CmdLen>3) {
+		if(CmdLen > 3) {
+			le_tmp = 0;	/* needed in case CmdLen < 7 */
 			msgbox_ex_addr = REG_HMEBOX_EXT0_8723B + (h2c_box_num *RTL8723B_EX_MESSAGE_BOX_SIZE);
-			h2c_cmd_ex = le32_to_cpu(le_tmp2);
+			_rtw_memcpy((u8*)(&le_tmp), pCmdBuffer+3, CmdLen-3);
+			h2c_cmd_ex = le32_to_cpu(le_tmp);
 			rtw_write32(padapter, msgbox_ex_addr, h2c_cmd_ex);
 		}
+		le_tmp = 0;		/* needed if CmdLen < 3 */
+		_rtw_memcpy((u8*)(&le_tmp)+1, pCmdBuffer, min_t(u8, CmdLen, 3));
+		*(u8*)(&le_tmp) |= ElementID;
+
 		msgbox_addr =REG_HMEBOX_0 + (h2c_box_num *MESSAGE_BOX_SIZE);
 		h2c_cmd = le32_to_cpu(le_tmp);
 		rtw_write32(padapter,msgbox_addr, h2c_cmd);
