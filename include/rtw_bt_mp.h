@@ -238,26 +238,6 @@ typedef struct _BT_RSP_CMD{
     UCHAR       pParamStart[100];
 } BT_RSP_CMD, *PBT_RSP_CMD;
 
-
-typedef struct _BT_H2C{
-	u1Byte	opCodeVer:4;
-	u1Byte	reqNum:4;
-	u1Byte	opCode;
-	u1Byte	buf[100];
-}BT_H2C, *PBT_H2C;
-
-
-
-typedef struct _BT_EXT_C2H{
-	u1Byte	extendId;
-	u1Byte	statusCode:4;
-	u1Byte	retLen:4;
-	u1Byte	opCodeVer:4;
-	u1Byte	reqNum:4;
-	u1Byte	buf[100];
-}BT_EXT_C2H, *PBT_EXT_C2H;
-
-
 typedef enum _BT_OPCODE_STATUS{
 	BT_OP_STATUS_SUCCESS									= 0x00, // Success
 	BT_OP_STATUS_VERSION_MISMATCH							= 0x01,
