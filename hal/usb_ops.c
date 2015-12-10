@@ -847,7 +847,7 @@ void rtl8723bu_recv_tasklet(void *priv)
 	struct recv_buf *precvbuf = NULL;
 	_adapter	*padapter = (_adapter*)priv;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
-	u8 *tmpbuf;
+	u8 *tmpbuf = NULL;
 
 	while (NULL != (precvbuf = rtw_dequeue_recvbuf(&precvpriv->recv_buf_pending_queue))) {
 		if ((padapter->bDriverStopped == _TRUE) ||
@@ -881,8 +881,7 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			 ("usb_read_port_complete:bDriverStopped(%d) OR bSurpriseRemoved(%d)\n",
 			  padapter->bDriverStopped,
 			  padapter->bSurpriseRemoved));
-
-		goto exit;
+		return;
 	}
 
 	if (purb->status==0) { //SUCCESS
@@ -950,7 +949,6 @@ static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
 			break;
 		}
 	}
-exit:
 }
 
 static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
