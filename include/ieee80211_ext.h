@@ -85,7 +85,7 @@ struct wme_ac_parameter {
 #endif
 
 	/* bytes 3 & 4 */
-	u16 txopLimit;
+	__le16 txopLimit;
 } __attribute__ ((packed));
 
 struct wme_parameter_element {
@@ -97,7 +97,6 @@ struct wme_parameter_element {
 	u8 acInfo;
 	u8 reserved;
 	struct wme_ac_parameter ac[4];
-
 } __attribute__ ((packed));
 
 #define WPA_PUT_LE16(a, val)			\
@@ -173,117 +172,6 @@ enum ieee80211_back_parties {
 	WLAN_BACK_INITIATOR = 1,
 	WLAN_BACK_TIMER = 2,
 };
-
-struct ieee80211_mgmt {
-	__le16 frame_control;
-	__le16 duration;
-	u8 da[6];
-	u8 sa[6];
-	u8 bssid[6];
-	__le16 seq_ctrl;
-	union {
-		struct {
-			__le16 auth_alg;
-			__le16 auth_transaction;
-			__le16 status_code;
-			/* possibly followed by Challenge text */
-			u8 variable[0];
-		}  __attribute__ ((packed)) auth;
-		struct {
-			__le16 reason_code;
-		}  __attribute__ ((packed)) deauth;
-		struct {
-			__le16 capab_info;
-			__le16 listen_interval;
-			/* followed by SSID and Supported rates */
-			u8 variable[0];
-		}  __attribute__ ((packed)) assoc_req;
-		struct {
-			__le16 capab_info;
-			__le16 status_code;
-			__le16 aid;
-			/* followed by Supported rates */
-			u8 variable[0];
-		}  __attribute__ ((packed)) assoc_resp, reassoc_resp;
-		struct {
-			__le16 capab_info;
-			__le16 listen_interval;
-			u8 current_ap[6];
-			/* followed by SSID and Supported rates */
-			u8 variable[0];
-		}  __attribute__ ((packed)) reassoc_req;
-		struct {
-			__le16 reason_code;
-		}  __attribute__ ((packed)) disassoc;
-		struct {
-			__le64 timestamp;
-			__le16 beacon_int;
-			__le16 capab_info;
-			/* followed by some of SSID, Supported rates,
-			 * FH Params, DS Params, CF Params, IBSS Params, TIM */
-			u8 variable[0];
-		}  __attribute__ ((packed)) beacon;
-		struct {
-			/* only variable items: SSID, Supported rates */
-			u8 variable[0];
-		}  __attribute__ ((packed)) probe_req;
-		struct {
-			__le64 timestamp;
-			__le16 beacon_int;
-			__le16 capab_info;
-			/* followed by some of SSID, Supported rates,
-			 * FH Params, DS Params, CF Params, IBSS Params */
-			u8 variable[0];
-		}  __attribute__ ((packed)) probe_resp;
-		struct {
-			u8 category;
-			union {
-				struct {
-					u8 action_code;
-					u8 dialog_token;
-					u8 status_code;
-					u8 variable[0];
-				}  __attribute__ ((packed)) wme_action;
-				struct{
-					u8 action_code;
-					u8 dialog_token;
-					__le16 capab;
-					__le16 timeout;
-					__le16 start_seq_num;
-				}  __attribute__ ((packed)) addba_req;
-				struct{
-					u8 action_code;
-					u8 dialog_token;
-					__le16 status;
-					__le16 capab;
-					__le16 timeout;
-				}  __attribute__ ((packed)) addba_resp;
-				struct{
-					u8 action_code;
-					__le16 params;
-					__le16 reason_code;
-				}  __attribute__ ((packed)) delba;
-				struct{
-					u8 action_code;
-					/* capab_info for open and confirm,
-					 * reason for close
-					 */
-					u16 aux;
-					/* Followed in plink_confirm by status
-					 * code, AID and supported rates,
-					 * and directly by supported rates in
-					 * plink_open and plink_close
-					 */
-					u8 variable[0];
-				}  __attribute__ ((packed)) plink_action;
-				struct{
-					u8 action_code;
-					u8 variable[0];
-				}  __attribute__ ((packed)) mesh_action;
-			} __attribute__ ((packed)) u;
-		}  __attribute__ ((packed)) action;
-	} __attribute__ ((packed)) u;
-}__attribute__ ((packed));
 
 /* mgmt header + 1 byte category code */
 #define IEEE80211_MIN_ACTION_SIZE FIELD_OFFSET(struct ieee80211_mgmt, u.action.u)

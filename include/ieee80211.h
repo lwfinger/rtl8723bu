@@ -368,10 +368,10 @@ struct rtw_ieee80211_hdr_3addr_qos {
 
 struct eapol {
 	u8 snap[6];
-	u16 ethertype;
+	__le16 ethertype;
 	u8 version;
 	u8 type;
-	u16 length;
+	__le16 length;
 } __attribute__ ((packed));
 
 enum eap_type {
@@ -860,18 +860,6 @@ struct ieee80211_softmac_stats{
 #define BIP_AAD_SIZE  20
 #endif //CONFIG_IEEE80211W
 
-struct ieee80211_security {
-	u16 active_key:2,
-            enabled:1,
-	    auth_mode:2,
-            auth_algo:4,
-            unicast_uses_group:1;
-	u8 key_sizes[WEP_KEYS];
-	u8 keys[WEP_KEYS][WEP_KEY_LEN];
-	u8 level;
-	u16 flags;
-} __attribute__ ((packed));
-
 /*
 
  802.11 data frame from AP
@@ -942,45 +930,6 @@ struct ieee80211_info_element {
 
 #define IEEE80211_DEFAULT_TX_ESSID "Penguin"
 #define IEEE80211_DEFAULT_BASIC_RATE 10
-
-
-struct ieee80211_authentication {
-	struct ieee80211_header_data header;
-	u16 algorithm;
-	u16 transaction;
-	u16 status;
-	//struct ieee80211_info_element_hdr info_element;
-} __attribute__ ((packed));
-
-
-struct ieee80211_probe_response {
-	struct ieee80211_header_data header;
-	u32 time_stamp[2];
-	u16 beacon_interval;
-	u16 capability;
-	struct ieee80211_info_element info_element;
-} __attribute__ ((packed));
-
-struct ieee80211_probe_request {
-	struct ieee80211_header_data header;
-	/*struct ieee80211_info_element info_element;*/
-} __attribute__ ((packed));
-
-struct ieee80211_assoc_request_frame {
-	struct rtw_ieee80211_hdr_3addr header;
-	u16 capability;
-	u16 listen_interval;
-	//u8 current_ap[ETH_ALEN];
-	struct ieee80211_info_element_hdr info_element;
-} __attribute__ ((packed));
-
-struct ieee80211_assoc_response_frame {
-	struct rtw_ieee80211_hdr_3addr header;
-	u16 capability;
-	u16 status;
-	u16 aid;
-//	struct ieee80211_info_element info_element; /* supported rates */
-} __attribute__ ((packed));
 
 struct ieee80211_txb {
 	u8 nr_frags;

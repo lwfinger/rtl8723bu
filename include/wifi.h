@@ -768,12 +768,9 @@ struct ieee80211_ht_addt_info {
 } __attribute__ ((packed));
 
 
-struct HT_caps_element
-{
-	union
-	{
-		struct
-		{
+struct HT_caps_element {
+	union {
+		struct {
 			__le16	HT_caps_info;
 			unsigned char	AMPDU_para;
 			unsigned char	MCS_rate[16];
@@ -785,29 +782,25 @@ struct HT_caps_element
 	}u;
 } __attribute__ ((packed));
 
-struct HT_info_element
-{
+struct HT_info_element {
 	unsigned char	primary_channel;
 	unsigned char	infos[5];
 	unsigned char	MCS_rate[16];
 }  __attribute__ ((packed));
 
-struct AC_param
-{
+struct AC_param {
 	unsigned char		ACI_AIFSN;
 	unsigned char		CW;
 	__le16	TXOP_limit;
 }  __attribute__ ((packed));
 
-struct WMM_para_element
-{
+struct WMM_para_element {
 	unsigned char		QoS_info;
 	unsigned char		reserved;
 	struct AC_param	ac_param[4];
 }  __attribute__ ((packed));
 
-struct ADDBA_request
-{
+struct ADDBA_request {
 	unsigned char		dialog_token;
 	__le16	BA_para_set;
 	__le16	BA_timeout_value;
