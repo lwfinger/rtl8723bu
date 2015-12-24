@@ -1798,19 +1798,11 @@ _ResetDigitalProcedure1(
 
 				if(retry_cnts >= 100){
 					DBG_8192C("%s #####=> 8051 reset failed!.........................\n", __func__);
-					// if 8051 reset fail we trigger GPIO 0 for LA
-					//PlatformEFIOWrite4Byte(	Adapter,
-					//						REG_GPIO_PIN_CTRL,
-					//						0x00010100);
 					// 2010/08/31 MH According to Filen's info, if 8051 reset fail, reset MAC directly.
 					rtw_write8(Adapter, REG_SYS_FUNC_EN+1, 0x50);	//Reset MAC and Enable 8051
 					rtw_mdelay_os(10);
 				}
-				else {
-					//DBG_871X("%s =====> 8051 reset success (%d) .\n", __func__, retry_cnts);
-				}
-			}
-			else {
+			} else {
 				DBG_871X("%s =====> 8051 in RAM but !Adapter->bFWReady\n", __func__);
 			}
 		}

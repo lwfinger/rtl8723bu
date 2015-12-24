@@ -79,9 +79,7 @@ odm_DynamicTxPowerWritePowerIndex(
 	u4Byte			Power_Index_REG[6] = {0xc90, 0xc91, 0xc92, 0xc98, 0xc99, 0xc9a};
 
 	for(index = 0; index< 6; index++)
-		//PlatformEFIOWrite1Byte(Adapter, Power_Index_REG[index], Value);
 		ODM_Write1Byte(pDM_Odm, Power_Index_REG[index], Value);
-
 }
 
 
@@ -94,8 +92,6 @@ odm_DynamicTxPower(
 	// For AP/ADSL use prtl8192cd_priv
 	// For CE/NIC use PADAPTER
 	//
-	//PADAPTER		pAdapter = pDM_Odm->Adapter;
-//	prtl8192cd_priv	priv		= pDM_Odm->priv;
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	if (!(pDM_Odm->SupportAbility & ODM_BB_DYNAMIC_TXPWR))
 		return;
