@@ -22,42 +22,28 @@
 
 static u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 {
-	u8 request;
-	u8 requesttype;
+	u8 request = 0x05;
+	u8 requesttype = 0x01;//read_in
 	u16 wvalue;
-	u16 index;
+	u16 index = 0;
 	u16 len;
 	u8 data=0;
-
-
-
-	request = 0x05;
-	requesttype = 0x01;//read_in
-	index = 0;//n/a
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 1;
 
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
-
 	return data;
-
 }
 
 static u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 {
-	u8 request;
-	u8 requesttype;
+	u8 request = 0x05;
+	u8 requesttype = 0x01;//read_in
 	u16 wvalue;
-	u16 index;
+	u16 index = 0;
 	u16 len;
 	__le32 data;
-
-	request = 0x05;
-	requesttype = 0x01;//read_in
-	index = 0;//n/a
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 2;
@@ -69,16 +55,12 @@ static u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 
 static u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 {
-	u8 request;
-	u8 requesttype;
+	u8 request = 0x05;
+	u8 requesttype = 0x01;//read_in
 	u16 wvalue;
-	u16 index;
+	u16 index = 0;
 	u16 len;
 	__le32 data;
-
-	request = 0x05;
-	requesttype = 0x01;//read_in
-	index = 0;//n/a
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 4;
@@ -90,98 +72,70 @@ static u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 
 static int usb_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
 {
-	u8 request;
-	u8 requesttype;
+	u8 request = 0x05;
+	u8 requesttype = 0x00;//write_out
 	u16 wvalue;
-	u16 index;
+	u16 index = 0;
 	u16 len;
 	u8 data;
-	int ret;
-
-
-
-	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 1;
-
 	data = val;
-
-	 ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-
-
-	return ret;
-
+	return usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 }
 
 static int usb_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
 {
-	u8 request;
-	u8 requesttype;
-	u16 wvalue;
-	u16 index;
+	u8 request = 0x05;
+	u8 requesttype = 0x00;//write_out
+	u16 wvalue = 0;
+	u16 index = 0;
 	u16 len;
 	__le32 data;
-	int ret;
-
-	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
 
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 2;
-
 	data = cpu_to_le32(val & 0x0000ffff);
-
-	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-	return ret;
+	return usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 }
 
 static int usb_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 {
-	u8 request;
-	u8 requesttype;
+	u8 request = 0x05;
+	u8 requesttype = 0x00;//write_out
 	u16 wvalue;
-	u16 index;
+	u16 index = 0;
 	u16 len;
 	__le32 data;
 	int ret;
 
-	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
-
 	wvalue = (u16)(addr&0x0000ffff);
 	len = 4;
 	data = cpu_to_le32(val);
-
-	ret =usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
-
-	return ret;
+	return usbctrl_vendorreq(pintfhdl, request, wvalue, index, &data, len, requesttype);
 }
 
 static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata)
 {
-	u8 request;
-	u8 requesttype;
+	u8 request = 0x05;
+	u8 requesttype = 0x00;//write_out
 	u16 wvalue;
-	u16 index;
+	u16 index = 0;
 	u16 len;
-	u8 buf[VENDOR_CMD_MAX_DATA_LEN]={0};
+	u8 *buf;
+	int ret;
 
-	request = 0x05;
-	requesttype = 0x00;//write_out
-	index = 0;//n/a
-
+	buf = kzalloc(length, GFP_ATOMIC);
+	if (!buf)
+		return 0;
 	wvalue = (u16)(addr&0x0000ffff);
 	len = length;
 	 _rtw_memcpy(buf, pdata, len );
 
-	return usbctrl_vendorreq(pintfhdl, request, wvalue, index, buf, len, requesttype);
+	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, buf, len, requesttype);
+	kfree(buf);
+	return ret;
 }
 
 
@@ -200,21 +154,6 @@ void interrupt_handler_8723bu(_adapter *padapter,u16 pkt_len,u8 *pbuf)
 	// HISR
 	_rtw_memcpy(&(pHalData->IntArray[0]), &(pbuf[USB_INTR_CONTENT_HISR_OFFSET]), 4);
 	_rtw_memcpy(&(pHalData->IntArray[1]), &(pbuf[USB_INTR_CONTENT_HISRE_OFFSET]), 4);
-
-	#if 0 //DBG
-	{
-		u32 hisr=0 ,hisr_ex=0;
-		_rtw_memcpy(&hisr,&(pHalData->IntArray[0]),4);
-		hisr = le32_to_cpu(hisr);
-
-		_rtw_memcpy(&hisr_ex,&(pHalData->IntArray[1]),4);
-		hisr_ex = le32_to_cpu(hisr_ex);
-
-		if((hisr != 0) || (hisr_ex!=0))
-			DBG_871X("===> %s hisr:0x%08x ,hisr_ex:0x%08x \n",__FUNCTION__,hisr,hisr_ex);
-	}
-	#endif
-
 
 #ifdef CONFIG_LPS_LCLK
 	if(  pHalData->IntArray[0]  & IMR_CPWM_88E )
@@ -238,15 +177,6 @@ void interrupt_handler_8723bu(_adapter *padapter,u16 pkt_len,u8 *pbuf)
 	#endif
 	{
 		struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-		#if 0
-		if(pHalData->IntArray[0] & IMR_BCNDMAINT0_88E)
-			DBG_8192C("%s: HISR_BCNERLY_INT\n", __func__);
-		if(pHalData->IntArray[0] & IMR_TBDOK_88E)
-			DBG_8192C("%s: HISR_TXBCNOK\n", __func__);
-		if(pHalData->IntArray[0] & IMR_TBDER_88E)
-			DBG_8192C("%s: HISR_TXBCNERR\n", __func__);
-		#endif
-
 
 		if(check_fwstate(pmlmepriv, WIFI_AP_STATE))
 	{
@@ -271,9 +201,6 @@ void interrupt_handler_8723bu(_adapter *padapter,u16 pkt_len,u8 *pbuf)
 
 	}
 #endif //CONFIG_INTERRUPT_BASED_TXBCN
-
-
-
 
 #ifdef DBG_CONFIG_ERROR_DETECT_INT
 	if(  pHalData->IntArray[1]  & IMR_TXERR_8723B )
