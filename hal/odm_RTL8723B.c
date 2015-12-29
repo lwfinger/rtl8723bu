@@ -137,60 +137,6 @@ odm_DIG_8723(
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG() : No Link\n"));
 	}
 
-#if 0
-	if(pFalseAlmCnt->Cnt_all > 10000)
-	{
-		ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("dm_DIG(): Abnornally false alarm case. \n"));
-
-		if(pDM_DigTable->LargeFAHit != 3)
-		        pDM_DigTable->LargeFAHit++;
-		if(pDM_DigTable->ForbiddenIGI < CurrentIGI)//if(pDM_DigTable->ForbiddenIGI < pDM_DigTable->CurIGValue)
-		{
-			pDM_DigTable->ForbiddenIGI = CurrentIGI;//pDM_DigTable->ForbiddenIGI = pDM_DigTable->CurIGValue;
-			pDM_DigTable->LargeFAHit = 1;
-		}
-
-		if(pDM_DigTable->LargeFAHit >= 3)
-		{
-			if((pDM_DigTable->ForbiddenIGI+1) >pDM_DigTable->rx_gain_range_max)
-				pDM_DigTable->rx_gain_range_min = pDM_DigTable->rx_gain_range_max;
-			else
-				pDM_DigTable->rx_gain_range_min = (pDM_DigTable->ForbiddenIGI + 1);
-			pDM_DigTable->Recover_cnt = 3600; //3600=2hr
-		}
-
-	}
-	else
-	{
-		//Recovery mechanism for IGI lower bound
-		if(pDM_DigTable->Recover_cnt != 0)
-			pDM_DigTable->Recover_cnt --;
-		else
-		{
-			if(pDM_DigTable->LargeFAHit < 3)
-			{
-				if((pDM_DigTable->ForbiddenIGI -1) < DIG_Dynamic_MIN) //DM_DIG_MIN)
-				{
-					pDM_DigTable->ForbiddenIGI = DIG_Dynamic_MIN; //DM_DIG_MIN;
-					pDM_DigTable->rx_gain_range_min = DIG_Dynamic_MIN; //DM_DIG_MIN;
-					ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): Normal Case: At Lower Bound\n"));
-				}
-				else
-				{
-					pDM_DigTable->ForbiddenIGI --;
-					pDM_DigTable->rx_gain_range_min = (pDM_DigTable->ForbiddenIGI + 1);
-					ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): Normal Case: Approach Lower Bound\n"));
-				}
-			}
-			else
-			{
-				pDM_DigTable->LargeFAHit = 0;
-			}
-		}
-	}
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG(): pDM_DigTable->LargeFAHit=%d\n",pDM_DigTable->LargeFAHit));
-#endif
-
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_DIG, ODM_DBG_LOUD, ("odm_DIG():pDM_DigTable->Recover_cnt=%d\n",pDM_DigTable->Recover_cnt));
 
 	//1 Adjust initial gain by false alarm

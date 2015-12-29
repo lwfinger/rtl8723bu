@@ -1054,25 +1054,9 @@
 #define		bOFDMPHY0_End             0xcff
 #define		bOFDMPHY1_End             0xdff
 
-//define max debug item in each debug page
-//#define bMaxItem_FPGA_PHY0        0x9
-//#define bMaxItem_FPGA_PHY1        0x3
-//#define bMaxItem_PHY_11B          0x16
-//#define bMaxItem_OFDM_PHY0        0x29
-//#define bMaxItem_OFDM_PHY1        0x0
-
 #define		bPMACControl	0x0		// Useless
 #define		bWMACControl	0x1
 #define		bWNICControl	0x2
-
-#if 0
-#define		ANTENNA_A	0x1	// Useless
-#define		ANTENNA_B	0x2
-#define		ANTENNA_AB	0x3	// ANTENNA_A|ANTENNA_B
-
-#define		ANTENNA_C	0x4
-#define		ANTENNA_D	0x8
-#endif
 
 #define RCR_AAP			BIT(0)				// accept all physical address
 #define RCR_APM			BIT(1)				// accept physical match

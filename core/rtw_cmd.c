@@ -1397,19 +1397,6 @@ u8 rtw_joinbss_cmd(_adapter  *padapter, struct wlan_network* pnetwork)
 
 	pmlmeinfo->assoc_AP_vendor = check_assoc_AP(pnetwork->network.IEs, pnetwork->network.IELength);
 
-	#if 0
-	psecuritypriv->supplicant_ie[0]=(u8)psecnetwork->IELength;
-
-	if(psecnetwork->IELength < (256-1))
-	{
-		_rtw_memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], psecnetwork->IELength);
-	}
-	else
-	{
-		_rtw_memcpy(&psecuritypriv->supplicant_ie[1], &psecnetwork->IEs[0], (256-1));
-	}
-	#endif
-
 	pcmd->cmdsz = get_WLAN_BSSID_EX_sz(psecnetwork);//get cmdsz before endian conversion
 
 #ifdef CONFIG_RTL8712
@@ -3635,26 +3622,8 @@ void rtw_createbss_cmd_callback(_adapter *padapter, struct cmd_obj *pcmd)
 
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
-#if 0
-		if((pmlmepriv->fw_state) & WIFI_AP_STATE)
-		{
-			psta = rtw_alloc_stainfo(&padapter->stapriv, pnetwork->MacAddress);
-
-			if (psta == NULL) { // for AP Mode & Adhoc Master Mode
-				RT_TRACE(_module_rtl871x_cmd_c_,_drv_err_,("\nCan't alloc sta_info when createbss_cmd_callback\n"));
-				goto createbss_cmd_fail ;
-			}
-
-			rtw_indicate_connect( padapter);
-		}
-		else {
-
-			//rtw_indicate_disconnect(dev);
-		}
-#endif
 		SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 		// we will set _FW_LINKED when there is one more sat to join us (rtw_stassoc_event_callback)
-
 	}
 
 createbss_cmd_fail:

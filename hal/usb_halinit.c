@@ -533,13 +533,8 @@ _InitNetworkType(
 	value32 = rtw_read32(Adapter, REG_CR);
 
 	// TODO: use the other function to set network type
-#if 0//RTL8191C_FPGA_NETWORKTYPE_ADHOC
-	value32 = (value32 & ~MASK_NETTYPE) | _NETTYPE(NT_LINK_AD_HOC);
-#else
 	value32 = (value32 & ~MASK_NETTYPE) | _NETTYPE(NT_LINK_AP);
-#endif
 	rtw_write32(Adapter, REG_CR, value32);
-//	RASSERT(pIoBase->rtw_read8(REG_CR + 2) == 0x2);
 }
 
 
@@ -967,40 +962,8 @@ HalDetectSelectiveSuspendMode(
 	IN PADAPTER				Adapter
 	)
 {
-#if 0   //amyma
-	u8	tmpvalue;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(Adapter);
-
-	// If support HW radio detect, we need to enable WOL ability, otherwise, we
-	// can not use FW to notify host the power state switch.
-
-	EFUSE_ShadowRead(Adapter, 1, EEPROM_USB_OPTIONAL1, (u32 *)&tmpvalue);
-
-	DBG_8192C("HalDetectSelectiveSuspendMode(): SS ");
-	if(tmpvalue & BIT1)
-	{
-		DBG_8192C("Enable\n");
-	}
-	else
-	{
-		DBG_8192C("Disable\n");
-		pdvobjpriv->RegUsbSS = _FALSE;
-	}
-
-	// 2010/09/01 MH According to Dongle Selective Suspend INF. We can switch SS mode.
-	if (pdvobjpriv->RegUsbSS && !SUPPORT_HW_RADIO_DETECT(pHalData))
-	{
-		//PMGNT_INFO				pMgntInfo = &(Adapter->MgntInfo);
-
-		//if (!pMgntInfo->bRegDongleSS)
-		//{
-		//	RT_TRACE(COMP_INIT, DBG_LOUD, ("Dongle disable SS\n"));
-			pdvobjpriv->RegUsbSS = _FALSE;
-		//}
-	}
-#endif
 }	// HalDetectSelectiveSuspendMode
+
 /*-----------------------------------------------------------------------------
  * Function:	HwSuspendModeEnable92Cu()
  *
@@ -1512,20 +1475,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
 	rtw_btcoex_HAL_Initialize(padapter, _TRUE);
 #endif
 
-#if 0
-	// 2010/05/20 MH We need to init timer after update setting. Otherwise, we can not get correct inf setting.
-	// 2010/05/18 MH For SE series only now. Init GPIO detect time
-	if(pDevice->RegUsbSS)
-	{
-		RT_TRACE(COMP_INIT, DBG_LOUD, (" call GpioDetectTimerStart8192CU\n"));
-		GpioDetectTimerStart8192CU(Adapter);	// Disable temporarily
-	}
-
-	// 2010/08/23 MH According to Alfred's suggestion, we need to to prevent HW enter
-	// suspend mode automatically.
-	HwSuspendModeEnable92Cu(Adapter, _FALSE);
-#endif
-
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 	rtw_hal_set_hwreg(padapter, HW_VAR_NAV_UPPER, (u8*)&NavUpper);
 
@@ -1738,15 +1687,6 @@ _ResetDigitalProcedure1(
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(Adapter);
 
 	if(pHalData->FirmwareVersion <=  0x20){
-		#if 0
-		/*****************************
-		f.	SYS_FUNC_EN 0x03[7:0]=0x54		// reset MAC register, DCORE
-		g.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
-		******************************/
-		u4Byte	value32 = 0;
-		PlatformIOWrite1Byte(Adapter, REG_SYS_FUNC_EN+1, 0x54);
-		PlatformIOWrite1Byte(Adapter, REG_MCUFWDL, 0);
-		#else
 		/*****************************
 		f.	MCUFWDL 0x80[7:0]=0				// reset MCU ready status
 		g.	SYS_FUNC_EN 0x02[10]= 0			// reset MCU register, (8051 reset)
@@ -1773,11 +1713,7 @@ _ResetDigitalProcedure1(
 
 			valu16 = rtw_read16(Adapter, REG_SYS_FUNC_EN);
 			rtw_write16(Adapter, REG_SYS_FUNC_EN, (valu16 | FEN_CPUEN));//enable MCU ,8051
-
-
-		#endif
-	}
-	else{
+	} else {
 		u8 retry_cnts = 0;
 
 		if(rtw_read8(Adapter, REG_MCUFWDL) & BIT1)
@@ -1919,15 +1855,6 @@ i.	APS_FSMCO 0x04[15:0] = 0x4802		// set USB suspend
 	rtw_write16(Adapter, REG_APS_FSMCO,value16 );//0x4802
 
 	rtw_write8(Adapter, REG_RSV_CTRL, 0x0e);
-
- #if 0
-	//tynli_test for suspend mode.
-	if(!bWithoutHWSM){
-		rtw_write8(Adapter, 0xfe10, 0x19);
-	}
-#endif
-
-	//RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Disable Analog Reg0x04:0x%04x.\n",value16));
 }
 
 static void rtl8723bu_hw_power_down(_adapter *padapter)
@@ -2226,31 +2153,6 @@ _ReadBoardType(
 	IN	BOOLEAN		AutoloadFail
 	)
 {
-#if 0 //amyma
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
-	u32			value32;
-	u8			boardType = BOARD_USB_DONGLE;
-
-	if(AutoloadFail){
-		if(IS_8723_SERIES(pHalData->VersionID))
-			pHalData->rf_type = RF_1T1R;
-		else
-		        pHalData->rf_type = RF_2T2R;
-
-		pHalData->BoardType = boardType;
-		return;
-	}
-
-	boardType = PROMContent[EEPROM_NORMAL_BoardType_92C];
-	boardType &= BOARD_TYPE_NORMAL_MASK;//bit[7:5]
-	boardType >>= 5;
-
-	pHalData->BoardType = boardType;
-	MSG_8192C("_ReadBoardType(%x)\n",pHalData->BoardType);
-
-	if (boardType == BOARD_USB_High_PA)
-		pHalData->ExternalPA = 1;
-#endif
 }
 
 
@@ -2321,15 +2223,7 @@ _ReadThermalMeter(
 	if(pHalData->EEPROMThermalMeter == 0x1f || AutoloadFail)
 		pdmpriv->bAPKThermalMeterIgnore = _TRUE;
 
-#if 0
-	if(pHalData->EEPROMThermalMeter < 0x06 || pHalData->EEPROMThermalMeter > 0x1c)
-		pHalData->EEPROMThermalMeter = 0x12;
-#endif
-
 	pdmpriv->ThermalMeter[0] = pHalData->EEPROMThermalMeter;
-
-	//RTPRINT(FINIT, INIT_TxPower, ("ThermalMeter = 0x%x\n", pHalData->EEPROMThermalMeter));
-
 }
 
 static VOID

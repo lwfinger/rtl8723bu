@@ -685,38 +685,22 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		/* TBD: BTCOEXSCAN-STOP */
 		break;
 	case ANDROID_WIFI_CMD_BTCOEXMODE:
-		#if 0
-		uint mode = *(command + strlen(CMD_BTCOEXMODE) + 1) - '0';
-		if (mode == 1)
-			net_os_set_packet_filter(net, 0); /* DHCP starts */
-		else
-			net_os_set_packet_filter(net, 1); /* DHCP ends */
-#ifdef WL_CFG80211
-		bytes_written = wl_cfg80211_set_btcoex_dhcp(net, command);
-#endif
-		#endif
 		break;
-
 	case ANDROID_WIFI_CMD_SETSUSPENDOPT:
 		//bytes_written = wl_android_set_suspendopt(net, command, priv_cmd.total_len);
 		break;
-
 	case ANDROID_WIFI_CMD_SETBAND:
 		bytes_written = rtw_android_setband(net, command, priv_cmd.total_len);
 		break;
-
 	case ANDROID_WIFI_CMD_GETBAND:
 		bytes_written = rtw_android_getband(net, command, priv_cmd.total_len);
 		break;
-
 	case ANDROID_WIFI_CMD_MIRACAST:
 		bytes_written = rtw_android_set_miracast_mode(net, command, priv_cmd.total_len);
 		break;
-
 	case ANDROID_WIFI_CMD_COUNTRY:
 		bytes_written = rtw_android_set_country(net, command, priv_cmd.total_len);
 		break;
-
 #ifdef CONFIG_PNO_SUPPORT
 	case ANDROID_WIFI_CMD_PNOSSIDCLR_SET:
 		//bytes_written = dhd_dev_pno_reset(net);
@@ -730,22 +714,15 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		bytes_written = rtw_android_pno_enable(net, pno_enable);
 		break;
 #endif
-
 	case ANDROID_WIFI_CMD_P2P_DEV_ADDR:
 		bytes_written = rtw_android_get_p2p_dev_addr(net, command, priv_cmd.total_len);
 		break;
 	case ANDROID_WIFI_CMD_P2P_SET_NOA:
-		//int skip = strlen(CMD_P2P_SET_NOA) + 1;
-		//bytes_written = wl_cfg80211_set_p2p_noa(net, command + skip, priv_cmd.total_len - skip);
 		break;
 	case ANDROID_WIFI_CMD_P2P_GET_NOA:
-		//bytes_written = wl_cfg80211_get_p2p_noa(net, command, priv_cmd.total_len);
 		break;
 	case ANDROID_WIFI_CMD_P2P_SET_PS:
-		//int skip = strlen(CMD_P2P_SET_PS) + 1;
-		//bytes_written = wl_cfg80211_set_p2p_ps(net, command + skip, priv_cmd.total_len - skip);
 		break;
-
 #ifdef CONFIG_IOCTL_CFG80211
 	case ANDROID_WIFI_CMD_SET_AP_WPS_P2P_IE:
 	{
@@ -757,7 +734,6 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 
 #ifdef CONFIG_WFD
 	case ANDROID_WIFI_CMD_WFD_ENABLE:
-	{
 		//	Commented by Albert 2012/07/24
 		//	We can enable the WFD function by using the following command:
 		//	wpa_cli driver wfd-enable
@@ -766,10 +742,7 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		if( padapter->wdinfo.driver_interface == DRIVER_CFG80211 )
 			pwfd_info->wfd_enable = _TRUE;
 		break;
-	}
-
 	case ANDROID_WIFI_CMD_WFD_DISABLE:
-	{
 		//	Commented by Albert 2012/07/24
 		//	We can disable the WFD function by using the following command:
 		//	wpa_cli driver wfd-disable
@@ -778,37 +751,27 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		if( padapter->wdinfo.driver_interface == DRIVER_CFG80211 )
 			pwfd_info->wfd_enable = _FALSE;
 		break;
-	}
 	case ANDROID_WIFI_CMD_WFD_SET_TCPPORT:
-	{
 		//	Commented by Albert 2012/07/24
 		//	We can set the tcp port number by using the following command:
 		//	wpa_cli driver wfd-set-tcpport = 554
 
 		pwfd_info = &padapter->wfd_info;
 		if( padapter->wdinfo.driver_interface == DRIVER_CFG80211 )
-		{
 			pwfd_info->rtsp_ctrlport = ( u16 ) get_int_from_command( priv_cmd.buf );
-	}
 		break;
-	}
 	case ANDROID_WIFI_CMD_WFD_SET_MAX_TPUT:
-	{
 		break;
-	}
 	case ANDROID_WIFI_CMD_WFD_SET_DEVTYPE:
-	{
 		//	Commented by Albert 2012/08/28
 		//	Specify the WFD device type ( WFD source/primary sink )
 
 		pwfd_info = &padapter->wfd_info;
-		if( padapter->wdinfo.driver_interface == DRIVER_CFG80211 )
-		{
+		if( padapter->wdinfo.driver_interface == DRIVER_CFG80211 ) {
 			pwfd_info->wfd_device_type = ( u8 ) get_int_from_command( priv_cmd.buf );
 			pwfd_info->wfd_device_type &= WFD_DEVINFO_DUAL;
 		}
 		break;
-	}
 #endif
 	case ANDROID_WIFI_CMD_CHANGE_DTIM:
 		{
@@ -827,11 +790,9 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		}
 		break;
 	case ANDROID_WIFI_CMD_HOSTAPD_SET_MACADDR_ACL:
-	{
 		padapter->stapriv.acl_list.mode = ( u8 ) get_int_from_command(command);
 		DBG_871X("%s ANDROID_WIFI_CMD_HOSTAPD_SET_MACADDR_ACL mode:%d\n", __FUNCTION__, padapter->stapriv.acl_list.mode);
 		break;
-	}
 	case ANDROID_WIFI_CMD_HOSTAPD_ACL_ADD_STA:
 	{
 		u8 addr[ETH_ALEN] = {0x00};

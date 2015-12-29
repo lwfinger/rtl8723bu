@@ -141,19 +141,6 @@ int issue_nulldata_to_TDLS_peer_STA(_adapter *padapter, unsigned char *da, unsig
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 
 	//[TDLS] UAPSD : merge this from issue_nulldata() and mark it first.
-	#if 0
-	psta = rtw_get_stainfo(&padapter->stapriv, da);
-	if (psta) {
-		if (power_mode)
-			rtw_hal_macid_sleep(padapter, psta->mac_id);
-		else
-			rtw_hal_macid_wakeup(padapter, psta->mac_id);
-	} else {
-		DBG_871X(FUNC_ADPT_FMT ": Can't find sta info for " MAC_FMT ", skip macid %s!!\n",
-			FUNC_ADPT_ARG(padapter), MAC_ARG(da), power_mode?"sleep":"wakeup");
-		rtw_warn_on(1);
-	}
-	#endif
 
 	do
 	{

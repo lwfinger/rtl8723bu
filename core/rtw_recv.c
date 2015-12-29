@@ -661,34 +661,18 @@ union recv_frame * decryptor(_adapter *padapter,union recv_frame *precv_frame)
 		&& (psecuritypriv->busetkipkey==1 || prxattrib->encrypt !=_TKIP_ )
 		)
 	{
-#if 0
-		if((prxstat->icv==1)&&(prxattrib->encrypt!=_AES_))
-		{
-			psecuritypriv->hw_decrypted=_FALSE;
+		DBG_COUNTER(padapter->rx_logs.core_rx_post_decrypt_hw);
 
-			RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("psecuritypriv->hw_decrypted=_FALSE"));
+		psecuritypriv->hw_decrypted=_TRUE;
+		#ifdef DBG_RX_DECRYPTOR
+		DBG_871X("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
+			__FUNCTION__,
+			__LINE__,
+			prxattrib->bdecrypted,
+			prxattrib->encrypt,
+			psecuritypriv->hw_decrypted);
 
-			rtw_free_recvframe(precv_frame, &padapter->recvpriv.free_recv_queue);
-
-			return_packet=NULL;
-
-		}
-		else
-#endif
-		{
-			DBG_COUNTER(padapter->rx_logs.core_rx_post_decrypt_hw);
-
-			psecuritypriv->hw_decrypted=_TRUE;
-			#ifdef DBG_RX_DECRYPTOR
-			DBG_871X("[%s] %d:prxstat->bdecrypted:%d,  prxattrib->encrypt:%d,  Setting psecuritypriv->hw_decrypted = %d\n",
-				__FUNCTION__,
-				__LINE__,
-				prxattrib->bdecrypted,
-				prxattrib->encrypt,
-				psecuritypriv->hw_decrypted);
-
-			#endif
-		}
+		#endif
 	}
 	else {
 		DBG_COUNTER(padapter->rx_logs.core_rx_post_decrypt_unknown);
@@ -1674,26 +1658,13 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 
 				pxmitframe->attrib.triggered = 1;
 
-				//DBG_871X("handling ps-poll, q_len=%d, tim=%x\n", psta->sleepq_len, pstapriv->tim_bitmap);
-
-#if 0
-				SPIN_UNLOCK_BH(psta->sleep_q.lock, &irqL);
-				if(rtw_hal_xmit(padapter, pxmitframe) == _TRUE)
-				{
-					rtw_os_xmit_complete(padapter, pxmitframe);
-				}
-				SPIN_LOCK_BH(psta->sleep_q.lock, &irqL);
-#endif
 				rtw_hal_xmitframe_enqueue(padapter, pxmitframe);
 
 				if(psta->sleepq_len==0)
 				{
 					pstapriv->tim_bitmap &= ~BIT(psta->aid);
 
-					//DBG_871X("after handling ps-poll, tim=%x\n", pstapriv->tim_bitmap);
-
 					//upate BCN for TIM IE
-					//update_BCNTIM(padapter);
 					update_beacon(padapter, _TIM_IE_, NULL, _TRUE);
 				}
 
@@ -1749,21 +1720,6 @@ sint validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame)
 	//struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
 
 	RT_TRACE(_module_rtl871x_recv_c_, _drv_info_, ("+validate_recv_mgnt_frame\n"));
-
-#if 0
-	if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
-	{
-#ifdef CONFIG_NATIVEAP_MLME
-		mgt_dispatcher(padapter, precv_frame);
-#else
-		rtw_hostapd_mlme_rx(padapter, precv_frame);
-#endif
-	}
-	else
-	{
-		mgt_dispatcher(padapter, precv_frame);
-	}
-#endif
 
 	precv_frame = recvframe_chk_defrag(padapter, precv_frame);
 	if (precv_frame == NULL) {
@@ -1976,14 +1932,6 @@ sint validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame)
 		ret= _FAIL;
 		goto exit;
 	}
-
-#if 0
-	if(psta->tdls_sta_state & TDLS_LINKED_STATE )
-	{
-		if(psta->dot118021XPrivacy==_AES_)
-			pattrib->encrypt=psta->dot118021XPrivacy;
-	}
-#endif //CONFIG_TDLS
 
 	if(pattrib->privacy){
 
@@ -3113,22 +3061,12 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 	phead =		get_list_head(ppending_recvframe_queue);
 	plist = get_next(phead);
 
-#if 0
-	// Check if there is any other indication thread running.
-	if(pTS->RxIndicateState == RXTS_INDICATE_PROCESSING)
-		return;
-#endif
-
 	// Handling some condition for forced indicate case.
 	if(bforced==_TRUE)
 	{
 		pdbgpriv->dbg_rx_ampdu_forced_indicate_count++;
 		if(rtw_is_list_empty(phead))
-		{
-			// _exit_critical_ex(&ppending_recvframe_queue->lock, &irql);
-			//_rtw_spinunlock_ex(&ppending_recvframe_queue->lock);
 			return _TRUE;
-		}
 
 		prframe = LIST_CONTAINOR(plist, union recv_frame, u);
 		pattrib = &prframe->u.hdr.attrib;
@@ -3156,16 +3094,6 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 				 ("recv_indicatepkts_in_order: indicate=%d seq=%d amsdu=%d\n",
 				  preorder_ctrl->indicate_seq, pattrib->seq_num, pattrib->amsdu));
 
-#if 0
-			// This protect buffer from overflow.
-			if(index >= REORDER_WIN_SIZE)
-			{
-				RT_ASSERT(FALSE, ("IndicateRxReorderList(): Buffer overflow!! \n"));
-				bPktInBuf = TRUE;
-				break;
-			}
-#endif
-
 			plist = get_next(plist);
 			rtw_list_delete(&(prframe->u.hdr.list));
 
@@ -3178,33 +3106,8 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 				#endif
 			}
 
-#if 0
-			index++;
-			if(index==1)
-			{
-				//Cancel previous pending timer.
-				//PlatformCancelTimer(Adapter, &pTS->RxPktPendingTimer);
-				if(bforced!=_TRUE)
-				{
-					//DBG_871X("_cancel_timer(&preorder_ctrl->reordering_ctrl_timer, &bcancelled);\n");
-					_cancel_timer(&preorder_ctrl->reordering_ctrl_timer, &bcancelled);
-				}
-			}
-#endif
-
-			//Set this as a lock to make sure that only one thread is indicating packet.
-			//pTS->RxIndicateState = RXTS_INDICATE_PROCESSING;
-
-			// Indicate packets
-			//RT_ASSERT((index<=REORDER_WIN_SIZE), ("RxReorderIndicatePacket(): Rx Reorder buffer full!! \n"));
-
-
 			//indicate this recv_frame
-			//DbgPrint("recv_indicatepkts_in_order, indicate_seq=%d, seq_num=%d\n", precvpriv->indicate_seq, pattrib->seq_num);
-			if(!pattrib->amsdu)
-			{
-				//DBG_871X("recv_indicatepkts_in_order, amsdu!=1, indicate_seq=%d, seq_num=%d\n", preorder_ctrl->indicate_seq, pattrib->seq_num);
-
+			if(!pattrib->amsdu) {
 				if ((padapter->bDriverStopped == _FALSE) &&
 				    (padapter->bSurpriseRemoved == _FALSE))
 				{
@@ -3558,22 +3461,6 @@ static int recv_func_posthandle(_adapter *padapter, union recv_frame *prframe)
 		DBG_COUNTER(padapter->rx_logs.core_rx_post_decrypt_err);
 		goto _recv_data_drop;
 	}
-
-#if 0
-	if ( padapter->adapter_type == PRIMARY_ADAPTER )
-	{
-		DBG_871X("+++\n");
-		{
-			int i;
-			u8	*ptr = get_recvframe_data(prframe);
-			for(i=0; i<140;i=i+8)
-				DBG_871X("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:", *(ptr+i),
-				*(ptr+i+1), *(ptr+i+2) ,*(ptr+i+3) ,*(ptr+i+4),*(ptr+i+5), *(ptr+i+6), *(ptr+i+7));
-
-		}
-		DBG_871X("---\n");
-	}
-#endif
 
 #ifdef CONFIG_TDLS
 	//check TDLS frame

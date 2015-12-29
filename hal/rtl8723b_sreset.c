@@ -79,22 +79,6 @@ void rtl8723b_sreset_linked_status_check(_adapter *padapter)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &pHalData->srestpriv;
-#if 0
-	u32 regc50,regc58,reg824,reg800;
-	regc50 = rtw_read32(padapter,0xc50);
-	regc58 = rtw_read32(padapter,0xc58);
-	reg824 = rtw_read32(padapter,0x824);
-	reg800 = rtw_read32(padapter,0x800);
-	if(	((regc50&0xFFFFFF00)!= 0x69543400)||
-		((regc58&0xFFFFFF00)!= 0x69543400)||
-		(((reg824&0xFFFFFF00)!= 0x00390000)&&(((reg824&0xFFFFFF00)!= 0x80390000)))||
-		( ((reg800&0xFFFFFF00)!= 0x03040000)&&((reg800&0xFFFFFF00)!= 0x83040000)))
-	{
-		DBG_8192C("%s regc50:0x%08x, regc58:0x%08x, reg824:0x%08x, reg800:0x%08x,\n", __FUNCTION__,
-			regc50, regc58, reg824, reg800);
-		rtw_hal_sreset_reset(padapter);
-	}
-#endif
 
 	if (psrtpriv->dbg_trigger_point == SRESET_TGP_LINK_STATUS) {
 		psrtpriv->dbg_trigger_point = SRESET_TGP_NULL;

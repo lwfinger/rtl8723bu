@@ -757,43 +757,6 @@ void update_network(WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src,
 			, dst->Ssid.Ssid, MAC_ARG(dst->MacAddress), dst->PhyInfo.SignalStrength, dst->PhyInfo.SignalQuality, dst->Rssi);
 	}
 	#endif
-
-#if 0 // old codes, may be useful one day...
-//	DBG_871X("update_network: rssi=0x%lx dst->Rssi=%d ,dst->Rssi=0x%lx , src->Rssi=0x%lx",(dst->Rssi+src->Rssi)/2,dst->Rssi,dst->Rssi,src->Rssi);
-	if (check_fwstate(&padapter->mlmepriv, _FW_LINKED) && is_same_network(&(padapter->mlmepriv.cur_network.network), src))
-	{
-
-		//DBG_871X("b:ssid=%s update_network: src->rssi=0x%d padapter->recvpriv.ui_rssi=%d\n",src->Ssid.Ssid,src->Rssi,padapter->recvpriv.signal);
-		if(padapter->recvpriv.signal_qual_data.total_num++ >= PHY_LINKQUALITY_SLID_WIN_MAX)
-	        {
-	              padapter->recvpriv.signal_qual_data.total_num = PHY_LINKQUALITY_SLID_WIN_MAX;
-	              last_evm = padapter->recvpriv.signal_qual_data.elements[padapter->recvpriv.signal_qual_data.index];
-	              padapter->recvpriv.signal_qual_data.total_val -= last_evm;
-	        }
-		padapter->recvpriv.signal_qual_data.total_val += query_rx_pwr_percentage(src->Rssi);
-
-		padapter->recvpriv.signal_qual_data.elements[padapter->recvpriv.signal_qual_data.index++] = query_rx_pwr_percentage(src->Rssi);
-                if(padapter->recvpriv.signal_qual_data.index >= PHY_LINKQUALITY_SLID_WIN_MAX)
-                       padapter->recvpriv.signal_qual_data.index = 0;
-
-		//DBG_871X("Total SQ=%d  pattrib->signal_qual= %d\n", padapter->recvpriv.signal_qual_data.total_val, src->Rssi);
-
-		// <1> Showed on UI for user,in percentage.
-		tmpVal = padapter->recvpriv.signal_qual_data.total_val/padapter->recvpriv.signal_qual_data.total_num;
-                padapter->recvpriv.signal=(u8)tmpVal;//Link quality
-
-		src->Rssi= translate_percentage_to_dbm(padapter->recvpriv.signal) ;
-	}
-	else{
-//	DBG_871X("ELSE:ssid=%s update_network: src->rssi=0x%d dst->rssi=%d\n",src->Ssid.Ssid,src->Rssi,dst->Rssi);
-		src->Rssi=(src->Rssi +dst->Rssi)/2;//dBM
-	}
-
-//	DBG_871X("a:update_network: src->rssi=0x%d padapter->recvpriv.ui_rssi=%d\n",src->Rssi,padapter->recvpriv.signal);
-
-#endif
-
-
 }
 
 static void update_current_network(_adapter *adapter, WLAN_BSSID_EX *pnetwork)
@@ -809,18 +772,10 @@ static void update_current_network(_adapter *adapter, WLAN_BSSID_EX *pnetwork)
 
 	if ( (check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE) && (is_same_network(&(pmlmepriv->cur_network.network), pnetwork, 0)))
 	{
-		//RT_TRACE(_module_rtl871x_mlme_c_,_drv_err_,"Same Network\n");
-
-		//if(pmlmepriv->cur_network.network.IELength<= pnetwork->IELength)
-		{
-			update_network(&(pmlmepriv->cur_network.network), pnetwork,adapter, _TRUE);
-			rtw_update_protection(adapter, (pmlmepriv->cur_network.network.IEs) + sizeof (NDIS_802_11_FIXED_IEs),
-									pmlmepriv->cur_network.network.IELength);
-		}
+		update_network(&(pmlmepriv->cur_network.network), pnetwork,adapter, _TRUE);
+		rtw_update_protection(adapter, (pmlmepriv->cur_network.network.IEs) + sizeof (NDIS_802_11_FIXED_IEs),
+					pmlmepriv->cur_network.network.IELength);
 	}
-
-
-
 }
 
 
@@ -1736,18 +1691,6 @@ static struct sta_info *rtw_joinbss_update_stainfo(_adapter *padapter, struct wl
 
 		psta->aid  = pnetwork->join_res;
 
-#if 0 //alloc macid when call rtw_alloc_stainfo(), and release macid when call rtw_free_stainfo()
-#ifdef CONFIG_CONCURRENT_MODE
-
-		if(PRIMARY_ADAPTER == padapter->adapter_type)
-			psta->mac_id=0;
-		else
-			psta->mac_id=2;
-#else
-		psta->mac_id=0;
-#endif
-#endif //removed
-
 		update_sta_info(padapter, psta);
 
 		//update station supportRate
@@ -2464,13 +2407,6 @@ void _rtw_join_timeout_handler (_adapter *adapter)
 	_irqL irqL;
 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
 
-#if 0
-	if (adapter->bDriverStopped == _TRUE){
-		_rtw_up_sema(&pmlmepriv->assoc_terminate);
-		return;
-	}
-#endif
-
 	DBG_871X("%s, fw_state=%x\n", __FUNCTION__, get_fwstate(pmlmepriv));
 
 	if(adapter->bDriverStopped ||adapter->bSurpriseRemoved)
@@ -3087,23 +3023,9 @@ candidate_exist:
 	{
 		DBG_871X("%s: _FW_LINKED while ask_for_joinbss!!!\n", __FUNCTION__);
 
-		#if 0 // for WPA/WPA2 authentication, wpa_supplicant will expect authentication from AP, it is needed to reconnect AP...
-		if(is_same_network(&pmlmepriv->cur_network.network, &candidate->network))
-		{
-			DBG_871X("%s: _FW_LINKED and is same network, it needn't join again\n", __FUNCTION__);
-
-			rtw_indicate_connect(adapter);//rtw_indicate_connect again
-
-			ret = 2;
-			goto exit;
-		}
-		else
-		#endif
-		{
-			rtw_disassoc_cmd(adapter, 0, _TRUE);
-			rtw_indicate_disconnect(adapter);
-			rtw_free_assoc_resources(adapter, 0);
-		}
+		rtw_disassoc_cmd(adapter, 0, _TRUE);
+		rtw_indicate_disconnect(adapter);
+		rtw_free_assoc_resources(adapter, 0);
 	}
 
 	#ifdef CONFIG_ANTENNA_DIVERSITY
@@ -3488,19 +3410,6 @@ void rtw_update_registrypriv_dev_network(_adapter* adapter)
 	WLAN_BSSID_EX    *pdev_network = &pregistrypriv->dev_network;
 	struct	security_priv*	psecuritypriv = &adapter->securitypriv;
 	struct	wlan_network	*cur_network = &adapter->mlmepriv.cur_network;
-	//struct	xmit_priv	*pxmitpriv = &adapter->xmitpriv;
-
-
-
-#if 0
-	pxmitpriv->vcs_setting = pregistrypriv->vrtl_carrier_sense;
-	pxmitpriv->vcs = pregistrypriv->vcs_type;
-	pxmitpriv->vcs_type = pregistrypriv->vcs_type;
-	//pxmitpriv->rts_thresh = pregistrypriv->rts_thresh;
-	pxmitpriv->frag_len = pregistrypriv->frag_thresh;
-
-	adapter->qospriv.qos_option = pregistrypriv->wmm_enable;
-#endif
 
 	pdev_network->Privacy = (psecuritypriv->dot11PrivacyAlgrthm > 0 ? 1 : 0) ; // adhoc no 802.1x
 

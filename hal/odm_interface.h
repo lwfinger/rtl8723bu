@@ -39,14 +39,6 @@
 #define _bit_all(_name)			BIT_##_name
 #define _bit_ic(_name, _ic)		BIT_##_name##_ic
 
-// _cat: implemented by Token-Pasting Operator.
-#if 0
-#define _cat(_name, _ic_type, _func)								\
-	(															\
-		_func##_all(_name)										\
-	)
-#endif
-
 /*===================================
 
 #define ODM_REG_DIG_11N		0xC50
@@ -60,24 +52,11 @@ ODM_REG(DIG,_pDM_Odm)
 #define _bit_11N(_name)			ODM_BIT_##_name##_11N
 #define _bit_11AC(_name)		ODM_BIT_##_name##_11AC
 
-#if 1 //TODO: enable it if we need to support run-time to differentiate between 92C_SERIES and JAGUAR_SERIES.
 #define _cat(_name, _ic_type, _func)									\
 	(															\
 		((_ic_type) & ODM_IC_11N_SERIES)? _func##_11N(_name):		\
 		_func##_11AC(_name)									\
 	)
-#endif
-#if 0 // only sample code
-#define _cat(_name, _ic_type, _func)									\
-	(															\
-		((_ic_type) & ODM_RTL8192C)? _func##_ic(_name, _8192C):		\
-		((_ic_type) & ODM_RTL8192D)? _func##_ic(_name, _8192D):		\
-		((_ic_type) & ODM_RTL8192S)? _func##_ic(_name, _8192S):		\
-		((_ic_type) & ODM_RTL8723A)? _func##_ic(_name, _8723A):		\
-		((_ic_type) & ODM_RTL8188E)? _func##_ic(_name, _8188E):		\
-		_func##_ic(_name, _8195)									\
-	)
-#endif
 
 // _name: name of register or bit.
 // Example: "ODM_REG(R_A_AGC_CORE1, pDM_Odm)"

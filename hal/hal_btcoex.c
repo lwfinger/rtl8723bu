@@ -228,14 +228,6 @@ static void halbtcoutsrc_NormalLps(PBTC_COEXIST pBtCoexist)
 		pBtCoexist->btInfo.bBtLpsOn = _FALSE;
 		rtw_btcoex_LPS_Leave(padapter);
 		pBtCoexist->btInfo.bBtCtrlLps = _FALSE;
-
-		// recover the LPS state to the original
-#if 0
-		padapter->HalFunc.UpdateLPSStatusHandler(
-			padapter,
-			pPSC->RegLeisurePsMode,
-			pPSC->RegPowerSaveMode);
-#endif
 	}
 }
 
@@ -453,37 +445,6 @@ static u32 halbtcoutsrc_GetWifiLinkStatus(PBTC_COEXIST pBtCoexist)
 
 static u32 halbtcoutsrc_GetBtPatchVer(PBTC_COEXIST pBtCoexist)
 {
-	u16 btRealFwVer = 0x0;
-	u8 btFwVer = 0x0;
-	u8 cnt = 0;
-
-#if 0
-	if (!pBtCoexist->btInfo.btRealFwVer && cnt<=5)
-	{
-		if (halbtcoutsrc_IsHwMailboxExist(pBtCoexist))
-		{	// mailbox exists, through mailbox
-			if (NDBG_GetBtFwVersion(pBtCoexist->Adapter, &btRealFwVer, &btFwVer))
-			{
-				pBtCoexist->btInfo.btRealFwVer = btRealFwVer;
-				pBtCoexist->btInfo.btFwVer = btFwVer;
-			}
-			else
-			{
-				pBtCoexist->btInfo.btRealFwVer = 0x0;
-				pBtCoexist->btInfo.btFwVer = 0x0;
-			}
-		}
-		else	// no mailbox, query bt patch version through stack.
-		{
-			u1Byte	dataLen=2;
-			u1Byte	buf[4] = {0};
-			buf[0] = 0x0;	// OP_Code
-			buf[1] = 0x0;	// OP_Code_Length
-			BT_SendEventExtBtCoexControl(pBtCoexist->Adapter, _FALSE, dataLen, &buf[0]);
-		}
-		cnt++;
-	}
-#endif
 	return pBtCoexist->btInfo.btRealFwVer;
 }
 
@@ -576,21 +537,10 @@ static u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 			break;
 
 		case BTC_GET_BL_WIFI_SCAN:
-#if 0
-			*pu8 = check_fwstate(&padapter->mlmepriv, WIFI_SITE_MONITOR);
-#ifdef CONFIG_CONCURRENT_MODE
-			if ((_FALSE == *pu8) && padapter->pbuddy_adapter)
-			{
-				*pu8 = check_fwstate(&padapter->pbuddy_adapter->mlmepriv, WIFI_SITE_MONITOR);
-			}
-#endif // CONFIG_CONCURRENT_MODE
-#else
 			/* Use the value of the new variable GLBtcWiFiInScanState to judge whether WiFi is in scan state or not, since the originally used flag
 				WIFI_SITE_MONITOR in fwstate may not be cleared in time */
 			*pu8 = GLBtcWiFiInScanState;
-#endif
 			break;
-
 		case BTC_GET_BL_WIFI_LINK:
 			*pu8 = check_fwstate(&padapter->mlmepriv, WIFI_UNDER_LINKING);
 #ifdef CONFIG_CONCURRENT_MODE
@@ -809,13 +759,8 @@ static u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
 
 		// the following are some action which will be triggered
 		case BTC_SET_ACT_GET_BT_RSSI:
-#if 0
-			BT_SendGetBtRssiEvent(padapter);
-#else
 			ret = _FALSE;
-#endif
 			break;
-
 		case BTC_SET_ACT_AGGREGATE_CTRL:
 			halbtcoutsrc_AggregationCheck(pBtCoexist);
 			break;
@@ -866,62 +811,16 @@ static u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
 			break;
 
 		case BTC_SET_ACT_SEND_MIMO_PS:
-#if 0 // not implement yet
-			{
-				u8 newMimoPsMode = *pU1Tmp;
-				if (check_fwstate(&padapter->mlmepriv, WIFI_ASOC_STATE) == _TRUE)
-					SendMimoPsFrame(padapter, padapter->MgntInfo.Bssid, newMimoPsMode);
-			}
-#else
 			ret = _FALSE;
-#endif
 			break;
-
 		case BTC_SET_ACT_CTRL_BT_INFO:
-#if 0
-			{
-				u8 dataLen = *pU1Tmp;
-				u8 tmpBuf[20];
-				if (dataLen)
-				{
-					_rtw_memcpy(tmpBuf, pU1Tmp+1, dataLen);
-				}
-//				BT_SendEventExtBtInfoControl(padapter, dataLen, &tmpBuf[0]);
-			}
-#else
 			ret = _FALSE;
-#endif
 			break;
-
 		case BTC_SET_ACT_CTRL_BT_COEX:
-#if 0
-			{
-				u8 dataLen = *pU1Tmp;
-				u8 tmpBuf[20];
-				if (dataLen)
-				{
-					_rtw_memcpy(tmpBuf, pU1Tmp+1, dataLen);
-				}
-//				BT_SendEventExtBtCoexControl(padapter, _FALSE, dataLen, &tmpBuf[0]);
-			}
-#else
 			ret = _FALSE;
-#endif
 			break;
 		case BTC_SET_ACT_CTRL_8723B_ANT:
-#if 0
-			{
-				u1Byte	dataLen=*pU1Tmp;
-				u1Byte	tmpBuf[20];
-				if(dataLen)
-				{
-					PlatformMoveMemory(&tmpBuf[0], pU1Tmp+1, dataLen);
-				}
-				BT_Set8723bAnt(Adapter, dataLen, &tmpBuf[0]);
-			}
-#else
 			ret = _FALSE;
-#endif
 			break;
 		//=====================
 		default:
@@ -934,102 +833,10 @@ static u8 halbtcoutsrc_Set(void *pBtcContext, u8 setType, void *pInBuf)
 
 static void halbtcoutsrc_DisplayCoexStatistics(PBTC_COEXIST pBtCoexist)
 {
-#if 0
-	PADAPTER padapter = (PADAPTER)pBtCoexist->Adapter;
-	PBT_MGNT pBtMgnt = &padapter->MgntInfo.BtInfo.BtMgnt;
-	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
-	u8 *cliBuf = pBtCoexist->cliBuf;
-	u8 i;
-
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s", "============[Statistics]============");
-	CL_PRINTF(cliBuf);
-
-#if (H2C_USE_IO_THREAD != 1)
-	for(i=0; i<H2C_STATUS_MAX; i++)
-	{
-		if (pHalData->h2cStatistics[i])
-		{
-			CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = [%s] = %d", "H2C statistics", \
-				h2cStaString[i], pHalData->h2cStatistics[i]);
-			CL_PRINTF(cliBuf);
-		}
-	}
-#else
-		for(i=0; i<IO_STATUS_MAX; i++)
-		{
-			if(Adapter->ioComStr.ioH2cStatistics[i])
-			{
-				CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = [%s] = %d", "H2C statistics", \
-					ioStaString[i], Adapter->ioComStr.ioH2cStatistics[i]);
-				CL_PRINTF(cliBuf);
-			}
-		}
-#endif
-#if 0
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x", "lastHMEBoxNum", \
-		pHalData->LastHMEBoxNum);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x / 0x%x", "LastOkH2c/FirstFailH2c(fwNotRead)", \
-		pHalData->lastSuccessH2cEid, pHalData->firstFailedH2cEid);
-	CL_PRINTF(cliBuf);
-
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d/ %d/ %d", "c2hIsr/c2hIntr/clr1AF/noRdy/noBuf", \
-		pHalData->InterruptLog.nIMR_C2HCMD, DBG_Var.c2hInterruptCnt, DBG_Var.c2hClrReadC2hCnt,
-		DBG_Var.c2hNotReadyCnt, DBG_Var.c2hBufAlloFailCnt);
-	CL_PRINTF(cliBuf);
-
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d", "c2hPacket", \
-		DBG_Var.c2hPacketCnt);
-	CL_PRINTF(cliBuf);
-#endif
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d", "Periodical/ DbgCtrl", \
-		pBtCoexist->statistics.cntPeriodical, pBtCoexist->statistics.cntDbgCtrl);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d/ %d", "PowerOn/InitHw/InitCoexDm/RfStatus", \
-		pBtCoexist->statistics.cntPowerOn, pBtCoexist->statistics.cntInitHwConfig, pBtCoexist->statistics.cntInitCoexDm,
-		pBtCoexist->statistics.cntRfStatusNotify);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d/ %d/ %d", "Ips/Lps/Scan/Connect/Mstatus", \
-		pBtCoexist->statistics.cntIpsNotify, pBtCoexist->statistics.cntLpsNotify,
-		pBtCoexist->statistics.cntScanNotify, pBtCoexist->statistics.cntConnectNotify,
-		pBtCoexist->statistics.cntMediaStatusNotify);
-	CL_PRINTF(cliBuf);
-	CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d", "Special pkt/Bt info", \
-		pBtCoexist->statistics.cntSpecialPacketNotify, pBtCoexist->statistics.cntBtInfoNotify);
-	CL_PRINTF(cliBuf);
-#endif
 }
 
 static void halbtcoutsrc_DisplayBtLinkInfo(PBTC_COEXIST pBtCoexist)
 {
-#if 0
-	PADAPTER padapter = (PADAPTER)pBtCoexist->Adapter;
-	PBT_MGNT pBtMgnt = &padapter->MgntInfo.BtInfo.BtMgnt;
-	u8 *cliBuf = pBtCoexist->cliBuf;
-	u8 i;
-
-
-	if (pBtCoexist->stackInfo.bProfileNotified)
-	{
-		for (i=0; i<pBtMgnt->ExtConfig.NumberOfACL; i++)
-		{
-			if (pBtMgnt->ExtConfig.HCIExtensionVer >= 1)
-			{
-				CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s/ %s/ %s", "Bt link type/spec/role", \
-					BtProfileString[pBtMgnt->ExtConfig.aclLink[i].BTProfile],
-					BtSpecString[pBtMgnt->ExtConfig.aclLink[i].BTCoreSpec],
-					BtLinkRoleString[pBtMgnt->ExtConfig.aclLink[i].linkRole]);
-				CL_PRINTF(cliBuf);				}
-			else
-			{
-				CL_SPRINTF(cliBuf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s/ %s", "Bt link type/spec", \
-					BtProfileString[pBtMgnt->ExtConfig.aclLink[i].BTProfile],
-					BtSpecString[pBtMgnt->ExtConfig.aclLink[i].BTCoreSpec]);
-				CL_PRINTF(cliBuf);
-			}
-		}
-	}
-#endif
 }
 
 static void halbtcoutsrc_DisplayFwPwrModeCmd(PBTC_COEXIST pBtCoexist)
@@ -1338,12 +1145,6 @@ static u8 EXhalbtcoutsrc_BindBtCoexWithAdapter(void *padapter)
 	pBtCoexist->btInfo.bIncreaseScanDevNum = _FALSE;
 	pBtCoexist->btInfo.bMiracastPlusBt = _FALSE;
 
-#if 0
-	chipType = HALBT_GetBtChipType(Adapter);
-	EXhalbtcoutsrc_SetChipType(chipType);
-	antNum = HALBT_GetPgAntNum(Adapter);
-	EXhalbtcoutsrc_SetAntNum(BT_COEX_ANT_TYPE_PG, antNum);
-#endif
 	// set default antenna position to main  port
 	pBtCoexist->boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
 
@@ -1353,8 +1154,6 @@ static u8 EXhalbtcoutsrc_BindBtCoexWithAdapter(void *padapter)
 u8 EXhalbtcoutsrc_InitlizeVariables(void *padapter)
 {
 	PBTC_COEXIST pBtCoexist = &GLBtCoexist;
-
-	//pBtCoexist->statistics.cntBind++;
 
 	halbtcoutsrc_DbgInit();
 
@@ -1740,38 +1539,31 @@ void EXhalbtcoutsrc_SetBtPatchVersion(u16 btHciVersion, u16 btPatchVersion)
 	pBtCoexist->btInfo.btHciVer = btHciVersion;
 }
 
-#if 0
-void EXhalbtcoutsrc_SetBtExist(u8 bBtExist)
-{
-	GLBtCoexist.boardInfo.bBtExist = bBtExist;
-}
-#endif
 void EXhalbtcoutsrc_SetChipType(u8 chipType)
 {
-	switch(chipType)
-	{
-		default:
-		case BT_2WIRE:
-		case BT_ISSC_3WIRE:
-		case BT_ACCEL:
-		case BT_RTL8756:
-			GLBtCoexist.boardInfo.btChipType = BTC_CHIP_UNDEF;
-			break;
-		case BT_CSR_BC4:
-			GLBtCoexist.boardInfo.btChipType = BTC_CHIP_CSR_BC4;
-			break;
-		case BT_CSR_BC8:
-			GLBtCoexist.boardInfo.btChipType = BTC_CHIP_CSR_BC8;
-			break;
-		case BT_RTL8723A:
-			GLBtCoexist.boardInfo.btChipType = BTC_CHIP_RTL8723A;
-			break;
-		case BT_RTL8821:
-			GLBtCoexist.boardInfo.btChipType = BTC_CHIP_RTL8821;
-			break;
-		case BT_RTL8723B:
-			GLBtCoexist.boardInfo.btChipType = BTC_CHIP_RTL8723B;
-			break;
+	switch(chipType) {
+	default:
+	case BT_2WIRE:
+	case BT_ISSC_3WIRE:
+	case BT_ACCEL:
+	case BT_RTL8756:
+		GLBtCoexist.boardInfo.btChipType = BTC_CHIP_UNDEF;
+		break;
+	case BT_CSR_BC4:
+		GLBtCoexist.boardInfo.btChipType = BTC_CHIP_CSR_BC4;
+		break;
+	case BT_CSR_BC8:
+		GLBtCoexist.boardInfo.btChipType = BTC_CHIP_CSR_BC8;
+		break;
+	case BT_RTL8723A:
+		GLBtCoexist.boardInfo.btChipType = BTC_CHIP_RTL8723A;
+		break;
+	case BT_RTL8821:
+		GLBtCoexist.boardInfo.btChipType = BTC_CHIP_RTL8821;
+		break;
+	case BT_RTL8723B:
+		GLBtCoexist.boardInfo.btChipType = BTC_CHIP_RTL8723B;
+		break;
 	}
 }
 
@@ -1781,25 +1573,14 @@ void EXhalbtcoutsrc_SetAntNum(u8 type, u8 antNum)
 	{
 		GLBtCoexist.boardInfo.pgAntNum = antNum;
 		GLBtCoexist.boardInfo.btdmAntNum = antNum;
-#if 0
-		//The antenna position: Main (default) or Aux for pgAntNum=2 && btdmAntNum =1
-		//The antenna position should be determined by auto-detect mechanism
-		// The following is assumed to main, and those must be modified if y auto-detect mechanism is ready
-		if ((GLBtCoexist.boardInfo.pgAntNum == 2) && (GLBtCoexist.boardInfo.btdmAntNum == 1) )
-			GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
-		else
-			GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
-#endif
 	}
 	else if (BT_COEX_ANT_TYPE_ANTDIV == type)
 	{
 		GLBtCoexist.boardInfo.btdmAntNum = antNum;
-		//GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
 	}
 	else if (BT_COEX_ANT_TYPE_DETECTED == type)
 	{
 		GLBtCoexist.boardInfo.btdmAntNum = antNum;
-		//GLBtCoexist.boardInfo.btdmAntPos = BTC_ANTENNA_AT_MAIN_PORT;
 	}
 }
 
