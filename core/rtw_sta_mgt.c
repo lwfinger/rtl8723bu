@@ -21,7 +21,7 @@
 
 #include <drv_types.h>
 
-void _rtw_init_stainfo(struct sta_info *psta)
+static void _rtw_init_stainfo(struct sta_info *psta)
 {
 
 
@@ -328,7 +328,6 @@ struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL2);
 	if (_rtw_queue_empty(pfree_sta_queue) == _TRUE)
 	{
-		SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL2);
 		psta = NULL;
 	}
 	else
