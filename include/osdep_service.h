@@ -228,6 +228,26 @@ void _rtw_usb_buffer_free(struct usb_device *dev, size_t size, void *addr, dma_a
 #define rtw_usb_buffer_free_f(dev, size, addr, dma, mstat_f) _rtw_usb_buffer_free((dev), (size), (addr), (dma))
 #endif /* DBG_MEM_ALLOC */
 
+static inline void _rtw_spinlock(_lock	*plock)
+{
+	SPIN_LOCK(plock);
+}
+
+static inline void	_rtw_spinunlock(_lock *plock)
+{
+	SPIN_UNLOCK(plock);
+}
+
+static inline void	_rtw_spinlock_ex(_lock	*plock)
+{
+	SPIN_LOCK(plock);
+}
+
+static inline void	_rtw_spinunlock_ex(_lock *plock)
+{
+	SPIN_UNLOCK(plock);
+}
+
 extern void*	rtw_malloc2d(int h, int w, int size);
 extern void	rtw_mfree2d(void *pbuf, int h, int w, int size);
 
@@ -249,10 +269,6 @@ extern void	_rtw_mutex_init(_mutex *pmutex);
 extern void	_rtw_mutex_free(_mutex *pmutex);
 extern void	_rtw_spinlock_init(spinlock_t *plock);
 extern void	_rtw_spinlock_free(spinlock_t *plock);
-extern void	_rtw_spinlock(spinlock_t	*plock);
-extern void	_rtw_spinunlock(spinlock_t	*plock);
-extern void	_rtw_spinlock_ex(spinlock_t	*plock);
-extern void	_rtw_spinunlock_ex(spinlock_t	*plock);
 
 extern void	_rtw_init_queue(_queue	*pqueue);
 extern u32	_rtw_queue_empty(_queue	*pqueue);

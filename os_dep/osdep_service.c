@@ -22,6 +22,7 @@
 #define _OSDEP_SERVICE_C_
 
 #include <drv_types.h>
+#include <hal_data.h>
 
 #define RT_TAG	'1178'
 
@@ -745,26 +746,6 @@ void	_rtw_spinlock_free(_lock *plock)
 {
 }
 
-void	_rtw_spinlock(_lock	*plock)
-{
-	SPIN_LOCK(plock);
-}
-
-void	_rtw_spinunlock(_lock *plock)
-{
-	SPIN_UNLOCK(plock);
-}
-
-void	_rtw_spinlock_ex(_lock	*plock)
-{
-	SPIN_LOCK(plock);
-}
-
-void	_rtw_spinunlock_ex(_lock *plock)
-{
-	SPIN_UNLOCK(plock);
-}
-
 void	_rtw_init_queue(_queue	*pqueue)
 {
 
@@ -866,7 +847,7 @@ void rtw_udelay_os(int us)
 }
 #endif
 
-void rtw_yield_os()
+void rtw_yield_os(void)
 {
 	yield();
 }
@@ -905,7 +886,7 @@ static android_suspend_lock_t rtw_resume_scan_lock ={
 };
 #endif
 
-inline void rtw_suspend_lock_init()
+inline void rtw_suspend_lock_init(void)
 {
 	#ifdef CONFIG_WAKELOCK
 	wake_lock_init(&rtw_suspend_lock, WAKE_LOCK_SUSPEND, RTW_SUSPEND_LOCK_NAME);
@@ -924,7 +905,7 @@ inline void rtw_suspend_lock_init()
 	#endif
 }
 
-inline void rtw_suspend_lock_uninit()
+inline void rtw_suspend_lock_uninit(void)
 {
 	#ifdef CONFIG_WAKELOCK
 	wake_lock_destroy(&rtw_suspend_lock);
@@ -1136,7 +1117,7 @@ static int readFile(struct file *fp,char *buf,int len)
 		return -EPERM;
 
 	while(sum<len) {
-		rlen=fp->f_op->read(fp,buf+sum,len-sum, &fp->f_pos);
+		rlen=fp->f_op->read(fp, (char __user *)buf+sum, len-sum, &fp->f_pos);
 		if(rlen>0)
 			sum+=rlen;
 		else if(0 != rlen)
@@ -1157,7 +1138,7 @@ static int writeFile(struct file *fp,char *buf,int len)
 		return -EPERM;
 
 	while(sum<len) {
-		wlen=fp->f_op->write(fp,buf+sum,len-sum, &fp->f_pos);
+		wlen=fp->f_op->write(fp, (char __user *)buf+sum, len-sum, &fp->f_pos);
 		if(wlen>0)
 			sum+=wlen;
 		else if(0 != wlen)
