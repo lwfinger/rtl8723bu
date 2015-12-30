@@ -20,6 +20,7 @@
 #define _RTW_CMD_C_
 
 #include <drv_types.h>
+#include <rtl8723b_hal.h>
 
 /*
 Caller and the rtw_cmd_thread can protect cmd_q by spin_lock.
@@ -2987,8 +2988,6 @@ exit:
 }
 
 #ifdef CONFIG_AP_MODE
-
-extern u32 g_wait_hiq_empty;
 
 static void rtw_chk_hi_queue_hdl(_adapter *padapter)
 {

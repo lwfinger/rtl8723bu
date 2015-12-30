@@ -283,7 +283,13 @@ VOID Hal_EfuseParseVoltage_8723B(PADAPTER pAdapter,u8* hwinfo,BOOLEAN	AutoLoadFa
 void C2HPacketHandler_8723B(PADAPTER padapter, u8 *pbuffer, u16 length);
 #endif
 
+extern u8 g_fwdl_chksum_fail;
+extern u8 g_fwdl_wintint_rdy_fail;
+extern u32 g_wait_hiq_empty;
 
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+extern void check_bt_status_work(void *data);
+#endif
 void rtl8723b_set_hal_ops(struct hal_ops *pHalFunc);
 void SetHwReg8723B(PADAPTER padapter, u8 variable, u8 *val);
 void GetHwReg8723B(PADAPTER padapter, u8 variable, u8 *val);

@@ -249,7 +249,6 @@ void _8051Reset8723(PADAPTER padapter)
 	DBG_8192C("%s: Finish\n", __func__);
 }
 
-extern u8 g_fwdl_chksum_fail;
 static s32 polling_fwdl_chksum(_adapter *adapter, u32 min_cnt, u32 timeout_ms)
 {
 	s32 ret = _FAIL;
@@ -287,7 +286,6 @@ exit:
 	return ret;
 }
 
-extern u8 g_fwdl_wintint_rdy_fail;
 static s32 _FWFreeToGo(_adapter *adapter, u32 min_cnt, u32 timeout_ms)
 {
 	s32 ret = _FAIL;
@@ -6040,7 +6038,6 @@ void rtl8723b_stop_thread(_adapter *padapter)
 }
 
 #if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
-extern void check_bt_status_work(void *data);
 void rtl8723bs_init_checkbthang_workqueue(_adapter * adapter)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))

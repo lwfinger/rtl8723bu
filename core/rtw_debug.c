@@ -20,6 +20,7 @@
 #define _RTW_DEBUG_C_
 
 #include <drv_types.h>
+#include <rtl8723b_hal.h>
 
 u32 GlobalDebugLevel = _drv_emerg_;
 
@@ -452,7 +453,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 	phead = get_list_head(queue);
 	plist = get_next(phead);
 	if ((!phead) || (!plist))
-		return 0;
+		goto exit;
 
 	DBG_871X_SEL_NL(m, "%5s  %-17s  %3s  %-3s  %-4s  %-4s  %5s  %s\n","index", "bssid", "ch", "RSSI", "SdBm", "Noise", "age", "ssid");
 	while(1)
@@ -487,6 +488,7 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 			pnetwork->network.Ssid.Ssid);
 		plist = get_next(plist);
 	}
+exit:
 	SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 
 	return 0;
