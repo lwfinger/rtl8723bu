@@ -21,7 +21,7 @@
 #include <rtw_odm.h>
 #include <hal_data.h>
 
-const char *odm_comp_str[] = {
+static const char *odm_comp_str[] = {
 	/* BIT0 */"ODM_COMP_DIG",
 	/* BIT1 */"ODM_COMP_RA_MASK",
 	/* BIT2 */"ODM_COMP_DYNAMIC_TXPWR",
@@ -58,7 +58,7 @@ const char *odm_comp_str[] = {
 
 #define RTW_ODM_COMP_MAX 32
 
-const char *odm_ability_str[] = {
+static const char *odm_ability_str[] = {
 	/* BIT0 */"ODM_BB_DIG",
 	/* BIT1 */"ODM_BB_RA_MASK",
 	/* BIT2 */"ODM_BB_DYNAMIC_TXPWR",
@@ -90,7 +90,7 @@ const char *odm_ability_str[] = {
 
 #define RTW_ODM_ABILITY_MAX 27
 
-const char *odm_dbg_level_str[] = {
+static const char *odm_dbg_level_str[] = {
 	NULL,
 	"ODM_DBG_OFF",
 	"ODM_DBG_SERIOUS",
@@ -170,7 +170,7 @@ inline void rtw_odm_ability_set(_adapter *adapter, u32 ability)
 #define RTW_ADAPTIVITY_EN_ENABLE 1
 #define RTW_ADAPTIVITY_EN_AUTO 2
 
-void rtw_odm_adaptivity_en_msg(void *sel, _adapter *adapter)
+static void rtw_odm_adaptivity_en_msg(void *sel, _adapter *adapter)
 {
 	struct registry_priv *regsty = &adapter->registrypriv;
 	struct mlme_priv *mlme = &adapter->mlmepriv;
@@ -194,7 +194,7 @@ void rtw_odm_adaptivity_en_msg(void *sel, _adapter *adapter)
 #define RTW_ADAPTIVITY_MODE_NORMAL 0
 #define RTW_ADAPTIVITY_MODE_CARRIER_SENSE 1
 
-void rtw_odm_adaptivity_mode_msg(void *sel, _adapter *adapter)
+static void rtw_odm_adaptivity_mode_msg(void *sel, _adapter *adapter)
 {
 	struct registry_priv *regsty = &adapter->registrypriv;
 
