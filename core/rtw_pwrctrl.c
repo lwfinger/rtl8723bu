@@ -178,7 +178,7 @@ int rtw_hw_suspend(_adapter *padapter );
 int rtw_hw_resume(_adapter *padapter);
 #endif
 
-bool rtw_pwr_unassociated_idle(_adapter *adapter)
+static bool rtw_pwr_unassociated_idle(_adapter *adapter)
 {
 	_adapter *buddy = adapter->pbuddy_adapter;
 	struct mlme_priv *pmlmepriv = &(adapter->mlmepriv);
@@ -648,7 +648,7 @@ void rtw_set_rpwm(PADAPTER padapter, u8 pslv)
 
 }
 
-u8 PS_RDY_CHECK(_adapter * padapter)
+static u8 PS_RDY_CHECK(_adapter * padapter)
 {
 	u32 curr_time, delta_time;
 	struct pwrctrl_priv	*pwrpriv = adapter_to_pwrctl(padapter);
