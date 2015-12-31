@@ -1098,7 +1098,7 @@ static _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 
 free_hal_data:
 	if(status != _SUCCESS && padapter->HalData)
-		rtw_mfree(padapter->HalData, sizeof(*(padapter->HalData)));
+		kfree(padapter->HalData);
 free_wdev:
 	if(status != _SUCCESS) {
 		#ifdef CONFIG_IOCTL_CFG80211
