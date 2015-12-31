@@ -605,7 +605,7 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		ret = -EFAULT;
 		goto exit;
 	 }
-	if (copy_from_user(command, (void *)priv_cmd.buf, priv_cmd.total_len)) {
+	if (copy_from_user(command, (void __user *)priv_cmd.buf, priv_cmd.total_len)) {
 		ret = -EFAULT;
 		goto exit;
 	}
@@ -758,7 +758,7 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 
 		pwfd_info = &padapter->wfd_info;
 		if( padapter->wdinfo.driver_interface == DRIVER_CFG80211 )
-			pwfd_info->rtsp_ctrlport = ( u16 ) get_int_from_command( priv_cmd.buf );
+			pwfd_info->rtsp_ctrlport = ( u16 ) get_int_from_command(priv_cmd.buf);
 		break;
 	case ANDROID_WIFI_CMD_WFD_SET_MAX_TPUT:
 		break;
@@ -768,7 +768,7 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 
 		pwfd_info = &padapter->wfd_info;
 		if( padapter->wdinfo.driver_interface == DRIVER_CFG80211 ) {
-			pwfd_info->wfd_device_type = ( u8 ) get_int_from_command( priv_cmd.buf );
+			pwfd_info->wfd_device_type = ( u8 ) get_int_from_command(priv_cmd.buf);
 			pwfd_info->wfd_device_type &= WFD_DEVINFO_DUAL;
 		}
 		break;
@@ -839,7 +839,7 @@ response:
 			bytes_written++;
 		}
 		priv_cmd.used_len = bytes_written;
-		if (copy_to_user((void *)priv_cmd.buf, command, bytes_written)) {
+		if (copy_to_user((void __user *)priv_cmd.buf, command, bytes_written)) {
 			DBG_871X("%s: failed to copy data to user buffer\n", __FUNCTION__);
 			ret = -EFAULT;
 		}
