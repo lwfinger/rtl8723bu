@@ -549,8 +549,6 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
 
-
-
 	DBG_COUNTER(padapter->rx_logs.os_indicate);
 
 	precvpriv = &(padapter->recvpriv);
@@ -591,23 +589,8 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p skb->len=%d\n", skb->head, skb->data, skb_tail_pointer(skb), skb_end_pointer(skb), skb->len));
 
 #ifdef CONFIG_AUTO_AP_MODE
-#if 1 //for testing
-#if 1
 	if (0x8899 == pattrib->eth_type)
-	{
 		rtw_os_ksocket_send(padapter, precv_frame);
-
-		//goto _recv_indicatepkt_drop;
-	}
-#else
-	if (0x8899 == pattrib->eth_type)
-	{
-		rtw_auto_ap_mode_rx(padapter, precv_frame);
-
-		goto _recv_indicatepkt_end;
-	}
-#endif
-#endif
 #endif //CONFIG_AUTO_AP_MODE
 
 	rtw_os_recv_indicate_pkt(padapter, skb, pattrib);
@@ -620,21 +603,15 @@ _recv_indicatepkt_end:
 
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("\n rtw_recv_indicatepkt :after rtw_os_recv_indicate_pkt!!!!\n"));
 
-
-
-        return _SUCCESS;
+	return _SUCCESS;
 
 _recv_indicatepkt_drop:
 
-	 //enqueue back to free_recv_queue
-	 if(precv_frame)
-		 rtw_free_recvframe(precv_frame, pfree_recv_queue);
+	//enqueue back to free_recv_queue
+	rtw_free_recvframe(precv_frame, pfree_recv_queue);
 
-	 DBG_COUNTER(padapter->rx_logs.os_indicate_err);
-	 return _FAIL;
-
-
-
+	DBG_COUNTER(padapter->rx_logs.os_indicate_err);
+	return _FAIL;
 }
 
 void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)

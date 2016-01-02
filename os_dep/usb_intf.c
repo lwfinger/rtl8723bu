@@ -1073,10 +1073,8 @@ static _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 #endif
 	//2012-07-11 Move here to prevent the 8723AS-VAU BT auto suspend influence
 	#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,33))
-			if (usb_autopm_get_interface(pusb_intf) < 0)
-				{
-					DBG_871X( "can't get autopm: \n");
-				}
+	if (usb_autopm_get_interface(pusb_intf) < 0)
+		DBG_871X( "can't get autopm: \n");
 	#endif
 #ifdef	CONFIG_BT_COEXIST
 	dvobj_to_pwrctl(dvobj)->autopm_cnt=1;
@@ -1159,11 +1157,11 @@ static void rtw_usb_if1_deinit(_adapter *if1)
 #ifdef CONFIG_BT_COEXIST
 	if(1 == pwrctl->autopm_cnt){
 		#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,33))
-			usb_autopm_put_interface(adapter_to_dvobj(if1)->pusbintf);
+		usb_autopm_put_interface(adapter_to_dvobj(if1)->pusbintf);
 		#elif (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,20))
-			usb_autopm_enable(adapter_to_dvobj(if1)->pusbintf);
+		usb_autopm_enable(adapter_to_dvobj(if1)->pusbintf);
 		#else
-			usb_autosuspend_device(adapter_to_dvobj(if1)->pusbdev, 1);
+		usb_autosuspend_device(adapter_to_dvobj(if1)->pusbdev, 1);
 		#endif
 		pwrctl->autopm_cnt --;
 	}

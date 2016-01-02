@@ -408,23 +408,23 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
 	int i;
 	struct xmit_buf *pxmitbuf = (struct xmit_buf *)purb->context;
 	_adapter	*padapter = pxmitbuf->padapter;
-       struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
+	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 
 	switch(pxmitbuf->flags) {
-		case VO_QUEUE_INX:
-			pxmitpriv->voq_cnt--;
-			break;
-		case VI_QUEUE_INX:
-			pxmitpriv->viq_cnt--;
-			break;
-		case BE_QUEUE_INX:
-			pxmitpriv->beq_cnt--;
-			break;
-		case BK_QUEUE_INX:
-			pxmitpriv->bkq_cnt--;
-			break;
-		default:
-			break;
+	case VO_QUEUE_INX:
+		pxmitpriv->voq_cnt--;
+		break;
+	case VI_QUEUE_INX:
+		pxmitpriv->viq_cnt--;
+		break;
+	case BE_QUEUE_INX:
+		pxmitpriv->beq_cnt--;
+		break;
+	case BK_QUEUE_INX:
+		pxmitpriv->bkq_cnt--;
+		break;
+	default:
+		break;
 	}
 
 	if (RTW_CANNOT_TX(padapter)) {

@@ -45,18 +45,14 @@ uint _rtw_pktfile_read (struct pkt_file *pfile, u8 *rmem, uint rlen)
 {
 	uint	len = 0;
 
-
-
-       len =  rtw_remainder_len(pfile);
+	len =  rtw_remainder_len(pfile);
 	len = (rlen > len)? len: rlen;
 
-       if(rmem)
-	  skb_copy_bits(pfile->pkt, pfile->buf_len-pfile->pkt_len, rmem, len);
+	if(rmem)
+		skb_copy_bits(pfile->pkt, pfile->buf_len-pfile->pkt_len, rmem, len);
 
-       pfile->cur_addr += len;
-       pfile->pkt_len -= len;
-
-
+	pfile->cur_addr += len;
+	pfile->pkt_len -= len;
 
 	return len;
 }
@@ -140,14 +136,13 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 
 	if (flag) {
 		int i;
-		for(i=0; i<8; i++)
-		{
+
+		for(i=0; i<8; i++) {
 			pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
-	             if(pxmitbuf->pxmit_urb[i] == NULL)
-	             {
-			DBG_871X("pxmitbuf->pxmit_urb[i]==NULL");
-			return _FAIL;
-	             }
+			if(pxmitbuf->pxmit_urb[i] == NULL) {
+				DBG_871X("pxmitbuf->pxmit_urb[i]==NULL");
+				return _FAIL;
+			}
 		}
 	}
 
