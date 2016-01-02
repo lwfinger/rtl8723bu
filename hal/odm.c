@@ -549,7 +549,7 @@ ODM_DMInit(
 	ODM_ClearTxPowerTrackingState(pDM_Odm);
 
 	if ( *(pDM_Odm->mp_mode) != 1)
-	odm_PathDiversityInit(pDM_Odm);
+		odm_PathDiversityInit(pDM_Odm);
 
 #if (defined(CONFIG_HW_ANTENNA_DIVERSITY))
 	if ( *(pDM_Odm->mp_mode) != 1){
@@ -638,21 +638,17 @@ ODM_DMWatchdog(
 	ODM_CfoTracking(pDM_Odm);
 	odm_DynamicTxPower(pDM_Odm);
 
-if ( *(pDM_Odm->mp_mode) != 1) {
-	if(pDM_Odm->SupportICType==ODM_RTL8723A)
-	{
-		odm_SwAntDivChkAntSwitch(pDM_Odm, SWAW_STEP_PEAK);
-	}
-	else if(pDM_Odm->SupportICType & (ODM_RTL8192C|ODM_RTL8192D))
-	{
-		if(pDM_Odm->AntDivType == HW_ANTDIV)
-			odm_HwAntDiv(pDM_Odm);
-		else
+	if ( *(pDM_Odm->mp_mode) != 1) {
+		if(pDM_Odm->SupportICType==ODM_RTL8723A) {
 			odm_SwAntDivChkAntSwitch(pDM_Odm, SWAW_STEP_PEAK);
+		} else if(pDM_Odm->SupportICType & (ODM_RTL8192C|ODM_RTL8192D)) {
+			if(pDM_Odm->AntDivType == HW_ANTDIV)
+				odm_HwAntDiv(pDM_Odm);
+			else
+				odm_SwAntDivChkAntSwitch(pDM_Odm, SWAW_STEP_PEAK);
+		} else
+			ODM_AntDiv(pDM_Odm);
 	}
-	else
-		ODM_AntDiv(pDM_Odm);
-}
 
 	if(pDM_Odm->SupportICType & ODM_IC_11AC_SERIES)
 	{
@@ -2311,7 +2307,7 @@ ODM_SingleDualAntennaDetection(
 	CurrentChannel = ODM_GetRFReg(pDM_Odm, ODM_RF_PATH_A, ODM_CHANNEL, bRFRegOffsetMask);
 	RfLoopReg = ODM_GetRFReg(pDM_Odm, ODM_RF_PATH_A, 0x00, bRFRegOffsetMask);
 	if(!(pDM_Odm->SupportICType == ODM_RTL8723B))
-	ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, Antenna_A);  // change to Antenna A
+		ODM_SetBBReg(pDM_Odm, rFPGA0_XA_RFInterfaceOE, ODM_DPDT, Antenna_A);  // change to Antenna A
 	else
 	{
 		Reg92c = ODM_GetBBReg(pDM_Odm, 0x92c, bMaskDWord);
@@ -2332,7 +2328,7 @@ ODM_SingleDualAntennaDetection(
 
 	// Store AFE Registers
 	if(pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8192C))
-	odm_PHY_SaveAFERegisters(pDM_Odm, AFE_REG_8723A, AFE_Backup, 16);
+		odm_PHY_SaveAFERegisters(pDM_Odm, AFE_REG_8723A, AFE_Backup, 16);
 	else if(pDM_Odm->SupportICType == ODM_RTL8723B)
 		AFE_rRx_Wait_CCA = ODM_GetBBReg(pDM_Odm, rRx_Wait_CCA,bMaskDWord);
 
@@ -2389,7 +2385,7 @@ ODM_SingleDualAntennaDetection(
 
 	//RF loop Setting
 	if(pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8192C))
-	ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_A, 0x0, 0xFFFFF, 0x50008);
+		ODM_SetRFReg(pDM_Odm, ODM_RF_PATH_A, 0x0, 0xFFFFF, 0x50008);
 
 	//IQK Single tone start
 	ODM_SetBBReg(pDM_Odm, rFPGA0_IQK, bMaskH3Bytes, 0x808000);
@@ -2466,31 +2462,23 @@ ODM_SingleDualAntennaDetection(
 
 	//Reload AFE Registers
 	if(pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8192C))
-	odm_PHY_ReloadAFERegisters(pDM_Odm, AFE_REG_8723A, AFE_Backup, 16);
+		odm_PHY_ReloadAFERegisters(pDM_Odm, AFE_REG_8723A, AFE_Backup, 16);
 	else if(pDM_Odm->SupportICType == ODM_RTL8723B)
 		ODM_SetBBReg(pDM_Odm, rRx_Wait_CCA, bMaskDWord, AFE_rRx_Wait_CCA);
 
-	if(pDM_Odm->SupportICType == ODM_RTL8723A)
-	{
+	if(pDM_Odm->SupportICType == ODM_RTL8723A) {
 		//2 Test Ant B based on Ant A is ON
-		if(mode==ANTTESTB)
-		{
-			if(AntA_report >=	100)
-			{
-				if(AntB_report > (AntA_report+1))
-				{
+		if(mode==ANTTESTB) {
+			if(AntA_report >=	100) {
+				if(AntB_report > (AntA_report+1)) {
 					pDM_SWAT_Table->ANTB_ON=FALSE;
-							ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Single Antenna A\n"));
-				}
-				else
-				{
+					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Single Antenna A\n"));
+				} else {
 					pDM_SWAT_Table->ANTB_ON=TRUE;
-							ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Dual Antenna is A and B\n"));
+					ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Dual Antenna is A and B\n"));
 				}
-			}
-			else
-			{
-							ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Need to check again\n"));
+			} else {
+				ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("ODM_SingleDualAntennaDetection(): Need to check again\n"));
 				pDM_SWAT_Table->ANTB_ON=FALSE; // Set Antenna B off as default
 				bResult = FALSE;
 			}

@@ -131,7 +131,7 @@ static int usb_writeN(struct intf_hdl *pintfhdl, u32 addr, u32 length, u8 *pdata
 		return 0;
 	wvalue = (u16)(addr&0x0000ffff);
 	len = length;
-	 _rtw_memcpy(buf, pdata, len );
+	_rtw_memcpy(buf, pdata, len );
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index, buf, len, requesttype);
 	kfree(buf);

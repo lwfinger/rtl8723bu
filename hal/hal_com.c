@@ -1087,21 +1087,14 @@ void SetHwReg(_adapter *adapter, u8 variable, u8 *val)
 		odm->SupportAbility &= *((u32 *)val);
 		break;
 	default:
-		if (0)
-		DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" variable(%d) not defined!\n",
-			FUNC_ADPT_ARG(adapter), variable);
 		break;
 	}
-
-
 }
 
 void GetHwReg(_adapter *adapter, u8 variable, u8 *val)
 {
 	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
 	DM_ODM_T *odm = &(hal_data->odmpriv);
-
-
 
 	switch (variable) {
 	case HW_VAR_BASIC_RATE:
@@ -1114,17 +1107,9 @@ void GetHwReg(_adapter *adapter, u8 variable, u8 *val)
 		*((u8*)val) = hal_data->rf_type;
 		break;
 	default:
-		if (0)
-		DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" variable(%d) not defined!\n",
-			FUNC_ADPT_ARG(adapter), variable);
 		break;
 	}
-
-
 }
-
-
-
 
 u8
 SetHalDefVar(_adapter *adapter, HAL_DEF_VARIABLE variable, void *value)

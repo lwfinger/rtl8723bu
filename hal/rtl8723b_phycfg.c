@@ -1160,7 +1160,7 @@ phy_SpurCalibration_8723B(IN PADAPTER pAdapter,
 			ODM_SetBBReg(pDM_Odm, 0xD4C, bMaskDWord, 0x00000000);
 			//enable CSI mask
 			ODM_SetBBReg(pDM_Odm, 0xD2C, BIT28, 0x1);
-				break;
+			break;
 		case 6:
 			ODM_SetBBReg(pDM_Odm, 0xC40,
 				     BIT28|BIT27|BIT26|BIT25|BIT24, 0x4);

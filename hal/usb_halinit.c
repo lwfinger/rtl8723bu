@@ -985,42 +985,8 @@ HwSuspendModeEnable92Cu(
 	IN	u8			Type
 	)
 {
-	//PRT_USB_DEVICE		pDevice = GET_RT_USB_DEVICE(pAdapter);
-	u16	reg = rtw_read16(pAdapter, REG_GPIO_MUXCFG);
-
-	//if (!pDevice->RegUsbSS)
-	{
-		return;
-	}
-
-	//
-	// 2010/08/23 MH According to Alfred's suggestion, we need to to prevent HW
-	// to enter suspend mode automatically. Otherwise, it will shut down major power
-	// domain and 8051 will stop. When we try to enter selective suspend mode, we
-	// need to prevent HW to enter D2 mode aumotmatically. Another way, Host will
-	// issue a S10 signal to power domain. Then it will cleat SIC setting(from Yngli).
-	// We need to enable HW suspend mode when enter S3/S4 or disable. We need
-	// to disable HW suspend mode for IPS/radio_off.
-	//
-	//RT_TRACE(COMP_RF, DBG_LOUD, ("HwSuspendModeEnable92Cu = %d\n", Type));
-	if (Type == _FALSE)
-	{
-		reg |= BIT14;
-		//RT_TRACE(COMP_RF, DBG_LOUD, ("REG_GPIO_MUXCFG = %x\n", reg));
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-		reg |= BIT12;
-		//RT_TRACE(COMP_RF, DBG_LOUD, ("REG_GPIO_MUXCFG = %x\n", reg));
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-	}
-	else
-	{
-		reg &= (~BIT12);
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-		reg &= (~BIT14);
-		rtw_write16(pAdapter, REG_GPIO_MUXCFG, reg);
-	}
-
 }	// HwSuspendModeEnable92Cu
+
 static rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
 {
 	//HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(pAdapter);
@@ -1125,11 +1091,7 @@ static u32 rtl8723bu_hal_init(PADAPTER padapter)
 	#define HAL_INIT_PROFILE_TAG(stage) do {} while(0)
 #endif //DBG_HAL_INIT_PROFILING
 
-
-
-
-
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 
 //	if(Adapter->bSurpriseRemoved)
 //		return RT_STATUS_FAILURE;
@@ -1176,7 +1138,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 	}
 #endif //CONFIG_WOWLAN
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PW_ON);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PW_ON);
 	status = _InitPowerOn_8723BU(padapter);
 	if(status == _FAIL){
 		RT_TRACE(_module_hci_hal_init_c_, _drv_err_, ("Failed to init power on!\n"));
@@ -1184,7 +1146,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PW_ON);
 	}
 
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 	if (!pregistrypriv->wifi_spec) {
 		boundary = TX_PAGE_BOUNDARY_8723B;
 	} else {
@@ -1197,7 +1159,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 		goto exit;
 	}
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC01);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC01);
 	if(pHalData->bRDGEnable){
 		_InitRDGSetting_8723bu(padapter);
 	}
@@ -1238,7 +1200,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC01);
 	// <Kordan> InitHalDm should be put ahead of FirmwareDownload. (HWConfig flow: FW->MAC->-BB->RF)
 	//InitHalDm(Adapter);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
 #if (1 == MP_DRIVER)
 	if (padapter->registrypriv.mp_mode == 1)
 	{
@@ -1277,7 +1239,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
 
 
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MAC);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MAC);
 #if (HAL_MAC_ENABLE == 1)
 	status = PHY_MACConfig8723B(padapter);
 	if(status == _FAIL)
@@ -1287,8 +1249,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MAC);
 	}
 #endif
 
-
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	//
 	//d. Initialize BB related configurations.
 	//
@@ -1300,11 +1261,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 		goto exit;
 	}
 #endif
-
-
-
-
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 #if (HAL_RF_ENABLE == 1)
 	status = PHY_RFConfig8723B(padapter);
 
@@ -1313,14 +1270,9 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 		DBG_871X("PHY_RFConfig8723B fault !!\n");
 		goto exit;
 	}
-
-
-
 #endif
 
-
-
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
 	_InitQueueReservedPage(padapter);
 	_InitTxBufferBoundary(padapter);
 	_InitQueuePriority(padapter);
@@ -1371,7 +1323,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
 	_InitHWLed(padapter);
 #endif //CONFIG_LED
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_TURN_ON_BLOCK);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_TURN_ON_BLOCK);
 	_BBTurnOnBlock(padapter);
 	//NicIFSetMacAddress(padapter, padapter->PermanentAddress);
 
@@ -1379,10 +1331,10 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_TURN_ON_BLOCK);
 	rtw_hal_set_chnl_bw(padapter, padapter->registrypriv.channel,
 		CHANNEL_WIDTH_20, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HAL_PRIME_CHNL_OFFSET_DONT_CARE);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_SECURITY);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_SECURITY);
 	invalidate_cam_all(padapter);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 	// 2010/12/17 MH We need to set TX power according to EFUSE content at first.
 	//PHY_SetTxPowerLevel8723B(padapter, pHalData->CurrentChannel);
 	rtl8723b_InitAntenna_Selection(padapter);
@@ -1402,9 +1354,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 
 	// Move by Neo for USB SS from above setp
 
-//	_RfPowerSave(Adapter);
-
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
 	rtl8723b_InitHalDm(padapter);
 
 #if (MP_DRIVER == 1)
@@ -1462,12 +1412,9 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
 	}
 
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 
-//HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PABIAS);
-//	_InitPABias(Adapter);
-
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
+	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
 #ifdef CONFIG_BT_COEXIST
 	// Init BT hw config.
 	rtw_btcoex_HAL_Initialize(padapter, _FALSE);
@@ -1539,7 +1486,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 
 	//2. Disable GPIO[10:8]
 	rtw_write8(Adapter, REG_GPIO_MUXCFG+3, 0x00);
-	    value16 = rtw_read16(Adapter, REG_GPIO_MUXCFG+2) & 0xFF0F;
+	value16 = rtw_read16(Adapter, REG_GPIO_MUXCFG+2) & 0xFF0F;
 	value8 = (u8) (value16&0x000F);
 	value16 |= ((value8<<4) | 0x0780);
 	rtw_write16(Adapter, REG_GPIO_MUXCFG+2, value16);
@@ -2062,25 +2009,21 @@ _ReadIDs(
 		// Customer ID, 0x00 and 0xff are reserved for Realtek.
 		pHalData->EEPROMCustomerID = *(u8 *)&PROMContent[EEPROM_CUSTOMER_ID_92C];
 		pHalData->EEPROMSubCustomerID = *(u8 *)&PROMContent[EEPROM_SUBCUSTOMER_ID_92C];
-
-	}
-	else{
+	} else{
 		pHalData->EEPROMVID	 = EEPROM_Default_VID;
 		pHalData->EEPROMPID	 = EEPROM_Default_PID;
 
 		// Customer ID, 0x00 and 0xff are reserved for Realtek.
 		pHalData->EEPROMCustomerID	= EEPROM_Default_CustomerID;
 		pHalData->EEPROMSubCustomerID = EEPROM_Default_SubCustomerID;
-
 	}
 
 	// For customized behavior.
-	if((pHalData->EEPROMVID == 0x103C) && (pHalData->EEPROMVID == 0x1629))// HP Lite-On for RTL8188CUS Slim Combo.
+	if((pHalData->EEPROMVID == 0x103C) || (pHalData->EEPROMVID == 0x1629))// HP Lite-On for RTL8188CUS Slim Combo.
 		pEEPROM->CustomerID = RT_CID_819x_HP;
 
 	//	Decide CustomerID according to VID/DID or EEPROM
-	switch(pHalData->EEPROMCustomerID)
-	{
+	switch(pHalData->EEPROMCustomerID) {
 		case EEPROM_CID_DEFAULT:
 			if((pHalData->EEPROMVID == 0x2001) && (pHalData->EEPROMPID == 0x3308))
 				pEEPROM->CustomerID = RT_CID_DLINK;
@@ -2243,12 +2186,8 @@ static void _ReadPSSetting(IN PADAPTER Adapter,IN u8*PROMContent,IN u8	AutoloadF
 	if(AutoloadFail){
 		pwrctl->bHWPowerdown = _FALSE;
 		pwrctl->bSupportRemoteWakeup = _FALSE;
-	}
-	else	{
-		//if(SUPPORT_HW_RADIO_DETECT(Adapter))
-			pwrctl->bHWPwrPindetect = Adapter->registrypriv.hwpwrp_detect;
-		//else
-			//pwrctl->bHWPwrPindetect = _FALSE;//dongle not support new
+	} else {
+		pwrctl->bHWPwrPindetect = Adapter->registrypriv.hwpwrp_detect;
 
 
 		//hw power down mode selection , 0:rf-off / 1:power down
@@ -2271,7 +2210,6 @@ static void _ReadPSSetting(IN PADAPTER Adapter,IN u8*PROMContent,IN u8	AutoloadF
 		DBG_8192C("### PS params=>  power_mgnt(%x),usbss_enable(%x) ###\n",Adapter->registrypriv.power_mgnt,Adapter->registrypriv.usbss_enable);
 
 	}
-
 }
 
 

@@ -282,10 +282,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 		// (2)PWDB, Average PWDB cacluated by hardware (for rate adaptive)
 		//
 
-		//if(pHalData->eRFPowerState == eRfOn)
-			cck_highpwr = pDM_Odm->bCckHighPower;
-		//else
-		//	cck_highpwr = FALSE;
+		cck_highpwr = pDM_Odm->bCckHighPower;
 
 		cck_agc_rpt =  pPhyStaRpt->cck_agc_rpt_ofdm_cfosho_a ;
 
@@ -485,8 +482,7 @@ odm_RxPhyStatus92CSeries_Parsing(
 		// (1)Get RSSI for HT rate
 		//
 
-	 for(i = ODM_RF_PATH_A; i < ODM_RF_PATH_MAX; i++)
-		{
+		for(i = ODM_RF_PATH_A; i < ODM_RF_PATH_MAX; i++) {
 			// 2008/01/30 MH we will judge RF RX path now.
 			if (pDM_Odm->RFPathRxEnable & BIT(i))
 				rf_rx_num++;
@@ -691,10 +687,7 @@ odm_RxPhyStatusJaguarSeries_Parsing(
 		// (2)PWDB, Average PWDB cacluated by hardware (for rate adaptive)
 		//
 
-		//if(pHalData->eRFPowerState == eRfOn)
-			cck_highpwr = pDM_Odm->bCckHighPower;
-		//else
-		//	cck_highpwr = FALSE;
+		cck_highpwr = pDM_Odm->bCckHighPower;
 
 		cck_agc_rpt =  pPhyStaRpt->cfosho[0] ;
 
@@ -824,21 +817,12 @@ odm_RxPhyStatusJaguarSeries_Parsing(
 		// (1)Get RSSI for OFDM rate
 		//
 
-		for(i = ODM_RF_PATH_A; i < ODM_RF_PATH_MAX; i++)
-		{
+		for(i = ODM_RF_PATH_A; i < ODM_RF_PATH_MAX; i++) {
 			// 2008/01/30 MH we will judge RF RX path now.
 			//DbgPrint("pDM_Odm->RFPathRxEnable = %x\n", pDM_Odm->RFPathRxEnable);
 			if (pDM_Odm->RFPathRxEnable & BIT(i))
-			{
 				rf_rx_num++;
-			}
-			//else
-				//continue;
-			//2012.05.25 LukeLee: Testchip AGC report is wrong, it should be restored back to old formula in MP chip
-			//if((pDM_Odm->SupportICType & (ODM_RTL8812|ODM_RTL8821)) && (!pDM_Odm->bIsMPChip))
-				rx_pwr[i] = (pPhyStaRpt->gain_trsw[i]&0x7F) - 110;
-			//else
-			//	rx_pwr[i] = ((pPhyStaRpt->gain_trsw[i]& 0x3F)*2) - 110;  //OLD FORMULA
+			rx_pwr[i] = (pPhyStaRpt->gain_trsw[i]&0x7F) - 110;
 
 			pPhyInfo->RxPwr[i] = rx_pwr[i];
 
@@ -846,9 +830,6 @@ odm_RxPhyStatusJaguarSeries_Parsing(
 			RSSI = odm_QueryRxPwrPercentage(rx_pwr[i]);
 
 			total_rssi += RSSI;
-			//RT_DISP(FRX, RX_PHY_SS, ("RF-%d RXPWR=%x RSSI=%d\n", i, rx_pwr[i], RSSI));
-
-
 
 			pPhyInfo->RxMIMOSignalStrength[i] =(u1Byte) RSSI;
 
@@ -1000,35 +981,20 @@ odm_Process_RSSIForDM(
 
 	//
 	// 2012/05/30 MH/Luke.Lee Add some description
-	// In windows driver: AP/IBSS mode STA
 	//
-	//if (pDM_Odm->SupportPlatform == ODM_WIN)
-	//{
-	//	pEntry = pDM_Odm->pODM_StaInfo[pDM_Odm->pAidMap[pPktinfo->StationID-1]];
-	//}
-	//else
-		pEntry = pDM_Odm->pODM_StaInfo[pPktinfo->StationID];
+	pEntry = pDM_Odm->pODM_StaInfo[pPktinfo->StationID];
 
 	if(!IS_STA_VALID(pEntry) ){
 		return;
 	}
 	if((!pPktinfo->bPacketMatchBSSID) )
-	{
 		return;
-	}
 
 	if(pPktinfo->bPacketBeacon)
 		pDM_Odm->PhyDbgInfo.NumQryBeaconPkt++;
 
 	isCCKrate = (pPktinfo->DataRate <= DESC_RATE11M)?TRUE :FALSE;
 	pDM_Odm->RxRate = pPktinfo->DataRate;
-	/*
-	if(!isCCKrate)
-	{
-		DbgPrint("OFDM: pPktinfo->StationID=%d, isCCKrate=%d, pPhyInfo->RxPWDBAll=%d\n",
-			pPktinfo->StationID, isCCKrate, pPhyInfo->RxPWDBAll);
-	}
-	*/
 
 	//--------------Statistic for antenna/path diversity------------------
 	if(pDM_Odm->SupportAbility & ODM_BB_ANT_DIV)
@@ -1324,26 +1290,18 @@ ODM_ConfigBBWithHeaderFile(
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
-				("===>ODM_ConfigBBWithHeaderFile (%s)\n", (pDM_Odm->bIsMPChip) ? "MPChip" : "TestChip"));
-    ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
-				("pDM_Odm->SupportPlatform: 0x%X, pDM_Odm->SupportInterface: 0x%X, pDM_Odm->BoardType: 0x%X\n",
-				pDM_Odm->SupportPlatform, pDM_Odm->SupportInterface, pDM_Odm->BoardType));
+			("===>ODM_ConfigBBWithHeaderFile (%s)\n", (pDM_Odm->bIsMPChip) ? "MPChip" : "TestChip"));
+	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD,
+			("pDM_Odm->SupportPlatform: 0x%X, pDM_Odm->SupportInterface: 0x%X, pDM_Odm->BoardType: 0x%X\n",
+			pDM_Odm->SupportPlatform, pDM_Odm->SupportInterface, pDM_Odm->BoardType));
 
-    if(pDM_Odm->SupportICType == ODM_RTL8723B)
-	{
-
+	if(pDM_Odm->SupportICType == ODM_RTL8723B) {
 		if(ConfigType == CONFIG_BB_PHY_REG)
-		{
 			READ_AND_CONFIG(8723B,_PHY_REG);
-		}
 		else if(ConfigType == CONFIG_BB_AGC_TAB)
-		{
 			READ_AND_CONFIG(8723B,_AGC_TAB);
-		}
 		else if(ConfigType == CONFIG_BB_PHY_REG_PG)
-		{
 			READ_AND_CONFIG(8723B,_PHY_REG_PG);
-		}
 	}
 	return HAL_STATUS_SUCCESS;
 }
@@ -1411,7 +1369,7 @@ ODM_GetHWImgVersion(
 	IN	PDM_ODM_T	pDM_Odm
 	)
 {
-    u4Byte  Version=0;
+	u4Byte  Version=0;
 
 	return Version;
 }

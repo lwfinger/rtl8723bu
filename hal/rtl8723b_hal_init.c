@@ -2836,7 +2836,6 @@ static void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 
 	if(bWithoutHWSM)
 	{
-		//HAL_DATA_TYPE		*pHalData	= GET_HAL_DATA(padapter);
 	/*****************************
 		Without HW auto state machine
 	g.	SYS_CLKR 0x08[15:0] = 0x30A3			//disable MAC clock
@@ -2844,25 +2843,14 @@ static void _ResetDigitalProcedure1_92C(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 	i.	AFE_XTAL_CTRL 0x24[15:0] = 0x880F		//gated AFE DIG_CLOCK
 	j.	SYS_ISO_CTRL 0x00[7:0] = 0xF9			// isolated digital to PON
 	******************************/
-		//rtw_write16(padapter, REG_SYS_CLKR, 0x30A3);
-		//if(!pDevice->RegUsbSS)
-		// 2011/01/26 MH SD4 Scott suggest to fix UNC-B cut bug.
-		//if (IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID))
-			//rtw_write16(padapter, REG_SYS_CLKR, (0x70A3|BIT6));  //modify to 0x70A3 by Scott.
-		//else
-			rtw_write16(padapter, REG_SYS_CLKR, 0x70A3);  //modify to 0x70A3 by Scott.
+		rtw_write16(padapter, REG_SYS_CLKR, 0x70A3);  //modify to 0x70A3 by Scott.
 		rtw_write8(padapter, REG_AFE_PLL_CTRL, 0x80);
 		rtw_write16(padapter, REG_AFE_XTAL_CTRL, 0x880F);
-		//if(!pDevice->RegUsbSS)
-			rtw_write8(padapter, REG_SYS_ISO_CTRL, 0xF9);
-	}
-	else
-	{
+		rtw_write8(padapter, REG_SYS_ISO_CTRL, 0xF9);
+	} else {
 		// Disable all RF/BB power
 		rtw_write8(padapter, REG_RF_CTRL, 0x00);
 	}
-//	RT_TRACE(COMP_INIT, DBG_LOUD, ("======> Reset Digital.\n"));
-
 }
 
 static void _ResetDigitalProcedure1(PADAPTER padapter, BOOLEAN bWithoutHWSM)
@@ -2872,18 +2860,12 @@ static void _ResetDigitalProcedure1(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 
 static void _ResetDigitalProcedure2(PADAPTER padapter)
 {
-	//HAL_DATA_TYPE		*pHalData	= GET_HAL_DATA(padapter);
 /*****************************
 k.	SYS_FUNC_EN 0x03[7:0] = 0x44			// disable ELDR runction
 l.	SYS_CLKR 0x08[15:0] = 0x3083			// disable ELDR clock
 m.	SYS_ISO_CTRL 0x01[7:0] = 0x83			// isolated ELDR to PON
 ******************************/
-	//rtw_write8(padapter, REG_SYS_FUNC_EN+1, 0x44); //marked by Scott.
-	// 2011/01/26 MH SD4 Scott suggest to fix UNC-B cut bug.
-	//if (IS_81xxC_VENDOR_UMC_B_CUT(pHalData->VersionID))
-		//rtw_write16(padapter, REG_SYS_CLKR, 0x70a3|BIT6);
-	//else
-		rtw_write16(padapter, REG_SYS_CLKR, 0x70a3); //modify to 0x70a3 by Scott.
+	rtw_write16(padapter, REG_SYS_CLKR, 0x70a3); //modify to 0x70a3 by Scott.
 	rtw_write8(padapter, REG_SYS_ISO_CTRL+1, 0x82); //modify to 0x82 by Scott.
 }
 
@@ -2903,12 +2885,10 @@ static void _DisableAnalog(PADAPTER padapter, BOOLEAN bWithoutHWSM)
 		******************************/
 
 		rtw_write8(padapter, REG_LDOA15_CTRL, 0x04);
-		//rtw_write8(padapter, REG_LDOV12D_CTRL, 0x54);
 
 		value8 = rtw_read8(padapter, REG_LDOV12D_CTRL);
 		value8 &= (~LDV12_EN);
 		rtw_write8(padapter, REG_LDOV12D_CTRL, value8);
-//		RT_TRACE(COMP_INIT, DBG_LOUD, (" REG_LDOV12D_CTRL Reg0x21:0x%02x.\n",value8));
 	}
 
 	/*****************************
@@ -4707,7 +4687,6 @@ static void hw_var_set_mlme_sitesurvey(PADAPTER padapter, u8 variable, u8* val)
 	PHAL_DATA_TYPE pHalData;
 	struct mlme_priv *pmlmepriv;
 
-
 	pHalData = GET_HAL_DATA(padapter);
 	pmlmepriv = &padapter->mlmepriv;
 
@@ -4716,12 +4695,12 @@ static void hw_var_set_mlme_sitesurvey(PADAPTER padapter, u8 variable, u8* val)
 		reg_bcn_ctl = REG_BCN_CTRL_1;
 	else
 #endif
-		reg_bcn_ctl = REG_BCN_CTRL;
+	reg_bcn_ctl = REG_BCN_CTRL;
 
 #ifdef CONFIG_FIND_BEST_CHANNEL
 	rcr_clear_bit = (RCR_CBSSID_BCN | RCR_CBSSID_DATA);
 
-	// Recieve all data frames
+	// Receive all data frames
 	value_rxfltmap2 = 0xFFFF;
 #else // CONFIG_FIND_BEST_CHANNEL
 

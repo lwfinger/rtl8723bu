@@ -1804,42 +1804,41 @@ PHY_GetTxPowerLimit(
 					rateSection = -1, channel = -1;
 	s8				powerLimit = MAX_POWER_INDEX;
 
-	if ( ( Adapter->registrypriv.RegEnableTxPowerLimit == 2 && pHalData->EEPROMRegulatory != 1 ) ||
-		   Adapter->registrypriv.RegEnableTxPowerLimit == 0 )
+	if ((Adapter->registrypriv.RegEnableTxPowerLimit == 2 &&
+	     pHalData->EEPROMRegulatory != 1 ) ||
+	    Adapter->registrypriv.RegEnableTxPowerLimit == 0 )
 		return MAX_POWER_INDEX;
-
-	switch( Adapter->registrypriv.RegPwrTblSel )
-	{
-		case 1:
-				regulation = TXPWR_LMT_ETSI;
-				break;
-		case 2:
-				regulation = TXPWR_LMT_MKK;
-				break;
-		case 3:
-				regulation = TXPWR_LMT_FCC;
-				break;
-
-		case 4:
-				regulation = TXPWR_LMT_WW;
-				break;
-
-		default:
-				regulation = ( Band == BAND_ON_2_4G ) ? pHalData->Regulation2_4G
-					                                  : pHalData->Regulation5G;
-				break;
+	switch( Adapter->registrypriv.RegPwrTblSel ) {
+	case 1:
+		regulation = TXPWR_LMT_ETSI;
+		break;
+	case 2:
+		regulation = TXPWR_LMT_MKK;
+		break;
+	case 3:
+		regulation = TXPWR_LMT_FCC;
+		break;
+	case 4:
+		regulation = TXPWR_LMT_WW;
+		break;
+	default:
+		regulation = ( Band == BAND_ON_2_4G ) ? pHalData->Regulation2_4G
+			                                  : pHalData->Regulation5G;
+		break;
 	}
+	if ( Band == BAND_ON_2_4G )
+		band = 0;
+	else
+		band = 1;
 
-	//DBG_871X("pMgntInfo->RegPwrTblSel %d, final regulation %d\n", Adapter->registrypriv.RegPwrTblSel, regulation );
-
-
-	if ( Band == BAND_ON_2_4G ) band = 0;
-	else if ( Band == BAND_ON_5G ) band = 1;
-
-	if ( Bandwidth == CHANNEL_WIDTH_20 ) bandwidth = 0;
-	else if ( Bandwidth == CHANNEL_WIDTH_40 ) bandwidth = 1;
-	else if ( Bandwidth == CHANNEL_WIDTH_80 ) bandwidth = 2;
-	else if ( Bandwidth == CHANNEL_WIDTH_160 ) bandwidth = 3;
+	if (Bandwidth == CHANNEL_WIDTH_20)
+		bandwidth = 0;
+	else if (Bandwidth == CHANNEL_WIDTH_40)
+		bandwidth = 1;
+	else if (Bandwidth == CHANNEL_WIDTH_80)
+		bandwidth = 2;
+	else if ( Bandwidth == CHANNEL_WIDTH_160)
+		bandwidth = 3;
 
 	switch ( DataRate )
 	{
@@ -1944,7 +1943,7 @@ PHY_GetTxPowerLimit(
 
 	if ( Band == BAND_ON_2_4G ) {
 		s8 limits[10] = {0}; u8 i = 0;
-		for (i = 0; i < MAX_REGULATION_NUM; ++i)
+		for (i = 0; i < MAX_REGULATION_NUM; i++)
 			limits[i] = pHalData->TxPwrLimit_2_4G[i][bandwidth][rateSection][channel][RfPath];
 
 		powerLimit = (regulation == TXPWR_LMT_WW) ? phy_GetWorldWideLimit(limits) :
@@ -2175,18 +2174,20 @@ PHY_SetTxPowerLimit(
 	//DBG_871X( "Index of power limit table [band %s][regulation %s][bw %s][rate section %s][rf path %s][chnl %s][val %s]\n",
 	//	  Band, Regulation, Bandwidth, RateSection, RfPath, Channel, PowerLimit );
 
-	if ( !GetU1ByteIntegerFromStringInDecimal( (s8 *)Channel, &channel ) ||
-		 !GetU1ByteIntegerFromStringInDecimal( (s8 *)PowerLimit, &powerLimit ) )
-	{
+	if (!GetU1ByteIntegerFromStringInDecimal( (s8 *)Channel, &channel ) ||
+	    !GetU1ByteIntegerFromStringInDecimal( (s8 *)PowerLimit, &powerLimit ) )
 		DBG_871X("Illegal index of power limit table [chnl %s][val %s]\n", Channel, PowerLimit );
-	}
 
 	powerLimit = powerLimit > MAX_POWER_INDEX ? MAX_POWER_INDEX : powerLimit;
 
-	if ( eqNByte( Regulation, (u8 *)("FCC"), 3 ) ) regulation = 0;
-	else if ( eqNByte( Regulation, (u8 *)("MKK"), 3 ) ) regulation = 1;
-	else if ( eqNByte( Regulation, (u8 *)("ETSI"), 4 ) ) regulation = 2;
-	else if ( eqNByte( Regulation, (u8 *)("WW13"), 4 ) ) regulation = 3;
+	if (eqNByte(Regulation, (u8 *)("FCC"), 3))
+		regulation = 0;
+	else if (eqNByte( Regulation, (u8 *)("MKK"), 3 ))
+		regulation = 1;
+	else if (eqNByte( Regulation, (u8 *)("ETSI"), 4 ))
+		regulation = 2;
+	else if (eqNByte( Regulation, (u8 *)("WW13"), 4))
+		regulation = 3;
 
 	if ( eqNByte( RateSection, (u8 *)("CCK"), 3 ) && eqNByte( RfPath, (u8 *)("1T"), 2 ) )
 		rateSection = 0;
@@ -2215,13 +2216,16 @@ PHY_SetTxPowerLimit(
 	}
 
 
-	if ( eqNByte( Bandwidth, (u8 *)("20M"), 3 ) ) bandwidth = 0;
-	else if ( eqNByte( Bandwidth, (u8 *)("40M"), 3 ) ) bandwidth = 1;
-	else if ( eqNByte( Bandwidth, (u8 *)("80M"), 3 ) ) bandwidth = 2;
-	else if ( eqNByte( Bandwidth, (u8 *)("160M"), 4 ) ) bandwidth = 3;
+	if ( eqNByte( Bandwidth, (u8 *)("20M"), 3 ) )
+		bandwidth = 0;
+	else if ( eqNByte( Bandwidth, (u8 *)("40M"), 3 ) )
+		bandwidth = 1;
+	else if ( eqNByte( Bandwidth, (u8 *)("80M"), 3 ) )
+		bandwidth = 2;
+	else if ( eqNByte( Bandwidth, (u8 *)("160M"), 4 ) )
+		bandwidth = 3;
 
-	if ( eqNByte( Band, (u8 *)("2.4G"), 4 ) )
-	{
+	if ( eqNByte( Band, (u8 *)("2.4G"), 4 ) ) {
 		channelIndex = phy_GetChannelIndexOfTxPowerLimit( BAND_ON_2_4G, channel );
 
 		if ( channelIndex == -1 )
@@ -2328,7 +2332,7 @@ Hal_ChannelPlanToRegulation(
 		case RT_CHANNEL_DOMAIN_WORLD_FCC2:
 			pHalData->Regulation2_4G = TXPWR_LMT_FCC;
 			pHalData->Regulation5G = TXPWR_LMT_FCC;
-					break;
+			break;
 		case RT_CHANNEL_DOMAIN_WORLD_FCC3:
 			pHalData->Regulation2_4G = TXPWR_LMT_FCC;
 			pHalData->Regulation5G = TXPWR_LMT_FCC;
@@ -3595,12 +3599,10 @@ static int phy_ParsePowerLimitTableFile(PADAPTER Adapter, char *buffer)
 		phy_DecryptBBPgParaFile( Adapter, buffer);
 
 	ptmp = buffer;
-	for (szLine = GetLineFromBuffer(ptmp); szLine != NULL; szLine = GetLineFromBuffer(ptmp))
-	{
+	for (szLine = GetLineFromBuffer(ptmp); szLine != NULL; szLine = GetLineFromBuffer(ptmp)) {
 		// skip comment
-		if ( IsCommentString( szLine ) ) {
+		if (IsCommentString( szLine))
 			continue;
-		}
 
 		if( loadingStage == 0 ) {
 			for ( forCnt = 0; forCnt < TXPWR_LMT_MAX_REGULATION_NUM; ++forCnt )
@@ -3811,8 +3813,6 @@ static int phy_ParsePowerLimitTableFile(PADAPTER Adapter, char *buffer)
 
 					powerLimit[cnt] = '\0';
 				}
-
-				//DBG_871X("ch%s => %s\n", channel, powerLimit);
 
 				// store the power limit value
 				PHY_SetTxPowerLimit( Adapter, (u8 *)regulation[forCnt], (u8 *)band,

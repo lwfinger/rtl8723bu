@@ -260,7 +260,7 @@ ODM_CfoTracking(
 		if(pCfoTrack->bAdjust)
 		{
 			if(CFO_ave > CFO_TH_XTAL_LOW)
-			CrystalCap = CrystalCap + Adjust_Xtal;
+				CrystalCap = CrystalCap + Adjust_Xtal;
 			else if(CFO_ave < (-CFO_TH_XTAL_LOW))
 				CrystalCap = CrystalCap - Adjust_Xtal;
 

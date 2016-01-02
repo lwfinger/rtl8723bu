@@ -55,8 +55,6 @@ static void setIqkMatrix_8723B(PDM_ODM_T pDM_Odm, u1Byte OFDM_index,
 
 	if (OFDM_index >= OFDM_TABLE_SIZE)
 		OFDM_index = OFDM_TABLE_SIZE-1;
-	else if (OFDM_index < 0)
-		OFDM_index = 0;
 
 	ele_D = (OFDMSwingTable_New[OFDM_index] & 0xFFC00000) >> 22;
 
@@ -1068,21 +1066,21 @@ phy_PathB_RxIQK8723B(IN PADAPTER pAdapter, IN BOOLEAN configPathB)
 		      ODM_GetBBReg(pDM_Odm, 0xe98, bMaskDWord)));
 
 	//Allen 20131125
-		tmp = (regE9C & 0x03FF0000)>>16;
-//		ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,  ("tmp1 = 0x%x\n", tmp));
-		if ((tmp & 0x200) > 0)
-			tmp = 0x400 - tmp;
-//		ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,  ("tmp2 = 0x%x\n", tmp));
+	tmp = (regE9C & 0x03FF0000)>>16;
+//	ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,  ("tmp1 = 0x%x\n", tmp));
+	if ((tmp & 0x200) > 0)
+		tmp = 0x400 - tmp;
+//	ODM_RT_TRACE(pDM_Odm,ODM_COMP_CALIBRATION, ODM_DBG_LOUD,  ("tmp2 = 0x%x\n", tmp));
 
-		if (!(regEAC & BIT28) &&
-		    (((regE94 & 0x03FF0000)>>16) != 0x142) &&
-		    (((regE9C & 0x03FF0000)>>16) != 0x42)  &&
-		    (((regE94 & 0x03FF0000)>>16) <0x110) &&
-		    (((regE94 & 0x03FF0000)>>16) >0xf0) &&
-		    (tmp <0xf))
-			result |= 0x01;
-		else			//if Tx not OK, ignore Rx
-			return result;
+	if (!(regEAC & BIT28) &&
+	    (((regE94 & 0x03FF0000)>>16) != 0x142) &&
+	    (((regE9C & 0x03FF0000)>>16) != 0x42)  &&
+	    (((regE94 & 0x03FF0000)>>16) <0x110) &&
+	    (((regE94 & 0x03FF0000)>>16) >0xf0) &&
+	    (tmp <0xf))
+		result |= 0x01;
+	else			//if Tx not OK, ignore Rx
+		return result;
 
 	u4tmp = 0x80007C00 | (regE94&0x3FF0000)  | ((regE9C&0x3FF0000) >> 16);
 	ODM_SetBBReg(pDM_Odm, rTx_IQK, bMaskDWord, u4tmp);
@@ -2878,26 +2876,6 @@ PHY_LCCalibrate_8723B(IN PDM_ODM_T pDM_Odm)
 VOID
 PHY_APCalibrate_8723B(IN PADAPTER pAdapter, IN s1Byte delta)
 {
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	PDM_ODM_T	pDM_Odm = &pHalData->odmpriv;
-
-	return;
-
-	if (!(pDM_Odm->SupportAbility & ODM_RF_CALIBRATION)) {
-		return;
-	}
-
-#if FOR_BRAZIL_PRETEST != 1
-	if (pDM_Odm->RFCalibrateInfo.bAPKdone)
-#endif
-		return;
-
-	if (IS_92C_SERIAL( pHalData->VersionID)) {
-		phy_APCalibrate_8723B(pAdapter, delta, TRUE);
-	} else {
-		// For 88C 1T1R
-		phy_APCalibrate_8723B(pAdapter, delta, FALSE);
-	}
 }
 
 static VOID phy_SetRFPathSwitch_8723B(IN PADAPTER pAdapter,

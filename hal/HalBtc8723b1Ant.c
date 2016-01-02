@@ -2431,32 +2431,22 @@ halbtc8723b1ant_ActionWifiNotConnectedScan(
 	halbtc8723b1ant_PowerSaveState(pBtCoexist, BTC_PS_WIFI_NATIVE, 0x0, 0x0);
 
 	// tdma and coex table
-	if(BT_8723B_1ANT_BT_STATUS_ACL_BUSY == pCoexDm->btStatus)
-	{
-		if (pBtLinkInfo->bA2dpExist)
-		{
+	if(BT_8723B_1ANT_BT_STATUS_ACL_BUSY == pCoexDm->btStatus) {
+		if (pBtLinkInfo->bA2dpExist) {
 			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 32);
 			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 4);
-		}
-		else if (pBtLinkInfo->bA2dpExist && pBtLinkInfo->bPanExist)
-		{
+		} else if (pBtLinkInfo->bA2dpExist && pBtLinkInfo->bPanExist) {
 			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 22);
 			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 4);
-		}
-		else
-		{
-		halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 20);
+		} else {
+			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 20);
 			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 4);
 		}
-	}
-	else if( (BT_8723B_1ANT_BT_STATUS_SCO_BUSY == pCoexDm->btStatus) ||
-			(BT_8723B_1ANT_BT_STATUS_ACL_SCO_BUSY == pCoexDm->btStatus) )
-	{
+	} else if ((BT_8723B_1ANT_BT_STATUS_SCO_BUSY == pCoexDm->btStatus) ||
+		   (BT_8723B_1ANT_BT_STATUS_ACL_SCO_BUSY == pCoexDm->btStatus)) {
 		halbtc8723b1ant_ActionBtScoHidOnlyBusy(pBtCoexist,
 			BT_8723B_1ANT_WIFI_STATUS_CONNECTED_SCAN);
-	}
-	else
-	{
+	} else {
 		//Bryant Add
 		halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, FALSE, 8);
 		halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 2);
@@ -2500,32 +2490,22 @@ halbtc8723b1ant_ActionWifiConnectedScan(
 	halbtc8723b1ant_PowerSaveState(pBtCoexist, BTC_PS_WIFI_NATIVE, 0x0, 0x0);
 
 	// tdma and coex table
-	if(BT_8723B_1ANT_BT_STATUS_ACL_BUSY == pCoexDm->btStatus)
-	{
-		if (pBtLinkInfo->bA2dpExist)
-		{
+	if(BT_8723B_1ANT_BT_STATUS_ACL_BUSY == pCoexDm->btStatus) {
+		if (pBtLinkInfo->bA2dpExist) {
 			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 32);
 			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 4);
-		}
-		else if (pBtLinkInfo->bA2dpExist && pBtLinkInfo->bPanExist)
-		{
+		} else if (pBtLinkInfo->bA2dpExist && pBtLinkInfo->bPanExist) {
 			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 22);
 			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 4);
-		}
-		else
-		{
-		halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 20);
+		} else {
+			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, TRUE, 20);
 			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 4);
-	}
-	}
-	else if( (BT_8723B_1ANT_BT_STATUS_SCO_BUSY == pCoexDm->btStatus) ||
-			(BT_8723B_1ANT_BT_STATUS_ACL_SCO_BUSY == pCoexDm->btStatus) )
-	{
+		}
+	} else if ((BT_8723B_1ANT_BT_STATUS_SCO_BUSY == pCoexDm->btStatus) ||
+		   (BT_8723B_1ANT_BT_STATUS_ACL_SCO_BUSY == pCoexDm->btStatus)) {
 		halbtc8723b1ant_ActionBtScoHidOnlyBusy(pBtCoexist,
 			BT_8723B_1ANT_WIFI_STATUS_CONNECTED_SCAN);
-	}
-	else
-	{
+	} else {
 		//Bryant Add
 		halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, FALSE, 8);
 		halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 2);
@@ -2641,7 +2621,7 @@ halbtc8723b1ant_ActionWifiConnected(
 			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, FALSE, 8);
 
 			if ( (pCoexSta->highPriorityTx) + (pCoexSta->highPriorityRx) <= 60 )
-			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 2);
+				halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 2);
 			else
 				halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 7);
 		}
@@ -2664,7 +2644,7 @@ halbtc8723b1ant_ActionWifiConnected(
 			halbtc8723b1ant_PsTdma(pBtCoexist, NORMAL_EXEC, FALSE, 8);
 
 			if ( (pCoexSta->highPriorityTx) + (pCoexSta->highPriorityRx) <= 60 )
-			halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 2);
+				halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 2);
 			else
 				halbtc8723b1ant_CoexTableWithType(pBtCoexist, NORMAL_EXEC, 7);
 		}

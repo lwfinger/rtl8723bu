@@ -263,85 +263,75 @@ odm_SearchPwdBLowerBound(
 	IGI = 0x50; // find H2L, L2H lower bound
 	ODM_Write_DIG(pDM_Odm, IGI);
 
-
 	Diff = IGI_target -(s1Byte)IGI;
 	TH_L2H_dmc = pDM_Odm->TH_L2H_ini + Diff;
-		if(TH_L2H_dmc > 10)
-			TH_L2H_dmc = 10;
+	if(TH_L2H_dmc > 10)
+		TH_L2H_dmc = 10;
 	TH_H2L_dmc = TH_L2H_dmc - pDM_Odm->TH_EDCCA_HL_diff;
-	if(pDM_Odm->SupportICType & ODM_IC_11N_SERIES)
-		{
+	if(pDM_Odm->SupportICType & ODM_IC_11N_SERIES) {
 		ODM_SetBBReg(pDM_Odm,rOFDM0_ECCAThreshold, bMaskByte0, (u1Byte)TH_L2H_dmc);
 		ODM_SetBBReg(pDM_Odm,rOFDM0_ECCAThreshold, bMaskByte2, (u1Byte)TH_H2L_dmc);
-		}
-	else
+	} else
 		ODM_SetBBReg(pDM_Odm, rFPGA0_XB_LSSIReadBack, 0xFFFF, ((u1Byte)TH_H2L_dmc<<8) | (u1Byte)TH_L2H_dmc);
 
 	ODM_delay_ms(5);
 
-		while(bAdjust)
+	while(bAdjust) {
+		for(cnt=0; cnt<20; cnt ++) {
+			if (pDM_Odm->SupportICType & ODM_IC_11N_SERIES)
+				value32 = ODM_GetBBReg(pDM_Odm,ODM_REG_RPT_11N, bMaskDWord);
+			else if(pDM_Odm->SupportICType & ODM_IC_11AC_SERIES)
+				value32 = ODM_GetBBReg(pDM_Odm,ODM_REG_RPT_11AC, bMaskDWord);
+
+			if (value32 & BIT30 && (pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8723B|ODM_RTL8188E)))
+				pDM_Odm->txEdcca1 = pDM_Odm->txEdcca1 + 1;
+			else if(value32 & BIT29)
+				pDM_Odm->txEdcca1 = pDM_Odm->txEdcca1 + 1;
+			else
+				pDM_Odm->txEdcca0 = pDM_Odm->txEdcca0 + 1;
+		}
+
+		if(pDM_Odm->txEdcca1 > 5 ) {
+			IGI = IGI -1;
+			TH_L2H_dmc = TH_L2H_dmc + 1;
+			if(TH_L2H_dmc > 10)
+				TH_L2H_dmc = 10;
+			TH_H2L_dmc = TH_L2H_dmc - pDM_Odm->TH_EDCCA_HL_diff;
+			if(pDM_Odm->SupportICType & ODM_IC_11N_SERIES)
 			{
-			for(cnt=0; cnt<20; cnt ++)
-				{
-				if (pDM_Odm->SupportICType & ODM_IC_11N_SERIES)
-					value32 = ODM_GetBBReg(pDM_Odm,ODM_REG_RPT_11N, bMaskDWord);
-				else if(pDM_Odm->SupportICType & ODM_IC_11AC_SERIES)
-					value32 = ODM_GetBBReg(pDM_Odm,ODM_REG_RPT_11AC, bMaskDWord);
-
-				if (value32 & BIT30 && (pDM_Odm->SupportICType & (ODM_RTL8723A|ODM_RTL8723B|ODM_RTL8188E)))
-					pDM_Odm->txEdcca1 = pDM_Odm->txEdcca1 + 1;
-				else if(value32 & BIT29)
-					pDM_Odm->txEdcca1 = pDM_Odm->txEdcca1 + 1;
-				else
-					pDM_Odm->txEdcca0 = pDM_Odm->txEdcca0 + 1;
-				}
-			//DbgPrint("txEdcca1 = %d, txEdcca0 = %d\n", pDM_Odm->txEdcca1, pDM_Odm->txEdcca0);
-
-				if(pDM_Odm->txEdcca1 > 5 )
-				{
-					IGI = IGI -1;
-					TH_L2H_dmc = TH_L2H_dmc + 1;
-						if(TH_L2H_dmc > 10)
-							TH_L2H_dmc = 10;
-					TH_H2L_dmc = TH_L2H_dmc - pDM_Odm->TH_EDCCA_HL_diff;
-					if(pDM_Odm->SupportICType & ODM_IC_11N_SERIES)
-					{
-						ODM_SetBBReg(pDM_Odm,rOFDM0_ECCAThreshold, bMaskByte0, (u1Byte)TH_L2H_dmc);
-						ODM_SetBBReg(pDM_Odm,rOFDM0_ECCAThreshold, bMaskByte2, (u1Byte)TH_H2L_dmc);
-					}
-					else
-						ODM_SetBBReg(pDM_Odm, rFPGA0_XB_LSSIReadBack, 0xFFFF, ((u1Byte)TH_H2L_dmc<<8) | (u1Byte)TH_L2H_dmc);
-
-					pDM_Odm->TxHangFlg = TRUE;
-					pDM_Odm->txEdcca1 = 0;
-					pDM_Odm->txEdcca0 = 0;
-
-					if(TH_L2H_dmc == 10)
-						{
-						bAdjust = FALSE;
-						pDM_Odm->TxHangFlg = FALSE;
-						pDM_Odm->txEdcca1 = 0;
-						pDM_Odm->txEdcca0 = 0;
-						pDM_Odm->H2L_lb = TH_H2L_dmc;
-						pDM_Odm->L2H_lb = TH_L2H_dmc;
-						pDM_Odm->Adaptivity_IGI_upper = IGI;
-						}
-					}
-				else
-				{
-					bAdjust = FALSE;
-					pDM_Odm->TxHangFlg = FALSE;
-					pDM_Odm->txEdcca1 = 0;
-					pDM_Odm->txEdcca0 = 0;
-					pDM_Odm->H2L_lb = TH_H2L_dmc;
-					pDM_Odm->L2H_lb = TH_L2H_dmc;
-					pDM_Odm->Adaptivity_IGI_upper = IGI;
-				}
+				ODM_SetBBReg(pDM_Odm,rOFDM0_ECCAThreshold, bMaskByte0, (u1Byte)TH_L2H_dmc);
+				ODM_SetBBReg(pDM_Odm,rOFDM0_ECCAThreshold, bMaskByte2, (u1Byte)TH_H2L_dmc);
 			}
+			else
+				ODM_SetBBReg(pDM_Odm, rFPGA0_XB_LSSIReadBack, 0xFFFF, ((u1Byte)TH_H2L_dmc<<8) | (u1Byte)TH_L2H_dmc);
+
+			pDM_Odm->TxHangFlg = TRUE;
+			pDM_Odm->txEdcca1 = 0;
+			pDM_Odm->txEdcca0 = 0;
+
+			if(TH_L2H_dmc == 10)
+				{
+				bAdjust = FALSE;
+				pDM_Odm->TxHangFlg = FALSE;
+				pDM_Odm->txEdcca1 = 0;
+				pDM_Odm->txEdcca0 = 0;
+				pDM_Odm->H2L_lb = TH_H2L_dmc;
+				pDM_Odm->L2H_lb = TH_L2H_dmc;
+				pDM_Odm->Adaptivity_IGI_upper = IGI;
+			}
+		} else {
+			bAdjust = FALSE;
+			pDM_Odm->TxHangFlg = FALSE;
+			pDM_Odm->txEdcca1 = 0;
+			pDM_Odm->txEdcca0 = 0;
+			pDM_Odm->H2L_lb = TH_H2L_dmc;
+			pDM_Odm->L2H_lb = TH_L2H_dmc;
+			pDM_Odm->Adaptivity_IGI_upper = IGI;
+		}
+	}
 
 
-ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("IGI = 0x%x, H2L_lb = 0x%x, L2H_lb = 0x%x\n", IGI, pDM_Odm->H2L_lb , pDM_Odm->L2H_lb));
-
+	ODM_RT_TRACE(pDM_Odm,ODM_COMP_DIG, ODM_DBG_LOUD, ("IGI = 0x%x, H2L_lb = 0x%x, L2H_lb = 0x%x\n", IGI, pDM_Odm->H2L_lb , pDM_Odm->L2H_lb));
 }
 
 VOID
@@ -506,13 +496,11 @@ odm_Adaptivity(
 		TH_H2L_dmc = TH_L2H_dmc - pDM_Odm->TH_EDCCA_HL_diff;
 
 		//replace lower bound to prevent EDCCA always equal 1
-			if(TH_H2L_dmc < pDM_Odm->H2L_lb)
-				TH_H2L_dmc = pDM_Odm->H2L_lb;
-			if(TH_L2H_dmc < pDM_Odm->L2H_lb)
-				TH_L2H_dmc = pDM_Odm->L2H_lb;
-	}
-	else
-	{
+		if(TH_H2L_dmc < pDM_Odm->H2L_lb)
+			TH_H2L_dmc = pDM_Odm->H2L_lb;
+		if(TH_L2H_dmc < pDM_Odm->L2H_lb)
+			TH_L2H_dmc = pDM_Odm->L2H_lb;
+	} else {
 		TH_L2H_dmc = 0x7f;
 		TH_H2L_dmc = 0x7f;
 	}
@@ -1143,9 +1131,9 @@ odm_DIGbyRSSI_LPS(
 		RSSI_Lower =DM_DIG_MIN_NIC;
 
 	//Upper and Lower Bound checking
-	 if(CurrentIGI > DM_DIG_MAX_NIC)
+	if(CurrentIGI > DM_DIG_MAX_NIC)
 		CurrentIGI=DM_DIG_MAX_NIC;
-	 else if(CurrentIGI < RSSI_Lower)
+	else if(CurrentIGI < RSSI_Lower)
 		CurrentIGI =RSSI_Lower;
 
 

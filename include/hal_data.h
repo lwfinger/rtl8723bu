@@ -345,9 +345,9 @@ typedef struct hal_com_data
 	u8	TxPwrByRateTable;
 	u8	TxPwrByRateBand;
 	s8	TxPwrByRateOffset[TX_PWR_BY_RATE_NUM_BAND]
-						 [TX_PWR_BY_RATE_NUM_RF]
-						 [TX_PWR_BY_RATE_NUM_RF]
-						 [TX_PWR_BY_RATE_NUM_RATE];
+				 [TX_PWR_BY_RATE_NUM_RF]
+				 [TX_PWR_BY_RATE_NUM_RF]
+				 [TX_PWR_BY_RATE_NUM_RATE];
 	//---------------------------------------------------------------------------------//
 
 	//2 Power Limit Table
@@ -359,17 +359,17 @@ typedef struct hal_com_data
 
 	// Power Limit Table for 2.4G
 	s8	TxPwrLimit_2_4G[MAX_REGULATION_NUM]
-						[MAX_2_4G_BANDWITH_NUM]
-	                                [MAX_RATE_SECTION_NUM]
-	                                [CHANNEL_MAX_NUMBER_2G]
-						[MAX_RF_PATH_NUM];
+			       [MAX_2_4G_BANDWITH_NUM]
+	                       [MAX_RATE_SECTION_NUM]
+	                       [CHANNEL_MAX_NUMBER_2G]
+			       [MAX_RF_PATH_NUM];
 
 	// Power Limit Table for 5G
 	s8	TxPwrLimit_5G[MAX_REGULATION_NUM]
-						[MAX_5G_BANDWITH_NUM]
-						[MAX_RATE_SECTION_NUM]
-						[CHANNEL_MAX_NUMBER_5G]
-						[MAX_RF_PATH_NUM];
+			     [MAX_5G_BANDWITH_NUM]
+			     [MAX_RATE_SECTION_NUM]
+			     [CHANNEL_MAX_NUMBER_5G]
+			     [MAX_RF_PATH_NUM];
 
 
 	// Store the original power by rate value of the base of each rate section of rf path A & B

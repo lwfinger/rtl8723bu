@@ -43,7 +43,8 @@ odm_RSSIMonitorCheck(
 	// For AP/ADSL use prtl8192cd_priv
 	// For CE/NIC use PADAPTER
 	//
-PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
+	PDM_ODM_T pDM_Odm = (PDM_ODM_T)pDM_VOID;
+
 	if (!(pDM_Odm->SupportAbility & ODM_BB_RSSI_MONITOR))
 		return;
 
@@ -134,7 +135,7 @@ odm_RSSIMonitorCheckCE(
 	if(pDM_Odm->bLinked != _TRUE)
 		return;
 
-       FirstConnect = (pDM_Odm->bLinked) && (pRA_Table->firstconnect == FALSE);
+	FirstConnect = (pDM_Odm->bLinked) && (pRA_Table->firstconnect == FALSE);
 	pRA_Table->firstconnect = pDM_Odm->bLinked;
 
 	{

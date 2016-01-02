@@ -301,7 +301,7 @@ void update_recvframe_phyinfo(
              pkt_info.StationID = psta->mac_id;
 	pkt_info.DataRate = pattrib->data_rate;
 
-	 ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
+	ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
 	if (psta)
 		psta->rssi = pattrib->phy_info.RecvSignalPower;
 	precvframe->u.hdr.psta = NULL;

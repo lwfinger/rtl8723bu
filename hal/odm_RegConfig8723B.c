@@ -100,9 +100,9 @@ odm_ConfigRF_RadioA_8723B(
 	u4Byte  content = 0x1000; // RF_Content: radioa_txt
 	u4Byte	maskforPhySet= (u4Byte)(content&0xE000);
 
-    odm_ConfigRFReg_8723B(pDM_Odm, Addr, Data, ODM_RF_PATH_A, Addr|maskforPhySet);
+	odm_ConfigRFReg_8723B(pDM_Odm, Addr, Data, ODM_RF_PATH_A, Addr|maskforPhySet);
 
-    ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_TRACE, ("===> ODM_ConfigRFWithHeaderFile: [RadioA] %08X %08X\n", Addr, Data));
+	ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_TRACE, ("===> ODM_ConfigRFWithHeaderFile: [RadioA] %08X %08X\n", Addr, Data));
 }
 
 void
@@ -115,7 +115,7 @@ odm_ConfigRF_RadioB_8723B(
 	u4Byte  content = 0x1001; // RF_Content: radiob_txt
 	u4Byte	maskforPhySet= (u4Byte)(content&0xE000);
 
-    odm_ConfigRFReg_8723B(pDM_Odm, Addr, Data, ODM_RF_PATH_B, Addr|maskforPhySet);
+	odm_ConfigRFReg_8723B(pDM_Odm, Addr, Data, ODM_RF_PATH_B, Addr|maskforPhySet);
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_INIT, ODM_DBG_TRACE, ("===> ODM_ConfigRFWithHeaderFile: [RadioB] %08X %08X\n", Addr, Data));
 
