@@ -657,18 +657,13 @@ static void _mgt_dispatcher(_adapter *padapter, struct mlme_handler *ptable, uni
 	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
 	u8 *pframe = precv_frame->u.hdr.rx_data;
 
-	  if(ptable->func)
-        {
-	 //receive the frames that ra(a1) is my address or ra(a1) is bc address.
+	if(ptable->func) {
+		//receive the frames that ra(a1) is my address or ra(a1) is bc address.
 		if (!_rtw_memcmp(GetAddr1Ptr(pframe), myid(&padapter->eeprompriv), ETH_ALEN) &&
 			!_rtw_memcmp(GetAddr1Ptr(pframe), bc_addr, ETH_ALEN))
-		{
 			return;
-		}
-
 		ptable->func(padapter, precv_frame);
         }
-
 }
 
 void mgt_dispatcher(_adapter *padapter, union recv_frame *precv_frame)
@@ -2215,8 +2210,7 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 				break;
 
 		//if (pstat->aid > NUM_STA) {
-		if (pstat->aid > pstapriv->max_num_sta) {
-
+		if (pstat->aid > pstapriv->max_num_sta || pstat->aid > NUM_STA) {
 			pstat->aid = 0;
 
 			DBG_871X("  no room for more AIDs\n");
@@ -2224,14 +2218,11 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 			status = WLAN_STATUS_AP_UNABLE_TO_HANDLE_NEW_STA;
 
 			goto OnAssocReqFail;
-
-
 		} else {
 			pstapriv->sta_aid[pstat->aid - 1] = pstat;
 			DBG_871X("allocate new AID = (%d)\n", pstat->aid);
 		}
 	}
-
 
 	pstat->state &= (~WIFI_FW_ASSOC_STATE);
 	pstat->state |= WIFI_FW_ASSOC_SUCCESS;
@@ -4839,9 +4830,8 @@ static u8 is_matched_in_profilelist( u8* peermacaddr, struct profile_info* profi
 	DBG_871X( "[%s] peermac = %.2X %.2X %.2X %.2X %.2X %.2X\n", __FUNCTION__,
 		    peermacaddr[0], peermacaddr[1],peermacaddr[2],peermacaddr[3],peermacaddr[4],peermacaddr[5]);
 
-	for( i = 0; i < P2P_MAX_PERSISTENT_GROUP_NUM; i++, profileinfo++ )
-	{
-	       DBG_871X( "[%s] profileinfo_mac = %.2X %.2X %.2X %.2X %.2X %.2X\n", __FUNCTION__,
+	for( i = 0; i < P2P_MAX_PERSISTENT_GROUP_NUM; i++, profileinfo++ ) {
+		DBG_871X( "[%s] profileinfo_mac = %.2X %.2X %.2X %.2X %.2X %.2X\n", __FUNCTION__,
 			    profileinfo->peermac[0], profileinfo->peermac[1],profileinfo->peermac[2],profileinfo->peermac[3],profileinfo->peermac[4],profileinfo->peermac[5]);
 		if ( _rtw_memcmp( peermacaddr, profileinfo->peermac, ETH_ALEN ) )
 		{
@@ -6545,7 +6535,7 @@ s32 dump_mgntframe_and_wait_ack(_adapter *padapter, struct xmit_frame *pmgntfram
 	pxmitpriv->ack_tx = _FALSE;
 	_exit_critical_mutex(&pxmitpriv->ack_tx_mutex, NULL);
 
-	 return ret;
+	return ret;
 #else //!CONFIG_XMIT_ACK
 	dump_mgntframe(padapter, pmgntframe);
 	rtw_msleep_os(50);
@@ -9242,31 +9232,6 @@ void site_survey(_adapter *padapter)
 		}
 	}
 
-	if (0){
-#ifdef CONFIG_P2P
-		DBG_871X(FUNC_ADPT_FMT" ch:%u (cnt:%u,idx:%d) at %dms, %c%c%c\n"
-		, FUNC_ADPT_ARG(padapter)
-		, survey_channel
-		, pwdinfo->find_phase_state_exchange_cnt, pmlmeext->sitesurvey_res.channel_idx
-		, rtw_get_passing_time_ms(padapter->mlmepriv.scan_start_time)
-		, ScanType?'A':'P', pmlmeext->sitesurvey_res.scan_mode?'A':'P'
-		, pmlmeext->sitesurvey_res.ssid[0].SsidLength?'S':' '
-		);
-#else
-		DBG_871X(FUNC_ADPT_FMT" ch:%u (cnt:%u) at %dms, %c%c%c\n"
-                , FUNC_ADPT_ARG(padapter)
-                , survey_channel
-                , pmlmeext->sitesurvey_res.channel_idx
-                , rtw_get_passing_time_ms(padapter->mlmepriv.scan_start_time)
-                , ScanType?'A':'P', pmlmeext->sitesurvey_res.scan_mode?'A':'P'
-                , pmlmeext->sitesurvey_res.ssid[0].SsidLength?'S':' '
-                );
-#endif // CONFIG_P2P
-		#ifdef DBG_FIXED_CHAN
-		DBG_871X(FUNC_ADPT_FMT" fixed_chan:%u\n", pmlmeext->fixed_chan);
-		#endif
-	}
-
 	if(survey_channel != 0)
 	{
 		//PAUSE 4-AC Queue when site_survey
@@ -9386,7 +9351,7 @@ void site_survey(_adapter *padapter)
 		else
 			channel_scan_time_ms = pmlmeext->chan_scan_time;
 #else
-			channel_scan_time_ms = pmlmeext->chan_scan_time;
+		channel_scan_time_ms = pmlmeext->chan_scan_time;
 #endif
 
 		set_survey_timer(pmlmeext, channel_scan_time_ms);
@@ -9412,12 +9377,6 @@ void site_survey(_adapter *padapter)
 		u8 cur_bwmode;
 		u8 cur_ch_offset;
 
-		if (rtw_get_ch_setting_union(padapter, &cur_channel, &cur_bwmode, &cur_ch_offset) != 0)
-		{
-			if (0)
-			DBG_871X(FUNC_ADPT_FMT" back to linked/linking union - ch:%u, bw:%u, offset:%u\n",
-				FUNC_ADPT_ARG(padapter), cur_channel, cur_bwmode, cur_ch_offset);
-		}
 		#ifdef CONFIG_IOCTL_CFG80211
 		else if(padapter->pbuddy_adapter
 			&& pbuddy_adapter->wdinfo.driver_interface == DRIVER_CFG80211
@@ -10238,18 +10197,16 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 			}
 		}
 
-		if (pregistrypriv->wireless_mode & WIRELESS_11A)
-		{
+		if (pregistrypriv->wireless_mode & WIRELESS_11A) {
 			do {
 				if ((i == MAX_CHANNEL_NUM) ||
-					(chplan_sta[i].ChannelNum == 0))
+				    (chplan_sta[i].ChannelNum == 0))
 					break;
 
 				if ((j == chplan_ap.Len) || (chplan_ap.Channel[j] == 0))
 					break;
 
-				if (chplan_sta[i].ChannelNum == chplan_ap.Channel[j])
-				{
+				if (chplan_sta[i].ChannelNum == chplan_ap.Channel[j]) {
 					chplan_new[k].ChannelNum = chplan_ap.Channel[j];
 					chplan_new[k].ScanType = SCAN_ACTIVE;
 					i++;
@@ -10259,7 +10216,6 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 				else if (chplan_sta[i].ChannelNum < chplan_ap.Channel[j])
 				{
 					chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
-//					chplan_new[k].ScanType = chplan_sta[i].ScanType;
 					chplan_new[k].ScanType = SCAN_PASSIVE;
 					i++;
 					k++;
@@ -10274,36 +10230,29 @@ static void process_80211d(PADAPTER padapter, WLAN_BSSID_EX *bssid)
 			} while (1);
 
 			// change AP not support channel to Passive scan
-			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0))
-			{
+			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0)) {
 				chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
-//				chplan_new[k].ScanType = chplan_sta[i].ScanType;
 				chplan_new[k].ScanType = SCAN_PASSIVE;
 				i++;
 				k++;
 			}
 
 			// add channel AP supported
-			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] != 0))
-			{
+			while ((j < chplan_ap.Len) && (chplan_ap.Channel[j] != 0)) {
 				chplan_new[k].ChannelNum = chplan_ap.Channel[j];
 				chplan_new[k].ScanType = SCAN_ACTIVE;
 				j++;
 				k++;
 			}
-		}
-		else
-		{
+		} else {
 			// keep original STA 5G channel plan
-			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0))
-			{
+			while ((i < MAX_CHANNEL_NUM) && (chplan_sta[i].ChannelNum != 0)) {
 				chplan_new[k].ChannelNum = chplan_sta[i].ChannelNum;
 				chplan_new[k].ScanType = chplan_sta[i].ScanType;
 				i++;
 				k++;
 			}
 		}
-
 		pmlmeext->update_channel_plan_by_ap_done = 1;
 
 #ifdef CONFIG_DEBUG_RTL871X
@@ -11120,7 +11069,7 @@ void _linked_info_dump(_adapter *padapter)
 {
 	int i;
 	struct mlme_ext_priv    *pmlmeext = &padapter->mlmeextpriv;
-      struct mlme_ext_info    *pmlmeinfo = &(pmlmeext->mlmext_info);
+     	struct mlme_ext_info    *pmlmeinfo = &(pmlmeext->mlmext_info);
 	u8 mac_id;
 	int UndecoratedSmoothedPWDB;
 	struct dvobj_priv *pdvobj = adapter_to_dvobj(padapter);
@@ -12139,10 +12088,6 @@ static int rtw_scan_ch_decision(_adapter *padapter, struct rtw_ieee80211_channel
 	/* acquire channels from in */
 	j = 0;
 	for (i=0;i<in_num;i++) {
-
-		if (0)
-		DBG_871X(FUNC_ADPT_FMT" "CHAN_FMT"\n", FUNC_ADPT_ARG(padapter), CHAN_ARG(&in[i]));
-
 		if(in[i].hw_value && !(in[i].flags & RTW_IEEE80211_CHAN_DISABLED)
 			&& (set_idx=rtw_ch_set_search_ch(pmlmeext->channel_set, in[i].hw_value)) >=0
 			&& rtw_mlme_band_check(padapter, in[i].hw_value) == _TRUE
@@ -12168,18 +12113,12 @@ static int rtw_scan_ch_decision(_adapter *padapter, struct rtw_ieee80211_channel
 	/* if out is empty, use channel_set as default */
 	if(j == 0) {
 		for (i=0;i<pmlmeext->max_chan_nums;i++) {
-
-			if (0)
-			DBG_871X(FUNC_ADPT_FMT" ch:%u\n", FUNC_ADPT_ARG(padapter), pmlmeext->channel_set[i].ChannelNum);
-
 			if (rtw_mlme_band_check(padapter, pmlmeext->channel_set[i].ChannelNum) == _TRUE) {
-
 				if (j >= out_num) {
 					DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" out_num:%u not enough\n",
 						FUNC_ADPT_ARG(padapter), out_num);
 					break;
 				}
-
 				out[j].hw_value = pmlmeext->channel_set[i].ChannelNum;
 
 				if(pmlmeext->channel_set[i].ScanType == SCAN_PASSIVE)

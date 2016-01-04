@@ -82,14 +82,12 @@ uint	rtw_is_cckrates_included(u8 *rate)
 {
 		u32	i = 0;
 
-		while(rate[i]!=0)
-		{
-			if  (  (((rate[i]) & 0x7f) == 2)	|| (((rate[i]) & 0x7f) == 4) ||
-			(((rate[i]) & 0x7f) == 11)  || (((rate[i]) & 0x7f) == 22) )
-			return _TRUE;
+		while(rate[i]!=0) {
+			if  ((((rate[i]) & 0x7f) == 2) || (((rate[i]) & 0x7f) == 4) ||
+			     (((rate[i]) & 0x7f) == 11)  || (((rate[i]) & 0x7f) == 22) )
+				return _TRUE;
 			i++;
 		}
-
 		return _FALSE;
 }
 
@@ -97,19 +95,15 @@ uint	rtw_is_cckratesonly_included(u8 *rate)
 {
 	u32 i = 0;
 
-
 	while(rate[i]!=0)
 	{
-			if  (  (((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
-				(((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22) )
-
+		if ((((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
+		   (((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22) )
 			return _FALSE;
-
-			i++;
+		i++;
 	}
 
 	return _TRUE;
-
 }
 
 int rtw_check_network_type(unsigned char *rate, int ratelen, int channel)

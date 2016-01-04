@@ -526,9 +526,6 @@ post_process:
 
 		_enter_critical_mutex(&(pcmd->padapter->cmdpriv.sctx_mutex), NULL);
 		if (pcmd->sctx) {
-			if (0)
-			DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" pcmd->sctx\n",
-				FUNC_ADPT_ARG(pcmd->padapter));
 			if (pcmd->res == H2C_SUCCESS)
 				rtw_sctx_done(&pcmd->sctx);
 			else
@@ -788,9 +785,6 @@ u8 rtw_sitesurvey_cmd(_adapter  *padapter, NDIS_802_11_SSID *ssid, int ssid_num,
 			if (ssid[i].SsidLength) {
 				_rtw_memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(NDIS_802_11_SSID));
 				psurveyPara->ssid_num++;
-				if (0)
-				DBG_871X(FUNC_ADPT_FMT" ssid:(%s, %d)\n", FUNC_ADPT_ARG(padapter),
-					psurveyPara->ssid[i].Ssid, psurveyPara->ssid[i].SsidLength);
 			}
 		}
 	}
@@ -802,9 +796,6 @@ u8 rtw_sitesurvey_cmd(_adapter  *padapter, NDIS_802_11_SSID *ssid, int ssid_num,
 			if (ch[i].hw_value && !(ch[i].flags & RTW_IEEE80211_CHAN_DISABLED)) {
 				_rtw_memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
 				psurveyPara->ch_num++;
-				if (0)
-				DBG_871X(FUNC_ADPT_FMT" ch:%u\n", FUNC_ADPT_ARG(padapter),
-					psurveyPara->ch[i].hw_value);
 			}
 		}
 	}
@@ -2256,16 +2247,13 @@ u8 traffic_status_watchdog(_adapter *padapter, u8 from_timer)
 	//
 	// Determine if our traffic is busy now
 	//
-	if((check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE)
-		/*&& !MgntInitAdapterInProgress(pMgntInfo)*/)
-	{
+	if((check_fwstate(pmlmepriv, _FW_LINKED)== _TRUE)) {
 		// if we raise bBusyTraffic in last watchdog, using lower threshold.
 		if (pmlmepriv->LinkDetectInfo.bBusyTraffic)
-				BusyThreshold = BusyThresholdLow;
+			BusyThreshold = BusyThresholdLow;
 
-		if( pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > BusyThreshold ||
-			pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > BusyThreshold )
-		{
+		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > BusyThreshold ||
+		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > BusyThreshold ) {
 			bBusyTraffic = _TRUE;
 
 			if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > pmlmepriv->LinkDetectInfo.NumTxOkInPeriod)
@@ -2275,9 +2263,8 @@ u8 traffic_status_watchdog(_adapter *padapter, u8 from_timer)
 		}
 
 		// Higher Tx/Rx data.
-		if( pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > 4000 ||
-			pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > 4000 )
-		{
+		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > 4000 ||
+		    pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > 4000) {
 			bHigherBusyTraffic = _TRUE;
 
 			if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > pmlmepriv->LinkDetectInfo.NumTxOkInPeriod)
@@ -2291,17 +2278,17 @@ u8 traffic_status_watchdog(_adapter *padapter, u8 from_timer)
 #define RX_ACTIVE_TH 20
 #define TRAFFIC_PROTECT_PERIOD_MS 4500
 
-	if (link_detect->NumTxOkInPeriod > TX_ACTIVE_TH
-		|| link_detect->NumRxUnicastOkInPeriod > RX_ACTIVE_TH) {
+		if (link_detect->NumTxOkInPeriod > TX_ACTIVE_TH ||
+		    link_detect->NumRxUnicastOkInPeriod > RX_ACTIVE_TH) {
 
-		DBG_871X_LEVEL(_drv_info_, FUNC_ADPT_FMT" acqiure wake_lock for %u ms(tx:%d,rx_unicast:%d)\n",
-			FUNC_ADPT_ARG(padapter),
-			TRAFFIC_PROTECT_PERIOD_MS,
-			link_detect->NumTxOkInPeriod,
-			link_detect->NumRxUnicastOkInPeriod);
+			DBG_871X_LEVEL(_drv_info_, FUNC_ADPT_FMT" acqiure wake_lock for %u ms(tx:%d,rx_unicast:%d)\n",
+				FUNC_ADPT_ARG(padapter),
+				TRAFFIC_PROTECT_PERIOD_MS,
+				link_detect->NumTxOkInPeriod,
+				link_detect->NumRxUnicastOkInPeriod);
 
-		rtw_lock_traffic_suspend_timeout(TRAFFIC_PROTECT_PERIOD_MS);
-	}
+			rtw_lock_traffic_suspend_timeout(TRAFFIC_PROTECT_PERIOD_MS);
+		}
 #endif
 
 #ifdef CONFIG_TDLS
@@ -3110,27 +3097,27 @@ static void btinfo_evt_dump(void *sel, void *buf)
 	DBG_871X_SEL_NL(sel, "cid:0x%02x, len:%u\n", info->cid, info->len);
 
 	if (info->len > 2)
-	DBG_871X_SEL_NL(sel, "byte2:%s%s%s%s%s%s%s%s\n"
-		, info->bConnection?"bConnection ":""
-		, info->bSCOeSCO?"bSCOeSCO ":""
-		, info->bInQPage?"bInQPage ":""
-		, info->bACLBusy?"bACLBusy ":""
-		, info->bSCOBusy?"bSCOBusy ":""
-		, info->bHID?"bHID ":""
-		, info->bA2DP?"bA2DP ":""
-		, info->bFTP?"bFTP":""
+		DBG_871X_SEL_NL(sel, "byte2:%s%s%s%s%s%s%s%s\n"
+			, info->bConnection?"bConnection ":""
+			, info->bSCOeSCO?"bSCOeSCO ":""
+			, info->bInQPage?"bInQPage ":""
+			, info->bACLBusy?"bACLBusy ":""
+			, info->bSCOBusy?"bSCOBusy ":""
+			, info->bHID?"bHID ":""
+			, info->bA2DP?"bA2DP ":""
+			, info->bFTP?"bFTP":""
 	);
 
 	if (info->len > 3)
-	DBG_871X_SEL_NL(sel, "retry_cnt:%u\n", info->retry_cnt);
+		DBG_871X_SEL_NL(sel, "retry_cnt:%u\n", info->retry_cnt);
 
 	if (info->len > 4)
-	DBG_871X_SEL_NL(sel, "rssi:%u\n", info->rssi);
+		DBG_871X_SEL_NL(sel, "rssi:%u\n", info->rssi);
 
 	if (info->len > 5)
-	DBG_871X_SEL_NL(sel, "byte5:%s%s\n"
-		, info->eSCO_SCO?"eSCO_SCO ":""
-		, info->Master_Slave?"Master_Slave ":""
+		DBG_871X_SEL_NL(sel, "byte5:%s%s\n"
+			, info->eSCO_SCO?"eSCO_SCO ":""
+			, info->Master_Slave?"Master_Slave ":""
 	);
 }
 

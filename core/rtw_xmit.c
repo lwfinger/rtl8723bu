@@ -1221,10 +1221,8 @@ static s32 xmitframe_addmic(_adapter *padapter, struct xmit_frame *pxmitframe){
 
 			}
 
-                    //if(pqospriv->qos_option==1)
-                    if(pattrib->qos_en)
+			if(pattrib->qos_en)
 				priority[0]=(u8)pxmitframe->attrib.priority;
-
 
 			rtw_secmicappend(&micdata, &priority[0], 4);
 
@@ -2977,35 +2975,11 @@ static struct xmit_frame *dequeue_one_xmitframe(struct xmit_priv *pxmitpriv, str
 	while ((rtw_end_of_queue_search(xmitframe_phead, xmitframe_plist)) == _FALSE)
 	{
 		pxmitframe = LIST_CONTAINOR(xmitframe_plist, struct xmit_frame, list);
-
 		xmitframe_plist = get_next(xmitframe_plist);
-
-/*#ifdef RTK_DMP_PLATFORM
-#ifdef CONFIG_USB_TX_AGGREGATION
-		if((ptxservq->qcnt>0) && (ptxservq->qcnt<=2))
-		{
-			pxmitframe = NULL;
-
-			tasklet_schedule(&pxmitpriv->xmit_tasklet);
-
-			break;
-		}
-#endif
-#endif*/
 		rtw_list_delete(&pxmitframe->list);
-
 		ptxservq->qcnt--;
-
-		//rtw_list_insert_tail(&pxmitframe->list, &phwxmit->pending);
-
-		//ptxservq->qcnt--;
-
 		break;
-
-		pxmitframe = NULL;
-
 	}
-
 	return pxmitframe;
 }
 
@@ -3771,34 +3745,28 @@ inline bool xmitframe_hiq_filter(struct xmit_frame *xmitframe)
 	_adapter *adapter = xmitframe->padapter;
 	struct registry_priv *registry = &adapter->registrypriv;
 
-if (adapter->interface_type != RTW_PCIE) {
+	if (adapter->interface_type != RTW_PCIE) {
+		if (registry->hiq_filter == RTW_HIQ_FILTER_ALLOW_SPECIAL) {
+			struct pkt_attrib *attrib = &xmitframe->attrib;
 
-	if (registry->hiq_filter == RTW_HIQ_FILTER_ALLOW_SPECIAL) {
-
-		struct pkt_attrib *attrib = &xmitframe->attrib;
-
-		if (attrib->ether_type == 0x0806
-			|| attrib->ether_type == 0x888e
-			#ifdef CONFIG_WAPI_SUPPORT
-			|| attrib->ether_type == 0x88B4
-			#endif
-			|| attrib->dhcp_pkt
-		) {
-			if (0)
-			DBG_871X(FUNC_ADPT_FMT" ether_type:0x%04x%s\n", FUNC_ADPT_ARG(xmitframe->padapter)
-				, attrib->ether_type, attrib->dhcp_pkt?" DHCP":"");
+			if (attrib->ether_type == 0x0806 ||
+			    attrib->ether_type == 0x888e ||
+			    #ifdef CONFIG_WAPI_SUPPORT
+			    attrib->ether_type == 0x88B4 ||
+			    #endif
+			    attrib->dhcp_pkt) {
+				allow = _TRUE;
+			}
+		}
+		else if (registry->hiq_filter == RTW_HIQ_FILTER_ALLOW_ALL) {
 			allow = _TRUE;
 		}
+		else if (registry->hiq_filter == RTW_HIQ_FILTER_DENY_ALL) {
+		}
+		else {
+			rtw_warn_on(1);
+		}
 	}
-	else if (registry->hiq_filter == RTW_HIQ_FILTER_ALLOW_ALL) {
-		allow = _TRUE;
-	}
-	else if (registry->hiq_filter == RTW_HIQ_FILTER_DENY_ALL) {
-	}
-	else {
-		rtw_warn_on(1);
-	}
-}
 	return allow;
 }
 

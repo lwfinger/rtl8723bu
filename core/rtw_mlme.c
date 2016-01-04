@@ -1594,7 +1594,7 @@ void rtw_indicate_disconnect( _adapter *padapter )
 		//set ips_deny_time to avoid enter IPS before LPS leave
 		rtw_set_ips_deny(padapter, 3000);
 
-	      _clr_fwstate_(pmlmepriv, _FW_LINKED);
+		_clr_fwstate_(pmlmepriv, _FW_LINKED);
 
 		rtw_led_control(padapter, LED_CTL_NO_LINK);
 
@@ -2710,8 +2710,6 @@ inline void rtw_clear_scan_deny(_adapter *adapter)
 {
 	struct mlme_priv *mlmepriv = &adapter->mlmepriv;
 	ATOMIC_SET(&mlmepriv->set_scan_deny, 0);
-	if (0)
-	DBG_871X(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 }
 
 void rtw_set_scan_deny_timer_hdl(_adapter *adapter)
@@ -2726,8 +2724,6 @@ void rtw_set_scan_deny(_adapter *adapter, u32 ms)
 	struct mlme_priv *b_mlmepriv;
 #endif
 
-	if (0)
-	DBG_871X(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 	ATOMIC_SET(&mlmepriv->set_scan_deny, 1);
 	_set_timer(&mlmepriv->set_scan_deny_timer, ms);
 
@@ -2735,8 +2731,6 @@ void rtw_set_scan_deny(_adapter *adapter, u32 ms)
 	if (!adapter->pbuddy_adapter)
 		return;
 
-	if (0)
-	DBG_871X(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter->pbuddy_adapter));
 	b_mlmepriv = &adapter->pbuddy_adapter->mlmepriv;
 	ATOMIC_SET(&b_mlmepriv->set_scan_deny, 1);
 	_set_timer(&b_mlmepriv->set_scan_deny_timer, ms);
@@ -2833,17 +2827,8 @@ int rtw_select_roaming_candidate(struct mlme_priv *mlme)
 
 		mlme->pscanned = get_next(mlme->pscanned);
 
-		if (0)
-		DBG_871X("%s("MAC_FMT", ch%u) rssi:%d\n"
-			, pnetwork->network.Ssid.Ssid
-			, MAC_ARG(pnetwork->network.MacAddress)
-			, pnetwork->network.Configuration.DSConfig
-			, (int)pnetwork->network.Rssi);
-
 		rtw_check_roaming_candidate(mlme, &candidate, pnetwork);
-
 	}
-
 	if(candidate == NULL) {
 		DBG_871X("%s: return _FAIL(candidate == NULL)\n", __FUNCTION__);
 		ret = _FAIL;
@@ -2991,17 +2976,8 @@ int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv )
 
 		pmlmepriv->pscanned = get_next(pmlmepriv->pscanned);
 
-		if (0)
-		DBG_871X("%s("MAC_FMT", ch%u) rssi:%d\n"
-			, pnetwork->network.Ssid.Ssid
-			, MAC_ARG(pnetwork->network.MacAddress)
-			, pnetwork->network.Configuration.DSConfig
-			, (int)pnetwork->network.Rssi);
-
 		rtw_check_join_candidate(pmlmepriv, &candidate, pnetwork);
-
 	}
-
 	if(candidate == NULL) {
 		DBG_871X("%s: return _FAIL(candidate == NULL)\n", __FUNCTION__);
 #ifdef CONFIG_WOWLAN

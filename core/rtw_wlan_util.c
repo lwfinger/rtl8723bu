@@ -87,7 +87,7 @@ int cckrates_included(unsigned char *rate, int ratelen)
 	for (i = 0; i < ratelen; i++) {
 		if ((((rate[i]) & 0x7f) == 2) || (((rate[i]) & 0x7f) == 4) ||
 		    (((rate[i]) & 0x7f) == 11) || (((rate[i]) & 0x7f) == 22))
-		return _TRUE;
+			return _TRUE;
 	}
 
 	return _FALSE;
@@ -101,7 +101,7 @@ int cckratesonly_included(unsigned char *rate, int ratelen)
 	for (i = 0; i < ratelen; i++) {
 		if  ((((rate[i]) & 0x7f) != 2) && (((rate[i]) & 0x7f) != 4) &&
 		     (((rate[i]) & 0x7f) != 11)  && (((rate[i]) & 0x7f) != 22))
-		return _FALSE;
+			return _FALSE;
 	}
 
 	return _TRUE;
@@ -2261,22 +2261,20 @@ unsigned int should_forbid_n_rate(_adapter * padapter)
 		{
 			pIE = (PNDIS_802_11_VARIABLE_IEs)(cur_network->IEs + i);
 
-			switch (pIE->ElementID)
-			{
-				case _VENDOR_SPECIFIC_IE_:
-					if (_rtw_memcmp(pIE->data, RTW_WPA_OUI, 4) &&
-						((_rtw_memcmp((pIE->data + 12), WPA_CIPHER_SUITE_CCMP, 4)) ||
-						  (_rtw_memcmp((pIE->data + 16), WPA_CIPHER_SUITE_CCMP, 4))))
-						return _FALSE;
-					break;
-
-				case _RSN_IE_2_:
-					if  ((_rtw_memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
-					       (_rtw_memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
+			switch (pIE->ElementID) {
+			case _VENDOR_SPECIFIC_IE_:
+				if (_rtw_memcmp(pIE->data, RTW_WPA_OUI, 4) &&
+				    ((_rtw_memcmp((pIE->data + 12), WPA_CIPHER_SUITE_CCMP, 4)) ||
+				    (_rtw_memcmp((pIE->data + 16), WPA_CIPHER_SUITE_CCMP, 4))))
 					return _FALSE;
-
-				default:
-					break;
+				break;
+			case _RSN_IE_2_:
+				if ((_rtw_memcmp((pIE->data + 8), RSN_CIPHER_SUITE_CCMP, 4))  ||
+				    (_rtw_memcmp((pIE->data + 12), RSN_CIPHER_SUITE_CCMP, 4)))
+					return _FALSE;
+				break;
+			default:
+				break;
 			}
 
 			i += (pIE->Length + 2);

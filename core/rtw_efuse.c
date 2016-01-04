@@ -794,14 +794,12 @@ u8 rtw_efuse_map_write(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 			{
 				word_en &= ~BIT(i >> 1);
 				newdata[i] = data[idx];
-				 if( addr + idx == 0x8)
-				 {
+				if( addr + idx == 0x8) {
 					if (IS_C_CUT(pHalData->VersionID) || IS_B_CUT(pHalData->VersionID))
 					{
-						if(pEEPROM->adjuseVoltageVal == 6)
-						{
-								newdata[i] = map[addr + idx];
-								DBG_8192C(" %s ,\n adjuseVoltageVal = %d ,newdata[%d] = %x \n",__func__,pEEPROM->adjuseVoltageVal,i,newdata[i]);
+						if(pEEPROM->adjuseVoltageVal == 6) {
+							newdata[i] = map[addr + idx];
+							DBG_8192C(" %s ,\n adjuseVoltageVal = %d ,newdata[%d] = %x \n",__func__,pEEPROM->adjuseVoltageVal,i,newdata[i]);
 						}
 					}
 				  }

@@ -451,8 +451,10 @@ int proc_get_survey_info(struct seq_file *m, void *v)
 
 	SPIN_LOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 	phead = get_list_head(queue);
+	if (!phead)
+		goto exit;
 	plist = get_next(phead);
-	if ((!phead) || (!plist))
+	if (!plist)
 		goto exit;
 
 	DBG_871X_SEL_NL(m, "%5s  %-17s  %3s  %-3s  %-4s  %-4s  %5s  %s\n","index", "bssid", "ch", "RSSI", "SdBm", "Noise", "age", "ssid");

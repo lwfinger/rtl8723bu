@@ -155,9 +155,8 @@ void rtw_read_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 		RT_TRACE(_module_rtl871x_io_c_, _drv_info_,
 			 ("rtw_read_mem:bDriverStopped(%d) OR bSurpriseRemoved(%d)",
 			 adapter->bDriverStopped, adapter->bSurpriseRemoved));
-	     return;
+		return;
 	}
-
 	pintfhdl->io_ops._read_mem(pintfhdl, addr, cnt, pmem);
 }
 
@@ -218,7 +217,7 @@ u32 rtw_write_port_and_wait(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem, int 
 	if (ret == _SUCCESS)
 		ret = rtw_sctx_wait(&sctx, __func__);
 
-	 return ret;
+	return ret;
 }
 
 void rtw_write_port_cancel(_adapter *adapter)

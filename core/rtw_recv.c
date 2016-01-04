@@ -261,13 +261,9 @@ int rtw_free_recvframe(union recv_frame *precvframe, _queue *pfree_recv_queue)
 		if(pfree_recv_queue == &precvpriv->free_recv_queue)
 				precvpriv->free_recvframe_cnt++;
 	}
-
-      SPIN_UNLOCK_BH(pfree_recv_queue->lock, &irqL);
-
-
+	SPIN_UNLOCK_BH(pfree_recv_queue->lock, &irqL);
 
 	return _SUCCESS;
-
 }
 
 
@@ -763,32 +759,14 @@ union recv_frame * portctrl(_adapter *adapter,union recv_frame * precv_frame)
 			RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("portctrl:precv_frame->hdr.attrib.privacy=%x\n",precv_frame->u.hdr.attrib.privacy));
 
 			if (pattrib->bdecrypted == 0)
-			{
 				RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("portctrl:prxstat->decrypted=%x\n", pattrib->bdecrypted));
-			}
 
 			prtnframe=precv_frame;
-			//check is the EAPOL frame or not (Rekey)
-			//if(ether_type == eapol_type){
-			//	RT_TRACE(_module_rtl871x_recv_c_,_drv_notice_,("########portctrl:ether_type == 0x888e\n"));
-				//check Rekey
-
-			//	prtnframe=precv_frame;
-			//}
-			//else{
-			//	RT_TRACE(_module_rtl871x_recv_c_,_drv_info_,("########portctrl:ether_type=0x%04x\n", ether_type));
-			//}
 		}
-	}
-	else
-	{
+	} else {
 		prtnframe=precv_frame;
 	}
-
-
-
-		return prtnframe;
-
+	return prtnframe;
 }
 
 sint recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcache *prxcache);
@@ -1244,9 +1222,9 @@ sint sta2sta_data_frame(
 				RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("bssid != TA under STATION_MODE; drop pkt\n"));
 				ret= _FAIL;
 				goto exit;
-		}
+			}
 
-		sta_addr = pattrib->bssid;
+			sta_addr = pattrib->bssid;
 		}
 
 	}

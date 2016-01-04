@@ -23,17 +23,11 @@
 
 static void _rtw_init_stainfo(struct sta_info *psta)
 {
-
-
-
 	_rtw_memset((u8 *)psta, 0, sizeof (struct sta_info));
 
-	 _rtw_spinlock_init(&psta->lock);
+	_rtw_spinlock_init(&psta->lock);
 	_rtw_init_listhead(&psta->list);
 	_rtw_init_listhead(&psta->hash_list);
-	//_rtw_init_listhead(&psta->asoc_list);
-	//_rtw_init_listhead(&psta->sleep_list);
-	//_rtw_init_listhead(&psta->wakeup_list);
 
 	_rtw_init_queue(&psta->sleep_q);
 	psta->sleepq_len = 0;
@@ -746,10 +740,9 @@ struct sta_info* rtw_get_bcmc_stainfo(_adapter* padapter)
 	struct sta_priv		*pstapriv = &padapter->stapriv;
 	u8 bc_addr[ETH_ALEN] = {0xff,0xff,0xff,0xff,0xff,0xff};
 
-	 psta = rtw_get_stainfo(pstapriv, bc_addr);
+	psta = rtw_get_stainfo(pstapriv, bc_addr);
 
 	return psta;
-
 }
 
 u8 rtw_access_ctrl(_adapter *padapter, u8 *mac_addr)
