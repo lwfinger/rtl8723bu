@@ -147,6 +147,7 @@ struct c2h_evt_hdr_88xx {
 #define c2h_evt_valid(c2h_evt) ((c2h_evt)->id || (c2h_evt)->plen)
 
 struct P2P_PS_Offload_t {
+#ifdef __LITTLE_ENDIAN
 	u8 Offload_En:1;
 	u8 role:1; // 1: Owner, 0: Client
 	u8 CTWindow_En:1;
@@ -155,6 +156,16 @@ struct P2P_PS_Offload_t {
 	u8 AllStaSleep:1; // Only valid in Owner
 	u8 discovery:1;
 	u8 rsvd:1;
+#else
+	u8 rsvd:1;
+	u8 discovery:1;
+	u8 AllStaSleep:1; // Only valid in Owner
+	u8 NoA1_En:1;
+	u8 NoA0_En:1;
+	u8 CTWindow_En:1;
+	u8 role:1; // 1: Owner, 0: Client
+	u8 Offload_En:1;
+#endif
 };
 
 struct P2P_PS_CTWPeriod_t {

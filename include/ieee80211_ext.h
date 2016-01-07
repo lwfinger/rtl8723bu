@@ -61,44 +61,6 @@ struct rsn_ie_hdr {
 	u8 version[2]; /* little endian */
 }__attribute__ ((packed));
 
-struct wme_ac_parameter {
-#if defined(__LITTLE_ENDIAN)
-	/* byte 1 */
-	u8	aifsn:4,
-		acm:1,
-		aci:2,
-		reserved:1;
-
-	/* byte 2 */
-	u8	eCWmin:4,
-		eCWmax:4;
-#else
-	/* byte 1 */
-	u8	reserved:1,
-		aci:2,
-		acm:1,
-		aifsn:4;
-
-	/* byte 2 */
-	u8	eCWmax:4,
-		eCWmin:4;
-#endif
-
-	/* bytes 3 & 4 */
-	__le16 txopLimit;
-} __attribute__ ((packed));
-
-struct wme_parameter_element {
-	/* required fields for WME version 1 */
-	u8 oui[3];
-	u8 oui_type;
-	u8 oui_subtype;
-	u8 version;
-	u8 acInfo;
-	u8 reserved;
-	struct wme_ac_parameter ac[4];
-} __attribute__ ((packed));
-
 #define WPA_PUT_LE16(a, val)			\
 	do {					\
 		(a)[1] = ((u16) (val)) >> 8;	\
