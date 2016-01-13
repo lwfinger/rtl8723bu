@@ -1431,20 +1431,6 @@ int proc_get_all_sta_info(struct seq_file *m, void *v)
 
 #endif
 
-#ifdef DBG_MEMORY_LEAK
-#include <asm/atomic.h>
-extern atomic_t _malloc_cnt;;
-extern atomic_t _malloc_size;;
-
-int proc_get_malloc_cnt(struct seq_file *m, void *v)
-{
-	DBG_871X_SEL_NL(m, "_malloc_cnt=%d\n", atomic_read(&_malloc_cnt));
-	DBG_871X_SEL_NL(m, "_malloc_size=%d\n", atomic_read(&_malloc_size));
-
-	return 0;
-}
-#endif /* DBG_MEMORY_LEAK */
-
 #ifdef CONFIG_FIND_BEST_CHANNEL
 int proc_get_best_channel(struct seq_file *m, void *v)
 {

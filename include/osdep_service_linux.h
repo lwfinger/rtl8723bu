@@ -178,33 +178,17 @@ __inline static _list	*get_list_head(_queue	*queue)
 	return (&(queue->queue));
 }
 
-extern ulong lock_jiffies;
-extern ulong locked_jiffies;
-extern ulong lock_jiffies_irq;
-extern ulong locked_jiffies_irq;
-extern ulong lock_jiffies_bh;
-extern ulong locked_jiffies_bh;
-
 #define LIST_CONTAINOR(ptr, type, member) \
         ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
 
 #define SPIN_LOCK_IRQ(_LOCK, _IRQL)					\
 	{							\
-		_LOCK##_set = jiffies;				\
 		spin_lock_irqsave(&_LOCK, *_IRQL);		\
-		if (jiffies - _LOCK##_set > lock_jiffies_irq) {	\
-			lock_jiffies_irq = jiffies - _LOCK##_set;	\
-			pr_info("ms waiting to acquire lock_irq  = %d\n", jiffies_to_msecs(lock_jiffies_irq)); \
-		}						\
 	}
 
 #define SPIN_UNLOCK_IRQ(_LOCK, _IRQL)				\
 	{							\
 		spin_unlock_irqrestore(&_LOCK, *_IRQL);		\
-		if (jiffies - _LOCK##_set > locked_jiffies_irq) {	\
-			locked_jiffies_irq = jiffies - _LOCK##_set; \
-			pr_info("ms lock_irq is held  = %d\n", jiffies_to_msecs(locked_jiffies_irq)); \
-		}						\
 	}
 
 #define SPIN_LOCK_BH(_LOCK, _IRQL)				\

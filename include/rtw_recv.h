@@ -446,7 +446,7 @@ extern int	 rtw_free_recvframe(union recv_frame *precvframe, _queue *pfree_recv_
 extern int _rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue);
 extern int rtw_enqueue_recvframe(union recv_frame *precvframe, _queue *queue);
 
-extern void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue);
+//extern void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue);
 u32 rtw_free_uc_swdec_pending_queue(_adapter *adapter);
 
 sint rtw_enqueue_recvbuf_to_head(struct recv_buf *precvbuf, _queue *queue);

@@ -573,6 +573,12 @@ typedef struct hal_com_data HAL_DATA_TYPE, *PHAL_DATA_TYPE;
 #define GET_RF_TYPE(__pAdapter)		(GET_HAL_DATA(__pAdapter)->rf_type)
 #endif
 
+extern unsigned char	RTW_WPA_OUI[];
+extern unsigned char	WMM_OUI[];
+extern unsigned char	WPS_OUI[];
+extern unsigned char	P2P_OUI[];
+extern unsigned char	WFD_OUI[];
+
 int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
 void *scdb_findEntry(_adapter *priv, unsigned char *macAddr, unsigned char *ipAddr);
 void dhcp_flag_bcast(_adapter *priv, struct sk_buff *skb);
@@ -581,5 +587,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method);
 void nat25_db_expire(_adapter *priv);
 extern unsigned char REALTEK_96B_IE[];
 int rtw_change_ifname(_adapter *padapter, const char *ifname);
+void indicate_wx_scan_complete_event(_adapter *padapter);
+u8 rtw_do_join(_adapter *padapter);
 
 #endif //__HAL_DATA_H__

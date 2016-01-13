@@ -267,7 +267,6 @@ void rtw_free_cmd_priv (struct	cmd_priv *pcmdpriv)
 
 }
 
-int rtw_cmd_filter(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj);
 int rtw_cmd_filter(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj)
 {
 	u8 bAllow = _FALSE; //set to _TRUE to allow enqueuing cmd when hw_init_completed is _FALSE
@@ -2482,7 +2481,6 @@ static void dynamic_chk_wk_hdl(_adapter *padapter)
 
 #ifdef CONFIG_LPS
 
-void lps_ctrl_wk_hdl(_adapter *padapter, u8 lps_ctrl_type);
 void lps_ctrl_wk_hdl(_adapter *padapter, u8 lps_ctrl_type)
 {
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);

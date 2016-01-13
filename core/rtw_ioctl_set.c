@@ -20,9 +20,7 @@
 #define _RTW_IOCTL_SET_C_
 
 #include <drv_types.h>
-
-
-extern void indicate_wx_scan_complete_event(_adapter *padapter);
+#include <hal_data.h>
 
 #define IS_MAC_ADDRESS_BROADCAST(addr) \
 ( \
@@ -77,7 +75,6 @@ exit:
 	return ret;
 }
 
-u8 rtw_do_join(_adapter * padapter);
 u8 rtw_do_join(_adapter * padapter)
 {
 	_irqL	irqL;

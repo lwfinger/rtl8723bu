@@ -22,8 +22,6 @@
 #include <drv_types.h>
 
 #ifdef CONFIG_TDLS
-extern void process_wmmps_data(_adapter *padapter, union recv_frame *precv_frame);
-
 void rtw_reset_tdls_info(_adapter* padapter)
 {
 	struct tdls_info *ptdlsinfo = &padapter->tdlsinfo;

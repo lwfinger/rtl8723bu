@@ -45,8 +45,6 @@ unsigned char REALTEK_96B_IE[] = {0x00, 0xe0, 0x4c, 0x02, 0x01, 0x20};
 static unsigned char WPA_TKIP_CIPHER[4] = {0x00, 0x50, 0xf2, 0x02};
 static unsigned char RSN_TKIP_CIPHER[4] = {0x00, 0x0f, 0xac, 0x02};
 
-extern unsigned char RTW_WPA_OUI[];
-
 #define R2T_PHY_DELAY	(0)
 
 //#define WAIT_FOR_BCN_TO_MIN	3000
@@ -254,7 +252,6 @@ u8 judge_network_type(_adapter *padapter, unsigned char *rate, int ratelen)
 	return	network_type;
 }
 
-unsigned char ratetbl_val_2wifirate(unsigned char rate);
 unsigned char ratetbl_val_2wifirate(unsigned char rate)
 {
 	unsigned char val = 0;
@@ -312,7 +309,6 @@ unsigned char ratetbl_val_2wifirate(unsigned char rate)
 	return val;
 }
 
-int is_basicrate(_adapter *padapter, unsigned char rate);
 int is_basicrate(_adapter *padapter, unsigned char rate)
 {
 	int i;
@@ -332,7 +328,6 @@ int is_basicrate(_adapter *padapter, unsigned char rate)
 	return _FALSE;
 }
 
-unsigned int ratetbl2rateset(_adapter *padapter, unsigned char *rateset);
 unsigned int ratetbl2rateset(_adapter *padapter, unsigned char *rateset)
 {
 	int i;
@@ -2330,7 +2325,6 @@ unsigned int is_ap_in_wep(_adapter *padapter)
 
 }
 
-int wifirate2_ratetbl_inx(unsigned char rate);
 int wifirate2_ratetbl_inx(unsigned char rate)
 {
 	int	inx = 0;
@@ -2463,7 +2457,6 @@ unsigned char get_highest_rate_idx(u32 mask)
 	return rate_idx;
 }
 
-unsigned char get_highest_mcs_rate(struct HT_caps_element *pHT_caps);
 unsigned char get_highest_mcs_rate(struct HT_caps_element *pHT_caps)
 {
 	int i, mcs_rate;
@@ -2486,7 +2479,6 @@ void Update_RA_Entry(_adapter *padapter, struct sta_info *psta)
 	rtw_hal_update_ra_mask(psta, 0);
 }
 
-void enable_rate_adaptive(_adapter *padapter, struct sta_info *psta);
 void enable_rate_adaptive(_adapter *padapter, struct sta_info *psta)
 {
 	Update_RA_Entry(padapter, psta);

@@ -306,7 +306,6 @@ exit:
 	return res;
 }
 
-void  rtw_mfree_xmit_priv_lock (struct xmit_priv *pxmitpriv);
 void  rtw_mfree_xmit_priv_lock (struct xmit_priv *pxmitpriv)
 {
 	_rtw_spinlock_free(&pxmitpriv->lock);
@@ -4517,8 +4516,6 @@ void rtw_sctx_done(struct submit_ctx **sctx)
 #ifdef CONFIG_XMIT_ACK
 
 #ifdef CONFIG_XMIT_ACK_POLLING
-s32 c2h_evt_hdl(_adapter *adapter, u8 *c2h_evt, c2h_id_filter filter);
-
 /**
  * rtw_ack_tx_polling -
  * @pxmitpriv: xmit_priv to address ack_tx_ops

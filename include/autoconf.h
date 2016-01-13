@@ -298,7 +298,6 @@
 
 //#define DBG_IO
 //#define DBG_DELAY_OS
-//#define DBG_MEM_ALLOC
 //#define DBG_IOCTL
 
 //#define DBG_TX
@@ -318,4 +317,3 @@
 
 //#define DBG_HAL_INIT_PROFILING
 
-//#define DBG_MEMORY_LEAK	1

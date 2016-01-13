@@ -24,12 +24,6 @@
 
 #ifdef CONFIG_AP_MODE
 
-extern unsigned char	RTW_WPA_OUI[];
-extern unsigned char	WMM_OUI[];
-extern unsigned char	WPS_OUI[];
-extern unsigned char	P2P_OUI[];
-extern unsigned char	WFD_OUI[];
-
 void init_mlme_ap_info(_adapter *padapter)
 {
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
@@ -315,7 +309,6 @@ void rtw_remove_bcn_ie(_adapter *padapter, WLAN_BSSID_EX *pnetwork, u8 index)
 }
 
 
-u8 chk_sta_is_alive(struct sta_info *psta);
 u8 chk_sta_is_alive(struct sta_info *psta)
 {
 	u8 ret = _FALSE;

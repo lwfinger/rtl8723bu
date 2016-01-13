@@ -168,16 +168,6 @@ int ips_leave(_adapter * padapter)
 }
 #endif /* CONFIG_IPS */
 
-#ifdef CONFIG_AUTOSUSPEND
-extern void autosuspend_enter(_adapter* padapter);
-extern int autoresume_enter(_adapter* padapter);
-#endif
-
-#ifdef SUPPORT_HW_RFOFF_DETECTED
-int rtw_hw_suspend(_adapter *padapter );
-int rtw_hw_resume(_adapter *padapter);
-#endif
-
 static bool rtw_pwr_unassociated_idle(_adapter *adapter)
 {
 	_adapter *buddy = adapter->pbuddy_adapter;
@@ -421,13 +411,12 @@ exit:
 	rtw_set_pwr_state_check_timer(pwrpriv);
 #endif
 	pwrpriv->ps_processing = _FALSE;
-	return;
 }
 
-void pwr_state_check_handler(RTW_TIMER_HDL_ARGS);
 void pwr_state_check_handler(RTW_TIMER_HDL_ARGS)
 {
 	_adapter *padapter = (_adapter *)FunctionContext;
+
 	rtw_ps_cmd(padapter);
 }
 
@@ -435,12 +424,10 @@ void pwr_state_check_handler(RTW_TIMER_HDL_ARGS)
 void	traffic_check_for_leave_lps(PADAPTER padapter, u8 tx, u32 tx_packets)
 {
 #ifdef CONFIG_CHECK_LEAVE_LPS
-	static u32 start_time = 0;
-	static u32 xmit_cnt = 0;
+	static u32 start_time;
+	static u32 xmit_cnt;
 	u8	bLeaveLPS = _FALSE;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-
-
 
 	if(tx) //from tx
 	{
@@ -2073,8 +2060,6 @@ void rtw_free_pwrctrl_priv(PADAPTER adapter)
 }
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
-extern int rtw_resume_process(_adapter *padapter);
-
 static void resume_workitem_callback(struct work_struct *work)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(work, struct pwrctrl_priv, resume_work);
@@ -2121,7 +2106,6 @@ inline void rtw_set_do_late_resume(struct pwrctrl_priv *pwrpriv, bool enable)
 #endif
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
-extern int rtw_resume_process(_adapter *padapter);
 static void rtw_early_suspend(struct early_suspend *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);
@@ -2172,7 +2156,6 @@ void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv)
 #endif //CONFIG_HAS_EARLYSUSPEND
 
 #ifdef CONFIG_ANDROID_POWER
-extern int rtw_resume_process(PADAPTER padapter);
 static void rtw_early_suspend(android_early_suspend_t *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);

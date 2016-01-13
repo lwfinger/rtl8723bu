@@ -1309,19 +1309,16 @@ static u8 key_char2num(u8 ch)
 	 return 0xff;
 }
 
-u8 str_2char2num(u8 hch, u8 lch);
 u8 str_2char2num(u8 hch, u8 lch)
 {
-    return ((key_char2num(hch) * 10 ) + key_char2num(lch));
+	return ((key_char2num(hch) * 10 ) + key_char2num(lch));
 }
 
-u8 key_2char2num(u8 hch, u8 lch);
 u8 key_2char2num(u8 hch, u8 lch)
 {
-    return ((key_char2num(hch) << 4) | key_char2num(lch));
+	return ((key_char2num(hch) << 4) | key_char2num(lch));
 }
 
-void macstr2num(u8 *dst, u8 *src);
 void macstr2num(u8 *dst, u8 *src)
 {
 	int	jj, kk;
@@ -1333,7 +1330,7 @@ void macstr2num(u8 *dst, u8 *src)
 
 static u8 convert_ip_addr(u8 hch, u8 mch, u8 lch)
 {
-    return ((key_char2num(hch) * 100) + (key_char2num(mch) * 10 ) + key_char2num(lch));
+	return ((key_char2num(hch) * 100) + (key_char2num(mch) * 10 ) + key_char2num(lch));
 }
 
 void rtw_macaddr_cfg(u8 *mac_addr)

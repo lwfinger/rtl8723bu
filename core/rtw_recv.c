@@ -20,25 +20,15 @@
 #define _RTW_RECV_C_
 
 #include <drv_types.h>
+#include <osdep_service.h>
 
-ulong lock_jiffies_irq;
-ulong locked_jiffies_irq;
-ulong lock_jiffies_bh;
-ulong locked_jiffies_bh;
-ulong lock_jiffies;
-ulong locked_jiffies;
-
-#ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS);
-#endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
-
+static void rtw_free_recvframe_queue(_queue *pframequeue,
+				     _queue *pfree_recv_queue);
+static union recv_frame* recvframe_chk_defrag(PADAPTER padapter,
+					      union recv_frame *precv_frame);
 
 void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
 {
-
-
-
-
 	_rtw_memset((u8 *)psta_recvpriv, 0, sizeof (struct sta_recv_priv));
 
 	_rtw_spinlock_init(&psta_recvpriv->lock);
@@ -129,7 +119,6 @@ exit:
 
 }
 
-void rtw_mfree_recv_priv_lock(struct recv_priv *precvpriv);
 void rtw_mfree_recv_priv_lock(struct recv_priv *precvpriv)
 {
 	_rtw_spinlock_free(&precvpriv->lock);
@@ -325,7 +314,8 @@ using spinlock to protect
 
 */
 
-void rtw_free_recvframe_queue(_queue *pframequeue,  _queue *pfree_recv_queue)
+static void rtw_free_recvframe_queue(_queue *pframequeue,
+				     _queue *pfree_recv_queue)
 {
 	union	recv_frame	*precvframe;
 	_list	*plist, *phead;
@@ -426,7 +416,6 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue)
 
 }
 
-sint recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe);
 sint recvframe_chkmic(_adapter *adapter,  union recv_frame *precvframe){
 
 	sint	i,res=_SUCCESS;
@@ -573,8 +562,7 @@ exit:
 }
 
 //decrypt and set the ivlen,icvlen of the recv_frame
-union recv_frame * decryptor(_adapter *padapter,union recv_frame *precv_frame);
-union recv_frame * decryptor(_adapter *padapter,union recv_frame *precv_frame)
+union recv_frame *decryptor(_adapter *padapter,union recv_frame *precv_frame)
 {
 
 	struct rx_pkt_attrib *prxattrib = &precv_frame->u.hdr.attrib;
@@ -699,8 +687,7 @@ union recv_frame * decryptor(_adapter *padapter,union recv_frame *precv_frame)
 
 }
 //###set the security information in the recv_frame
-union recv_frame * portctrl(_adapter *adapter,union recv_frame * precv_frame);
-union recv_frame * portctrl(_adapter *adapter,union recv_frame * precv_frame)
+union recv_frame *portctrl(_adapter *adapter,union recv_frame * precv_frame)
 {
 	u8 *psta_addr = NULL;
 	u8 *ptr;
@@ -769,8 +756,8 @@ union recv_frame * portctrl(_adapter *adapter,union recv_frame * precv_frame)
 	return prtnframe;
 }
 
-sint recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcache *prxcache);
-sint recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcache *prxcache)
+sint recv_decache(union recv_frame *precv_frame, u8 bretry,
+		  struct stainfo_rxcache *prxcache)
 {
 	sint tid = precv_frame->u.hdr.attrib.priority;
 
@@ -804,7 +791,6 @@ sint recv_decache(union recv_frame *precv_frame, u8 bretry, struct stainfo_rxcac
 
 }
 
-void process_pwrbit_data(_adapter *padapter, union recv_frame *precv_frame);
 void process_pwrbit_data(_adapter *padapter, union recv_frame *precv_frame)
 {
 #ifdef CONFIG_AP_MODE
@@ -850,7 +836,6 @@ void process_pwrbit_data(_adapter *padapter, union recv_frame *precv_frame)
 #endif
 }
 
-void process_wmmps_data(_adapter *padapter, union recv_frame *precv_frame);
 void process_wmmps_data(_adapter *padapter, union recv_frame *precv_frame)
 {
 #ifdef CONFIG_AP_MODE
@@ -1020,8 +1005,8 @@ exit:
 }
 #endif
 
-void count_rx_stats(_adapter *padapter, union recv_frame *prframe, struct sta_info*sta);
-void count_rx_stats(_adapter *padapter, union recv_frame *prframe, struct sta_info*sta)
+void count_rx_stats(_adapter *padapter, union recv_frame *prframe,
+		    struct sta_info*sta)
 {
 	int	sz;
 	struct sta_info		*psta = NULL;
@@ -1531,7 +1516,6 @@ exit:
 
 }
 
-sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame);
 sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 {
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
@@ -1691,8 +1675,6 @@ sint validate_recv_ctrl_frame(_adapter *padapter, union recv_frame *precv_frame)
 
 }
 
-union recv_frame* recvframe_chk_defrag(PADAPTER padapter, union recv_frame *precv_frame);
-sint validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame);
 sint validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame)
 {
 	//struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
@@ -1782,7 +1764,6 @@ sint validate_recv_mgnt_frame(PADAPTER padapter, union recv_frame *precv_frame)
 
 }
 
-sint validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame);
 sint validate_recv_data_frame(_adapter *adapter, union recv_frame *precv_frame)
 {
 	u8 bretry;
@@ -2074,7 +2055,6 @@ static inline void dump_rx_packet(u8 *ptr)
 	DBG_871X("############################# \n");
 }
 
-sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame);
 sint validate_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
 {
 	//shall check frame subtype, to / from ds, da, bssid
@@ -2289,7 +2269,6 @@ exit:
 //remove the wlanhdr and add the eth_hdr
 #if 1
 
-sint wlanhdr_to_ethhdr ( union recv_frame *precvframe);
 sint wlanhdr_to_ethhdr ( union recv_frame *precvframe)
 {
 	sint	rmv_len;
@@ -2567,8 +2546,7 @@ static void recvframe_expand_pkt(
 }
 
 //perform defrag
-union recv_frame * recvframe_defrag(_adapter *adapter,_queue *defrag_q);
-union recv_frame * recvframe_defrag(_adapter *adapter,_queue *defrag_q)
+union recv_frame *recvframe_defrag(_adapter *adapter,_queue *defrag_q)
 {
 	_list	 *plist, *phead;
 	u8	*data,wlanhdr_offset;
@@ -2655,7 +2633,7 @@ union recv_frame * recvframe_defrag(_adapter *adapter,_queue *defrag_q)
 }
 
 //check if need to defrag, if needed queue the frame to defrag_q
-union recv_frame* recvframe_chk_defrag(PADAPTER padapter, union recv_frame *precv_frame)
+static union recv_frame* recvframe_chk_defrag(PADAPTER padapter, union recv_frame *precv_frame)
 {
 	u8	ismfrag;
 	u8	fragnum;
@@ -2865,7 +2843,6 @@ static int amsdu_to_msdu(_adapter *padapter, union recv_frame *prframe)
 	return ret;
 }
 
-int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_num);
 int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_num)
 {
 	PADAPTER padapter = preorder_ctrl->padapter;
@@ -2939,8 +2916,8 @@ int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl, u16 seq_num)
 	return _TRUE;
 }
 
-int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union recv_frame *prframe);
-int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union recv_frame *prframe)
+int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl,
+			      union recv_frame *prframe)
 {
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
 	_queue *ppending_recvframe_queue = &preorder_ctrl->pending_recvframe_queue;
@@ -3001,8 +2978,8 @@ int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, union rec
 
 }
 
-void recv_indicatepkts_pkt_loss_cnt(struct debug_priv *pdbgpriv, u64 prev_seq, u64 current_seq);
-void recv_indicatepkts_pkt_loss_cnt(struct debug_priv *pdbgpriv, u64 prev_seq, u64 current_seq)
+void recv_indicatepkts_pkt_loss_cnt(struct debug_priv *pdbgpriv, u64 prev_seq,
+				    u64 current_seq)
 {
 	if(current_seq < prev_seq)
 	{
@@ -3014,8 +2991,10 @@ void recv_indicatepkts_pkt_loss_cnt(struct debug_priv *pdbgpriv, u64 prev_seq, u
 		pdbgpriv->dbg_rx_ampdu_loss_count+= (current_seq - prev_seq);
 	}
 }
-int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *preorder_ctrl, int bforced);
-int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *preorder_ctrl, int bforced)
+
+int recv_indicatepkts_in_order(_adapter *padapter,
+			       struct recv_reorder_ctrl *preorder_ctrl,
+			       int bforced)
 {
 	//_irqL irql;
 	//u8 bcancelled;
@@ -3146,7 +3125,6 @@ int recv_indicatepkts_in_order(_adapter *padapter, struct recv_reorder_ctrl *pre
 
 }
 
-int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe);
 int recv_indicatepkt_reorder(_adapter *padapter, union recv_frame *prframe)
 {
 	_irqL irql;
@@ -3313,7 +3291,6 @@ void rtw_reordering_ctrl_timeout_handler(void *pcontext)
 
 }
 
-int process_recv_indicatepkts(_adapter *padapter, union recv_frame *prframe);
 int process_recv_indicatepkts(_adapter *padapter, union recv_frame *prframe)
 {
 	int retval = _SUCCESS;
@@ -3563,8 +3540,6 @@ _recv_data_drop:
 	return ret;
 }
 
-
-int recv_func(_adapter *padapter, union recv_frame *rframe);
 int recv_func(_adapter *padapter, union recv_frame *rframe)
 {
 	int ret;

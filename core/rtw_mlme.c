@@ -22,10 +22,6 @@
 #include <drv_types.h>
 #include <hal_data.h>
 
-extern void indicate_wx_scan_complete_event(_adapter *padapter);
-extern u8 rtw_do_join(_adapter * padapter);
-
-
 sint	_rtw_init_mlme_priv (_adapter* padapter)
 {
 	sint	i;
@@ -107,7 +103,6 @@ exit:
 	return res;
 }
 
-void rtw_mfree_mlme_priv_lock (struct mlme_priv *pmlmepriv);
 void rtw_mfree_mlme_priv_lock (struct mlme_priv *pmlmepriv)
 {
 	_rtw_spinlock_free(&pmlmepriv->lock);
@@ -474,7 +469,6 @@ void rtw_free_mlme_priv (struct mlme_priv *pmlmepriv)
 
 }
 
-int	rtw_enqueue_network(_queue *queue, struct wlan_network *pnetwork);
 int	rtw_enqueue_network(_queue *queue, struct wlan_network *pnetwork)
 {
 	int	res;
@@ -495,7 +489,6 @@ static struct	wlan_network *rtw_dequeue_network(_queue *queue)
 }
 */
 
-struct	wlan_network *rtw_alloc_network(struct	mlme_priv *pmlmepriv );
 struct	wlan_network *rtw_alloc_network(struct	mlme_priv *pmlmepriv )//(_queue	*free_queue)
 {
 	struct	wlan_network	*pnetwork;
@@ -505,7 +498,6 @@ struct	wlan_network *rtw_alloc_network(struct	mlme_priv *pmlmepriv )//(_queue	*f
 	return pnetwork;
 }
 
-void rtw_free_network(struct mlme_priv *pmlmepriv, struct	wlan_network *pnetwork, u8 is_freeall);
 void rtw_free_network(struct mlme_priv *pmlmepriv, struct	wlan_network *pnetwork, u8 is_freeall)//(struct	wlan_network *pnetwork, _queue	*free_queue)
 {
 
@@ -514,7 +506,6 @@ void rtw_free_network(struct mlme_priv *pmlmepriv, struct	wlan_network *pnetwork
 
 }
 
-void rtw_free_network_nolock(_adapter * padapter, struct wlan_network *pnetwork );
 void rtw_free_network_nolock(_adapter * padapter, struct wlan_network *pnetwork )
 {
 
@@ -936,7 +927,6 @@ exit:
 
 }
 
-void rtw_add_network(_adapter *adapter, WLAN_BSSID_EX *pnetwork);
 void rtw_add_network(_adapter *adapter, WLAN_BSSID_EX *pnetwork)
 {
 	_irqL irqL;
@@ -966,7 +956,6 @@ void rtw_add_network(_adapter *adapter, WLAN_BSSID_EX *pnetwork)
 //			   (3) WMM
 //			   (4) HT
 //                     (5) others
-int rtw_is_desired_network(_adapter *adapter, struct wlan_network *pnetwork);
 int rtw_is_desired_network(_adapter *adapter, struct wlan_network *pnetwork)
 {
 	struct security_priv *psecuritypriv = &adapter->securitypriv;

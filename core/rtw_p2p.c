@@ -3353,8 +3353,6 @@ static void find_phase_handler( _adapter*	padapter )
 
 }
 
-void p2p_concurrent_handler(  _adapter* padapter );
-
 static void restore_p2p_state_handler( _adapter*	padapter )
 {
 	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;

@@ -122,15 +122,6 @@ static ssize_t proc_set_log_level(struct file *file, const char __user *buffer, 
 	return count;
 }
 
-#ifdef DBG_MEM_ALLOC
-static int proc_get_mstat(struct seq_file *m, void *v)
-{
-	rtw_mstat_dump(m);
-	return 0;
-}
-#endif /* DBG_MEM_ALLOC */
-
-
 /*
 * rtw_drv_proc:
 * init/deinit when register/unregister driver
@@ -138,9 +129,6 @@ static int proc_get_mstat(struct seq_file *m, void *v)
 static const struct rtw_proc_hdl drv_proc_hdls [] = {
 	{"ver_info", proc_get_drv_version, NULL},
 	{"log_level", proc_get_log_level, proc_set_log_level},
-#ifdef DBG_MEM_ALLOC
-	{"mstat", proc_get_mstat, NULL},
-#endif /* DBG_MEM_ALLOC */
 };
 
 static const int drv_proc_hdls_num = sizeof(drv_proc_hdls) / sizeof(struct rtw_proc_hdl);
@@ -477,10 +465,6 @@ static const struct rtw_proc_hdl adapter_proc_hdls [] = {
 #ifdef CONFIG_AP_MODE
 	{"all_sta_info", proc_get_all_sta_info, NULL},
 #endif /* CONFIG_AP_MODE */
-
-#ifdef DBG_MEMORY_LEAK
-	{"_malloc_cnt", proc_get_malloc_cnt, NULL},
-#endif /* DBG_MEMORY_LEAK */
 
 #ifdef CONFIG_FIND_BEST_CHANNEL
 	{"best_channel", proc_get_best_channel, proc_set_best_channel},
