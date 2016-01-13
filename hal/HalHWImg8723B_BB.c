@@ -1,26 +1,28 @@
-/******************************************************************************
-*
-* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-*
-*
+/****************************************************************************** 
+* 
+* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved. 
+* 
+* This program is free software; you can redistribute it and/or modify it 
+* under the terms of version 2 of the GNU General Public License as 
+* published by the Free Software Foundation. 
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT 
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+* more details. 
+* 
+* You should have received a copy of the GNU General Public License along with 
+* this program; if not, write to the Free Software Foundation, Inc., 
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA 
+* 
+* 
 ******************************************************************************/
 
+/*Image2HeaderVersion: 2.9*/
+#include "Mp_Precomp.h"
+#include "../phydm_precomp.h"
 
-#include "odm_precomp.h"
-
+#if (RTL8723B_SUPPORT == 1)
 static BOOLEAN
 CheckPositive(
     IN  PDM_ODM_T     pDM_Odm,
@@ -28,70 +30,72 @@ CheckPositive(
     IN  const u4Byte  Condition2
     )
 {
-	u1Byte    _BoardType = ((pDM_Odm->BoardType & BIT4) >> 4) << 0 | // _GLNA
-                           ((pDM_Odm->BoardType & BIT3) >> 3) << 1 | // _GPA
+    u1Byte    _BoardType = ((pDM_Odm->BoardType & BIT4) >> 4) << 0 | // _GLNA
+                           ((pDM_Odm->BoardType & BIT3) >> 3) << 1 | // _GPA 
                            ((pDM_Odm->BoardType & BIT7) >> 7) << 2 | // _ALNA
-                           ((pDM_Odm->BoardType & BIT6) >> 6) << 3 | // _APA
-                           ((pDM_Odm->BoardType & BIT2) >> 2) << 4;  // _BT
+                           ((pDM_Odm->BoardType & BIT6) >> 6) << 3 | // _APA 
+                           ((pDM_Odm->BoardType & BIT2) >> 2) << 4;  // _BT  
 
-	u4Byte	  cond1   = Condition1, cond2 = Condition2;
-	u4Byte    driver1 = pDM_Odm->CutVersion       << 24 |
-		                pDM_Odm->SupportPlatform  << 16 |
-		                pDM_Odm->PackageType      << 12 |
-		                pDM_Odm->SupportInterface << 8  |
-		                _BoardType;
+	u4Byte 	  cond1   = Condition1, cond2 = Condition2;
+	u4Byte    driver1 = pDM_Odm->CutVersion       << 24 | 
+				(pDM_Odm->SupportInterface & 0xF0) << 16 | 
+				pDM_Odm->SupportPlatform  << 16 | 
+				pDM_Odm->PackageType      << 12 | 
+				(pDM_Odm->SupportInterface & 0x0F) << 8  |
+				_BoardType;
 
-	u4Byte    driver2 = pDM_Odm->TypeGLNA <<  0 |
-		                pDM_Odm->TypeGPA  <<  8 |
-		                pDM_Odm->TypeALNA << 16 |
-		                pDM_Odm->TypeAPA  << 24;
+	u4Byte    driver2 = pDM_Odm->TypeGLNA <<  0 |  
+		                pDM_Odm->TypeGPA  <<  8 | 
+		                pDM_Odm->TypeALNA << 16 | 
+		                pDM_Odm->TypeAPA  << 24; 
 
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+    ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                 ("===> [8812A] CheckPositive (cond1, cond2) = (0x%X 0x%X)\n", cond1, cond2));
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+    ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                 ("===> [8812A] CheckPositive (driver1, driver2) = (0x%X 0x%X)\n", driver1, driver2));
 
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+    ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                 ("	(Platform, Interface) = (0x%X, 0x%X)\n", pDM_Odm->SupportPlatform, pDM_Odm->SupportInterface));
-	ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+    ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                 ("	(Board, Package) = (0x%X, 0x%X)\n", pDM_Odm->BoardType, pDM_Odm->PackageType));
 
 
-	//============== Value Defined Check ===============//
-	//QFN Type [15:12] and Cut Version [27:24] need to do value check
-
-	if(((cond1 & 0x0000F000) != 0) &&((cond1 & 0x0000F000) != (driver1 & 0x0000F000)))
+	/*============== Value Defined Check ===============*/
+	/*QFN Type [15:12] and Cut Version [27:24] need to do value check*/
+	
+	if (((cond1 & 0x0000F000) != 0) && ((cond1 & 0x0000F000) != (driver1 & 0x0000F000)))
 		return FALSE;
-	if(((cond1 & 0x0F000000) != 0) &&((cond1 & 0x0F000000) != (driver1 & 0x0F000000)))
+	if (((cond1 & 0x0F000000) != 0) && ((cond1 & 0x0F000000) != (driver1 & 0x0F000000)))
 		return FALSE;
 
-	//=============== Bit Defined Check ================//
-	// We don't care [31:28] and [23:20]
-	//
-	cond1   &= 0x000F0FFF;
-	driver1 &= 0x000F0FFF;
+	/*=============== Bit Defined Check ================*/
+	/* We don't care [31:28] */
+
+	cond1   &= 0x00FF0FFF; 
+	driver1 &= 0x00FF0FFF; 
 
 	if ((cond1 & driver1) == cond1) {
 		u4Byte bitMask = 0;
-		if ((cond1 & 0x0F) == 0) // BoardType is DONTCARE
-			return TRUE;
 
-		if ((cond1 & BIT0) != 0) //GLNA
-			bitMask |= 0x000000FF;
-		if ((cond1 & BIT1) != 0) //GPA
-			bitMask |= 0x0000FF00;
-		if ((cond1 & BIT2) != 0) //ALNA
-			bitMask |= 0x00FF0000;
-		if ((cond1 & BIT3) != 0) //APA
-			bitMask |= 0xFF000000;
+		if ((cond1 & 0x0F) == 0) /* BoardType is DONTCARE*/
+            return TRUE;
 
-		if ((cond2 & bitMask) == (driver2 & bitMask)) // BoardType of each RF path is matched
-			return TRUE;
-		return FALSE;
-	}
-	return FALSE;
+		if ((cond1 & BIT0) != 0) /*GLNA*/
+            bitMask |= 0x000000FF;
+		if ((cond1 & BIT1) != 0) /*GPA*/
+            bitMask |= 0x0000FF00;
+		if ((cond1 & BIT2) != 0) /*ALNA*/
+            bitMask |= 0x00FF0000;
+		if ((cond1 & BIT3) != 0) /*APA*/
+            bitMask |= 0xFF000000;
+
+		if ((cond2 & bitMask) == (driver2 & bitMask)) /* BoardType of each RF path is matched*/
+            return TRUE;
+		else
+            return FALSE;
+		} else
+        return FALSE;
 }
-
 static BOOLEAN
 CheckNegative(
     IN  PDM_ODM_T     pDM_Odm,
@@ -106,7 +110,7 @@ CheckNegative(
 *                           AGC_TAB.TXT
 ******************************************************************************/
 
-static u4Byte Array_MP_8723B_AGC_TAB[] = {
+u4Byte Array_MP_8723B_AGC_TAB[] = { 
 		0xC78, 0xFD000001,
 		0xC78, 0xFC010001,
 		0xC78, 0xFB020001,
@@ -243,83 +247,64 @@ static u4Byte Array_MP_8723B_AGC_TAB[] = {
 
 void
 ODM_ReadAndConfig_MP_8723B_AGC_TAB(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
     u4Byte     i         = 0;
+    u1Byte     cCond;
+    BOOLEAN bMatched = TRUE, bSkipped = FALSE;
     u4Byte     ArrayLen    = sizeof(Array_MP_8723B_AGC_TAB)/sizeof(u4Byte);
     pu4Byte    Array       = Array_MP_8723B_AGC_TAB;
-
+	
     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ReadAndConfig_MP_8723B_AGC_TAB\n"));
 
-    for (i = 0; i < ArrayLen; i += 2 )
-    {
-        u4Byte v1 = Array[i];
-        u4Byte v2 = Array[i+1];
+	while ((i + 1) < ArrayLen) {
+		u4Byte v1 = Array[i];
+		u4Byte v2 = Array[i+1];
 
-        // This (offset, data) pair doesn't care the condition.
-        if ( v1 < 0x40000000 )
-        {
-           odm_ConfigBB_AGC_8723B(pDM_Odm, v1, bMaskDWord, v2);
-           continue;
-        }
-        else
-        {   // This line is the beginning of branch.
-            BOOLEAN bMatched = TRUE;
-            u1Byte  cCond  = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
-
-            if (cCond == COND_ELSE) { // ELSE, ENDIF
-                bMatched = TRUE;
-                READ_NEXT_PAIR(v1, v2, i);
-            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) {
-                bMatched = FALSE;
-                READ_NEXT_PAIR(v1, v2, i);
-                READ_NEXT_PAIR(v1, v2, i);
-            } else {
-                READ_NEXT_PAIR(v1, v2, i);
-                if ( ! CheckNegative(pDM_Odm, v1, v2) )
-                    bMatched = FALSE;
-                else
-                    bMatched = TRUE;
-                READ_NEXT_PAIR(v1, v2, i);
-            }
-
-            if ( bMatched == FALSE )
-            {   // Condition isn't matched. Discard the following (offset, data) pairs.
-                while (v1 < 0x40000000 && i < ArrayLen -2)
-                    READ_NEXT_PAIR(v1, v2, i);
-
-                i -= 2; // prevent from for-loop += 2
-            }
-            else // Configure matched pairs and skip to end of if-else.
-            {
-                while (v1 < 0x40000000 && i < ArrayLen-2) {
-                    odm_ConfigBB_AGC_8723B(pDM_Odm, v1, bMaskDWord, v2);
-                    READ_NEXT_PAIR(v1, v2, i);
-                }
-
-                // Keeps reading until ENDIF.
-                cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
-                while (cCond != COND_ENDIF && i < ArrayLen-2) {
-                    READ_NEXT_PAIR(v1, v2, i);
-                    cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
-                }
-            }
-        }
-    }
+		if (v1 & (BIT31 | BIT30)) {/*positive & negative condition*/
+			if (v1 & BIT31) {/* positive condition*/
+				cCond  = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
+				if (cCond == COND_ENDIF) {/*end*/
+					bMatched = TRUE;
+					bSkipped = FALSE;
+				} else if (cCond == COND_ELSE) /*else*/
+					bMatched = bSkipped?FALSE:TRUE;
+				else {/*if , else if*/
+					if (bSkipped)
+						bMatched = FALSE;
+					else {
+						if (CheckPositive(pDM_Odm, v1, v2)) {
+							bMatched = TRUE;
+							bSkipped = TRUE;
+						} else {
+							bMatched = FALSE;
+							bSkipped = FALSE;
+						}
+					}
+				}
+			} else if (v1 & BIT30) { /*negative condition*/
+			/*do nothing*/
+			}
+		} else {
+			if (bMatched)
+				odm_ConfigBB_AGC_8723B(pDM_Odm, v1, bMaskDWord, v2);
+		}
+	i = i + 2;
+	}
 }
 
 u4Byte
 ODM_GetVersion_MP_8723B_AGC_TAB(void)
 {
-	   return 11;
+	   return 18;
 }
 
 /******************************************************************************
 *                           PHY_REG.TXT
 ******************************************************************************/
 
-static u4Byte Array_MP_8723B_PHY_REG[] = {
+u4Byte Array_MP_8723B_PHY_REG[] = { 
 		0x800, 0x80040000,
 		0x804, 0x00000003,
 		0x808, 0x0000FC00,
@@ -406,7 +391,7 @@ static u4Byte Array_MP_8723B_PHY_REG[] = {
 		0xC4C, 0x007F037F,
 		0xC50, 0x69553420,
 		0xC54, 0x43BC0094,
-		0xC58, 0x00013149,
+		0xC58, 0x00013147,
 		0xC5C, 0x00250492,
 		0xC60, 0x00000000,
 		0xC64, 0x7112848B,
@@ -417,7 +402,7 @@ static u4Byte Array_MP_8723B_PHY_REG[] = {
 		0xC78, 0x0000001F,
 		0xC7C, 0x00B91612,
 		0xC80, 0x390000E4,
-		0xC84, 0x20F60000,
+		0xC84, 0x21F60000,
 		0xC88, 0x40000100,
 		0xC8C, 0x20200000,
 		0xC90, 0x00020E1A,
@@ -518,83 +503,64 @@ static u4Byte Array_MP_8723B_PHY_REG[] = {
 
 void
 ODM_ReadAndConfig_MP_8723B_PHY_REG(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
     u4Byte     i         = 0;
+    u1Byte     cCond;
+    BOOLEAN bMatched = TRUE, bSkipped = FALSE;
     u4Byte     ArrayLen    = sizeof(Array_MP_8723B_PHY_REG)/sizeof(u4Byte);
     pu4Byte    Array       = Array_MP_8723B_PHY_REG;
-
+	
     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ReadAndConfig_MP_8723B_PHY_REG\n"));
 
-    for (i = 0; i < ArrayLen; i += 2 )
-    {
-        u4Byte v1 = Array[i];
-        u4Byte v2 = Array[i+1];
+	while ((i + 1) < ArrayLen) {
+		u4Byte v1 = Array[i];
+		u4Byte v2 = Array[i+1];
 
-        // This (offset, data) pair doesn't care the condition.
-        if ( v1 < 0x40000000 )
-        {
-           odm_ConfigBB_PHY_8723B(pDM_Odm, v1, bMaskDWord, v2);
-           continue;
-        }
-        else
-        {   // This line is the beginning of branch.
-            BOOLEAN bMatched = TRUE;
-            u1Byte  cCond  = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
-
-            if (cCond == COND_ELSE) { // ELSE, ENDIF
-                bMatched = TRUE;
-                READ_NEXT_PAIR(v1, v2, i);
-            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) {
-                bMatched = FALSE;
-                READ_NEXT_PAIR(v1, v2, i);
-                READ_NEXT_PAIR(v1, v2, i);
-            } else {
-                READ_NEXT_PAIR(v1, v2, i);
-                if ( ! CheckNegative(pDM_Odm, v1, v2) )
-                    bMatched = FALSE;
-                else
-                    bMatched = TRUE;
-                READ_NEXT_PAIR(v1, v2, i);
-            }
-
-            if ( bMatched == FALSE )
-            {   // Condition isn't matched. Discard the following (offset, data) pairs.
-                while (v1 < 0x40000000 && i < ArrayLen -2)
-                    READ_NEXT_PAIR(v1, v2, i);
-
-                i -= 2; // prevent from for-loop += 2
-            }
-            else // Configure matched pairs and skip to end of if-else.
-            {
-                while (v1 < 0x40000000 && i < ArrayLen-2) {
-                    odm_ConfigBB_PHY_8723B(pDM_Odm, v1, bMaskDWord, v2);
-                    READ_NEXT_PAIR(v1, v2, i);
-                }
-
-                // Keeps reading until ENDIF.
-                cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
-                while (cCond != COND_ENDIF && i < ArrayLen-2) {
-                    READ_NEXT_PAIR(v1, v2, i);
-                    cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
-                }
-            }
-        }
-    }
+		if (v1 & (BIT31 | BIT30)) {/*positive & negative condition*/
+			if (v1 & BIT31) {/* positive condition*/
+				cCond  = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
+				if (cCond == COND_ENDIF) {/*end*/
+					bMatched = TRUE;
+					bSkipped = FALSE;
+				} else if (cCond == COND_ELSE) /*else*/
+					bMatched = bSkipped?FALSE:TRUE;
+				else {/*if , else if*/
+					if (bSkipped)
+						bMatched = FALSE;
+					else {
+						if (CheckPositive(pDM_Odm, v1, v2)) {
+							bMatched = TRUE;
+							bSkipped = TRUE;
+						} else {
+							bMatched = FALSE;
+							bSkipped = FALSE;
+						}
+					}
+				}
+			} else if (v1 & BIT30) { /*negative condition*/
+			/*do nothing*/
+			}
+		} else {
+			if (bMatched)
+				odm_ConfigBB_PHY_8723B(pDM_Odm, v1, bMaskDWord, v2);
+		}
+	i = i + 2;
+	}
 }
 
 u4Byte
 ODM_GetVersion_MP_8723B_PHY_REG(void)
 {
-	   return 11;
+	   return 18;
 }
 
 /******************************************************************************
 *                           PHY_REG_PG.TXT
 ******************************************************************************/
 
-static u4Byte Array_MP_8723B_PHY_REG_PG[] = {
+u4Byte Array_MP_8723B_PHY_REG_PG[] = { 
 	0, 0, 0, 0x00000e08, 0x0000ff00, 0x00003800,
 	0, 0, 0, 0x0000086c, 0xffffff00, 0x32343600,
 	0, 0, 0, 0x00000e00, 0xffffffff, 0x40424444,
@@ -605,8 +571,8 @@ static u4Byte Array_MP_8723B_PHY_REG_PG[] = {
 
 void
 ODM_ReadAndConfig_MP_8723B_PHY_REG_PG(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
     u4Byte     i         = 0;
     u4Byte     ArrayLen    = sizeof(Array_MP_8723B_PHY_REG_PG)/sizeof(u4Byte);
@@ -617,15 +583,19 @@ ODM_ReadAndConfig_MP_8723B_PHY_REG_PG(
 	pDM_Odm->PhyRegPgVersion = 1;
 	pDM_Odm->PhyRegPgValueType = PHY_REG_PG_EXACT_VALUE;
 
-	for (i = 0; i < ArrayLen; i += 6 )
-	{
-	    u4Byte v1 = Array[i];
-	    u4Byte v2 = Array[i+1];
-	    u4Byte v3 = Array[i+2];
-	    u4Byte v4 = Array[i+3];
-	    u4Byte v5 = Array[i+4];
-	    u4Byte v6 = Array[i+5];
+	for (i = 0; i < ArrayLen; i += 6) {
+		u4Byte v1 = Array[i];
+		u4Byte v2 = Array[i+1];
+		u4Byte v3 = Array[i+2];
+		u4Byte v4 = Array[i+3];
+		u4Byte v5 = Array[i+4];
+		u4Byte v6 = Array[i+5];
 
 	    odm_ConfigBB_PHY_REG_PG_8723B(pDM_Odm, v1, v2, v3, v4, v5, v6);
 	}
 }
+
+
+
+#endif /* end of HWIMG_SUPPORT*/
+

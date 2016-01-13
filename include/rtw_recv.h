@@ -20,13 +20,34 @@
 #ifndef _RTW_RECV_H_
 #define _RTW_RECV_H_
 
-#ifdef CONFIG_SINGLE_RECV_BUF
-	#define NR_RECVBUFF (1)
-#else
-	#define NR_RECVBUFF (8)
-#endif //CONFIG_SINGLE_RECV_BUF
+#ifdef PLATFORM_OS_XP
+	#ifdef CONFIG_SDIO_HCI
+		#define NR_RECVBUFF 1024//512//128
+	#else
+		#define NR_RECVBUFF (16)
+	#endif
+#elif defined(PLATFORM_OS_CE)
+	#ifdef CONFIG_SDIO_HCI
+		#define NR_RECVBUFF (128)
+	#else
+		#define NR_RECVBUFF (4)
+	#endif
+#else //PLATFORM_LINUX /PLATFORM_BSD
 
-#define NR_PREALLOC_RECV_SKB (8)
+	#ifdef CONFIG_SINGLE_RECV_BUF
+		#define NR_RECVBUFF (1)
+	#else
+		#if defined(CONFIG_GSPI_HCI)
+			#define NR_RECVBUFF (32)
+		#elif defined(CONFIG_SDIO_HCI)
+			#define NR_RECVBUFF (8)	
+		#else
+			#define NR_RECVBUFF (8)
+		#endif	
+	#endif //CONFIG_SINGLE_RECV_BUF
+
+	#define NR_PREALLOC_RECV_SKB (8)	
+#endif
 
 #define NR_RECVFRAME 256
 
@@ -75,13 +96,33 @@ struct recv_reorder_ctrl
 	u16 indicate_seq;//=wstart_b, init_value=0xffff
 	u16 wend_b;
 	u8 wsize_b;
+	u8 ampdu_size;
 	_queue pending_recvframe_queue;
 	_timer reordering_ctrl_timer;
 };
 
 struct	stainfo_rxcache	{
-	u16	tid_rxseq[16];
+	u16 	tid_rxseq[16];
+/*
+	unsigned short 	tid0_rxseq;
+	unsigned short 	tid1_rxseq;
+	unsigned short 	tid2_rxseq;
+	unsigned short 	tid3_rxseq;
+	unsigned short 	tid4_rxseq;
+	unsigned short 	tid5_rxseq;
+	unsigned short 	tid6_rxseq;
+	unsigned short 	tid7_rxseq;
+	unsigned short 	tid8_rxseq;
+	unsigned short 	tid9_rxseq;
+	unsigned short 	tid10_rxseq;
+	unsigned short 	tid11_rxseq;
+	unsigned short 	tid12_rxseq;
+	unsigned short 	tid13_rxseq;
+	unsigned short 	tid14_rxseq;
+	unsigned short 	tid15_rxseq;
+*/
 };
+
 
 struct smooth_rssi_data {
 	u32	elements[100];	//array to store values
@@ -91,31 +132,67 @@ struct smooth_rssi_data {
 };
 
 struct signal_stat {
-	u8	update_req;		//used to indicate
+	u8	update_req;		//used to indicate 
 	u8	avg_val;		//avg of valid elements
 	u32	total_num;		//num of valid elements
-	u32	total_val;		//sum of valid elements
+	u32	total_val;		//sum of valid elements	
 };
+/*
+typedef struct _ODM_Phy_Status_Info_
+{
+	//
+	// Be care, if you want to add any element please insert between 
+	// RxPWDBAll & SignalStrength.
+	//
+#if (DM_ODM_SUPPORT_TYPE &  (ODM_WIN))
+	u4Byte		RxPWDBAll;	
+#else
+	u1Byte		RxPWDBAll;	
+#endif
 
-struct phy_info {
+	u1Byte		SignalQuality;	 		// in 0-100 index. 
+	s1Byte		RxMIMOSignalQuality[4];	//per-path's EVM
+	u1Byte		RxMIMOEVMdbm[4]; 		//per-path's EVM dbm
+
+	u1Byte		RxMIMOSignalStrength[4];// in 0~100 index
+
+	u2Byte		Cfo_short[4]; 			// per-path's Cfo_short
+	u2Byte		Cfo_tail[4];			// per-path's Cfo_tail
+	
+#if (DM_ODM_SUPPORT_TYPE &  (ODM_WIN|ODM_CE))
+	s1Byte		RxPower;				// in dBm Translate from PWdB
+	s1Byte		RecvSignalPower;		// Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures.
+	u1Byte		BTRxRSSIPercentage;	
+	u1Byte		SignalStrength; 		// in 0-100 index.
+ 
+	u1Byte		RxPwr[4];				//per-path's pwdb
+#endif
+	u1Byte		RxSNR[4];				//per-path's SNR	
+	u1Byte		BandWidth;
+	u1Byte		btCoexPwrAdjust;
+}ODM_PHY_INFO_T,*PODM_PHY_INFO_T;
+*/
+
+struct phy_info
+{		
 	u8		RxPWDBAll;
 
-	u8		SignalQuality;	 // in 0-100 index.
+	u8		SignalQuality;	 // in 0-100 index. 
 	s8		RxMIMOSignalQuality[4];	//per-path's EVM
-	u8		RxMIMOEVMdbm[4];		//per-path's EVM dbm
+	u8		RxMIMOEVMdbm[4]; 		//per-path's EVM dbm
 
 	u8		RxMIMOSignalStrength[4];// in 0~100 index
 
-	u16		Cfo_short[4];			// per-path's Cfo_short
+	u16		Cfo_short[4]; 			// per-path's Cfo_short
 	u16		Cfo_tail[4];			// per-path's Cfo_tail
 
 	s8		RxPower; // in dBm Translate from PWdB
 	s8		RecvSignalPower;// Real power in dBm for this packet, no beautification and aggregation. Keep this raw info to be used for the other procedures.
-	u8		BTRxRSSIPercentage;
+	u8		BTRxRSSIPercentage;	
 	u8		SignalStrength; // in 0-100 index.
 
 	s8		RxPwr[4];				//per-path's pwdb
-	u8		RxSNR[4];				//per-path's SNR
+	u8		RxSNR[4];				//per-path's SNR	
 	u8		BandWidth;
 	u8		btCoexPwrAdjust;
 };
@@ -126,10 +203,10 @@ struct rx_raw_rssi
 	u8 data_rate;
 	u8 pwdball;
 	s8 pwr_all;
-
+	
 	u8 mimo_singal_strength[4];// in 0~100 index
 	u8 mimo_singal_quality[4];
-
+	
 	s8 ofdm_pwr[4];
 	u8 ofdm_snr[4];
 
@@ -142,8 +219,8 @@ struct rx_pkt_attrib	{
 	u8	drvinfo_sz;
 	u8	shift_sz;
 	u8	hdrlen; //the WLAN Header Len
-	u8	to_fr_ds;
-	u8	amsdu;
+	u8 	to_fr_ds;
+	u8 	amsdu;
 	u8	qos;
 	u8	priority;
 	u8	pw_save;
@@ -162,26 +239,37 @@ struct rx_pkt_attrib	{
 
 	u16	eth_type;
 
-	u8	dst[ETH_ALEN];
-	u8	src[ETH_ALEN];
-	u8	ta[ETH_ALEN];
-	u8	ra[ETH_ALEN];
-	u8	bssid[ETH_ALEN];
-
+	u8 	dst[ETH_ALEN];
+	u8 	src[ETH_ALEN];
+	u8 	ta[ETH_ALEN];
+	u8 	ra[ETH_ALEN];
+	u8 	bssid[ETH_ALEN];
+	
 	u8	ack_policy;
-
+	
 //#ifdef CONFIG_TCP_CSUM_OFFLOAD_RX
 	u8	tcpchk_valid; // 0: invalid, 1: valid
 	u8	ip_chkrpt; //0: incorrect, 1: correct
 	u8	tcp_chkrpt; //0: incorrect, 1: correct
 //#endif
-	u8	key_index;
+	u8 	key_index;
 
 	u8	data_rate;
-	u8	sgi;
-	u8	pkt_rpt_type;
+	u8	bw;
+	u8	stbc;
+	u8	ldpc;
+	u8 	sgi;
+	u8 	pkt_rpt_type;
+	u32 tsfl;
 	u32	MacIDValidEntry[2];	// 64 bits present 64 entry.
 
+/*
+	u8	signal_qual;
+	s8	rx_mimo_signal_qual[2];
+	u8	signal_strength;
+	u32	RxPWDBAll;	
+	s32	RecvSignalPower;
+*/
 	struct phy_info phy_info;
 };
 
@@ -195,21 +283,58 @@ struct rx_pkt_attrib	{
 
 #define RECVBUFF_ALIGN_SZ 8
 
+#if defined (CONFIG_RTL8192E)
+	#ifdef CONFIG_PCI_HCI
+		#define RXDESC_SIZE 16
+		#define RX_WIFI_INFO_SIZE	24
+	#else
+		#define RXDESC_SIZE	24
+	#endif
+#else
 #define RXDESC_SIZE	24
+#endif
 #define RXDESC_OFFSET RXDESC_SIZE
 
-struct recv_stat {
-	__le32 rxdw0;
-	__le32 rxdw1;
+struct recv_stat
+{
+	unsigned int rxdw0;
+
+	unsigned int rxdw1;
+
+#if !(defined(CONFIG_RTL8192E) && defined(CONFIG_PCI_HCI)) //exclude 8192ee
+	unsigned int rxdw2;
+
+	unsigned int rxdw3;
+#endif
 
 #ifndef BUF_DESC_ARCH
-	__le32 rxdw4;
-	__le32 rxdw5;
+	unsigned int rxdw4;
 
+	unsigned int rxdw5;
+
+#ifdef CONFIG_PCI_HCI
+	unsigned int rxdw6;
+
+	unsigned int rxdw7;
+#endif
 #endif //if BUF_DESC_ARCH is defined, rx_buf_desc occupy 4 double words
 };
 
 #define EOR BIT(30)
+
+#ifdef CONFIG_PCI_HCI
+#define PCI_MAX_RX_QUEUE		1// MSDU packet queue, Rx Command Queue
+#define PCI_MAX_RX_COUNT		128
+
+struct rtw_rx_ring {
+	struct recv_stat	*desc;
+	dma_addr_t		dma;
+	unsigned int		idx;
+	struct sk_buff	*rx_buf[PCI_MAX_RX_COUNT];
+};
+#endif
+
+
 
 /*
 accesser of recv_priv: rtw_recv_entry(dispatch / passive level); recv_thread(passive) ; returnpkt(dispatch)
@@ -219,8 +344,7 @@ using enter_critical section to protect
 */
 struct recv_priv
 {
-	spinlock_t	lock;
-	ulong lock_set;
+	_lock	lock;
 
 #ifdef CONFIG_RECV_THREAD_MODE
 	_sema	recv_sema;
@@ -240,6 +364,17 @@ struct recv_priv
 
 	_adapter	*adapter;
 
+#ifdef PLATFORM_WINDOWS
+	_nic_hdl  RxPktPoolHdl;
+	_nic_hdl  RxBufPoolHdl;
+
+#ifdef PLATFORM_OS_XP
+	PMDL	pbytecnt_mdl;
+#endif
+	uint	counter; //record the number that up-layer will return to drv; only when counter==0 can we  release recv_priv
+	NDIS_EVENT 	recv_resource_evt ;
+#endif
+
 	u32	bIsAnyNonBEPkts;
 	u64	rx_bytes;
 	u64	rx_pkts;
@@ -250,19 +385,29 @@ struct recv_priv
 	uint  rx_smallpacket_crcerr;
 	uint  rx_middlepacket_crcerr;
 
+#ifdef CONFIG_USB_HCI
 	//u8 *pallocated_urb_buf;
 	_sema allrxreturnevt;
 	uint	ff_hwaddr;
-	u8	rx_pending_cnt;
+	ATOMIC_T	rx_pending_cnt;
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
+#ifdef PLATFORM_LINUX
 	PURB	int_in_urb;
+#endif
 
 	u8	*int_in_buf;
 #endif //CONFIG_USB_INTERRUPT_IN_PIPE
 
+#endif
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
+#ifdef PLATFORM_FREEBSD
+	struct task irq_prepare_beacon_tasklet;
+	struct task recv_tasklet;
+#else //PLATFORM_FREEBSD
 	struct tasklet_struct irq_prepare_beacon_tasklet;
 	struct tasklet_struct recv_tasklet;
+#endif //PLATFORM_FREEBSD
 	struct sk_buff_head free_recv_skb_queue;
 	struct sk_buff_head rx_skb_queue;
 #ifdef CONFIG_RX_INDICATE_QUEUE
@@ -270,27 +415,40 @@ struct recv_priv
 	struct ifqueue rx_indicate_queue;
 #endif	// CONFIG_RX_INDICATE_QUEUE
 
+#endif //defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
+
 	u8 *pallocated_recv_buf;
 	u8 *precv_buf;    // 4 alignment
 	_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
+
+#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI) || defined(CONFIG_USB_HCI) 
 	_queue	recv_buf_pending_queue;
+#endif
+
+#ifdef CONFIG_PCI_HCI
+	// Rx
+	struct rtw_rx_ring	rx_ring[PCI_MAX_RX_QUEUE];
+	int 	rxringcount;
+	u16	rxbuffersize;
+#endif
+
 	//For display the phy informatiom
 	u8 is_signal_dbg;	// for debug
 	u8 signal_strength_dbg;	// for debug
-
+	
 	u8 signal_strength;
 	u8 signal_qual;
 	s8 rssi;	//translate_percentage_to_dbm(ptarget_wlan->network.PhyInfo.SignalStrength);
 	#ifdef DBG_RX_SIGNAL_DISPLAY_RAW_DATA
 	struct rx_raw_rssi raw_rssi_info;
 	#endif
-	//s8 rxpwdb;
-	s16 noise;
+	//s8 rxpwdb;	
+	s16 noise;	
 	//int RxSNRdB[2];
 	//s8 RxRssi[2];
 	//int FalseAlmCnt_all;
-
+	
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
 	_timer signal_stat_timer;
@@ -302,7 +460,7 @@ struct recv_priv
 	struct smooth_rssi_data signal_qual_data;
 	struct smooth_rssi_data signal_strength_data;
 #endif //CONFIG_NEW_SIGNAL_STAT_PROCESS
-
+	u16 sink_udpport,pre_rtp_rxseq,cur_rtp_rxseq;
 };
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
@@ -311,8 +469,7 @@ struct recv_priv
 
 struct sta_recv_priv {
 
-	spinlock_t	lock;
-	ulong lock_set;
+	_lock	lock;
 	sint	option;
 
 	//_queue	blk_strms[MAX_RX_NUMBLKS];
@@ -331,8 +488,8 @@ struct recv_buf
 {
 	_list list;
 
-	spinlock_t recvbuf_lock;
-	ulong recvbuf_lock_set;
+	_lock recvbuf_lock;
+
 	u32	ref_cnt;
 
 	PADAPTER adapter;
@@ -346,14 +503,33 @@ struct recv_buf
 	u8	*ptail;
 	u8	*pend;
 
+#ifdef CONFIG_USB_HCI
+
+	#if defined(PLATFORM_OS_XP)||defined(PLATFORM_LINUX)||defined(PLATFORM_FREEBSD)
 	PURB	purb;
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u32 alloc_sz;
+	#endif
+
+	#ifdef PLATFORM_OS_XP
+	PIRP		pirp;
+	#endif
+
+	#ifdef PLATFORM_OS_CE
+	USB_TRANSFER	usb_transfer_read_port;
+	#endif
 
 	u8  irp_pending;
 	int  transfer_len;
+
+#endif
+
+#ifdef PLATFORM_LINUX
 	_pkt	*pskb;
-	u8	reuse;
+#endif
+#ifdef PLATFORM_FREEBSD //skb solution
+	struct sk_buff *pskb;
+#endif //PLATFORM_FREEBSD //skb solution
 };
 
 
@@ -455,6 +631,8 @@ struct recv_buf *rtw_dequeue_recvbuf (_queue *queue);
 
 void rtw_reordering_ctrl_timeout_handler(void *pcontext);
 
+void rx_query_phy_status(union recv_frame *rframe, u8 *phy_stat);
+
 __inline static u8 *get_rxmem(union recv_frame *precvframe)
 {
 	//always return rx_head...
@@ -541,7 +719,7 @@ __inline static u8 *recvframe_put(union recv_frame *precvframe, sint sz)
 
 	//used for append sz bytes from ptr to rx_tail, update rx_tail and return the updated rx_tail to the caller
 	//after putting, rx_tail must be still larger than rx_end.
-	unsigned char * prev_rx_tail;
+ 	unsigned char * prev_rx_tail;
 
 	if(precvframe==NULL)
 		return NULL;
@@ -596,6 +774,10 @@ __inline static _buffer * get_rxbuf_desc(union recv_frame *precvframe)
 
 	if(precvframe==NULL)
 		return NULL;
+#ifdef PLATFORM_WINDOWS
+	NdisQueryPacket(precvframe->u.hdr.pkt, NULL, NULL, &buf_desc, NULL);
+#endif
+
 	return buf_desc;
 }
 
@@ -615,7 +797,13 @@ __inline static union recv_frame *pkt_to_recvframe(_pkt *pkt)
 
 	u8 * buf_star;
 	union recv_frame * precv_frame;
+#ifdef PLATFORM_WINDOWS
+	_buffer * buf_desc;
+	uint len;
 
+	NdisQueryPacket(pkt, NULL, NULL, &buf_desc, &len);
+	NdisQueryBufferSafe(buf_desc, &buf_star, &len, HighPagePriority);
+#endif
 	precv_frame = rxmem_to_recvframe((unsigned char*)buf_star);
 
 	return precv_frame;
@@ -627,7 +815,7 @@ __inline static u8 *pkt_to_recvmem(_pkt *pkt)
 
 	union recv_frame * precv_frame = pkt_to_recvframe(pkt);
 
-	return	precv_frame->u.hdr.rx_head;
+	return 	precv_frame->u.hdr.rx_head;
 
 }
 
@@ -637,7 +825,7 @@ __inline static u8 *pkt_to_recvdata(_pkt *pkt)
 
 	union recv_frame * precv_frame =pkt_to_recvframe(pkt);
 
-	return	precv_frame->u.hdr.rx_data;
+	return 	precv_frame->u.hdr.rx_data;
 
 }
 
@@ -657,8 +845,8 @@ __inline static s32 translate_percentage_to_dbm(u32 SignalStrengthIndex)
 	SignalPower = SignalStrengthIndex - 100;
 #else
 	// Translate to dBm (x=0.5y-95).
-	SignalPower = (s32)((SignalStrengthIndex + 1) >> 1);
-	SignalPower -= 95;
+	SignalPower = (s32)((SignalStrengthIndex + 1) >> 1); 
+	SignalPower -= 95; 
 #endif
 
 	return SignalPower;
@@ -672,3 +860,4 @@ extern void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv);
 extern void  mgt_dispatcher(_adapter *padapter, union recv_frame *precv_frame);
 
 #endif
+

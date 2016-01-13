@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Copyright(c) 2013 Realtek Corporation. All rights reserved.
- *
+ * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,26 +17,8 @@
  *
  *
  ******************************************************************************/
-#ifndef __MP_PRECOMP_H__
-#define __MP_PRECOMP_H__
 
-#include <drv_types.h>
-#include <hal_data.h>
+//#include <Precomp.h>
+//#include "phydm_precomp.h"
+//#include "../phydm_precomp.h"
 
-#define BT_TMP_BUF_SIZE	100
-
-#define rsprintf snprintf
-
-#define DCMD_Printf			DBG_BT_INFO
-
-#define delay_ms(ms)		rtw_mdelay_os(ms)
-
-#ifdef bEnable
-#undef bEnable
-#endif
-
-#include "HalBtcOutSrc.h"
-#include "HalBtc8723b1Ant.h"
-#include "HalBtc8723b2Ant.h"
-
-#endif // __MP_PRECOMP_H__

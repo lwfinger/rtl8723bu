@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -98,6 +98,7 @@
  */
 
 
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_WINDOWS) || defined(PLATFORM_MPIXEL) || defined(PLATFORM_FREEBSD)
 /*
  * inside the kernel, we can use nicknames;
  * outside of it, we must avoid POSIX namespace pollution...
@@ -138,6 +139,7 @@
 #define be32_to_cpus __be32_to_cpus
 #define cpu_to_be16s __cpu_to_be16s
 #define be16_to_cpus __be16_to_cpus
+#endif
 
 
 /*
@@ -163,10 +165,19 @@
  * Do the prototypes. Somebody might want to take the
  * address or some such sick thing..
  */
+#if defined(PLATFORM_LINUX) || (defined (__GLIBC__) && __GLIBC__ >= 2)
 extern __u32			ntohl(__u32);
 extern __u32			htonl(__u32);
+#else //defined(PLATFORM_LINUX) || (defined (__GLIBC__) && __GLIBC__ >= 2)
+#ifndef PLATFORM_FREEBSD
+extern unsigned long int	ntohl(unsigned long int);
+extern unsigned long int	htonl(unsigned long int);
+#endif
+#endif
+#ifndef PLATFORM_FREEBSD
 extern unsigned short int	ntohs(unsigned short int);
 extern unsigned short int	htons(unsigned short int);
+#endif
 
 #if defined(__GNUC__) && (__GNUC__ >= 2) && defined(__OPTIMIZE__) ||  defined(PLATFORM_MPIXEL)
 
@@ -175,11 +186,28 @@ extern unsigned short int	htons(unsigned short int);
 #define ___ntohl(x) __be32_to_cpu(x)
 #define ___ntohs(x) __be16_to_cpu(x)
 
+#if defined(PLATFORM_LINUX) || (defined (__GLIBC__) && __GLIBC__ >= 2)
 #define htonl(x) ___htonl(x)
 #define ntohl(x) ___ntohl(x)
+#else
+#define htonl(x) ((unsigned long)___htonl(x))
+#define ntohl(x) ((unsigned long)___ntohl(x))
+#endif
 #define htons(x) ___htons(x)
 #define ntohs(x) ___ntohs(x)
 
 #endif /* OPTIMIZE */
 
+
+#if defined (PLATFORM_WINDOWS)
+
+#define htonl(x) __cpu_to_be32(x)
+#define ntohl(x) __be32_to_cpu(x)
+#define htons(x) __cpu_to_be16(x)
+#define ntohs(x) __be16_to_cpu(x)
+
+
+#endif
+
 #endif /* _LINUX_BYTEORDER_GENERIC_H */
+

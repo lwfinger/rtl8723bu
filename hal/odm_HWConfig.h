@@ -130,9 +130,15 @@ typedef struct _Phy_Status_Rpt_8812
 	u1Byte			rx_gain_d;
 	s1Byte			sigevm;
 	u1Byte			resvd_0;
+#ifdef __LITTLE_ENDIAN
 	u1Byte			antidx_anta:3;
 	u1Byte			antidx_antb:3;
 	u1Byte			resvd_1:2;
+#else
+	u1Byte			resvd_1:2;
+	u1Byte			antidx_antb:3;
+	u1Byte			antidx_anta:3;
+#endif
 } PHY_STATUS_RPT_8812_T,*PPHY_STATUS_RPT_8812_T;
 
 

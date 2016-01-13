@@ -20,23 +20,22 @@
 #define _RECV_OSDEP_C_
 
 #include <drv_types.h>
-#include <hal_data.h>
 
 int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 *pdata, _pkt *pskb)
 {
 	int res = _SUCCESS;
 	u8	shift_sz = 0;
 	u32	skb_len, alloc_sz;
-	_pkt	 *pkt_copy = NULL;
+	_pkt	 *pkt_copy = NULL;	
 	struct rx_pkt_attrib *pattrib = &precvframe->u.hdr.attrib;
 
 
 	if(pdata == NULL)
-	{
+	{		
 		precvframe->u.hdr.pkt = NULL;
 		res = _FAIL;
 		return res;
-	}
+	}	
 
 
 	//	Modified by Albert 20101213
@@ -50,15 +49,15 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 	if((pattrib->mfrag == 1)&&(pattrib->frag_num == 0))
 	{
 		//alloc_sz = 1664;	//1664 is 128 alignment.
-		alloc_sz = (skb_len <= 1650) ? 1664:(skb_len + 14);
+		alloc_sz = (skb_len <= 1650) ? 1664:(skb_len + 14);		
 	}
-	else
+	else 
 	{
 		alloc_sz = skb_len;
 		//	6 is for IP header 8 bytes alignment in QoS packet case.
 		//	8 is for skb->data 4 bytes alignment.
 		alloc_sz += 14;
-	}
+	}	
 
 	pkt_copy = rtw_skb_alloc(alloc_sz);
 
@@ -83,10 +82,10 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 		//rtw_free_recvframe(precvframe, pfree_recv_queue);
 		//goto _exit_recvbuf2recvframe;
 
-		res = _FAIL;
+		res = _FAIL;	
 #else
 		if((pattrib->mfrag == 1)&&(pattrib->frag_num == 0))
-		{
+		{				
 			DBG_871X("%s: alloc_skb fail , drop frag frame \n", __FUNCTION__);
 			//rtw_free_recvframe(precvframe, pfree_recv_queue);
 			res = _FAIL;
@@ -98,7 +97,7 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 			res = _FAIL;
 			goto exit_rtw_os_recv_resource_alloc;
 		}
-
+			
 		precvframe->u.hdr.pkt = rtw_skb_clone(pskb);
 		if(precvframe->u.hdr.pkt)
 		{
@@ -112,8 +111,8 @@ int rtw_os_alloc_recvframe(_adapter *padapter, union recv_frame *precvframe, u8 
 			//goto _exit_recvbuf2recvframe;
 			res = _FAIL;
 		}
-#endif
-	}
+#endif			
+	}		
 
 exit_rtw_os_recv_resource_alloc:
 
@@ -143,7 +142,7 @@ int rtw_os_recv_resource_init(struct recv_priv *precvpriv, _adapter *padapter)
 int rtw_os_recv_resource_alloc(_adapter *padapter, union recv_frame *precvframe)
 {
 	int	res=_SUCCESS;
-
+	
 	precvframe->u.hdr.pkt_newalloc = precvframe->u.hdr.pkt = NULL;
 
 	return res;
@@ -171,6 +170,8 @@ void rtw_os_recv_resource_free(struct recv_priv *precvpriv)
 int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	int res=_SUCCESS;
+
+#ifdef CONFIG_USB_HCI
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
 
@@ -181,8 +182,6 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 	}
 
 	precvbuf->pskb = NULL;
-
-	precvbuf->reuse = _FALSE;
 
 	precvbuf->pallocated_buf  = precvbuf->pbuf = NULL;
 
@@ -198,6 +197,8 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 	if(precvbuf->pallocated_buf == NULL)
 		return _FAIL;
 	#endif //CONFIG_USE_USB_BUFFER_ALLOC_RX
+	
+#endif //CONFIG_USB_HCI
 
 	return res;
 }
@@ -206,7 +207,11 @@ int rtw_os_recvbuf_resource_alloc(_adapter *padapter, struct recv_buf *precvbuf)
 int rtw_os_recvbuf_resource_free(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	int ret = _SUCCESS;
+
+#ifdef CONFIG_USB_HCI
+
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
+
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 	struct usb_device	*pusbd = pdvobjpriv->pusbdev;
 
@@ -221,6 +226,9 @@ int rtw_os_recvbuf_resource_free(_adapter *padapter, struct recv_buf *precvbuf)
 		//usb_kill_urb(precvbuf->purb);
 		usb_free_urb(precvbuf->purb);
 	}
+
+#endif //CONFIG_USB_HCI
+
 
 	if(precvbuf->pskb)
 	{
@@ -278,7 +286,7 @@ _pkt *rtw_os_alloc_msdu_pkt(union recv_frame *prframe, u16 nSubframe_Length, u8 
 		_rtw_memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->src, ETH_ALEN);
 		_rtw_memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->dst, ETH_ALEN);
 	} else {
-		__be16 len;
+		u16 len;
 		/* Leave Ethernet header part of hdr and full payload */
 		len = htons(sub_skb->len);
 		_rtw_memcpy(skb_push(sub_skb, 2), &len, 2);
@@ -292,6 +300,7 @@ _pkt *rtw_os_alloc_msdu_pkt(union recv_frame *prframe, u16 nSubframe_Length, u8 
 void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attrib *pattrib)
 {
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
+	struct recv_priv *precvpriv = &(padapter->recvpriv);
 #ifdef CONFIG_BR_EXT
 	void *br_port = NULL;
 #endif
@@ -301,14 +310,14 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 	if (pkt) {
 		if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
 		{
-			_pkt *pskb2=NULL;
-			struct sta_info *psta = NULL;
-			struct sta_priv *pstapriv = &padapter->stapriv;
+		 	_pkt *pskb2=NULL;
+		 	struct sta_info *psta = NULL;
+		 	struct sta_priv *pstapriv = &padapter->stapriv;
 			int bmcast = IS_MCAST(pattrib->dst);
 
 			//DBG_871X("bmcast=%d\n", bmcast);
 
-			if(_rtw_memcmp(pattrib->dst, myid(&padapter->eeprompriv), ETH_ALEN)==_FALSE)
+			if (_rtw_memcmp(pattrib->dst, adapter_mac_addr(padapter), ETH_ALEN) == _FALSE)
 			{
 				//DBG_871X("not ap psta=%p, addr=%pM\n", psta, pattrib->dst);
 
@@ -322,12 +331,12 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 
 				if(psta)
 				{
-					struct net_device *pnetdev= (struct net_device*)padapter->pnetdev;
+					struct net_device *pnetdev= (struct net_device*)padapter->pnetdev;			
 
 					//DBG_871X("directly forwarding to the rtw_xmit_entry\n");
 
 					//skb->ip_summed = CHECKSUM_NONE;
-					pkt->dev = pnetdev;
+					pkt->dev = pnetdev;				
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
 					skb_set_queue_mapping(pkt, rtw_recv_select_queue(pkt));
 #endif //LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35)
@@ -349,7 +358,7 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 				DBG_COUNTER(padapter->rx_logs.os_indicate_ap_self);
 			}
 		}
-
+		
 #ifdef CONFIG_BR_EXT
 		// Insert NAT2.5 RX here!
 #if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
@@ -363,21 +372,23 @@ void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, struct rx_pkt_attri
 
 		if( br_port && (check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) )
 		{
+			int nat25_handle_frame(_adapter *priv, struct sk_buff *skb);
 			if (nat25_handle_frame(padapter, pkt) == -1) {
 				//priv->ext_stats.rx_data_drops++;
 				//DEBUG_ERR("RX DROP: nat25_handle_frame fail!\n");
 				//return FAIL;
-
+				
 #if 1
 				// bypass this frame to upper layer!!
 #else
 				rtw_skb_free(sub_skb);
 				continue;
 #endif
-			}
+			}							
 		}
 #endif	// CONFIG_BR_EXT
-
+		if( precvpriv->sink_udpport > 0)
+			rtw_sink_rtp_seq_dbg(padapter,pkt);
 		pkt->protocol = eth_type_trans(pkt, padapter->pnetdev);
 		pkt->dev = padapter->pnetdev;
 
@@ -407,7 +418,7 @@ void rtw_handle_tkip_mic_err(_adapter *padapter,u8 bgroup)
 	union iwreq_data wrqu;
 	struct iw_michaelmicfailure    ev;
 	struct mlme_priv*              pmlmepriv  = &padapter->mlmepriv;
-	struct security_priv	*psecuritypriv = &padapter->securitypriv;
+	struct security_priv	*psecuritypriv = &padapter->securitypriv;	
 	u32 cur_time = 0;
 
 	if( psecuritypriv->last_mic_err_time == 0 )
@@ -508,38 +519,95 @@ void rtw_hostapd_mlme_rx(_adapter *padapter, union recv_frame *precv_frame)
 
 #ifdef CONFIG_AUTO_AP_MODE
 static void rtw_os_ksocket_send(_adapter *padapter, union recv_frame *precv_frame)
-{
-	_pkt *skb = precv_frame->u.hdr.pkt;
+{	
+	_pkt *skb = precv_frame->u.hdr.pkt;	
 	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
 	struct sta_info *psta = precv_frame->u.hdr.psta;
-
-	DBG_871X("eth rx: got eth_type=0x%x\n", pattrib->eth_type);
-
+		
+	DBG_871X("eth rx: got eth_type=0x%x\n", pattrib->eth_type);					
+		
 	if (psta && psta->isrc && psta->pid>0)
 	{
 		u16 rx_pid;
 
 		rx_pid = *(u16*)(skb->data+ETH_HLEN);
-
-		DBG_871X("eth rx(pid=0x%x): sta("MAC_FMT") pid=0x%x\n",
+			
+		DBG_871X("eth rx(pid=0x%x): sta("MAC_FMT") pid=0x%x\n", 
 			rx_pid, MAC_ARG(psta->hwaddr), psta->pid);
 
-		if(rx_pid == psta->pid) {
+		if(rx_pid == psta->pid)
+		{
 			int i;
 			u16 len = *(u16*)(skb->data+ETH_HLEN+2);
+			//u16 ctrl_type = *(u16*)(skb->data+ETH_HLEN+4);
 
+			//DBG_871X("eth, RC: len=0x%x, ctrl_type=0x%x\n", len, ctrl_type); 
 			DBG_871X("eth, RC: len=0x%x\n", len);
 
 			for(i=0;i<len;i++)
 				DBG_871X("0x%x\n", *(skb->data+ETH_HLEN+4+i));
+				//DBG_871X("0x%x\n", *(skb->data+ETH_HLEN+6+i));
 
-			DBG_871X("eth, RC-end\n");
+			DBG_871X("eth, RC-end\n"); 
+
+#if 0
+			//send_sz = ksocket_send(padapter->ksock_send, &padapter->kaddr_send, (skb->data+ETH_HLEN+2), len);				
+			rtw_recv_ksocket_send_cmd(padapter, (skb->data+ETH_HLEN+2), len);
+
+			//DBG_871X("ksocket_send size=%d\n", send_sz); 
+#endif			
 		}
-
-	}
+		
+	}		
 
 }
 #endif //CONFIG_AUTO_AP_MODE
+
+int rtw_recv_monitor(_adapter *padapter, union recv_frame *precv_frame)
+{
+	int ret = _FAIL;
+	struct recv_priv *precvpriv;
+	_queue	*pfree_recv_queue;
+	_pkt *skb;
+	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+	struct rx_pkt_attrib *pattrib;
+
+	if (NULL == precv_frame)
+		goto _recv_drop;
+
+	pattrib = &precv_frame->u.hdr.attrib;
+	precvpriv = &(padapter->recvpriv);
+	pfree_recv_queue = &(precvpriv->free_recv_queue);
+
+	skb = precv_frame->u.hdr.pkt;
+	if (skb == NULL) {
+		DBG_871X("%s :skb==NULL something wrong!!!!\n", __func__);
+		goto _recv_drop;
+	}
+
+	skb->data = precv_frame->u.hdr.rx_data;
+	skb_set_tail_pointer(skb, precv_frame->u.hdr.len);
+	skb->len = precv_frame->u.hdr.len;
+	skb->ip_summed = CHECKSUM_NONE;
+	skb->pkt_type = PACKET_OTHERHOST;
+	skb->protocol = htons(0x0019); /* ETH_P_80211_RAW */
+
+	rtw_netif_rx(padapter->pnetdev, skb);
+
+	/* pointers to NULL before rtw_free_recvframe() */
+	precv_frame->u.hdr.pkt = NULL;
+
+	ret = _SUCCESS;
+
+_recv_drop:
+
+	/* enqueue back to free_recv_queue */
+	if (precv_frame)
+		rtw_free_recvframe(precv_frame, pfree_recv_queue);
+
+	return ret;
+
+}
 
 int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 {
@@ -547,10 +615,13 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 	_queue	*pfree_recv_queue;
 	_pkt *skb;
 	struct mlme_priv*pmlmepriv = &padapter->mlmepriv;
-	struct rx_pkt_attrib *pattrib = &precv_frame->u.hdr.attrib;
+	struct rx_pkt_attrib *pattrib;
+	
+	if(NULL == precv_frame)
+		goto _recv_indicatepkt_drop;
 
 	DBG_COUNTER(padapter->rx_logs.os_indicate);
-
+	pattrib = &precv_frame->u.hdr.attrib;
 	precvpriv = &(padapter->recvpriv);
 	pfree_recv_queue = &(precvpriv->free_recv_queue);
 
@@ -576,7 +647,7 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 		goto _recv_indicatepkt_drop;
 	}
 
-	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():skb != NULL !!!\n"));
+	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():skb != NULL !!!\n"));		
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("rtw_recv_indicatepkt():precv_frame->u.hdr.rx_head=%p  precv_frame->hdr.rx_data=%p\n", precv_frame->u.hdr.rx_head, precv_frame->u.hdr.rx_data));
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("precv_frame->hdr.rx_tail=%p precv_frame->u.hdr.rx_end=%p precv_frame->hdr.len=%d \n", precv_frame->u.hdr.rx_tail, precv_frame->u.hdr.rx_end, precv_frame->u.hdr.len));
 
@@ -588,9 +659,24 @@ int rtw_recv_indicatepkt(_adapter *padapter, union recv_frame *precv_frame)
 
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("\n skb->head=%p skb->data=%p skb->tail=%p skb->end=%p skb->len=%d\n", skb->head, skb->data, skb_tail_pointer(skb), skb_end_pointer(skb), skb->len));
 
-#ifdef CONFIG_AUTO_AP_MODE
+#ifdef CONFIG_AUTO_AP_MODE	
+#if 1 //for testing
+#if 1
 	if (0x8899 == pattrib->eth_type)
+	{
 		rtw_os_ksocket_send(padapter, precv_frame);
+
+		//goto _recv_indicatepkt_drop;
+	}
+#else
+	if (0x8899 == pattrib->eth_type)
+	{
+		rtw_auto_ap_mode_rx(padapter, precv_frame);
+		
+		goto _recv_indicatepkt_end;
+	}
+#endif
+#endif
 #endif //CONFIG_AUTO_AP_MODE
 
 	rtw_os_recv_indicate_pkt(padapter, skb, pattrib);
@@ -603,20 +689,26 @@ _recv_indicatepkt_end:
 
 	RT_TRACE(_module_recv_osdep_c_,_drv_info_,("\n rtw_recv_indicatepkt :after rtw_os_recv_indicate_pkt!!!!\n"));
 
-	return _SUCCESS;
+
+        return _SUCCESS;
 
 _recv_indicatepkt_drop:
 
-	//enqueue back to free_recv_queue
-	rtw_free_recvframe(precv_frame, pfree_recv_queue);
+	 //enqueue back to free_recv_queue
+	 if(precv_frame)
+		 rtw_free_recvframe(precv_frame, pfree_recv_queue);
 
-	DBG_COUNTER(padapter->rx_logs.os_indicate_err);
-	return _FAIL;
+	 DBG_COUNTER(padapter->rx_logs.os_indicate_err);
+
+	 return _FAIL;
+
 }
 
 void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 {
 	struct recv_priv *precvpriv = &padapter->recvpriv;
+
+#ifdef CONFIG_USB_HCI
 
 	precvbuf->ref_cnt--;
 
@@ -624,16 +716,21 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 	rtw_skb_free(precvbuf->pskb);
 
 	precvbuf->pskb = NULL;
-	precvbuf->reuse = _FALSE;
 
 	if(precvbuf->irp_pending == _FALSE)
 	{
 		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
 	}
 
-}
 
-static void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)
+#endif
+#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+		precvbuf->pskb = NULL;
+#endif
+
+}
+void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext);
+void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)
 {
 	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)FunctionContext;
 	rtw_reordering_ctrl_timeout_handler(preorder_ctrl);
@@ -646,3 +743,4 @@ void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, _rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
 
 }
+

@@ -25,7 +25,7 @@
 struct intf_priv {
 
 	u8 *intf_dev;
-	u32	max_iosz;	//USB2.0: 128, USB1.1: 64, SDIO:64
+	u32	max_iosz; 	//USB2.0: 128, USB1.1: 64, SDIO:64
 	u32	max_xmitsz; //USB2.0: unlimited, SDIO:512
 	u32	max_recvsz; //USB2.0: unlimited, SDIO:512
 
@@ -47,8 +47,11 @@ The protection mechanism is through the pending queue.
 
 	_mutex ioctl_mutex;
 
+
+#ifdef PLATFORM_LINUX
+	#ifdef CONFIG_USB_HCI
 	// when in USB, IO is through interrupt in/out endpoints
-	struct usb_device	*udev;
+	struct usb_device 	*udev;
 	PURB	piorw_urb;
 	u8 io_irp_cnt;
 	u8 bio_irp_pending;
@@ -56,6 +59,29 @@ The protection mechanism is through the pending queue.
 	_timer	io_timer;
 	u8 bio_irp_timeout;
 	u8 bio_timer_cancel;
+	#endif
+#endif
+
+#ifdef PLATFORM_OS_XP
+	#ifdef CONFIG_SDIO_HCI
+		// below is for io_rwmem...
+		PMDL pmdl;
+		PSDBUS_REQUEST_PACKET  sdrp;
+		PSDBUS_REQUEST_PACKET  recv_sdrp;
+		PSDBUS_REQUEST_PACKET  xmit_sdrp;
+
+			PIRP		piorw_irp;
+
+	#endif
+	#ifdef CONFIG_USB_HCI
+		PURB	piorw_urb;
+		PIRP		piorw_irp;
+		u8 io_irp_cnt;
+		u8 bio_irp_pending;
+		_sema io_retevt;
+	#endif
+#endif
+
 };
 
 
@@ -79,10 +105,12 @@ void rtw_cancel_dynamic_chk_timer(_adapter *padapter);
 #endif
 void rtw_cancel_all_timer(_adapter *padapter);
 
+#ifdef PLATFORM_LINUX
 int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 
 int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname);
 struct net_device *rtw_init_netdev(_adapter *padapter);
+void rtw_unregister_netdev(_adapter *adapter);
 void rtw_unregister_netdevs(struct dvobj_priv *dvobj);
 
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,35))
@@ -93,6 +121,17 @@ int rtw_ndev_notifier_register(void);
 void rtw_ndev_notifier_unregister(void);
 
 #include "../os_dep/rtw_proc.h"
+
+#ifdef CONFIG_IOCTL_CFG80211
+#include "../os_dep/ioctl_cfg80211.h"
+#endif //CONFIG_IOCTL_CFG80211
+
+#endif //PLATFORM_LINUX
+
+
+#ifdef PLATFORM_FREEBSD
+extern int rtw_ioctl(struct ifnet * ifp, u_long cmd, caddr_t data);
+#endif
 
 void rtw_ips_dev_unload(_adapter *padapter);
 
@@ -125,3 +164,4 @@ int rtw_suspend_common(_adapter *padapter);
 int rtw_resume_common(_adapter *padapter);
 
 #endif	//_OSDEP_INTF_H_
+

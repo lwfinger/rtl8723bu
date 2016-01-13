@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -51,6 +51,7 @@ u8 process_p2p_group_negotation_req( struct wifidirect_info *pwdinfo, u8 *pframe
 u8 process_p2p_group_negotation_resp( struct wifidirect_info *pwdinfo, u8 *pframe, uint len );
 u8 process_p2p_group_negotation_confirm( struct wifidirect_info *pwdinfo, u8 *pframe, uint len );
 u8 process_p2p_presence_req(struct wifidirect_info *pwdinfo, u8 *pframe, uint len);
+int process_p2p_cross_connect_ie(PADAPTER padapter, u8 *IEs, u32 IELength);
 
 void p2p_protocol_wk_hdl(_adapter *padapter, int intCmdType);
 
@@ -86,34 +87,37 @@ static inline void _rtw_p2p_set_pre_state(struct wifidirect_info *wdinfo, enum P
 		wdinfo->pre_p2p_state = state;
 	}
 }
-
+#if 0
+static inline void _rtw_p2p_restore_state(struct wifidirect_info *wdinfo)
+{
+	if(wdinfo->pre_p2p_state != -1) {
+		wdinfo->p2p_state = wdinfo->pre_p2p_state;
+		wdinfo->pre_p2p_state = -1;
+	}
+}
+#endif
 static inline void _rtw_p2p_set_role(struct wifidirect_info *wdinfo, enum P2P_ROLE role)
 {
 	if(wdinfo->role != role) {
 		wdinfo->role = role;
 	}
 }
-
 static inline int _rtw_p2p_state(struct wifidirect_info *wdinfo)
 {
 	return wdinfo->p2p_state;
 }
-
 static inline int _rtw_p2p_pre_state(struct wifidirect_info *wdinfo)
 {
 	return wdinfo->pre_p2p_state;
 }
-
 static inline int _rtw_p2p_role(struct wifidirect_info *wdinfo)
 {
 	return wdinfo->role;
 }
-
 static inline bool _rtw_p2p_chk_state(struct wifidirect_info *wdinfo, enum P2P_STATE state)
 {
 	return wdinfo->p2p_state == state;
 }
-
 static inline bool _rtw_p2p_chk_role(struct wifidirect_info *wdinfo, enum P2P_ROLE role)
 {
 	return wdinfo->role == role;
@@ -154,3 +158,4 @@ void dbg_rtw_p2p_set_role(struct wifidirect_info *wdinfo, enum P2P_ROLE role, co
 	(wdinfo)->find_phase_state_exchange_cnt != P2P_FINDPHASE_EX_NONE)
 
 #endif
+

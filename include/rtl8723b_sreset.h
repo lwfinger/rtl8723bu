@@ -27,3 +27,4 @@ extern void rtl8723b_sreset_xmit_status_check(_adapter *padapter);
 extern void rtl8723b_sreset_linked_status_check(_adapter *padapter);
 #endif
 #endif
+

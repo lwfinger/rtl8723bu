@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -20,7 +20,14 @@
 #ifndef _LINUX_BYTEORDER_BIG_ENDIAN_H
 #define _LINUX_BYTEORDER_BIG_ENDIAN_H
 
-#include <swab.h>
+#ifndef __BIG_ENDIAN
+#define __BIG_ENDIAN 4321
+#endif
+#ifndef __BIG_ENDIAN_BITFIELD
+#define __BIG_ENDIAN_BITFIELD
+#endif
+
+#include <byteorder/swab.h>
 
 #define __constant_htonl(x) ((__u32)(x))
 #define __constant_ntohl(x) ((__u32)(x))
@@ -75,6 +82,7 @@
 #define __cpu_to_be16s(x) do {} while (0)
 #define __be16_to_cpus(x) do {} while (0)
 
-#include <generic.h>
+#include <byteorder/generic.h>
 
 #endif /* _LINUX_BYTEORDER_BIG_ENDIAN_H */
+

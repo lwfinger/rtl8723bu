@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -21,9 +21,12 @@
 #define _RTL871X_BYTEORDER_H_
 
 #if defined (__LITTLE_ENDIAN)
+#ifndef CONFIG_PLATFORM_MSTAR389
 #  include <little_endian.h>
+#endif
 #else
 #  include <big_endian.h>
 #endif
 
 #endif /* _RTL871X_BYTEORDER_H_ */
+

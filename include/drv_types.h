@@ -39,9 +39,20 @@
 #include <net/arp.h>
 #endif
 
+#ifdef PLATFORM_OS_XP
+#include <drv_types_xp.h>
+#endif
+
+#ifdef PLATFORM_OS_CE
+#include <drv_types_ce.h>
+#endif
+
+#ifdef PLATFORM_LINUX
 #include <drv_types_linux.h>
+#endif
 
 enum _NIC_VERSION {
+
 	RTL8711_NIC,
 	RTL8712_NIC,
 	RTL8713_NIC,
@@ -83,6 +94,7 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 #include <hal_intf.h>
 #include <hal_com.h>
 #include <hal_com_led.h>
+#include "../hal/hal_dm.h"
 #include <rtw_qos.h>
 #include <rtw_pwrctrl.h>
 #include <rtw_mlme.h>
@@ -122,6 +134,8 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 #include <drvext_api.h>
 #endif // CONFIG_DRVEXT_MODULE
 
+#include <rtw_mp.h>
+
 #ifdef CONFIG_BR_EXT
 #include <rtw_br_ext.h>
 #endif // CONFIG_BR_EXT
@@ -130,16 +144,16 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 #include <rtw_iol.h>
 #endif // CONFIG_IOL
 
-#ifdef CONFIG_IOCTL_CFG80211
-#include "ioctl_cfg80211.h"
-#endif //CONFIG_IOCTL_CFG80211
-
 #include <ip.h>
 #include <if_ether.h>
 #include <ethernet.h>
 #include <circ_buf.h>
 
 #include <rtw_android.h>
+
+#ifdef CONFIG_BT_COEXIST
+#include <rtw_btcoex.h>
+#endif // CONFIG_BT_COEXIST
 
 #define SPEC_DEV_ID_NONE BIT(0)
 #define SPEC_DEV_ID_DISABLE_HT BIT(1)
@@ -186,7 +200,7 @@ struct registry_priv
 	u8	network_mode;	//infra, ad-hoc, auto
 	u8	channel;//ad-hoc support requirement
 	u8	wireless_mode;//A, B, G, auto
-	u8	scan_mode;//active, passive
+	u8 	scan_mode;//active, passive
 	u8	radio_enable;
 	u8	preamble;//long, short, auto
 	u8	vrtl_carrier_sense;//Enable, Disable, Auto
@@ -229,7 +243,7 @@ struct registry_priv
 	// 0x21 means enable 2.4G 40MHz & 5G 80MHz
 	u8	bw_mode;
 	u8	ampdu_enable;//for tx
-	u8	rx_stbc;
+	u8 	rx_stbc;
 	u8	ampdu_amsdu;//A-MPDU Supports A-MSDU is permitted
 	// Short GI support Bit Map
 	// BIT0 - 20MHz, 1: support, 0: non-support
@@ -270,6 +284,8 @@ struct registry_priv
 
 	u8	antdiv_cfg;
 	u8	antdiv_type;
+	
+	u8	switch_usb3;
 
 	u8	usbss_enable;//0:disable,1:enable
 	u8	hwpdn_mode;//0:disable,1:enable,2:decide by EFUSE config
@@ -315,7 +331,8 @@ struct registry_priv
 	u8	bEn_RFE;
 	u8	RFE_Type;
 	u8  check_fw_ps;
-
+	u8	RegRfKFreeEnable;
+	
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
 	u8	load_phy_file;
 	u8	RegDecryptCustomFile;
@@ -329,14 +346,41 @@ struct registry_priv
 	u8 hiq_filter;
 	u8 adaptivity_en;
 	u8 adaptivity_mode;
+	u8 adaptivity_dml;
+	u8 adaptivity_dc_backoff;
+	u8 boffefusemask;
+	BOOLEAN bFileMaskEfuse;
 };
 
 
 //For registry parameters
 #define RGTRY_OFT(field) ((ULONG)FIELD_OFFSET(struct registry_priv,field))
 #define RGTRY_SZ(field)   sizeof(((struct registry_priv*) 0)->field)
+
+#define GetRegAmplifierType2G(_Adapter)	(_Adapter->registrypriv.AmplifierType_2G)
+#define GetRegAmplifierType5G(_Adapter)	(_Adapter->registrypriv.AmplifierType_5G)
+
+#define GetRegTxBBSwing_2G(_Adapter)	(_Adapter->registrypriv.TxBBSwing_2G)
+#define GetRegTxBBSwing_5G(_Adapter)	(_Adapter->registrypriv.TxBBSwing_5G)
+
+#define GetRegbENRFEType(_Adapter)	(_Adapter->registrypriv.bEn_RFE)
+#define GetRegRFEType(_Adapter)	(_Adapter->registrypriv.RFE_Type)
+
+
 #define BSSID_OFT(field) ((ULONG)FIELD_OFFSET(WLAN_BSSID_EX,field))
 #define BSSID_SZ(field)   sizeof(((PWLAN_BSSID_EX) 0)->field)
+
+
+
+#ifdef CONFIG_SDIO_HCI
+#include <drv_types_sdio.h>
+#define INTF_DATA SDIO_DATA
+#elif defined(CONFIG_GSPI_HCI)
+#include <drv_types_gspi.h>
+#define INTF_DATA GSPI_DATA
+#elif defined(CONFIG_PCI_HCI)
+#include <drv_types_pci.h>
+#endif
 
 #ifdef CONFIG_CONCURRENT_MODE
 #define is_primary_adapter(adapter) (adapter->adapter_type == PRIMARY_ADAPTER)
@@ -348,6 +392,8 @@ struct registry_priv
 #define GET_PRIMARY_ADAPTER(padapter) (((_adapter *)padapter)->dvobj->if1)
 #define GET_IFACE_NUMS(padapter) (((_adapter *)padapter)->dvobj->iface_nums)
 #define GET_ADAPTER(padapter, iface_id) (((_adapter *)padapter)->dvobj->padapters[iface_id])
+
+#define GetDefaultAdapter(padapter)	padapter
 
 enum _IFACE_ID {
 	IFACE_ID0, //maping to PRIMARY_ADAPTER
@@ -520,6 +566,7 @@ struct debug_priv {
 	u64 dbg_rx_ampdu_loss_count;
 	u64 dbg_rx_dup_mgt_frame_drop_count;
 	u64 dbg_rx_ampdu_window_shift_cnt;
+	u64 dbg_rx_conflic_mac_addr_cnt;
 };
 
 struct rtw_traffic_statistics {
@@ -541,8 +588,7 @@ struct rtw_traffic_statistics {
 };
 
 struct cam_ctl_t {
-	spinlock_t lock;
-	ulong lock_set;
+	_lock lock;
 	u64 bitmap;
 };
 
@@ -557,21 +603,37 @@ struct cam_entry_cache {
 	((u8*)(x))[6],((u8*)(x))[7],((u8*)(x))[8],((u8*)(x))[9],((u8*)(x))[10],((u8*)(x))[11], \
 	((u8*)(x))[12],((u8*)(x))[13],((u8*)(x))[14],((u8*)(x))[15]
 
+struct macid_bmp {
+	u32 m0;
+#if (MACID_NUM_SW_LIMIT > 32)
+	u32 m1;
+#endif
+#if (MACID_NUM_SW_LIMIT > 64)
+	u32 m2;
+#endif
+#if (MACID_NUM_SW_LIMIT > 96)
+	u32 m3;
+#endif
+};
+
+struct macid_ctl_t {
+	_lock lock;
+	u8 num;
+	struct macid_bmp used;
+	struct macid_bmp bmc;
+	struct macid_bmp if_g[IFACE_ID_MAX];
+	struct macid_bmp ch_g[2]; /* 2 ch concurrency */
+};
+
 struct dvobj_priv
 {
-	/*-------- below is common data --------*/
+	/*-------- below is common data --------*/	
 	_adapter *if1; //PRIMARY_ADAPTER
 	_adapter *if2; //SECONDARY_ADAPTER
 
 	s32	processing_dev_remove;
 
 	struct debug_priv drv_dbg;
-
-	//for local/global synchronization
-	//
-	spinlock_t lock;
-	ulong lock_set;
-	int macid[NUM_STA];
 
 	_mutex hw_init_mutex;
 	_mutex h2c_fwcmd_mutex;
@@ -588,6 +650,8 @@ struct dvobj_priv
 	//padapters[IFACE_ID1] == if2
 	_adapter *padapters[IFACE_ID_MAX];
 	u8 iface_nums; // total number of ifaces used runtime
+
+	struct macid_ctl_t macid_ctl;
 
 	struct cam_ctl_t cam_ctl;
 	struct cam_entry_cache cam_cache[TOTAL_CAM_ENTRY];
@@ -618,6 +682,8 @@ struct dvobj_priv
 
 /*-------- below is for USB INTERFACE --------*/
 
+#ifdef CONFIG_USB_HCI
+
 	u8	usb_speed; // 1.1, 2.0 or 3.0
 	u8	nr_endpoint;
 	u8	RtNumInPipes;
@@ -637,19 +703,108 @@ struct dvobj_priv
 	u8 * usb_vendor_req_buf;
 #endif
 
+#ifdef PLATFORM_WINDOWS
+	//related device objects
+	PDEVICE_OBJECT	pphysdevobj;//pPhysDevObj;
+	PDEVICE_OBJECT	pfuncdevobj;//pFuncDevObj;
+	PDEVICE_OBJECT	pnextdevobj;//pNextDevObj;
+
+	u8	nextdevstacksz;//unsigned char NextDeviceStackSize;	//= (CHAR)CEdevice->pUsbDevObj->StackSize + 1;
+
+	//urb for control diescriptor request
+
+#ifdef PLATFORM_OS_XP
+	struct _URB_CONTROL_DESCRIPTOR_REQUEST descriptor_urb;
+	PUSB_CONFIGURATION_DESCRIPTOR	pconfig_descriptor;//UsbConfigurationDescriptor;
+#endif
+
+#ifdef PLATFORM_OS_CE
+	WCHAR			active_path[MAX_ACTIVE_REG_PATH];	// adapter regpath
+	USB_EXTENSION	usb_extension;
+
+	_nic_hdl		pipehdls_r8192c[0x10];
+#endif
+
+	u32	config_descriptor_len;//ULONG UsbConfigurationDescriptorLength;
+#endif//PLATFORM_WINDOWS
+
+#ifdef PLATFORM_LINUX
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
+#endif//PLATFORM_LINUX
+
+#ifdef PLATFORM_FREEBSD
+	struct usb_interface *pusbintf;
+	struct usb_device *pusbdev;
+#endif//PLATFORM_FREEBSD
+	
+#endif//CONFIG_USB_HCI
+
+/*-------- below is for PCIE INTERFACE --------*/
+
+#ifdef CONFIG_PCI_HCI
+
+#ifdef PLATFORM_LINUX
+	struct pci_dev *ppcidev;
+
+	//PCI MEM map
+	unsigned long	pci_mem_end;	/* shared mem end	*/
+	unsigned long	pci_mem_start;	/* shared mem start	*/
+
+	//PCI IO map
+	unsigned long	pci_base_addr;	/* device I/O address	*/
+
+	//PciBridge
+	struct pci_priv	pcipriv;
+
+	u16	irqline;
+	u8	irq_enabled;
+	RT_ISR_CONTENT	isr_content;
+	_lock	irq_th_lock;
+
+	//ASPM
+	u8	const_pci_aspm;
+	u8	const_amdpci_aspm;
+	u8	const_hwsw_rfoff_d3;
+	u8	const_support_pciaspm;
+	// pci-e bridge */
+	u8 	const_hostpci_aspm_setting;
+	// pci-e device */
+	u8 	const_devicepci_aspm_setting;
+	u8 	b_support_aspm; // If it supports ASPM, Offset[560h] = 0x40, otherwise Offset[560h] = 0x00.
+	u8	b_support_backdoor;
+	u8	bdma64;
+#endif//PLATFORM_LINUX
+
+#endif//CONFIG_PCI_HCI
 };
 
 #define dvobj_to_pwrctl(dvobj) (&(dvobj->pwrctl_priv))
 #define pwrctl_to_dvobj(pwrctl) container_of(pwrctl, struct dvobj_priv, pwrctl_priv)
+#define dvobj_to_macidctl(dvobj) (&(dvobj->macid_ctl))
+#define dvobj_to_regsty(dvobj) (&(dvobj->if1->registrypriv))
 
+#ifdef PLATFORM_LINUX
 static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
 	/* todo: get interface type from dvobj and the return the dev accordingly */
+#ifdef RTW_DVOBJ_CHIP_HW_TYPE
+#endif
 
+#ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
+#endif
+#ifdef CONFIG_SDIO_HCI
+	return &dvobj->intf_data.func->dev;
+#endif
+#ifdef CONFIG_GSPI_HCI
+	return &dvobj->intf_data.func->dev;
+#endif
+#ifdef CONFIG_PCI_HCI
+	return &dvobj->ppcidev->dev;
+#endif
 }
+#endif
 
 _adapter *dvobj_get_port0_adapter(struct dvobj_priv *dvobj);
 
@@ -704,7 +859,7 @@ struct _ADAPTER{
 	int	DriverState;// for disable driver using module, use dongle to replace module.
 	int	pid[3];//process id from UI, 0:wps, 1:hostapd, 2:dhcpcd
 	int	bDongle;//build-in module or external dongle
-	u16	chip_type;
+	u16 	chip_type;
 	u16	HardwareType;
 	u16	interface_type;//USB,SDIO,SPI,PCI
 
@@ -714,16 +869,15 @@ struct _ADAPTER{
 	struct	cmd_priv	cmdpriv;
 	struct	evt_priv	evtpriv;
 	//struct	io_queue	*pio_queue;
-	struct	io_priv	iopriv;
+	struct 	io_priv	iopriv;
 	struct	xmit_priv	xmitpriv;
 	struct	recv_priv	recvpriv;
 	struct	sta_priv	stapriv;
 	struct	security_priv	securitypriv;
-	spinlock_t   security_key_mutex; // add for CONFIG_IEEE80211W, none 11w also can use
-	ulong security_key_mutex_set;
-	struct	registry_priv	registrypriv;
-	struct	eeprom_priv eeprompriv;
+	_lock   security_key_mutex; // add for CONFIG_IEEE80211W, none 11w also can use
+	struct	registry_priv	registrypriv;	
 	struct	led_priv	ledpriv;
+       struct	mp_priv	mppriv;
 
 #ifdef CONFIG_DRVEXT_MODULE
 	struct	drvext_priv	drvextpriv;
@@ -757,6 +911,12 @@ struct _ADAPTER{
 	struct wifi_display_info wfd_info;
 #endif //CONFIG_WFD
 
+#ifdef CONFIG_BT_COEXIST_SOCKET_TRX
+	struct bt_coex_info coex_info;
+#endif //CONFIG_BT_COEXIST_SOCKET_TRX
+	
+	ERROR_CODE		LastError; /* <20130613, Kordan> Only the functions associated with MP records the error code by now. */
+	
 	PVOID			HalData;
 	u32 hal_data_sz;
 	struct hal_ops	HalFunc;
@@ -773,21 +933,45 @@ struct _ADAPTER{
 	u8	bDriverIsGoingToUnload;
 	u8	init_adpt_in_progress;
 	u8	bHaltInProgress;
-
+#ifdef CONFIG_GPIO_API	
+	u8	pre_gpio_pin;
+	struct gpio_int_priv {
+		u8 interrupt_mode;
+		u8 interrupt_enable_mask;
+		void (*callback[8])(u8 level);
+	}gpiointpriv;
+#endif	
 	_thread_hdl_ cmdThread;
 	_thread_hdl_ evtThread;
 	_thread_hdl_ xmitThread;
 	_thread_hdl_ recvThread;
 
-	u32 (*intf_init)(struct dvobj_priv *dvobj);
+#ifndef PLATFORM_LINUX
+	NDIS_STATUS (*dvobj_init)(struct dvobj_priv *dvobj);
+	void (*dvobj_deinit)(struct dvobj_priv *dvobj);
+#endif
+
+ 	u32 (*intf_init)(struct dvobj_priv *dvobj);
 	void (*intf_deinit)(struct dvobj_priv *dvobj);
 	int (*intf_alloc_irq)(struct dvobj_priv *dvobj);
 	void (*intf_free_irq)(struct dvobj_priv *dvobj);
-
+	
 
 	void (*intf_start)(_adapter * adapter);
 	void (*intf_stop)(_adapter * adapter);
 
+#ifdef PLATFORM_WINDOWS
+	_nic_hdl		hndis_adapter;//hNdisAdapter(NDISMiniportAdapterHandle);
+	_nic_hdl		hndis_config;//hNdisConfiguration;
+	NDIS_STRING fw_img;
+
+	u32	NdisPacketFilter;
+	u8	MCList[MAX_MCAST_LIST_NUM][6];
+	u32	MCAddrCount;
+#endif //end of PLATFORM_WINDOWS
+
+
+#ifdef PLATFORM_LINUX
 	_nic_hdl pnetdev;
 	char old_ifname[IFNAMSIZ];
 
@@ -810,8 +994,16 @@ struct _ADAPTER{
 	struct rtw_wdev_priv wdev_data;
 #endif //CONFIG_IOCTL_CFG80211
 
-	int net_closed;
+#endif //end of PLATFORM_LINUX
 
+#ifdef PLATFORM_FREEBSD
+	_nic_hdl pifp;
+	int bup;
+	_lock glock;
+#endif //PLATFORM_FREEBSD
+	u8 mac_addr[ETH_ALEN];
+	int net_closed;
+	
 	u8 netif_up;
 
 	u8 bFWReady;
@@ -846,7 +1038,7 @@ struct _ADAPTER{
 	// refer to iface_id if iface_nums>2 and isprimary is false and the adapter_type value is 0xff.
 	u8 adapter_type;//used only in  two inteface case(PRIMARY_ADAPTER and SECONDARY_ADAPTER) .
 	u8 iface_type; //interface port type, it depends on HW port
-#endif //CONFIG_CONCURRENT_MODE
+#endif //CONFIG_CONCURRENT_MODE 
 
 	//extend to support multi interface
        //IFACE_ID0 is equals to PRIMARY_ADAPTER
@@ -854,8 +1046,8 @@ struct _ADAPTER{
 	u8 iface_id;
 
 #ifdef CONFIG_BR_EXT
-	spinlock_t 			br_ext_lock;
-	ulong br_ext_lock_set;
+	_lock					br_ext_lock;
+	//unsigned int			macclone_completed;
 	struct nat25_network_db_entry	*nethash[NAT25_HASH_SIZE];
 	int				pppoe_connection_in_progress;
 	unsigned char			pppoe_addr[MACADDRLEN];
@@ -881,15 +1073,23 @@ struct _ADAPTER{
 
 	//for debug purpose
 	u8 fix_rate;
+	u8 data_fb; /* data rate fallback, valid only when fix_rate is not 0xff */
 	u8 driver_vcs_en; //Enable=1, Disable=0 driver control vrtl_carrier_sense for tx
 	u8 driver_vcs_type;//force 0:disable VCS, 1:RTS-CTS, 2:CTS-to-self when vcs_en=1.
 	u8 driver_ampdu_spacing;//driver control AMPDU Density for peer sta's rx
 	u8 driver_rx_ampdu_factor;//0xff: disable drv ctrl, 0:8k, 1:16k, 2:32k, 3:64k;
-	u8 fix_ba_rxbuf_bz; /* 0~127, TODO:consider each sta and each TID */
-
+	u8 driver_rx_ampdu_spacing;  //driver control Rx AMPDU Density 
+	u8 fix_rx_ampdu_accept;
+	u8 fix_rx_ampdu_size; /* 0~127, TODO:consider each sta and each TID */
 	unsigned char     in_cta_test;
+#ifdef DBG_RX_COUNTER_DUMP		
+	u8 dump_rx_cnt_mode;/*BIT0:drv,BIT1:mac,BIT2:phy*/
+	u32 drv_rx_cnt_ok;
+	u32 drv_rx_cnt_crcerror;
+	u32 drv_rx_cnt_drop;
+#endif
 
-#ifdef CONFIG_DBG_COUNTER
+#ifdef CONFIG_DBG_COUNTER	
 	struct rx_logs rx_logs;
 	struct tx_logs tx_logs;
 	struct int_logs int_logs;
@@ -899,6 +1099,7 @@ struct _ADAPTER{
 #define adapter_to_dvobj(adapter) (adapter->dvobj)
 #define adapter_to_pwrctl(adapter) (dvobj_to_pwrctl(adapter->dvobj))
 #define adapter_wdev_data(adapter) (&((adapter)->wdev_data))
+#define adapter_mac_addr(adapter) (adapter->mac_addr)
 
 //
 // Function disabled.
@@ -939,40 +1140,44 @@ __inline static void RTW_ENABLE_FUNC(_adapter*padapter, int func_bit)
 			 (padapter)->bSurpriseRemoved || \
 			 RTW_IS_FUNC_DISABLED((padapter), DF_TX_BIT))
 
-int rtw_handle_dualmac(_adapter *adapter, bool init);
-
 #ifdef CONFIG_PNO_SUPPORT
 int rtw_parse_ssid_list_tlv(char** list_str, pno_ssid_t* ssid, int max, int *bytes_left);
-int rtw_dev_pno_set(struct net_device *net, pno_ssid_t* ssid, int num,
+int rtw_dev_pno_set(struct net_device *net, pno_ssid_t* ssid, int num, 
 					int pno_time, int pno_repeat, int pno_freq_expo_max);
 #ifdef CONFIG_PNO_SET_DEBUG
 void rtw_dev_pno_debug(struct net_device *net);
 #endif //CONFIG_PNO_SET_DEBUG
 #endif //CONFIG_PNO_SUPPORT
 
-#ifdef CONFIG_GPIO_API
-int rtw_get_gpio(struct net_device *netdev, int gpio_num);
-int rtw_set_gpio_output_value(struct net_device *netdev, int gpio_num, BOOLEAN isHigh);
-int rtw_config_gpio(struct net_device *netdev, int gpio_num, BOOLEAN isOutput);
-#endif
-
 #ifdef CONFIG_WOWLAN
 int rtw_suspend_wow(_adapter *padapter);
 int rtw_resume_process_wow(_adapter *padapter);
 #endif
 
-__inline static u8 *myid(struct eeprom_priv *peepriv)
-{
-	return (peepriv->mac_addr);
-}
-
 // HCI Related header file
+#ifdef CONFIG_USB_HCI
 #include <usb_osintf.h>
 #include <usb_ops.h>
 #include <usb_hal.h>
+#endif
 
-#ifdef CONFIG_BT_COEXIST
-#include <rtw_btcoex.h>
-#endif // CONFIG_BT_COEXIST
+#ifdef CONFIG_SDIO_HCI
+#include <sdio_osintf.h>
+#include <sdio_ops.h>
+#include <sdio_hal.h>
+#endif
+
+#ifdef CONFIG_GSPI_HCI
+#include <gspi_osintf.h>
+#include <gspi_ops.h>
+#include <gspi_hal.h>
+#endif
+
+#ifdef CONFIG_PCI_HCI
+#include <pci_osintf.h>
+#include <pci_ops.h>
+#include <pci_hal.h>
+#endif
 
 #endif //__DRV_TYPES_H__
+

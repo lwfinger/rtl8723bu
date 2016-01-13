@@ -34,25 +34,29 @@ void ConfigureTxpowerTrack_8723B(
 	);
 
 void DoIQK_8723B(
-	PDM_ODM_T	pDM_Odm,
-	u1Byte		DeltaThermalIndex,
-	u1Byte		ThermalValue,
-	u1Byte		Threshold
+	PVOID		pDM_VOID,
+	u1Byte 		DeltaThermalIndex,
+	u1Byte		ThermalValue,	
+	u1Byte 		Threshold
 	);
 
 VOID
 ODM_TxPwrTrackSetPwr_8723B(
 	PDM_ODM_T			pDM_Odm,
-	PWRTRACK_METHOD		Method,
-	u1Byte				RFPath,
-	u1Byte				ChannelMappedIndex
+	PWRTRACK_METHOD 	Method,
+	u1Byte 				RFPath,
+	u1Byte 				ChannelMappedIndex
 	);
 
 //1 7.	IQK
 
-void
-PHY_IQCalibrate_8723B(
+void	
+PHY_IQCalibrate_8723B(	
+#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
+	IN PDM_ODM_T		pDM_Odm,
+#else
 	IN PADAPTER	Adapter,
+#endif
 	IN BOOLEAN	bReCovery,
 	IN BOOLEAN	bRestore,
 	IN BOOLEAN	Is2ant,
@@ -60,14 +64,18 @@ PHY_IQCalibrate_8723B(
 
 VOID
 ODM_SetIQCbyRFpath(
+//#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
 	IN PDM_ODM_T		pDM_Odm,
-	IN u4Byte RFpath
+//#else
+	//IN	PADAPTER	pAdapter,
+//#endif
+    IN u4Byte RFpath
 	);
 
 //
 // LC calibrate
 //
-void
+void	
 PHY_LCCalibrate_8723B(
 	IN PDM_ODM_T		pDM_Odm
 );
@@ -75,17 +83,25 @@ PHY_LCCalibrate_8723B(
 //
 // AP calibrate
 //
-void
-PHY_APCalibrate_8723B(
+void	
+PHY_APCalibrate_8723B(		
+#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
+	IN PDM_ODM_T		pDM_Odm,
+#else
 	IN	PADAPTER	pAdapter,
-	IN	s1Byte		delta);
-void
+#endif
+							IN 	s1Byte		delta);
+void	
 PHY_DigitalPredistortion_8723B(		IN	PADAPTER	pAdapter);
 
 
 VOID
 _PHY_SaveADDARegisters_8723B(
+#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
+	IN PDM_ODM_T		pDM_Odm,
+#else
 	IN	PADAPTER	pAdapter,
+#endif
 	IN	pu4Byte		ADDAReg,
 	IN	pu4Byte		ADDABackup,
 	IN	u4Byte		RegisterNum
@@ -93,7 +109,11 @@ _PHY_SaveADDARegisters_8723B(
 
 VOID
 _PHY_PathADDAOn_8723B(
+#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
+	IN PDM_ODM_T		pDM_Odm,
+#else
 	IN	PADAPTER	pAdapter,
+#endif
 	IN	pu4Byte		ADDAReg,
 	IN	BOOLEAN		isPathAOn,
 	IN	BOOLEAN		is2T
@@ -101,9 +121,14 @@ _PHY_PathADDAOn_8723B(
 
 VOID
 _PHY_MACSettingCalibration_8723B(
+#if (DM_ODM_SUPPORT_TYPE & ODM_AP)
+	IN PDM_ODM_T		pDM_Odm,
+#else
 	IN	PADAPTER	pAdapter,
+#endif
 	IN	pu4Byte		MACReg,
-	IN	pu4Byte		MACBackup
+	IN	pu4Byte		MACBackup	
 	);
+							
+#endif	// #ifndef __HAL_PHY_RF_8188E_H__								
 
-#endif	// #ifndef __HAL_PHY_RF_8188E_H__

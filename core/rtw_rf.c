@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -27,7 +27,7 @@ struct ch_freq {
 	u32 frequency;
 };
 
-static struct ch_freq ch_freq_map[] = {
+struct ch_freq ch_freq_map[] = {
 	{1, 2412},{2, 2417},{3, 2422},{4, 2427},{5, 2432},
 	{6, 2437},{7, 2442},{8, 2447},{9, 2452},{10, 2457},
 	{11, 2462},{12, 2467},{13, 2472},{14, 2484},
@@ -49,7 +49,7 @@ static struct ch_freq ch_freq_map[] = {
 	{216, 5080},/* Japan, means J16 */
 };
 
-static int ch_freq_map_num = (sizeof(ch_freq_map) / sizeof(struct ch_freq));
+int ch_freq_map_num = (sizeof(ch_freq_map) / sizeof(struct ch_freq));
 
 u32 rtw_ch2freq(u32 channel)
 {
@@ -88,3 +88,4 @@ u32 rtw_freq2ch(u32 freq)
 
 	return ch;
 }
+

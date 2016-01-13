@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,7 +17,7 @@
  *
  *
  ******************************************************************************/
-#ifndef	__RTW_RF_H_
+#ifndef	__RTW_RF_H_ 
 #define __RTW_RF_H_
 
 
@@ -49,15 +49,15 @@
 
 //Country codes
 #define USA							0x555320
-#define EUROPE						0x1 //temp, should be provided later
-#define JAPAN						0x2 //temp, should be provided later
+#define EUROPE						0x1 //temp, should be provided later	
+#define JAPAN						0x2 //temp, should be provided later	
 
 struct	regulatory_class {
-	u32	starting_freq;					//MHz,
+	u32	starting_freq;					//MHz, 
 	u8	channel_set[MAX_CHANNEL_NUM];
 	u8	channel_cck_power[MAX_CHANNEL_NUM];//dbm
 	u8	channel_ofdm_power[MAX_CHANNEL_NUM];//dbm
-	u8	txpower_limit;					//dbm
+	u8	txpower_limit;  				//dbm
 	u8	channel_spacing;				//MHz
 	u8	modem;
 };
@@ -104,8 +104,8 @@ typedef enum _RF90_RADIO_PATH{
 	RF90_PATH_A = 0,			//Radio Path A
 	RF90_PATH_B = 1,			//Radio Path B
 	RF90_PATH_C = 2,			//Radio Path C
-	RF90_PATH_D = 3			//Radio Path D
-	//RF90_PATH_MAX				//Max RF number 90 support
+	RF90_PATH_D = 3 		//Radio Path D
+	//RF90_PATH_MAX 			//Max RF number 90 support
 }RF90_RADIO_PATH_E, *PRF90_RADIO_PATH_E;
 
 // Bandwidth Offset
@@ -155,7 +155,6 @@ typedef enum _PROTECTION_MODE{
 	PROTECTION_MODE_FORCE_DISABLE = 2,
 }PROTECTION_MODE, *PPROTECTION_MODE;
 
-/* 2007/11/15 MH Define different RF type. */
 typedef	enum _RT_RF_TYPE_DEFINITION
 {
 	RF_1T2R = 0,
@@ -163,7 +162,12 @@ typedef	enum _RT_RF_TYPE_DEFINITION
 	RF_2T2R = 2,
 	RF_1T1R = 3,
 	RF_2T2R_GREEN = 4,
-	RF_MAX_TYPE = 5,
+	RF_2T3R = 5,	
+	RF_3T3R = 6,
+	RF_3T4R	= 7,
+	RF_4T4R	= 8,
+
+	RF_MAX_TYPE = 0xF, /* u1Byte */
 }RT_RF_TYPE_DEF_E;
 
 
@@ -172,3 +176,4 @@ u32 rtw_freq2ch(u32 freq);
 
 
 #endif //_RTL8711_RF_H_
+

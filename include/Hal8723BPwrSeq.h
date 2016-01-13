@@ -3,7 +3,7 @@
 
 #include "HalPwrSeqCmd.h"
 
-/*
+/* 
 	Check document WM-20130815-JackieLau-RTL8723B_Power_Architecture v08.vsd
 	There are 6 HW Power States:
 	0: POFF--Power Off
@@ -20,7 +20,7 @@
 	TRANS_SUS_TO_CARDEMU
 	TRANS_CARDEMU_TO_PDN
 	TRANS_ACT_TO_LPS
-	TRANS_LPS_TO_ACT
+	TRANS_LPS_TO_ACT	
 
 	TRANS_END
 */
@@ -31,13 +31,13 @@
 #define	RTL8723B_TRANS_CARDEMU_TO_PDN_STEPS	15
 #define	RTL8723B_TRANS_PDN_TO_CARDEMU_STEPS	15
 #define	RTL8723B_TRANS_ACT_TO_LPS_STEPS		15
-#define	RTL8723B_TRANS_LPS_TO_ACT_STEPS		15
+#define	RTL8723B_TRANS_LPS_TO_ACT_STEPS		15	
 #define	RTL8723B_TRANS_ACT_TO_SWLPS_STEPS		22
 #define	RTL8723B_TRANS_SWLPS_TO_ACT_STEPS		15
 #define	RTL8723B_TRANS_END_STEPS		1
 
 
-#define RTL8723B_TRANS_CARDEMU_TO_ACT														\
+#define RTL8723B_TRANS_CARDEMU_TO_ACT 														\
 	/* format */																\
 	/* { offset, cut_msk, fab_msk|interface_msk, base|cmd, msk, value }, // comments here*/								\
 	{0x0020, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_USB_MSK|PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, BIT0, BIT0}, /*0x20[0] = 1b'1 enable LDOA12 MACRO block for all interface*/   \
@@ -164,8 +164,8 @@
 	{0x0100, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_ALL_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, 0xFF, 0xFF}, /*.	0x100[7:0] = 0xFF	 enable WMAC TRX*/\
 	{0x0002, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_ALL_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, BIT1|BIT0, BIT1|BIT0}, /*.	0x02[1:0] = 2b'11	 enable BB macro*/\
 	{0x0522, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_ALL_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, 0xFF, 0}, /*.	0x522 = 0*/
-
-
+ 
+ 
  #define RTL8723B_TRANS_ACT_TO_SWLPS														\
 	/* format */																\
 	/* { offset, cut_msk, fab_msk|interface_msk, base|cmd, msk, value }, // comments here*/								\
@@ -190,7 +190,7 @@
 	{0x0008, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, BIT4, BIT4},/*switch TSF to 32K*/\
 	{0x0109, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, BIT7, BIT7},/*polling TSF stable*/\
 	{0x0090, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, BIT0, BIT0},/*Set FW LPS*/	\
-	{0x0090, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_POLLING, BIT0, 0},/*polling FW LPS ready */
+	{0x0090, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_POLLING, BIT0, 0},/*polling FW LPS ready */	
 
 
 #define RTL8723B_TRANS_SWLPS_TO_ACT															\
@@ -211,7 +211,7 @@
 	{0x0080, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_POLLING, BIT6, BIT6},/*polling FW init ready */	\
 	{0x0002, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, BIT0, BIT0}, /*.	0x02[1:0] = 2b'11	 enable BB macro*/\
 	{0x0522, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK, PWR_INTF_SDIO_MSK,PWR_BASEADDR_MAC,PWR_CMD_WRITE, 0xFF, 0}, /*.	0x522 = 0*/
-
+	
 #define RTL8723B_TRANS_END															\
 	/* format */																\
 	/* { offset, cut_msk, fab_msk|interface_msk, base|cmd, msk, value }, // comments here*/								\
@@ -230,3 +230,4 @@ extern WLAN_PWR_CFG rtl8723B_leave_lps_flow[RTL8723B_TRANS_LPS_TO_ACT_STEPS+RTL8
 extern WLAN_PWR_CFG rtl8723B_enter_swlps_flow[RTL8723B_TRANS_ACT_TO_SWLPS_STEPS+RTL8723B_TRANS_END_STEPS];
 extern WLAN_PWR_CFG rtl8723B_leave_swlps_flow[RTL8723B_TRANS_SWLPS_TO_ACT_STEPS+RTL8723B_TRANS_END_STEPS];
 #endif
+

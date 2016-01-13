@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2013 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -31,6 +31,7 @@
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,5))
 	#include <linux/kref.h>
 #endif
+	//#include <linux/smp_lock.h>
 	#include <linux/netdevice.h>
 	#include <linux/skbuff.h>
 	#include <linux/circ_buf.h>
@@ -68,9 +69,15 @@
 	#include <asm/io.h>
 #endif
 
-#ifdef CONFIG_IOCTL_CFG80211
-//	#include <linux/ieee80211.h>
-        #include <net/ieee80211_radiotap.h>
+#ifdef CONFIG_NET_RADIO
+	#define CONFIG_WIRELESS_EXT
+#endif
+
+	/* Monitor mode */
+	#include <net/ieee80211_radiotap.h>
+
+#ifdef CONFIG_IOCTL_CFG80211	
+/*	#include <linux/ieee80211.h> */
 	#include <net/cfg80211.h>
 #endif //CONFIG_IOCTL_CFG80211
 
@@ -87,45 +94,56 @@
 	#include <linux/fs.h>
 #endif //CONFIG_EFUSE_CONFIG_FILE
 
+#ifdef CONFIG_USB_HCI
 	#include <linux/usb.h>
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,21))
 	#include <linux/usb_ch9.h>
 #else
 	#include <linux/usb/ch9.h>
 #endif
+#endif
 
+#ifdef CONFIG_BT_COEXIST_SOCKET_TRX
+	#include <net/sock.h>
+	#include <net/tcp.h>
+	#include <linux/udp.h>
+	#include <linux/in.h>
+	#include <linux/netlink.h>
+#endif //CONFIG_BT_COEXIST_SOCKET_TRX
+
+#ifdef CONFIG_USB_HCI
 	typedef struct urb *  PURB;
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,22))
 #ifdef CONFIG_USB_SUSPEND
 #define CONFIG_AUTOSUSPEND	1
 #endif
 #endif
+#endif
 
-	typedef struct	semaphore _sema;
+	typedef struct 	semaphore _sema;
 	typedef	spinlock_t	_lock;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
-	typedef struct mutex		_mutex;
+	typedef struct mutex 		_mutex;
 #else
 	typedef struct semaphore	_mutex;
 #endif
 	typedef struct timer_list _timer;
 
 	struct	__queue	{
-		struct	list_head	queue;
-		spinlock_t	lock;
-		ulong lock_set;
+		struct	list_head	queue;	
+		_lock	lock;
 	};
 
 	typedef	struct sk_buff	_pkt;
 	typedef unsigned char	_buffer;
-
+	
 	typedef struct	__queue	_queue;
 	typedef struct	list_head	_list;
 	typedef	int	_OS_STATUS;
 	//typedef u32	_irqL;
 	typedef unsigned long _irqL;
 	typedef	struct	net_device * _nic_hdl;
-
+	
 	typedef void*		_thread_hdl_;
 	typedef int		thread_return;
 	typedef void*	thread_context;
@@ -171,66 +189,53 @@ static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
 __inline static _list *get_next(_list	*list)
 {
 	return list->next;
-}
+}	
 
 __inline static _list	*get_list_head(_queue	*queue)
 {
 	return (&(queue->queue));
 }
 
-extern ulong lock_jiffies;
-extern ulong locked_jiffies;
-extern ulong lock_jiffies_irq;
-extern ulong locked_jiffies_irq;
-extern ulong lock_jiffies_bh;
-extern ulong locked_jiffies_bh;
-
+	
 #define LIST_CONTAINOR(ptr, type, member) \
-        ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))
+        ((type *)((char *)(ptr)-(SIZE_T)(&((type *)0)->member)))	
 
-#define SPIN_LOCK_IRQ(_LOCK, _IRQL)					\
-	{							\
-		_LOCK##_set = jiffies;				\
-		spin_lock_irqsave(&_LOCK, *_IRQL);		\
-		if (jiffies - _LOCK##_set > lock_jiffies_irq) {	\
-			lock_jiffies_irq = jiffies - _LOCK##_set;	\
-			pr_info("ms waiting to acquire lock_irq  = %d\n", jiffies_to_msecs(lock_jiffies_irq)); \
-		}						\
-	}
+        
+__inline static void _enter_critical(_lock *plock, _irqL *pirqL)
+{
+	spin_lock_irqsave(plock, *pirqL);
+}
 
-#define SPIN_UNLOCK_IRQ(_LOCK, _IRQL)				\
-	{							\
-		spin_unlock_irqrestore(&_LOCK, *_IRQL);		\
-		if (jiffies - _LOCK##_set > locked_jiffies_irq) {	\
-			locked_jiffies_irq = jiffies - _LOCK##_set; \
-			pr_info("ms lock_irq is held  = %d\n", jiffies_to_msecs(locked_jiffies_irq)); \
-		}						\
-	}
+__inline static void _exit_critical(_lock *plock, _irqL *pirqL)
+{
+	spin_unlock_irqrestore(plock, *pirqL);
+}
 
-#define SPIN_LOCK_BH(_LOCK, _IRQL)				\
-	{							\
-		spin_lock_bh(&_LOCK);				\
-	}
+__inline static void _enter_critical_ex(_lock *plock, _irqL *pirqL)
+{
+	spin_lock_irqsave(plock, *pirqL);
+}
 
-#define SPIN_UNLOCK_BH(_LOCK, _IRQL)				\
-	{							\
-		spin_unlock_bh(&_LOCK);				\
-	}
+__inline static void _exit_critical_ex(_lock *plock, _irqL *pirqL)
+{
+	spin_unlock_irqrestore(plock, *pirqL);
+}
 
-#define SPIN_LOCK(_LOCK)					\
-	{							\
-		spin_lock(_LOCK);				\
-	}
+__inline static void _enter_critical_bh(_lock *plock, _irqL *pirqL)
+{
+	spin_lock_bh(plock);
+}
 
-#define SPIN_UNLOCK(_LOCK)					\
-	{							\
-		spin_unlock(_LOCK);				\
-	}
+__inline static void _exit_critical_bh(_lock *plock, _irqL *pirqL)
+{
+	spin_unlock_bh(plock);
+}
 
 __inline static int _enter_critical_mutex(_mutex *pmutex, _irqL *pirqL)
 {
 	int ret = 0;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37))
+	//mutex_lock(pmutex);
 	ret = mutex_lock_interruptible(pmutex);
 #else
 	ret = down_interruptible(pmutex);
@@ -257,20 +262,20 @@ __inline static void rtw_list_delete(_list *plist)
 
 __inline static void _init_timer(_timer *ptimer,_nic_hdl nic_hdl,void *pfunc,void* cntx)
 {
-	//setup_timer(ptimer, pfunc,(u32)cntx);
+	//setup_timer(ptimer, pfunc,(u32)cntx);	
 	ptimer->function = pfunc;
 	ptimer->data = (unsigned long)cntx;
 	init_timer(ptimer);
 }
 
 __inline static void _set_timer(_timer *ptimer,u32 delay_time)
-{
-	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));
+{	
+	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));	
 }
 
 __inline static void _cancel_timer(_timer *ptimer,u8 *bcancelled)
 {
-	del_timer_sync(ptimer);
+	del_timer_sync(ptimer); 	
 	*bcancelled=  _TRUE;//TRUE ==1; FALSE==0
 }
 
@@ -411,3 +416,4 @@ extern struct net_device * rtw_alloc_etherdev(int sizeof_priv);
 
 
 #endif
+

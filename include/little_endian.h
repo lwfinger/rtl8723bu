@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -20,7 +20,14 @@
 #ifndef _LINUX_BYTEORDER_LITTLE_ENDIAN_H
 #define _LINUX_BYTEORDER_LITTLE_ENDIAN_H
 
-#include <swab.h>
+#ifndef __LITTLE_ENDIAN
+#define __LITTLE_ENDIAN 1234
+#endif
+#ifndef __LITTLE_ENDIAN_BITFIELD
+#define __LITTLE_ENDIAN_BITFIELD
+#endif
+
+#include <byteorder/swab.h>
 
 #ifndef __constant_htonl
 #define __constant_htonl(x) ___constant_swab32((x))
@@ -77,6 +84,7 @@
 #define __be16_to_cpus(x) __swab16s((x))
 #endif	// __constant_htonl
 
-#include <generic.h>
+#include <byteorder/generic.h>
 
 #endif /* _LINUX_BYTEORDER_LITTLE_ENDIAN_H */
+

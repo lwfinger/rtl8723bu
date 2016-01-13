@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -20,6 +20,12 @@
 #ifndef __DRV_CONF_H__
 #define __DRV_CONF_H__
 #include "autoconf.h"
+
+#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
+
+#error "Shall be Linux or Windows, but not both!\n"
+
+#endif
 
 //Older Android kernel doesn't has CONFIG_ANDROID defined,
 //add this to force CONFIG_ANDROID defined
@@ -60,7 +66,7 @@
 #endif
 
 //About USB VENDOR REQ
-#if defined(CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC) && !defined(CONFIG_USB_VENDOR_REQ_MUTEX)
+#if defined(CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC) && !defined(CONFIG_USB_VENDOR_REQ_MUTEX) 
 	#warning "define CONFIG_USB_VENDOR_REQ_MUTEX for CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC automatically"
 	#define CONFIG_USB_VENDOR_REQ_MUTEX
 #endif
@@ -71,18 +77,42 @@
 
 #define DYNAMIC_CAMID_ALLOC
 
+#define RTW_SCAN_SPARSE_MIRACAST 1
+#define RTW_SCAN_SPARSE_BG 0
+
 #ifndef CONFIG_RTW_HIQ_FILTER
 	#define CONFIG_RTW_HIQ_FILTER 1
 #endif
 
 #ifndef CONFIG_RTW_ADAPTIVITY_EN
-	#define CONFIG_RTW_ADAPTIVITY_EN 2
+	#define CONFIG_RTW_ADAPTIVITY_EN 0
 #endif
 
 #ifndef CONFIG_RTW_ADAPTIVITY_MODE
 	#define CONFIG_RTW_ADAPTIVITY_MODE 0
 #endif
 
+#ifndef CONFIG_RTW_ADAPTIVITY_DML
+	#define CONFIG_RTW_ADAPTIVITY_DML 0
+#endif
+
+#ifndef CONFIG_RTW_ADAPTIVITY_DC_BACKOFF
+	#define CONFIG_RTW_ADAPTIVITY_DC_BACKOFF 2
+#endif
+
+#ifndef CONFIG_RTW_AMPLIFIER_TYPE_2G
+	#define CONFIG_RTW_AMPLIFIER_TYPE_2G 0
+#endif
+
+#ifndef CONFIG_RTW_AMPLIFIER_TYPE_5G
+	#define CONFIG_RTW_AMPLIFIER_TYPE_5G 0
+#endif
+
+#define MACID_NUM_SW_LIMIT 32
+#define CAM_ENTRY_NUM_SW_LIMIT 32
+
+/*#define CONFIG_WEXT_DONT_JOIN_BYSSID	*/
 //#include <rtl871x_byteorder.h>
 
 #endif // __DRV_CONF_H__
+
