@@ -1009,8 +1009,6 @@ static rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
 	return rfpowerstate;
 }	// HalDetectPwrDownMode
 
-void _ps_open_RF(_adapter *padapter);
-
 static u32 rtl8723bu_hal_init(PADAPTER padapter)
 {
 	u8	value8 = 0, u1bRegCR;

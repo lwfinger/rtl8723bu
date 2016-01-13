@@ -35,6 +35,16 @@ static const u2Byte dB_Invert_Table[8][12] = {
 	{	4467,	5012,	5623,	6310,	7079,	7943,	8913,	10000,	11220,	12589,	14125,	15849},
 	{	17783,	19953,	22387,	25119,	28184,	31623,	35481,	39811,	44668,	50119,	56234,	65535}};
 
+/* forward definitions */
+static VOID odm_CommonInfoSelfInit(PDM_ODM_T pDM_Odm);
+static VOID odm_SwAntDivChkAntSwitch(PDM_ODM_T pDM_Odm, u1Byte Step);
+static void odm_SwAntDetectInit(PDM_ODM_T pDM_Odm);
+static VOID odm_HwAntDiv(PDM_ODM_T pDM_Odm);
+static VOID odm_TXPowerTrackingCheckCE(PDM_ODM_T pDM_Odm);
+static VOID odm_TXPowerTrackingThermalMeterInit(PDM_ODM_T pDM_Odm);
+static VOID odm_BasicDbgMessage(PDM_ODM_T pDM_Odm);
+static VOID odm_CmnInfoInit_Debug(PDM_ODM_T pDM_Odm);
+static VOID odm_CommonInfoSelfUpdate(PDM_ODM_T pDM_Odm);
 
 //============================================================
 // Global var
@@ -362,39 +372,6 @@ unsigned int TxPwrTrk_OFDM_SwingTbl[TxPwrTrk_OFDM_SwingTbl_Len] = {
 // Local Function predefine.
 //============================================================
 
-//START------------COMMON INFO RELATED---------------//
-VOID
-odm_CommonInfoSelfInit(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_CommonInfoSelfUpdate(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_CmnInfoInit_Debug(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_CmnInfoHook_Debug(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_CmnInfoUpdate_Debug(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-VOID
-odm_BasicDbgMessage
-(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-//END------------COMMON INFO RELATED---------------//
-
 //START---------------DIG---------------------------//
 
 //Remove by Yuchen
@@ -411,116 +388,11 @@ odm_BasicDbgMessage
 
 //Remove Rssimonitorcheck by RS_James
 
-VOID
-odm_SwAntDivInit(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_SwAntDivInit_NIC(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_SwAntDetectInit(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_SwAntDivChkAntSwitch(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		u1Byte			Step
-	);
-
-VOID
-odm_SwAntDivChkAntSwitchNIC(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		u1Byte		Step
-	);
-
-
-VOID odm_SwAntDivChkAntSwitchCallback(void *FunctionContext);
-
-VOID
-odm_GlobalAdapterCheck(
-	IN		VOID
-	);
-
-//Remove RAMask by RS_James
-
-VOID
-ODM_TXPowerTrackingCheck(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-VOID
-odm_TXPowerTrackingCheckAP(
-	IN		PDM_ODM_T		pDM_Odm
-	);
-
-
-VOID
-odm_TXPowerTrackingThermalMeterInit(
-	IN	PDM_ODM_T	pDM_Odm
-	);
-
-
-VOID
-odm_IQCalibrate(
-		IN	PDM_ODM_T	pDM_Odm
-		);
-
-VOID
-odm_TXPowerTrackingInit(
-	IN	PDM_ODM_T	pDM_Odm
-	);
-
-VOID
-odm_TXPowerTrackingCheckMP(
-	IN	PDM_ODM_T	pDM_Odm
-	);
-
-
-VOID
-odm_TXPowerTrackingCheckCE(
-	IN	PDM_ODM_T	pDM_Odm
-	);
-
 //Remove Edca by Yu Chen
 
 
 #define		RxDefaultAnt1		0x65a9
 #define	RxDefaultAnt2		0x569a
-
-VOID
-odm_InitHybridAntDiv(
-	IN PDM_ODM_T	pDM_Odm
-	);
-
-BOOLEAN
-odm_StaDefAntSel(
-	IN PDM_ODM_T	pDM_Odm,
-	IN u4Byte		OFDM_Ant1_Cnt,
-	IN u4Byte		OFDM_Ant2_Cnt,
-	IN u4Byte		CCK_Ant1_Cnt,
-	IN u4Byte		CCK_Ant2_Cnt,
-	OUT u1Byte		*pDefAnt
-	);
-
-VOID
-odm_SetRxIdleAnt(
-	IN	PDM_ODM_T	pDM_Odm,
-	IN	u1Byte	Ant,
-	IN   BOOLEAN   bDualPath
-);
-
-
-
-VOID
-odm_HwAntDiv(
-	IN	PDM_ODM_T	pDM_Odm
-);
-
 
 //============================================================
 //3 Export Interface
@@ -575,6 +447,10 @@ ODM_DMInit(
 			odm_SwAntDetectInit(pDM_Odm);
 	}
 
+}
+
+static VOID odm_IQCalibrate(PDM_ODM_T pDM_Odm)
+{
 }
 
 //
@@ -1084,10 +960,7 @@ ODM_CmnInfoUpdate(
 
 }
 
-VOID
-odm_CommonInfoSelfInit(
-	IN		PDM_ODM_T		pDM_Odm
-	)
+static VOID odm_CommonInfoSelfInit(PDM_ODM_T pDM_Odm)
 {
 	pFAT_T			pDM_FatTable = &pDM_Odm->DM_FatTable;
 	pDM_Odm->bCckHighPower = (BOOLEAN) ODM_GetBBReg(pDM_Odm, ODM_REG(CCK_RPT_FORMAT,pDM_Odm), ODM_BIT(CCK_RPT_FORMAT,pDM_Odm));
@@ -1119,10 +992,7 @@ odm_CommonInfoSelfInit(
 
 }
 
-VOID
-odm_CommonInfoSelfUpdate(
-	IN		PDM_ODM_T		pDM_Odm
-	)
+static VOID odm_CommonInfoSelfUpdate(PDM_ODM_T pDM_Odm)
 {
 	u1Byte	EntryCnt=0;
 	u1Byte	i;
@@ -1150,10 +1020,7 @@ odm_CommonInfoSelfUpdate(
 		pDM_Odm->bOneEntryOnly = FALSE;
 }
 
-VOID
-odm_CmnInfoInit_Debug(
-	IN		PDM_ODM_T		pDM_Odm
-	)
+static VOID odm_CmnInfoInit_Debug(PDM_ODM_T pDM_Odm)
 {
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_COMMON, ODM_DBG_LOUD, ("odm_CmnInfoInit_Debug==>\n"));
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_COMMON, ODM_DBG_LOUD, ("SupportPlatform=%d\n",pDM_Odm->SupportPlatform) );
@@ -1220,11 +1087,7 @@ odm_CmnInfoUpdate_Debug(
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_COMMON, ODM_DBG_LOUD, ("RSSI_Min=%d\n",pDM_Odm->RSSI_Min) );
 }
 
-VOID
-odm_BasicDbgMessage
-(
-	IN		PDM_ODM_T		pDM_Odm
-	)
+static VOID odm_BasicDbgMessage(PDM_ODM_T pDM_Odm)
 {
 	PFALSE_ALARM_STATISTICS FalseAlmCnt = &(pDM_Odm->FalseAlmCnt);
 	pDIG_T	pDM_DigTable = &pDM_Odm->DM_DigTable;
@@ -1337,15 +1200,6 @@ ODM_ReleaseAllTimers(
 //3============================================================
 
 VOID
-odm_IQCalibrate(
-		IN	PDM_ODM_T	pDM_Odm
-		)
-{
-	PADAPTER	Adapter = pDM_Odm->Adapter;
-}
-
-
-VOID
 odm_TXPowerTrackingInit(
 	IN	PDM_ODM_T	pDM_Odm
 	)
@@ -1389,10 +1243,7 @@ getSwingIndex(
 	return i;
 }
 
-VOID
-odm_TXPowerTrackingThermalMeterInit(
-	IN	PDM_ODM_T	pDM_Odm
-	)
+static VOID odm_TXPowerTrackingThermalMeterInit(PDM_ODM_T pDM_Odm)
 {
 	u1Byte defaultSwingIndex = getSwingIndex(pDM_Odm);
 	u1Byte			p = 0;
@@ -1462,6 +1313,14 @@ odm_TXPowerTrackingThermalMeterInit(
 
 }
 
+static VOID odm_TXPowerTrackingCheckAP(PDM_ODM_T pDM_Odm)
+{
+}
+
+static VOID odm_TXPowerTrackingCheckMP(PDM_ODM_T pDM_Odm)
+{
+}
+
 VOID
 ODM_TXPowerTrackingCheck(
 	IN		PDM_ODM_T		pDM_Odm
@@ -1493,10 +1352,7 @@ ODM_TXPowerTrackingCheck(
 
 }
 
-VOID
-odm_TXPowerTrackingCheckCE(
-	IN		PDM_ODM_T		pDM_Odm
-	)
+static VOID odm_TXPowerTrackingCheckCE(PDM_ODM_T pDM_Odm)
 {
 	PADAPTER	Adapter = pDM_Odm->Adapter;
 
@@ -1522,22 +1378,6 @@ odm_TXPowerTrackingCheckCE(
 		pDM_Odm->RFCalibrateInfo.TM_Trigger = 0;
 	}
 }
-
-VOID
-odm_TXPowerTrackingCheckMP(
-	IN		PDM_ODM_T		pDM_Odm
-	)
-{
-}
-
-
-VOID
-odm_TXPowerTrackingCheckAP(
-	IN		PDM_ODM_T		pDM_Odm
-	)
-{
-}
-
 
 //antenna mapping info
 // 1: right-side antenna
@@ -1651,10 +1491,7 @@ ODM_SwAntDivRestAfterLink(
 	}
 }
 
-void
-odm_SwAntDetectInit(
-	IN		PDM_ODM_T		pDM_Odm
-	)
+static void odm_SwAntDetectInit(PDM_ODM_T pDM_Odm)
 {
 	pSWAT_T		pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	pDM_SWAT_Table->SWAS_NoLink_BK_Reg92c = ODM_Read4Byte(pDM_Odm, rDPDT_control);
@@ -1694,11 +1531,7 @@ ODM_SwAntDivChkPerPktRssi(
 }
 
 //
-VOID
-odm_SwAntDivChkAntSwitch(
-	IN		PDM_ODM_T		pDM_Odm,
-	IN		u1Byte			Step
-	)
+static VOID odm_SwAntDivChkAntSwitch(PDM_ODM_T pDM_Odm, u1Byte Step)
 {
 	//
 	// For AP/ADSL use prtl8192cd_priv
@@ -2010,10 +1843,7 @@ ODM_SetTxAntByTxInfo_88C_92D(
 
 }
 
-VOID
-odm_HwAntDiv_92C_92D(
-	IN	PDM_ODM_T	pDM_Odm
-)
+static VOID odm_HwAntDiv_92C_92D(PDM_ODM_T pDM_Odm)
 {
 	SWAT_T			*pDM_SWAT_Table = &pDM_Odm->DM_SWAT_Table;
 	u4Byte			RSSI_Min=0xFF, RSSI, RSSI_Ant1, RSSI_Ant2;
@@ -2087,10 +1917,7 @@ odm_HwAntDiv_92C_92D(
 	ODM_RT_TRACE(pDM_Odm, ODM_COMP_ANT_DIV, ODM_DBG_LOUD,("<==============odm_HwAntDiv\n"));
 }
 
-VOID
-odm_HwAntDiv(
-	IN	PDM_ODM_T	pDM_Odm
-)
+static VOID odm_HwAntDiv(PDM_ODM_T pDM_Odm)
 {
 
 	PADAPTER		pAdapter	= pDM_Odm->Adapter;
