@@ -2287,8 +2287,12 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 		#ifdef CONFIG_DEBUG_CFG80211
 		DBG_8192C("ssid=%s, len=%d\n", ssids[i].ssid, ssids[i].ssid_len);
 		#endif
-		_rtw_memcpy(ssid[i].Ssid, ssids[i].ssid, ssids[i].ssid_len);
-		ssid[i].SsidLength = ssids[i].ssid_len;	
+		if (ssid[i] && ssids[i]) {
+			_rtw_memcpy(ssid[i].Ssid, ssids[i].ssid, ssids[i].ssid_len);
+			ssid[i].SsidLength = ssids[i].ssid_len;
+		} else {
+			pr_info("***** ssid %p, ssids &p, i %d\n", ssid[i], ssids[i], i);
+		}
 	}
 
 	/* parsing channels, n_channels */

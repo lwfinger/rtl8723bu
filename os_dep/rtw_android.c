@@ -23,6 +23,7 @@
 #endif
 
 #include <drv_types.h>
+#include <hal_data.h>
 
 #if defined(RTW_ENABLE_WIFI_CONTROL_FUNC)
 #include <linux/platform_device.h>
@@ -37,8 +38,6 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #endif
-
-extern void macstr2num(u8 *dst, u8 *src);
 
 static const char *android_wifi_cmd_str[ANDROID_WIFI_CMD_MAX] = {
 	"START",

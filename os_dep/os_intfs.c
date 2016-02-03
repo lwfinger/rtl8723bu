@@ -335,8 +335,6 @@ MODULE_PARM_DESC(rtw_decrypt_phy_file,"Enable Decrypt PHY File");
 #endif
 
 static uint loadparam(PADAPTER padapter, _nic_hdl pnetdev);
-int _netdev_open(struct net_device *pnetdev);
-int netdev_open (struct net_device *pnetdev);
 static int netdev_close (struct net_device *pnetdev);
 
 //#ifdef RTK_DMP_PLATFORM
@@ -920,7 +918,6 @@ void rtw_stop_drv_threads (_adapter *padapter)
 	rtw_hal_stop_thread(padapter);
 }
 
-u8 rtw_init_default_value(_adapter *padapter);
 u8 rtw_init_default_value(_adapter *padapter)
 {
 	u8 ret  = _SUCCESS;

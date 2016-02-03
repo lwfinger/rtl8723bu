@@ -589,5 +589,10 @@ extern unsigned char REALTEK_96B_IE[];
 int rtw_change_ifname(_adapter *padapter, const char *ifname);
 void indicate_wx_scan_complete_event(_adapter *padapter);
 u8 rtw_do_join(_adapter *padapter);
+int _netdev_open(struct net_device *pnetdev);
+int netdev_open (struct net_device *pnetdev);
+u8 key_2char2num(u8 hch, u8 lch);
+u8 key_2char2num(u8 hch, u8 lch);
+void macstr2num(u8 *dst, u8 *src);
 
 #endif //__HAL_DATA_H__
