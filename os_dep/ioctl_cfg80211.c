@@ -2120,7 +2120,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	#ifdef CONFIG_P2P
 	if( pwdinfo->driver_interface == DRIVER_CFG80211 )
 	{
-		if (_rtw_memcmp(ssids->ssid, "DIRECT-", 7) &&
+		if (ssids->ssid_len > 7 && _rtw_memcmp(ssids->ssid, "DIRECT-", 7) &&
 		    rtw_get_p2p_ie((u8 *)request->ie, request->ie_len, NULL, NULL)) {
 			if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)) {
 				rtw_p2p_enable(padapter, P2P_ROLE_DEVICE);
@@ -2254,12 +2254,8 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 		#ifdef CONFIG_DEBUG_CFG80211
 		DBG_8192C("ssid=%s, len=%d\n", ssids[i].ssid, ssids[i].ssid_len);
 		#endif
-		if (i < RTW_SSID_SCAN_AMOUNT) {
-			_rtw_memcpy(ssid[i].Ssid, ssids[i].ssid, ssids[i].ssid_len);
-			ssid[i].SsidLength = ssids[i].ssid_len;
-		} else {
-			pr_info("**** i %d\n", i);
-		}
+		_rtw_memcpy(ssid[i].Ssid, ssids[i].ssid, ssids[i].ssid_len);
+		ssid[i].SsidLength = ssids[i].ssid_len;
 	}
 
 	/* parsing channels, n_channels */
