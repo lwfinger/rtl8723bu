@@ -1849,16 +1849,21 @@ void rtw_cfg80211_unlink_bss(_adapter *padapter, struct wlan_network *pnetwork)
 		select_network.Ssid.SsidLength, 0/*WLAN_CAPABILITY_ESS*/,
 		0/*WLAN_CAPABILITY_ESS*/);
 
+	if (!wiphy) {
+		pr_info("rtl8723bu: rtw_cfg80211_unlink_bss: wiphy is NULL\n");
+		return;
+	}
 	if (bss) {
 		cfg80211_unlink_bss(wiphy, bss);
 		DBG_8192C("%s(): cfg80211_unlink %s!! () ",__func__,select_network.Ssid.Ssid );
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0)
+		if (!padapter->rtw_wdev->wiphy)
+			return;
 		cfg80211_put_bss(padapter->rtw_wdev->wiphy, bss);
 #else
 		cfg80211_put_bss(bss);
 #endif
 	}
-	return;
 }
 
 void rtw_cfg80211_surveydone_event_callback(_adapter *padapter)
