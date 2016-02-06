@@ -18,9 +18,9 @@ ccflags-y += -D__CHECK_ENDIAN__
 
 #EXTRA_CFLAGS += -Wno-uninitialized
 
-EXTRA_CFLAGS += -I$(src)/include
+EXTRA_CFLAGS += -g -I$(src)/include
 
-//EXTRA_LDFLAGS += --strip-debug
+#EXTRA_LDFLAGS += --strip-debug
 
 CONFIG_AUTOCFG_CP = n
 
