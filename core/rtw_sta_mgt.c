@@ -320,7 +320,8 @@ struct	sta_info *rtw_alloc_stainfo(struct	sta_priv *pstapriv, u8 *hwaddr)
 	else
 	{
 		psta = LIST_CONTAINOR(get_next(&pfree_sta_queue->queue), struct sta_info, list);
-
+		if (!psta)
+			goto exit;
 		rtw_list_delete(&(psta->list));
 
 		tmp_aid = psta->aid;
