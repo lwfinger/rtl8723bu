@@ -594,5 +594,8 @@ int netdev_open (struct net_device *pnetdev);
 u8 key_2char2num(u8 hch, u8 lch);
 u8 key_2char2num(u8 hch, u8 lch);
 void macstr2num(u8 *dst, u8 *src);
+#ifdef CONFIG_AUTOSUSPEND
+void autosuspend_enter(_adapter* padapter);
+#endif
 
 #endif //__HAL_DATA_H__

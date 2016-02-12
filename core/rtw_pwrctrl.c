@@ -20,7 +20,7 @@
 #define _RTW_PWRCTRL_C_
 
 #include <drv_types.h>
-
+#include <hal_data.h>
 
 int rtw_fw_ps_state(PADAPTER padapter)
 {
