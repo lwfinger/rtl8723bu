@@ -829,17 +829,15 @@ void rtw_unregister_netdevs(struct dvobj_priv *dvobj)
 
 		pnetdev = padapter->pnetdev;
 
-		if((padapter->DriverState != DRIVER_DISAPPEAR) && pnetdev) {
-
-			unregister_netdev(pnetdev); //will call netdev_close()
-		}
-
 #ifdef CONFIG_IOCTL_CFG80211
 		rtw_wdev_unregister(padapter->rtw_wdev);
 #endif
 
-	}
+		if((padapter->DriverState != DRIVER_DISAPPEAR) && pnetdev) {
 
+			unregister_netdev(pnetdev); //will call netdev_close()
+		}
+	}
 }
 
 u32 rtw_start_drv_threads(_adapter *padapter)
