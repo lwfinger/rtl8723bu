@@ -33,6 +33,9 @@
 #include <linux/wifi_tiwlan.h>
 #endif
 #endif /* defined(RTW_ENABLE_WIFI_CONTROL_FUNC) */
+#ifndef is_compat_task
+#define is_compat_task() 0
+#endif
 
 #ifdef CONFIG_GPIO_WAKEUP
 #include <linux/interrupt.h>
