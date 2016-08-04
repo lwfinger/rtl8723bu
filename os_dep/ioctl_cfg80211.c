@@ -1810,6 +1810,11 @@ exit:
 void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted)
 {
 	struct rtw_wdev_priv *pwdev_priv = adapter_wdev_data(adapter);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0))
+	struct cfg80211_scan_info info = {
+		.aborted = aborted
+	};
+#endif
 	_irqL	irqL;
 
 	SPIN_LOCK_BH(pwdev_priv->scan_req_lock, &irqL);
@@ -1819,13 +1824,14 @@ void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted)
 		#endif
 
 		/* avoid WARN_ON(request != wiphy_to_dev(request->wiphy)->scan_req); */
-		if(pwdev_priv->scan_request->wiphy != pwdev_priv->rtw_wdev->wiphy)
-		{
+		if(pwdev_priv->scan_request->wiphy != pwdev_priv->rtw_wdev->wiphy) {
 			DBG_8192C("error wiphy compare\n");
-		}
-		else
-		{
+		} else {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0))
+			cfg80211_scan_done(pwdev_priv->scan_request, &info);
+#else
 			cfg80211_scan_done(pwdev_priv->scan_request, aborted);
+#endif
 		}
 
 		pwdev_priv->scan_request = NULL;
