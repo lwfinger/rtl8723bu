@@ -31,6 +31,10 @@
 #include <rtw_bt_mp.h>
 #endif
 
+#ifndef is_compat_task
+#define is_compat_task() 0
+#endif
+
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,27))
 #define  iwe_stream_add_event(a, b, c, d, e)  iwe_stream_add_event(b, c, d, e)
 #define  iwe_stream_add_point(a, b, c, d, e)  iwe_stream_add_point(b, c, d, e)

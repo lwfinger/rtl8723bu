@@ -38,6 +38,10 @@
 #include <linux/irq.h>
 #endif
 
+#ifndef is_compat_task
+#define is_compat_task() 0
+#endif
+
 extern void macstr2num(u8 *dst, u8 *src);
 
 const char *android_wifi_cmd_str[ANDROID_WIFI_CMD_MAX] = {
