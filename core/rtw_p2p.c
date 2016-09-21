@@ -3353,91 +3353,6 @@ static void find_phase_handler( _adapter*	padapter )
 
 }
 
-static void restore_p2p_state_handler( _adapter*	padapter )
-{
-	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
-	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
-
-
-
-	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_ING) || rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_FAIL))
-	{
-		rtw_p2p_set_role(pwdinfo, P2P_ROLE_DEVICE);
-	}
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if ( check_buddy_fwstate(padapter, _FW_LINKED ) )
-	{
-		_adapter				*pbuddy_adapter = padapter->pbuddy_adapter;
-		struct mlme_priv		*pbuddy_mlmepriv = &pbuddy_adapter->mlmepriv;
-		struct mlme_ext_priv	*pbuddy_mlmeext = &pbuddy_adapter->mlmeextpriv;
-
-		if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ) || rtw_p2p_chk_state(pwdinfo, P2P_STATE_RX_PROVISION_DIS_RSP))
-		{
-			set_channel_bwmode(padapter, pbuddy_mlmeext->cur_channel, pbuddy_mlmeext->cur_ch_offset, pbuddy_mlmeext->cur_bwmode);
-
-			issue_nulldata(pbuddy_adapter, NULL, 0, 3, 500);
-		}
-	}
-#endif
-
-	rtw_p2p_set_state(pwdinfo, rtw_p2p_pre_state(pwdinfo));
-
-	if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE))
-	{
-#ifdef CONFIG_CONCURRENT_MODE
-		p2p_concurrent_handler( padapter );
-#else
-		//	In the P2P client mode, the driver should not switch back to its listen channel
-		//	because this P2P client should stay at the operating channel of P2P GO.
-		set_channel_bwmode( padapter, pwdinfo->listen_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
-#endif
-	}
-
-}
-
-static void pre_tx_invitereq_handler( _adapter*	padapter )
-{
-	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
-	u8	val8 = 1;
-
-
-	set_channel_bwmode(padapter, pwdinfo->invitereq_info.peer_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
-	padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-	issue_probereq_p2p(padapter, NULL);
-	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
-
-
-}
-
-static void pre_tx_provdisc_handler( _adapter*	padapter )
-{
-	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
-	u8	val8 = 1;
-
-
-	set_channel_bwmode(padapter, pwdinfo->tx_prov_disc_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
-	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-	issue_probereq_p2p(padapter, NULL);
-	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
-
-
-}
-
-static void pre_tx_negoreq_handler( _adapter*	padapter )
-{
-	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
-	u8	val8 = 1;
-
-
-	set_channel_bwmode(padapter, pwdinfo->nego_req_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
-	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
-	issue_probereq_p2p(padapter, NULL);
-	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
-
-
-}
-
 #ifdef CONFIG_CONCURRENT_MODE
 void p2p_concurrent_handler( _adapter*	padapter )
 {
@@ -3447,7 +3362,6 @@ void p2p_concurrent_handler( _adapter*	padapter )
 	//struct mlme_priv		*pbuddy_mlmepriv = &pbuddy_adapter->mlmepriv;
 	//struct mlme_ext_priv	*pbuddy_mlmeext = &pbuddy_adapter->mlmeextpriv;
 	u8					val8;
-_func_enter_;
 
 	if ( check_buddy_fwstate(padapter, _FW_LINKED ) )
 	{
@@ -3554,9 +3468,94 @@ _func_enter_;
 		set_channel_bwmode( padapter, pwdinfo->listen_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
 	}
 
-_func_exit_;
 }
 #endif
+
+static void restore_p2p_state_handler( _adapter*	padapter )
+{
+	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
+	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
+
+
+
+	if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_ING) || rtw_p2p_chk_state(pwdinfo, P2P_STATE_GONEGO_FAIL))
+	{
+		rtw_p2p_set_role(pwdinfo, P2P_ROLE_DEVICE);
+	}
+
+#ifdef CONFIG_CONCURRENT_MODE
+	if ( check_buddy_fwstate(padapter, _FW_LINKED ) )
+	{
+		_adapter				*pbuddy_adapter = padapter->pbuddy_adapter;
+		struct mlme_priv		*pbuddy_mlmepriv = &pbuddy_adapter->mlmepriv;
+		struct mlme_ext_priv	*pbuddy_mlmeext = &pbuddy_adapter->mlmeextpriv;
+
+		if(rtw_p2p_chk_state(pwdinfo, P2P_STATE_TX_PROVISION_DIS_REQ) || rtw_p2p_chk_state(pwdinfo, P2P_STATE_RX_PROVISION_DIS_RSP))
+		{
+			set_channel_bwmode(padapter, pbuddy_mlmeext->cur_channel, pbuddy_mlmeext->cur_ch_offset, pbuddy_mlmeext->cur_bwmode);
+
+			issue_nulldata(pbuddy_adapter, NULL, 0, 3, 500);
+		}
+	}
+#endif
+
+	rtw_p2p_set_state(pwdinfo, rtw_p2p_pre_state(pwdinfo));
+
+	if(rtw_p2p_chk_role(pwdinfo, P2P_ROLE_DEVICE))
+	{
+#ifdef CONFIG_CONCURRENT_MODE
+		p2p_concurrent_handler( padapter );
+#else
+		//	In the P2P client mode, the driver should not switch back to its listen channel
+		//	because this P2P client should stay at the operating channel of P2P GO.
+		set_channel_bwmode( padapter, pwdinfo->listen_channel, HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
+#endif
+	}
+
+}
+
+static void pre_tx_invitereq_handler( _adapter*	padapter )
+{
+	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
+	u8	val8 = 1;
+
+
+	set_channel_bwmode(padapter, pwdinfo->invitereq_info.peer_ch, HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
+	padapter->HalFunc.SetHwRegHandler(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+	issue_probereq_p2p(padapter, NULL);
+	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+
+
+}
+
+static void pre_tx_provdisc_handler( _adapter*	padapter )
+{
+	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
+	u8	val8 = 1;
+
+
+	set_channel_bwmode(padapter, pwdinfo->tx_prov_disc_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
+	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+	issue_probereq_p2p(padapter, NULL);
+	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+
+
+}
+
+static void pre_tx_negoreq_handler( _adapter*	padapter )
+{
+	struct wifidirect_info  *pwdinfo = &padapter->wdinfo;
+	u8	val8 = 1;
+
+
+	set_channel_bwmode(padapter, pwdinfo->nego_req_info.peer_channel_num[0], HAL_PRIME_CHNL_OFFSET_DONT_CARE, CHANNEL_WIDTH_20);
+	rtw_hal_set_hwreg(padapter, HW_VAR_MLME_SITESURVEY, (u8 *)(&val8));
+	issue_probereq_p2p(padapter, NULL);
+	_set_timer( &pwdinfo->pre_tx_scan_timer, P2P_TX_PRESCAN_TIMEOUT );
+
+
+}
+
 
 #ifdef CONFIG_IOCTL_CFG80211
 static void ro_ch_handler(_adapter *padapter)
