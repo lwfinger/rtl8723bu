@@ -65,13 +65,9 @@ void free_mlme_ap_info(_adapter *padapter)
 
 	//free bc/mc sta_info
 	psta = rtw_get_bcmc_stainfo(padapter);
-	SPIN_LOCK_BH(pstapriv->sta_hash_lock, &irqL);
 	rtw_free_stainfo(padapter, psta);
-	SPIN_UNLOCK_BH(pstapriv->sta_hash_lock, &irqL);
-
 
 	_rtw_spinlock_free(&pmlmepriv->bcn_update_lock);
-
 }
 
 static void update_BCNTIM(_adapter *padapter)
