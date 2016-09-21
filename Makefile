@@ -13,6 +13,7 @@ EXTRA_CFLAGS += -Wno-unused-label
 EXTRA_CFLAGS += -Wno-unused-parameter
 EXTRA_CFLAGS += -Wno-unused-function
 EXTRA_CFLAGS += -Wno-unused
+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
 
 ccflags-y += -D__CHECK_ENDIAN__
 
