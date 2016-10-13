@@ -1,3 +1,5 @@
+FW_DIR	:= /lib/firmware/rtk_bt
+
 EXTRA_CFLAGS += $(USER_EXTRA_CFLAGS)
 EXTRA_CFLAGS += -O1
 #EXTRA_CFLAGS += -O3
@@ -324,10 +326,13 @@ strip:
 install:
 	install -p -m 644 $(MODULE_NAME).ko  $(MODDESTDIR)
 	/sbin/depmod -a ${KVER}
+	mkdir -p $(FW_DIR)
+	cp -f rtl8723b_fw.bin $(FW_DIR)./rtl8723b_fw.bin
 
 uninstall:
 	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
 	/sbin/depmod -a ${KVER}
+	rm -f $(FW_DIR)/rtl8723b_fw.bin
 
 config_r:
 	@echo "make config"
