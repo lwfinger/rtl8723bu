@@ -1,4 +1,4 @@
-FW_DIR	:= /lib/firmware/rtk_bt
+FW_DIR	:= /lib/firmware/rtl_bt
 
 EXTRA_CFLAGS += $(USER_EXTRA_CFLAGS)
 EXTRA_CFLAGS += -O1
