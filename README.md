@@ -1,5 +1,11 @@
-# rtl8723bu
+rtl8723bu
+=========
+
 Driver for Realtek RTL8723BU Wireless Adapter with Hardware ID `0bda:b720`
+
+Supports building of module for the Raspberry Pi 1/2/3 or Zero 
+under Yocto
+
 
 # How to use?
 ## a. Concurrent Mode
