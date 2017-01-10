@@ -53,8 +53,9 @@ CONFIG_PNO_SUPPORT = n
 CONFIG_PNO_SET_DEBUG = n
 CONFIG_AP_WOWLAN = n
 ###################### Platform Related #######################
-CONFIG_PLATFORM_I386_PC = n
-CONFIG_RASPBIAN = n
+CONFIG_PLATFORM_I386_PC ?= y
+CONFIG_PLATFORM_ARM ?= n
+CONFIG_RASPBIAN ?= n
 ###############################################################
 
 CONFIG_DRVEXT_MODULE = n
