@@ -344,8 +344,6 @@ else
 
 export CONFIG_RTL8723BU = m
 
-error:
-	@echo "No PLATFORM was set in Makefile"
 
 all: modules
 
