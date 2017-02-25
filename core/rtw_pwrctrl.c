@@ -2155,6 +2155,7 @@ void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv)
 }
 #endif //CONFIG_HAS_EARLYSUSPEND
 
+
 #ifdef CONFIG_ANDROID_POWER
 static void rtw_early_suspend(android_early_suspend_t *h)
 {
