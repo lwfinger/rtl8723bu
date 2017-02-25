@@ -172,16 +172,6 @@ int ips_leave(_adapter * padapter)
 }
 #endif /* CONFIG_IPS */
 
-#ifdef CONFIG_AUTOSUSPEND
-extern void autosuspend_enter(_adapter* padapter);	
-extern int autoresume_enter(_adapter* padapter);
-#endif
-
-#ifdef SUPPORT_HW_RFOFF_DETECTED
-int rtw_hw_suspend(_adapter *padapter );
-int rtw_hw_resume(_adapter *padapter);
-#endif
-
 bool rtw_pwr_unassociated_idle(_adapter *adapter)
 {
 	_adapter *buddy = adapter->pbuddy_adapter;
@@ -2246,8 +2236,6 @@ _func_exit_;
 }
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
-extern int rtw_resume_process(_adapter *padapter);
-
 static void resume_workitem_callback(struct work_struct *work)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(work, struct pwrctrl_priv, resume_work);
@@ -2294,7 +2282,6 @@ inline void rtw_set_do_late_resume(struct pwrctrl_priv *pwrpriv, bool enable)
 #endif
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
-extern int rtw_resume_process(_adapter *padapter);
 static void rtw_early_suspend(struct early_suspend *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);
@@ -2344,10 +2331,6 @@ void rtw_unregister_early_suspend(struct pwrctrl_priv *pwrpriv)
 }
 #endif //CONFIG_HAS_EARLYSUSPEND
 
-#ifdef CONFIG_ANDROID_POWER
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-extern int rtw_resume_process(PADAPTER padapter);
-#endif
 static void rtw_early_suspend(android_early_suspend_t *h)
 {
 	struct pwrctrl_priv *pwrpriv = container_of(h, struct pwrctrl_priv, early_suspend);
