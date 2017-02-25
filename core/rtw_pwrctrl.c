@@ -2304,6 +2304,7 @@ static void rtw_late_resume(struct early_suspend *h)
 	}
 }
 
+#ifdef CONFIG_ANDROID_POWER
 void rtw_register_early_suspend(struct pwrctrl_priv *pwrpriv)
 {
 	DBG_871X("%s\n", __FUNCTION__);
