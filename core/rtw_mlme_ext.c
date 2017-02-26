@@ -9388,8 +9388,8 @@ void site_survey(_adapter *padapter)
 			cur_bwmode = pbuddy_mlmeext->cur_bwmode;
 			cur_ch_offset = pbuddy_mlmeext->cur_ch_offset;
 		}
-		#endif
 		else
+		#endif
 		{
 			cur_channel = pmlmeext->cur_channel;
 			cur_bwmode = pmlmeext->cur_bwmode;
