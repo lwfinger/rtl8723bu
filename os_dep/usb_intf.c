@@ -683,7 +683,7 @@ exit:
 	return ret;
 }
 
-static int rtw_resume_process(_adapter *padapter)
+int rtw_resume_process(_adapter *padapter)
 {
 	int ret,pm_cnt = 0;
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);

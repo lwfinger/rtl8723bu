@@ -598,12 +598,13 @@ void macstr2num(u8 *dst, u8 *src);
 void autosuspend_enter(_adapter* padapter);
 #endif
 
-#if defined(CONFIG_RESUME_IN_WORKQUEUE) || defined(CONFIG_HAS_EARLYSUSPEND)
-int rtw_resume_process(_adapter *padapter);
-#endif
 #ifdef CONFIG_ANDROID_POWER
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 int rtw_resume_process(PADAPTER padapter);
+#endif
+#else
+#if defined(CONFIG_RESUME_IN_WORKQUEUE) || defined(CONFIG_HAS_EARLYSUSPEND)
+int rtw_resume_process(_adapter *padapter);
 #endif
 #endif
 #ifdef CONFIG_AUTOSUSPEND
