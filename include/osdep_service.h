@@ -33,6 +33,10 @@
 #define _FALSE		0
 
 
+#include <linux/version.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0)
+#include <linux/sched/signal.h>
+#endif
 #include <osdep_service_linux.h>
 
 void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS);
