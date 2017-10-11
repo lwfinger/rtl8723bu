@@ -329,8 +329,7 @@ strip:
 install:
 	install -p -m 644 -D $(MODULE_NAME).ko $(MODDESTDIR)$(MODULE_NAME).ko
 	$(DEPMOD) -a ${KVER}
-	mkdir -p $(FW_DIR)
-	cp -f rtl8723b_fw.bin $(FW_DIR)/rtl8723b_fw.bin
+	install rtl8723b_fw.bin -D $(FW_DIR)/rtl8723b_fw.bin
 
 uninstall:
 	rm -f $(MODDESTDIR)$(MODULE_NAME).ko
