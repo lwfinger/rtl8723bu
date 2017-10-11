@@ -324,13 +324,13 @@ strip:
 	$(CROSS_COMPILE)strip $(MODULE_NAME).ko --strip-unneeded
 
 install:
-	install -p -m 644 $(MODULE_NAME).ko  $(MODDESTDIR)
+	install -p -m 644 -D $(MODULE_NAME).ko $(MODDESTDIR)$(MODULE_NAME).ko
 	/sbin/depmod -a ${KVER}
 	mkdir -p $(FW_DIR)
 	cp -f rtl8723b_fw.bin $(FW_DIR)/rtl8723b_fw.bin
 
 uninstall:
-	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
+	rm -f $(MODDESTDIR)$(MODULE_NAME).ko
 	/sbin/depmod -a ${KVER}
 	rm -f $(FW_DIR)/rtl8723b_fw.bin
 
