@@ -1,4 +1,5 @@
-FW_DIR	:= /lib/firmware/rtl_bt
+INSTALL_FW_PATH = $(INSTALL_MOD_PATH)/lib/firmware
+FW_DIR	:= $(INSTALL_FW_PATH)/rtl_bt
 
 DEPMOD  = /sbin/depmod
 
