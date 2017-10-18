@@ -1,4 +1,7 @@
-FW_DIR	:= /lib/firmware/rtl_bt
+INSTALL_FW_PATH = $(INSTALL_MOD_PATH)/lib/firmware
+FW_DIR	:= $(INSTALL_FW_PATH)/rtl_bt
+
+DEPMOD  = /sbin/depmod
 
 EXTRA_CFLAGS += $(USER_EXTRA_CFLAGS)
 EXTRA_CFLAGS += -O1
@@ -258,7 +261,7 @@ ARCH ?= $(SUBARCH)
 CROSS_COMPILE ?=
 KVER  := $(shell uname -r)
 KSRC := /lib/modules/$(KVER)/build
-MODDESTDIR := /lib/modules/$(KVER)/kernel/drivers/net/wireless/
+MODDESTDIR := $(INSTALL_MOD_PATH)/lib/modules/$(KVER)/kernel/drivers/net/wireless/
 INSTALL_PREFIX :=
 endif
 
@@ -324,14 +327,13 @@ strip:
 	$(CROSS_COMPILE)strip $(MODULE_NAME).ko --strip-unneeded
 
 install:
-	install -p -m 644 $(MODULE_NAME).ko  $(MODDESTDIR)
-	/sbin/depmod -a ${KVER}
-	mkdir -p $(FW_DIR)
-	cp -f rtl8723b_fw.bin $(FW_DIR)/rtl8723b_fw.bin
+	install -p -m 644 -D $(MODULE_NAME).ko $(MODDESTDIR)$(MODULE_NAME).ko
+	$(DEPMOD) -b "$(INSTALL_MOD_PATH)" -a ${KVER}
+	install rtl8723b_fw.bin -D $(FW_DIR)/rtl8723b_fw.bin
 
 uninstall:
-	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
-	/sbin/depmod -a ${KVER}
+	rm -f $(MODDESTDIR)$(MODULE_NAME).ko
+	$(DEPMOD) -a ${KVER}
 	rm -f $(FW_DIR)/rtl8723b_fw.bin
 
 config_r:
