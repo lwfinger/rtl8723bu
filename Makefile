@@ -312,11 +312,9 @@ $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 $(MODULE_NAME)-y += $(_OUTSRC_FILES)
 $(MODULE_NAME)-y += $(_PLATFORM_FILES)
 
-obj-$(CONFIG_RTL8723BU) := $(MODULE_NAME).o
+obj-m := $(MODULE_NAME).o
 
 else
-
-export CONFIG_RTL8723BU = m
 
 all: modules
 
