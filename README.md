@@ -8,7 +8,9 @@ Get it from Github repository with the following command in the Linux terminal.
 git clone https://github.com/lwfinger/rtl8723bu.git
 cd rtl8723bu
 ```
-Or get it as zip archive.
+Or get it as zip archive. Note: If you use the zip format, you will need to download the entire source EVERY time it is changed. By contrast,
+a 'git pull' will get only the changed part. In addition, the git version will be able to access all branches, whereas the zip version only
+handles one branch.
 ```
 wget https://github.com/lwfinger/rtl8723bu/archive/master.zip
 unzip master.zip && rm master.zip
