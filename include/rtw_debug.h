@@ -201,7 +201,7 @@
 #define DBG_871X_SEL(sel, fmt, arg...) \
 	do {\
 		if (sel == RTW_DBGDUMP)\
-			_DBG_871X_LEVEL(_drv_always_, fmt, ##arg); \
+			_DBG_871X_LEVEL(_drv_debug_, fmt, ##arg); \
 		else {\
 			_seqdump(sel, fmt, ##arg) /*rtw_warn_on(1)*/; \
 		} \
@@ -211,7 +211,7 @@
 #define DBG_871X_SEL_NL(sel, fmt, arg...) \
 	do {\
 		if (sel == RTW_DBGDUMP)\
-			DBG_871X_LEVEL(_drv_always_, fmt, ##arg); \
+			DBG_871X_LEVEL(_drv_debug_, fmt, ##arg); \
 		else {\
 			_seqdump(sel, fmt, ##arg) /*rtw_warn_on(1)*/; \
 		} \

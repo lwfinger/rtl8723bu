@@ -1354,10 +1354,10 @@ static int __init rtw_drv_entry(void)
 {
 	int ret = 0;
 
-	DBG_871X_LEVEL(_drv_always_, "module init start\n");
+	DBG_871X_LEVEL(_drv_info_, "module init start\n");
 	dump_drv_version(RTW_DBGDUMP);
 #ifdef BTCOEXVERSION
-	DBG_871X_LEVEL(_drv_always_, DRV_NAME" BT-Coex version = %s\n", BTCOEXVERSION);
+	DBG_871X_LEVEL(_drv_info_, DRV_NAME" BT-Coex version = %s\n", BTCOEXVERSION);
 #endif // BTCOEXVERSION
 
 	ret = platform_wifi_power_on();
@@ -1387,13 +1387,13 @@ static int __init rtw_drv_entry(void)
 	}
 
 exit:
-	DBG_871X_LEVEL(_drv_always_, "module init ret=%d\n", ret);
+	DBG_871X_LEVEL(_drv_info_, "module init ret=%d\n", ret);
 	return ret;
 }
 
 static void __exit rtw_drv_halt(void)
 {
-	DBG_871X_LEVEL(_drv_always_, "module exit start\n");
+	DBG_871X_LEVEL(_drv_info_, "module exit start\n");
 
 	usb_drv.drv_registered = _FALSE;
 
@@ -1405,7 +1405,7 @@ static void __exit rtw_drv_halt(void)
 	rtw_drv_proc_deinit();
 	rtw_ndev_notifier_unregister();
 
-	DBG_871X_LEVEL(_drv_always_, "module exit success\n");
+	DBG_871X_LEVEL(_drv_info_, "module exit success\n");
 
 	rtw_mstat_dump(RTW_DBGDUMP);
 }

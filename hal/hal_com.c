@@ -928,12 +928,12 @@ void hw_var_port_switch(_adapter *adapter)
 	if (adapter->iface_type == IFACE_PORT0) {
 		adapter->iface_type = IFACE_PORT1;
 		adapter->pbuddy_adapter->iface_type = IFACE_PORT0;
-		DBG_871X_LEVEL(_drv_always_, "port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
+		DBG_871X_LEVEL(_drv_info_, "port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
 			ADPT_ARG(adapter->pbuddy_adapter), ADPT_ARG(adapter));
 	} else {
 		adapter->iface_type = IFACE_PORT0;
 		adapter->pbuddy_adapter->iface_type = IFACE_PORT1;
-		DBG_871X_LEVEL(_drv_always_, "port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
+		DBG_871X_LEVEL(_drv_info_, "port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
 			ADPT_ARG(adapter), ADPT_ARG(adapter->pbuddy_adapter));
 	}
 
@@ -1200,7 +1200,7 @@ SetHalDefVar(_adapter *adapter, HAL_DEF_VARIABLE variable, void *value)
 		hal_data->AntDetection = *((u8 *)value);
 		break;
 	default:
-		DBG_871X_LEVEL(_drv_always_, "%s: [WARNING] HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
+		DBG_871X_LEVEL(_drv_warning_, "%s: [WARNING] HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
 		bResult = _FAIL;
 		break;
 	}
@@ -1256,7 +1256,7 @@ GetHalDefVar(_adapter *adapter, HAL_DEF_VARIABLE variable, void *value)
 			*(( u32*)value) = PAGE_SIZE_128;
 			break;
 		default:
-			DBG_871X_LEVEL(_drv_always_, "%s: [WARNING] HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
+			DBG_871X_LEVEL(_drv_warning_, "%s: [WARNING] HAL_DEF_VARIABLE(%d) not defined!\n", __FUNCTION__, variable);
 			bResult = _FAIL;
 			break;
 	}

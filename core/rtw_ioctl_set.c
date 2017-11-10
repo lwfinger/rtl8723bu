@@ -212,7 +212,7 @@ u8 rtw_set_802_11_bssid(_adapter* padapter, u8 *bssid)
 
 
 
-	DBG_871X_LEVEL(_drv_always_, "set bssid:%pM\n", bssid);
+	DBG_871X_LEVEL(_drv_info_, "set bssid:%pM\n", bssid);
 
 	if ((bssid[0]==0x00 && bssid[1]==0x00 && bssid[2]==0x00 && bssid[3]==0x00 && bssid[4]==0x00 &&bssid[5]==0x00) ||
 	    (bssid[0]==0xFF && bssid[1]==0xFF && bssid[2]==0xFF && bssid[3]==0xFF && bssid[4]==0xFF &&bssid[5]==0xFF))
@@ -298,7 +298,7 @@ u8 rtw_set_802_11_ssid(_adapter* padapter, NDIS_802_11_SSID *ssid)
 
 
 
-	DBG_871X_LEVEL(_drv_always_, "set ssid [%s] fw_state=0x%08x\n",
+	DBG_871X_LEVEL(_drv_info_, "set ssid [%s] fw_state=0x%08x\n",
 			ssid->Ssid, get_fwstate(pmlmepriv));
 
 	if(padapter->hw_init_completed==_FALSE){
@@ -444,7 +444,7 @@ u8 rtw_set_802_11_connect(_adapter* padapter, u8 *bssid, NDIS_802_11_SSID *ssid)
 
 	SPIN_LOCK_BH(pmlmepriv->lock, &irqL);
 
-	DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT"  fw_state=0x%08x\n",
+	DBG_871X_LEVEL(_drv_dump_, FUNC_ADPT_FMT"  fw_state=0x%08x\n",
 		FUNC_ADPT_ARG(padapter), get_fwstate(pmlmepriv));
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == _TRUE) {
@@ -1346,6 +1346,6 @@ int rtw_set_band(_adapter *adapter, enum _BAND band)
 		return _SUCCESS;
 	}
 
-	DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" band:%d fail\n", FUNC_ADPT_ARG(adapter), band);
+	DBG_871X_LEVEL(_drv_err_, FUNC_ADPT_FMT" band:%d fail\n", FUNC_ADPT_ARG(adapter), band);
 	return _FAIL;
 }
