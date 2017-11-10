@@ -1931,7 +1931,7 @@ void rtw_joinbss_event_prehandle(_adapter *adapter, u8 *pbuf)
 			}
 			else
 			{
-				DBG_871X_LEVEL(_drv_always_, "Can't find ptarget_wlan when joinbss_event callback\n");
+				DBG_871X_LEVEL(_drv_warning_, "Can't find ptarget_wlan when joinbss_event callback\n");
 				SPIN_UNLOCK_BH(pmlmepriv->scanned_queue.lock, &irqL);
 				goto ignore_joinbss_callback;
 			}

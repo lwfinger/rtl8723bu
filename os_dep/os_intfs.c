@@ -673,7 +673,7 @@ static int rtw_ndev_init(struct net_device *dev)
 {
 	_adapter *adapter = rtw_netdev_priv(dev);
 
-	DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
+	DBG_871X_LEVEL(_drv_debug_, FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 	strncpy(adapter->old_ifname, dev->name, IFNAMSIZ);
 	rtw_adapter_proc_init(dev);
 
@@ -684,7 +684,7 @@ static void rtw_ndev_uninit(struct net_device *dev)
 {
 	_adapter *adapter = rtw_netdev_priv(dev);
 
-	DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
+	DBG_871X_LEVEL(_drv_debug_, FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(adapter));
 	rtw_adapter_proc_deinit(dev);
 }
 
@@ -2817,11 +2817,11 @@ void rtw_dev_unload(PADAPTER padapter)
 
 		//check the status of IPS
 		if(rtw_hal_check_ips_status(padapter) == _TRUE || pwrctl->rf_pwrstate == rf_off) { //check HW status and SW state
-			DBG_871X_LEVEL(_drv_always_, "%s: driver in IPS-FWLPS\n", __func__);
+			DBG_871X_LEVEL(_drv_info_, "%s: driver in IPS-FWLPS\n", __func__);
 			pdbgpriv->dbg_dev_unload_inIPS_cnt++;
 			LeaveAllPowerSaveMode(padapter);
 		} else {
-			DBG_871X_LEVEL(_drv_always_, "%s: driver not in IPS\n", __func__);
+			DBG_871X_LEVEL(_drv_info_, "%s: driver not in IPS\n", __func__);
 		}
 
 		if (padapter->bSurpriseRemoved == _FALSE)
@@ -2832,7 +2832,7 @@ void rtw_dev_unload(PADAPTER padapter)
 #ifdef CONFIG_WOWLAN
 			if (pwrctl->bSupportRemoteWakeup == _TRUE &&
 				pwrctl->wowlan_mode ==_TRUE) {
-				DBG_871X_LEVEL(_drv_always_, "%s bSupportRemoteWakeup==_TRUE  do not run rtw_hal_deinit()\n",__FUNCTION__);
+				DBG_871X_LEVEL(_drv_info_, "%s bSupportRemoteWakeup==_TRUE  do not run rtw_hal_deinit()\n",__FUNCTION__);
 			}
 			else
 #endif
@@ -2905,7 +2905,7 @@ static int rtw_suspend_free_assoc_resource(_adapter *padapter)
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_LINKING) == _TRUE)
 	{
-		DBG_871X_LEVEL(_drv_always_, "%s: fw_under_linking\n", __FUNCTION__);
+		DBG_871X_LEVEL(_drv_info_, "%s: fw_under_linking\n", __FUNCTION__);
 		rtw_indicate_disconnect(padapter);
 	}
 
@@ -2985,11 +2985,11 @@ int rtw_suspend_wow(_adapter *padapter)
 			}
 		}
 
-		DBG_871X_LEVEL(_drv_always_, "%s: wowmode suspending\n", __func__);
+		DBG_871X_LEVEL(_drv_info_, "%s: wowmode suspending\n", __func__);
 
 		if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY) == _TRUE)
 		{
-			DBG_871X_LEVEL(_drv_always_, "%s: fw_under_survey\n", __func__);
+			DBG_871X_LEVEL(_drv_info_, "%s: fw_under_survey\n", __func__);
 			rtw_indicate_scan_done(padapter, 1);
 			clr_fwstate(pmlmepriv, _FW_UNDER_SURVEY);
 		}
@@ -3006,7 +3006,7 @@ int rtw_suspend_wow(_adapter *padapter)
 		#endif
 
 		if(pwrpriv->wowlan_pno_enable)
-			DBG_871X_LEVEL(_drv_always_, "%s: pno: %d\n", __func__, pwrpriv->wowlan_pno_enable);
+			DBG_871X_LEVEL(_drv_info_, "%s: pno: %d\n", __func__, pwrpriv->wowlan_pno_enable);
 		#ifdef CONFIG_LPS
 		else
 			rtw_set_ps_mode(padapter, PS_MODE_DTIM, 0, 0, "WOWLAN");
@@ -3015,7 +3015,7 @@ int rtw_suspend_wow(_adapter *padapter)
 	}
 	else
 	{
-		DBG_871X_LEVEL(_drv_always_, "%s: ### ERROR ### wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
+		DBG_871X_LEVEL(_drv_crit_, "%s: ### ERROR ### wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
 	}
 	DBG_871X("<== "FUNC_ADPT_FMT" exit....\n", FUNC_ADPT_ARG(padapter));
 	return ret;
@@ -3082,7 +3082,7 @@ int rtw_suspend_ap_wow(_adapter *padapter)
 	padapter->HalFunc.SetHwRegHandler(padapter,
 					HW_VAR_AP_WOWLAN,(u8 *)&poidparam);
 
-	DBG_871X_LEVEL(_drv_always_, "%s: wowmode suspending\n", __func__);
+	DBG_871X_LEVEL(_drv_info_, "%s: wowmode suspending\n", __func__);
 
 #ifdef CONFIG_CONCURRENT_MODE
 	if (check_buddy_fwstate(padapter, WIFI_AP_STATE) == _TRUE) {
@@ -3155,7 +3155,7 @@ static int rtw_suspend_normal(_adapter *padapter)
 	if ((rtw_hal_check_ips_status(padapter) == _TRUE)
 		|| (adapter_to_pwrctl(padapter)->rf_pwrstate == rf_off))
 	{
-		DBG_871X_LEVEL(_drv_always_, "%s: ### ERROR #### driver in IPS ####ERROR###!!!\n", __FUNCTION__);
+		DBG_871X_LEVEL(_drv_crit_, "%s: ### ERROR #### driver in IPS ####ERROR###!!!\n", __FUNCTION__);
 
 	}
 
@@ -3184,7 +3184,7 @@ int rtw_suspend_common(_adapter *padapter)
 	int ret = 0;
 	u32 start_time = rtw_get_current_time();
 
-	DBG_871X_LEVEL(_drv_always_, " suspend start\n");
+	DBG_871X_LEVEL(_drv_info_, " suspend start\n");
 	DBG_871X("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
 	pdbgpriv->dbg_suspend_cnt++;
 
@@ -3283,7 +3283,7 @@ int rtw_suspend_common(_adapter *padapter)
 		rtw_suspend_normal(padapter);
 	}
 
-	DBG_871X_LEVEL(_drv_always_, "rtw suspend success in %d ms\n",
+	DBG_871X_LEVEL(_drv_info_, "rtw suspend success in %d ms\n",
 		rtw_get_passing_time_ms(start_time));
 
 exit:
@@ -3402,7 +3402,7 @@ int rtw_resume_process_wow(_adapter *padapter)
 	}
 	else{
 
-		DBG_871X_LEVEL(_drv_always_, "%s: ### ERROR ### wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
+		DBG_871X_LEVEL(_drv_crit_, "%s: ### ERROR ### wowlan_mode=%d\n", __FUNCTION__, pwrpriv->wowlan_mode);
 	}
 
 	if( padapter->pid[1]!=0) {
@@ -3453,7 +3453,7 @@ int rtw_resume_process_wow(_adapter *padapter)
 		rtw_set_pwr_state_check_timer(pwrpriv);
 #endif
 	} else {
-		DBG_871X_LEVEL(_drv_always_, "do not reset timer\n");
+		DBG_871X_LEVEL(_drv_info_, "do not reset timer\n");
 	}
 
 	pwrpriv->wowlan_mode =_FALSE;
@@ -3743,7 +3743,7 @@ int rtw_resume_common(_adapter *padapter)
 
 
 
-	DBG_871X_LEVEL(_drv_always_, "resume start\n");
+	DBG_871X_LEVEL(_drv_info_, "resume start\n");
 	DBG_871X("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
 
 	if (check_fwstate(pmlmepriv,WIFI_STATION_STATE) == _TRUE
@@ -3793,7 +3793,7 @@ int rtw_resume_common(_adapter *padapter)
 		pwrpriv->pno_in_resume = _FALSE;
 	#endif
 	}
-	DBG_871X_LEVEL(_drv_always_, "%s:%d in %d ms\n", __FUNCTION__ ,ret,
+	DBG_871X_LEVEL(_drv_dump_, "%s:%d in %d ms\n", __FUNCTION__ ,ret,
 		rtw_get_passing_time_ms(start_time));
 
 

@@ -949,7 +949,7 @@ s16 rtw_get_camid(_adapter *adapter, struct sta_info *sta, s16 kid)
 
 		if((mlmeinfo->state&0x03) == WIFI_FW_AP_STATE) {
 			if((macid == 1) || (macid > (NUM_STA - 4))) {
-				DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT
+				DBG_871X_LEVEL(_drv_emerg_, FUNC_ADPT_FMT
 					       " failed, mac_id=%d\n",
 					       FUNC_ADPT_ARG(adapter), macid);
 				camid = -1;
@@ -1068,7 +1068,7 @@ s16 rtw_camid_alloc(_adapter *adapter, struct sta_info *sta, u8 kid)
 			&& !sta) {
 			/* AP/Ad-hoc mode group key: static alloction to default key by key ID */
 			if (kid > 3) {
-				DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" group key with invalid key id:%u\n"
+				DBG_871X_LEVEL(_drv_warning_, FUNC_ADPT_FMT" group key with invalid key id:%u\n"
 					, FUNC_ADPT_ARG(adapter), kid);
 				rtw_warn_on(1);
 				goto bitmap_handle;
@@ -1094,7 +1094,7 @@ s16 rtw_camid_alloc(_adapter *adapter, struct sta_info *sta, u8 kid)
 				if (sta || _rtw_camid_is_gk(adapter, i) == _TRUE)
 					cam_id = i;
 				else
-					DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" group key id:%u the same key id as pairwise key\n"
+					DBG_871X_LEVEL(_drv_info_, FUNC_ADPT_FMT" group key id:%u the same key id as pairwise key\n"
 						, FUNC_ADPT_ARG(adapter), kid);
 				goto bitmap_handle;
 			}
@@ -1105,10 +1105,10 @@ s16 rtw_camid_alloc(_adapter *adapter, struct sta_info *sta, u8 kid)
 
 			if (i == TOTAL_CAM_ENTRY) {
 				if (sta)
-					DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" pairwise key with "MAC_FMT" id:%u no room\n"
+					DBG_871X_LEVEL(_drv_info_, FUNC_ADPT_FMT" pairwise key with "MAC_FMT" id:%u no room\n"
 					, FUNC_ADPT_ARG(adapter), MAC_ARG(sta->hwaddr), kid);
 				else
-					DBG_871X_LEVEL(_drv_always_, FUNC_ADPT_FMT" group key id:%u no room\n"
+					DBG_871X_LEVEL(_drv_info_, FUNC_ADPT_FMT" group key id:%u no room\n"
 					, FUNC_ADPT_ARG(adapter), kid);
 				rtw_warn_on(1);
 				goto bitmap_handle;
