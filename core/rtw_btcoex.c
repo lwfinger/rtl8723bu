@@ -173,7 +173,7 @@ u8 rtw_btcoex_IsBtDisabled(PADAPTER padapter)
 void rtw_btcoex_Handler(PADAPTER padapter)
 {
 #if defined(CONFIG_CONCURRENT_MODE)
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
+	if (padapter->adapter_type != PRIMARYadapter)
 		return;
 #endif
 

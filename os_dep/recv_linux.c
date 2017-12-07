@@ -633,9 +633,17 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+static void _rtw_reordering_ctrl_timeout_handler(struct timer_list *t)
+#else
 static void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)
+#endif
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct recv_reorder_ctrl *preorder_ctrl = from_timer(preorder_ctrl, t, reordering_ctrl_timer);
+#else
 	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)FunctionContext;
+#endif
 	rtw_reordering_ctrl_timeout_handler(preorder_ctrl);
 }
 
@@ -643,6 +651,9 @@ void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 {
 	_adapter *padapter = preorder_ctrl->padapter;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	timer_setup(&preorder_ctrl->reordering_ctrl_timer, _rtw_reordering_ctrl_timeout_handler, 0);
+#else
 	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, _rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
-
+#endif
 }

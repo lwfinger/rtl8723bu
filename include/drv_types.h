@@ -49,7 +49,7 @@ enum _NIC_VERSION {
 
 };
 
-typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
+typedef struct adapter _adapter, ADAPTER,*PADAPTER;
 
 #include <rtw_debug.h>
 #include <rtw_rf.h>
@@ -339,19 +339,19 @@ struct registry_priv
 #define BSSID_SZ(field)   sizeof(((PWLAN_BSSID_EX) 0)->field)
 
 #ifdef CONFIG_CONCURRENT_MODE
-#define is_primary_adapter(adapter) (adapter->adapter_type == PRIMARY_ADAPTER)
+#define is_primary_adapter(adapter) (adapter->adapter_type == PRIMARYadapter)
 #define get_iface_type(adapter) (adapter->iface_type)
 #else
 #define is_primary_adapter(adapter) (1)
 #define get_iface_type(adapter) (IFACE_PORT0)
 #endif
-#define GET_PRIMARY_ADAPTER(padapter) (((_adapter *)padapter)->dvobj->if1)
+#define GET_PRIMARYadapter(padapter) (((_adapter *)padapter)->dvobj->if1)
 #define GET_IFACE_NUMS(padapter) (((_adapter *)padapter)->dvobj->iface_nums)
-#define GET_ADAPTER(padapter, iface_id) (((_adapter *)padapter)->dvobj->padapters[iface_id])
+#define GETadapter(padapter, iface_id) (((_adapter *)padapter)->dvobj->padapters[iface_id])
 
 enum _IFACE_ID {
-	IFACE_ID0, //maping to PRIMARY_ADAPTER
-	IFACE_ID1, //maping to SECONDARY_ADAPTER
+	IFACE_ID0, //maping to PRIMARYadapter
+	IFACE_ID1, //maping to SECONDARYadapter
 	IFACE_ID2,
 	IFACE_ID3,
 	IFACE_ID_MAX,
@@ -560,8 +560,8 @@ struct cam_entry_cache {
 struct dvobj_priv
 {
 	/*-------- below is common data --------*/
-	_adapter *if1; //PRIMARY_ADAPTER
-	_adapter *if2; //SECONDARY_ADAPTER
+	_adapter *if1; //PRIMARYadapter
+	_adapter *if2; //SECONDARYadapter
 
 	s32	processing_dev_remove;
 
@@ -659,10 +659,10 @@ enum _IFACE_TYPE {
 	MAX_IFACE_PORT,
 };
 
-enum _ADAPTER_TYPE {
-	PRIMARY_ADAPTER,
-	SECONDARY_ADAPTER,
-	MAX_ADAPTER = 0xFF,
+enum adapter_TYPE {
+	PRIMARYadapter,
+	SECONDARYadapter,
+	MAXadapter = 0xFF,
 };
 
 typedef enum _DRIVER_STATE{
@@ -700,7 +700,11 @@ typedef struct loopbackdata
 }LOOPBACKDATA, *PLOOPBACKDATA;
 #endif
 
-struct _ADAPTER{
+struct adapter{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_timer	pwr_state_check_timer;
+	int pwr_state_check_interval;
+#endif
 	int	DriverState;// for disable driver using module, use dongle to replace module.
 	int	pid[3];//process id from UI, 0:wps, 1:hostapd, 2:dhcpcd
 	int	bDongle;//build-in module or external dongle
@@ -831,26 +835,26 @@ struct _ADAPTER{
 #endif
 
 	//pbuddy_adapter is used only in  two inteface case, (iface_nums=2 in struct dvobj_priv)
-	//PRIMARY_ADAPTER's buddy is SECONDARY_ADAPTER
-	//SECONDARY_ADAPTER's buddy is PRIMARY_ADAPTER
-	//for iface_id > SECONDARY_ADAPTER(IFACE_ID1), refer to padapters[iface_id]  in struct dvobj_priv
-	//and their pbuddy_adapter is PRIMARY_ADAPTER.
-	//for PRIMARY_ADAPTER(IFACE_ID0) can directly refer to if1 in struct dvobj_priv
+	//PRIMARYadapter's buddy is SECONDARYadapter
+	//SECONDARYadapter's buddy is PRIMARYadapter
+	//for iface_id > SECONDARYadapter(IFACE_ID1), refer to padapters[iface_id]  in struct dvobj_priv
+	//and their pbuddy_adapter is PRIMARYadapter.
+	//for PRIMARYadapter(IFACE_ID0) can directly refer to if1 in struct dvobj_priv
 	_adapter *pbuddy_adapter;
 
 #if defined(CONFIG_CONCURRENT_MODE)
 	u8 isprimary; //is primary adapter or not
 	//notes:
-	// if isprimary is true, the adapter_type value is 0, iface_id is IFACE_ID0 for PRIMARY_ADAPTER
-	// if isprimary is false, the adapter_type value is 1, iface_id is IFACE_ID1 for SECONDARY_ADAPTER
+	// if isprimary is true, the adapter_type value is 0, iface_id is IFACE_ID0 for PRIMARYadapter
+	// if isprimary is false, the adapter_type value is 1, iface_id is IFACE_ID1 for SECONDARYadapter
 	// refer to iface_id if iface_nums>2 and isprimary is false and the adapter_type value is 0xff.
-	u8 adapter_type;//used only in  two inteface case(PRIMARY_ADAPTER and SECONDARY_ADAPTER) .
+	u8 adapter_type;//used only in  two inteface case(PRIMARYadapter and SECONDARYadapter) .
 	u8 iface_type; //interface port type, it depends on HW port
 #endif //CONFIG_CONCURRENT_MODE
 
 	//extend to support multi interface
-       //IFACE_ID0 is equals to PRIMARY_ADAPTER
-       //IFACE_ID1 is equals to SECONDARY_ADAPTER
+       //IFACE_ID0 is equals to PRIMARYadapter
+       //IFACE_ID1 is equals to SECONDARYadapter
 	u8 iface_id;
 
 #ifdef CONFIG_BR_EXT

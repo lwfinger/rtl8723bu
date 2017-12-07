@@ -1734,7 +1734,7 @@ static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 	}
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type == SECONDARY_ADAPTER)
+	if(padapter->adapter_type == SECONDARYadapter)
 	{
 		DBG_871X(FUNC_NDEV_FMT" call netdev_if2_open\n", FUNC_NDEV_ARG(ndev));
 		if(netdev_if2_open(ndev) != 0) {
@@ -1743,7 +1743,7 @@ static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 			goto exit;
 		}
 	}
-	else if(padapter->adapter_type == PRIMARY_ADAPTER)
+	else if(padapter->adapter_type == PRIMARYadapter)
 #endif //CONFIG_CONCURRENT_MODE
 	{
 		DBG_871X(FUNC_NDEV_FMT" call netdev_open\n", FUNC_NDEV_ARG(ndev));

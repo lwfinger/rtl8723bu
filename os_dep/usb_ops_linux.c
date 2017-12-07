@@ -43,7 +43,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 	#endif
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
+	if(padapter->adapter_type > PRIMARYadapter)
 	{
 		padapter = padapter->pbuddy_adapter;
 		pdvobjpriv = adapter_to_dvobj(padapter);

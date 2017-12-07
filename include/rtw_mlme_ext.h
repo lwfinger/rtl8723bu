@@ -870,7 +870,7 @@ int rtw_get_ch_setting_union(_adapter *adapter, u8 *ch, u8 *bw, u8 *offset);
 
 struct cmd_hdl {
 	uint	parmsize;
-	u8 (*h2cfuns)(struct _ADAPTER *padapter, u8 *pbuf);
+	u8 (*h2cfuns)(struct adapter *padapter, u8 *pbuf);
 };
 
 

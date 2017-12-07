@@ -4030,7 +4030,7 @@ static void rtl8723b_fill_default_txdesc(
 			DBG_8192C("%s set spe_rpt\n", __func__);
 			#endif
 			SET_TX_DESC_SPE_RPT_8723B(pbuf, 1);
-			SET_TX_DESC_SW_DEFINE_8723B(pbuf, (u8)(GET_PRIMARY_ADAPTER(padapter)->xmitpriv.seq_no));
+			SET_TX_DESC_SW_DEFINE_8723B(pbuf, (u8)(GET_PRIMARYadapter(padapter)->xmitpriv.seq_no));
 		}
 #endif // CONFIG_XMIT_ACK
 	}
@@ -4462,7 +4462,7 @@ static void hw_var_set_macaddr(PADAPTER padapter, u8 variable, u8 *val)
 
 	for (idx = 0 ; idx < 6; idx++)
 	{
-		rtw_write8(GET_PRIMARY_ADAPTER(padapter), (reg_macid+idx), val[idx]);
+		rtw_write8(GET_PRIMARYadapter(padapter), (reg_macid+idx), val[idx]);
 	}
 }
 

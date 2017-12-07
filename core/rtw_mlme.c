@@ -1623,7 +1623,11 @@ inline void rtw_indicate_scan_done( _adapter *padapter, bool aborted)
 #ifdef CONFIG_IPS_CHECK_IN_WD
 		_set_timer(&padapter->mlmepriv.dynamic_chk_timer, 1);
 #else // !CONFIG_IPS_CHECK_IN_WD
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 		_rtw_set_pwr_state_check_timer(pwrpriv, 1);
+#else
+		_rtw_set_pwr_state_check_timer(padapter, 1);
+#endif
 #endif // !CONFIG_IPS_CHECK_IN_WD
 	}
 #endif // CONFIG_IPS
