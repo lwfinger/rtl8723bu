@@ -839,6 +839,9 @@ void rtw_cfg80211_indicate_disconnect(_adapter *padapter)
 #else
 			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, GFP_ATOMIC);
 #endif
+		else
+			cfg80211_connect_result(padapter->pnetdev, NULL, NULL, 0, NULL, 0,
+						WLAN_STATUS_UNSPECIFIED_FAILURE, GFP_ATOMIC);
 #endif // kernel >= 3.11
 	}
 }
