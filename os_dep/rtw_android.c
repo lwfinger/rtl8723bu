@@ -953,6 +953,7 @@ int wifi_get_mac_addr(unsigned char *buf)
 	if (wifi_control_data && wifi_control_data->get_mac_addr) {
 		return wifi_control_data->get_mac_addr(buf);
 	}
+	pr_info("%s - failed\n", __func__);
 	return -EOPNOTSUPP;
 }
 #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35)) */
