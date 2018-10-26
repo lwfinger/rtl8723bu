@@ -1598,10 +1598,9 @@ _func_enter_;
     for (j = 0; j < 8; j++)
     	pframe[payload_index+j] = mic[j];	//message[payload_index+j] = mic[j];
 
-	payload_index = hdrlen + 8;
-	for (i=0; i< num_blocks; i++)
-    {
-        construct_ctr_preload(
+    payload_index = hdrlen + 8;
+    for (i=0; i< num_blocks; i++) {
+		construct_ctr_preload(
                                 ctr_preload,
                                 a4_exists,
                                 qc_exists,
@@ -1609,9 +1608,9 @@ _func_enter_;
                                 pn_vector,
                                 i+1,
                                 frtype); // add for CONFIG_IEEE80211W, none 11w also can use
-        aes128k128d(key, ctr_preload, aes_out);
-        bitwise_xor(aes_out, &pframe[payload_index], chain_buffer);//bitwise_xor(aes_out, &message[payload_index], chain_buffer);
-        for (j=0; j<16;j++) pframe[payload_index++] = chain_buffer[j];//for (j=0; j<16;j++) message[payload_index++] = chain_buffer[j];
+		aes128k128d(key, ctr_preload, aes_out);
+		bitwise_xor(aes_out, &pframe[payload_index], chain_buffer);//bitwise_xor(aes_out, &message[payload_index], chain_buffer);
+		for (j=0; j<16;j++) pframe[payload_index++] = chain_buffer[j];//for (j=0; j<16;j++) message[payload_index++] = chain_buffer[j];
     }
 
     if (payload_remainder > 0)          /* If there is a short final block, then pad it,*/
@@ -1984,9 +1983,8 @@ _func_enter_;
     for (j = 0; j < 8; j++)
     	message[payload_index+j] = mic[j];
 
-	payload_index = hdrlen + 8;
-	for (i=0; i< num_blocks; i++)
-    {
+    payload_index = hdrlen + 8;
+    for (i=0; i< num_blocks; i++) {
         construct_ctr_preload(
                                 ctr_preload,
                                 a4_exists,
