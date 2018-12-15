@@ -573,12 +573,6 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 				usb_write_port_complete,
 				pxmitbuf);//context is pxmitbuf
 
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_TX
-	purb->transfer_dma = pxmitbuf->dma_transfer_addr;
-	purb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-	purb->transfer_flags |= URB_ZERO_PACKET;
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
-
 #ifdef USB_PACKET_OFFSET_SZ
 #if (USB_PACKET_OFFSET_SZ == 0)
 	purb->transfer_flags |= URB_ZERO_PACKET;
