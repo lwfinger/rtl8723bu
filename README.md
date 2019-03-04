@@ -15,6 +15,9 @@ handles one branch.
 wget https://github.com/lwfinger/rtl8723bu/archive/master.zip
 unzip master.zip && rm master.zip
 cd rtl8723bu-master
+...
+Note: The code in branch v4.3.16 is better than that in master. Get that with
+git clone https://github.com/lwfinger/rtl8723bu.git -b v4.3.16
 ```
 ## Concurrent or Non-Concurrent Mode
 By default driver operates the hardware as a station AND as an access point *simultaneously*.  This will show two devices when you run the `iwconfig` command.
@@ -37,7 +40,12 @@ make
 sudo make install
 sudo modprobe -v 8723bu
 ```
-
+This driver can not work with the standard driver rtl8xxxu, thus you need to blacklist it. Run the following command
+...
+sudo nano /etc/modprobe.d/50-rtl8xxxu.conf
+...
+Add a single line: blacklist rtl8xxxu
+...
 ## Automatic install using DKMS
 If you don't want to worry about building/installing driver after kernel update, use this scenario. For Ubuntu/Debian install DKMS package using command `sudo apt install dkms`.
 
