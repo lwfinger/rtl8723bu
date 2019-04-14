@@ -119,7 +119,7 @@ void _dynamic_check_timer_handler(struct timer_list *t)
 #endif
 {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
-	struct dvobj_priv *pdvobj = (struct dvobj_priv *)FunctionContext;
+	_adapter *adapter = (_adapter *)FunctionContext;
 #else
 	_adapter *adapter = from_timer(adapter, t, mlmepriv.dynamic_chk_timer);
 #endif
