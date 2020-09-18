@@ -5538,6 +5538,7 @@ exit:
 	return ret;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0)
 static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
 	struct wireless_dev *wdev,
@@ -5566,6 +5567,13 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
 exit:
 	return;
 }
+#else
+static void cfg80211_rtw_update_mgmt_frame_registrations(struct wiphy *wiphy,
+							 struct wireless_dev *wdev,
+							 struct mgmt_frame_regs *upd)
+{
+}
+#endif
 
 #if defined(CONFIG_TDLS) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3,2,0))
 static int cfg80211_rtw_tdls_mgmt(struct wiphy *wiphy,
@@ -6412,7 +6420,11 @@ static struct cfg80211_ops rtw_cfg80211_ops = {
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) || defined(COMPAT_KERNEL_RELEASE)	 
 	.mgmt_tx = cfg80211_rtw_mgmt_tx,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
+	.update_mgmt_frame_registrations = cfg80211_rtw_update_mgmt_frame_registrations,
+#else
 	.mgmt_frame_register = cfg80211_rtw_mgmt_frame_register,
+#endif
 #elif  (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,34) && LINUX_VERSION_CODE<=KERNEL_VERSION(2,6,35))
 	.action = cfg80211_rtw_mgmt_tx,
 #endif
