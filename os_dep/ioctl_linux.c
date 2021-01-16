@@ -946,6 +946,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 			if(rtw_set_802_11_add_wep(padapter, pwep) == (u8)_FAIL)
 			{
+				pr_info("%s - rtw_set_802_11_add_wep() failed\n", __func__);
 				ret = -EOPNOTSUPP ;
 			}
 		}
@@ -957,6 +958,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 			//"psecuritypriv->dot11PrivacyKeyIndex=keyid", but can rtw_set_key to fw/cam
 
 			if (wep_key_idx >= WEP_KEYS) {
+				pr_info("%s - wep_key_idx of %d too large\n", __func__, wep_key_idx);
 				ret = -EOPNOTSUPP ;
 				goto exit;
 			}
@@ -1957,6 +1959,7 @@ static int rtw_wx_set_mlme(struct net_device *dev,
 			ret = -1;
 		break;
 	default:
+		pr_info("%s - mlme->cmd %d not supported\n", __func__, mlme->cmd);
 		return -EOPNOTSUPP;
 	}
 
@@ -2811,6 +2814,7 @@ static int rtw_wx_set_enc(struct net_device *dev,
 
 	if (rtw_set_802_11_add_wep(padapter, &wep) == _FALSE) {
 		if(rf_on == pwrpriv->rf_pwrstate )
+			pr_info("%s - rtw_set_802_11_add_wep() failed with rf on\n", __func__);
 			ret = -EOPNOTSUPP;
 		goto exit;
 	}
@@ -3066,6 +3070,7 @@ static int rtw_wx_set_auth(struct net_device *dev,
 #endif
 
 	default:
+		pr_info("%s - param->flags %d\n", __func__, param->flags);
 		return -EOPNOTSUPP;
 
 	}
@@ -7203,6 +7208,7 @@ static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 		*/
 		break;
 	default:
+		pr_info("%s - name %d\n", __func__, name);
 		ret = -EOPNOTSUPP;
 		break;
 
@@ -7232,6 +7238,7 @@ static int wpa_mlme(struct net_device *dev, u32 command, u32 reason)
 			break;
 
 		default:
+			pr_info("%s - command %d\n", __func__, command);
 			ret = -EOPNOTSUPP;
 			break;
 	}

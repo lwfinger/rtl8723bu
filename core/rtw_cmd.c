@@ -334,7 +334,7 @@ u32 rtw_enqueue_cmd(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj)
 
 #ifdef CONFIG_CONCURRENT_MODE
 	//change pcmdpriv to primary's pcmdpriv
-	if (padapter->adapter_type != PRIMARY_ADAPTER && padapter->pbuddy_adapter)
+	if (padapter->adapter_type != PRIMARYadapter && padapter->pbuddy_adapter)
 		pcmdpriv = &(padapter->pbuddy_adapter->cmdpriv);
 #endif
 
@@ -1900,7 +1900,7 @@ u8 rtw_dynamic_chk_wk_cmd(_adapter*padapter)
 	//only  primary padapter does this cmd
 /*
 #ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->adapter_type != PRIMARY_ADAPTER && padapter->pbuddy_adapter)
+	if (padapter->adapter_type != PRIMARYadapter && padapter->pbuddy_adapter)
 		pcmdpriv = &(padapter->pbuddy_adapter->cmdpriv);
 #endif
 */
@@ -2178,7 +2178,7 @@ static void collect_traffic_statistics(_adapter *padapter)
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
+	if (padapter->adapter_type != PRIMARYadapter)
 		return;
 #endif
 
@@ -2939,7 +2939,7 @@ u8 rtw_ps_cmd(_adapter*padapter)
 
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
+	if (padapter->adapter_type != PRIMARYadapter)
 		goto exit;
 #endif
 

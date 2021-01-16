@@ -43,7 +43,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 	#endif
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
+	if(padapter->adapter_type > PRIMARYadapter)
 	{
 		padapter = padapter->pbuddy_adapter;
 		pdvobjpriv = adapter_to_dvobj(padapter);
@@ -572,12 +572,6 @@ u32 usb_write_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 				cnt,
 				usb_write_port_complete,
 				pxmitbuf);//context is pxmitbuf
-
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_TX
-	purb->transfer_dma = pxmitbuf->dma_transfer_addr;
-	purb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-	purb->transfer_flags |= URB_ZERO_PACKET;
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 
 #ifdef USB_PACKET_OFFSET_SZ
 #if (USB_PACKET_OFFSET_SZ == 0)

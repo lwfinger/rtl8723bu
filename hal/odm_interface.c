@@ -337,6 +337,7 @@ ODM_SetTimer(
 	_set_timer(pTimer,msDelay ); //ms
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 VOID
 ODM_InitializeTimer(
 	IN	PDM_ODM_T			pDM_Odm,
@@ -349,6 +350,7 @@ ODM_InitializeTimer(
 	PADAPTER Adapter = pDM_Odm->Adapter;
 	_init_timer(pTimer,Adapter->pnetdev,CallBackFunc,pDM_Odm);
 }
+#endif
 
 VOID
 ODM_CancelTimer(

@@ -408,14 +408,26 @@ void rtw_ps_processor(_adapter*padapter)
 	}
 exit:
 #ifndef CONFIG_IPS_CHECK_IN_WD
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_set_pwr_state_check_timer(pwrpriv);
+#else
+	rtw_set_pwr_state_check_timer(padapter);
+#endif
 #endif
 	pwrpriv->ps_processing = _FALSE;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void pwr_state_check_handler(RTW_TIMER_HDL_ARGS)
+#else
+void pwr_state_check_handler(struct timer_list *t)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_adapter *padapter = (_adapter *)FunctionContext;
+#else
+	_adapter *padapter = from_timer(padapter, t, pwr_state_check_timer);
+#endif
 
 	rtw_ps_cmd(padapter);
 }
@@ -1056,7 +1068,7 @@ void LPS_Leave(PADAPTER padapter, const char *msg)
 
 void LeaveAllPowerSaveModeDirect(PADAPTER Adapter)
 {
-	PADAPTER pri_padapter = GET_PRIMARY_ADAPTER(Adapter);
+	PADAPTER pri_padapter = GET_PRIMARYadapter(Adapter);
 	struct mlme_priv	*pmlmepriv = &(Adapter->mlmepriv);
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(Adapter);
 	struct dvobj_priv *psdpriv = Adapter->dvobj;
@@ -1929,7 +1941,7 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
 
 #if defined(CONFIG_CONCURRENT_MODE)
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
+	if (padapter->adapter_type != PRIMARYadapter)
 		return;
 #endif
 
@@ -1945,7 +1957,11 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 	pwrctrlpriv->ips_mode = padapter->registrypriv.ips_mode;
 	pwrctrlpriv->ips_mode_req = padapter->registrypriv.ips_mode;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	pwrctrlpriv->pwr_state_check_interval = RTW_PWR_STATE_CHK_INTERVAL;
+#else
+	padapter->pwr_state_check_interval = RTW_PWR_STATE_CHK_INTERVAL;
+#endif
 	pwrctrlpriv->pwr_state_check_cnts = 0;
 	pwrctrlpriv->bInternalAutoSuspend = _FALSE;
 	pwrctrlpriv->bInSuspend = _FALSE;
@@ -1989,8 +2005,11 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 #endif // CONFIG_LPS_RPWM_TIMER
 #endif // CONFIG_LPS_LCLK
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_init_timer(&pwrctrlpriv->pwr_state_check_timer, padapter, pwr_state_check_handler);
-
+#else
+	timer_setup(&padapter->pwr_state_check_timer, pwr_state_check_handler, 0);
+#endif
 	pwrctrlpriv->wowlan_mode = _FALSE;
 	pwrctrlpriv->wowlan_ap_mode = _FALSE;
 
@@ -2022,7 +2041,7 @@ void rtw_free_pwrctrl_priv(PADAPTER adapter)
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(adapter);
 
 #if defined(CONFIG_CONCURRENT_MODE)
-	if (adapter->adapter_type != PRIMARY_ADAPTER)
+	if (adapter->adapter_type != PRIMARYadapter)
 		return;
 #endif
 
@@ -2238,7 +2257,7 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 	LeaveAllPowerSaveMode(padapter);
 
 	/* IPS still bound with primary adapter */
-	padapter = GET_PRIMARY_ADAPTER(padapter);
+	padapter = GET_PRIMARYadapter(padapter);
 	pmlmepriv = &padapter->mlmepriv;
 
 	if (pwrpriv->ips_deny_time < rtw_get_current_time() + rtw_ms_to_systime(ips_deffer_ms))

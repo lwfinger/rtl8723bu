@@ -103,7 +103,11 @@ sint _rtw_init_recv_priv(struct recv_priv *precvpriv, _adapter *padapter)
 	res = rtw_hal_init_recv_priv(padapter);
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	timer_setup(&precvpriv->signal_stat_timer, rtw_signal_stat_timer_hdl, 0);
+#else
 	rtw_init_timer(&precvpriv->signal_stat_timer, padapter, RTW_TIMER_HDL_NAME(signal_stat));
+#endif
 
 	precvpriv->signal_stat_sampling_interval = 2000; //ms
 	//precvpriv->signal_stat_converging_constant = 5000; //ms
@@ -131,10 +135,6 @@ void rtw_mfree_recv_priv_lock(struct recv_priv *precvpriv)
 	_rtw_spinlock_free(&precvpriv->recv_pending_queue.lock);
 
 	_rtw_spinlock_free(&precvpriv->free_recv_buf_queue.lock);
-
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-	_rtw_spinlock_free(&precvpriv->recv_buf_pending_queue.lock);
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
 }
 
 void _rtw_free_recv_priv (struct recv_priv *precvpriv)
@@ -226,7 +226,7 @@ int rtw_free_recvframe(union recv_frame *precvframe, _queue *pfree_recv_queue)
 
 
 #ifdef CONFIG_CONCURRENT_MODE
-	if(padapter->adapter_type > PRIMARY_ADAPTER)
+	if(padapter->adapter_type > PRIMARYadapter)
 	{
 		padapter = padapter->pbuddy_adapter;//get primary_padapter
 		precvpriv = &padapter->recvpriv;
@@ -3632,8 +3632,17 @@ _recv_entry_drop:
 }
 
 #ifdef CONFIG_NEW_SIGNAL_STAT_PROCESS
-void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS){
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+void rtw_signal_stat_timer_hdl(struct timer_list *t)
+#else
+void rtw_signal_stat_timer_hdl(RTW_TIMER_HDL_ARGS)
+#endif
+{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	_adapter *adapter = from_timer(adapter, t, recvpriv.signal_stat_timer);
+#else
 	_adapter *adapter = (_adapter *)FunctionContext;
+#endif
 	struct recv_priv *recvpriv = &adapter->recvpriv;
 
 	u32 tmp_s, tmp_q;

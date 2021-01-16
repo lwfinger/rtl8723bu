@@ -581,12 +581,17 @@ static unsigned int rtw_classify8021d(struct sk_buff *skb)
 }
 
 static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 2, 0))
+			    ,struct net_device *sb_dev
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0))
+			    ,struct net_device *sb_dev
+                            ,select_queue_fallback_t fallback
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
+ 			    ,void *unused
+                             ,select_queue_fallback_t fallback
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
 			, void *accel_priv
-#endif // kernle >= 3.13
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
-			, select_queue_fallback_t fallback
-#endif // kernel >= 3.14
+#endif
 	)
 {
 	_adapter	*padapter = rtw_netdev_priv(dev);
@@ -1250,7 +1255,11 @@ void rtw_cancel_all_timer(_adapter *padapter)
 	rtw_hal_sw_led_deinit(padapter);
 	RT_TRACE(_module_os_intfs_c_,_drv_info_,("rtw_cancel_all_timer:cancel DeInitSwLeds! \n"));
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_cancel_timer_ex(&(adapter_to_pwrctl(padapter)->pwr_state_check_timer));
+#else
+	_cancel_timer_ex(&padapter->pwr_state_check_timer);
+#endif
 
 #ifdef CONFIG_IOCTL_CFG80211
 #ifdef CONFIG_P2P
@@ -1368,7 +1377,7 @@ u8 rtw_free_drv_sw(_adapter *padapter)
 int _netdev_vir_if_open(struct net_device *pnetdev)
 {
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
-	_adapter *primary_padapter = GET_PRIMARY_ADAPTER(padapter);
+	_adapter *primary_padapter = GET_PRIMARYadapter(padapter);
 
 	DBG_871X(FUNC_NDEV_FMT" enter\n", FUNC_NDEV_ARG(pnetdev));
 
@@ -1528,7 +1537,7 @@ _adapter *rtw_drv_add_vir_if(_adapter *primary_padapter,
 
 	//set adapter_type/iface type
 	padapter->isprimary = _FALSE;
-	padapter->adapter_type = MAX_ADAPTER;
+	padapter->adapter_type = MAXadapter;
 	padapter->pbuddy_adapter = primary_padapter;
 	//extended virtual interfaces always are set to port0
 	padapter->iface_type = IFACE_PORT0;
@@ -1887,7 +1896,7 @@ _adapter *rtw_drv_if2_init(_adapter *primary_padapter,
 
 	//set adapter_type/iface type
 	padapter->isprimary = _FALSE;
-	padapter->adapter_type = SECONDARY_ADAPTER;
+	padapter->adapter_type = SECONDARYadapter;
 	padapter->pbuddy_adapter = primary_padapter;
 	padapter->iface_id = IFACE_ID1;
 #ifndef CONFIG_HWPORT_SWAP			//Port0 -> Pri , Port1 -> Sec
@@ -2211,7 +2220,11 @@ int _netdev_open(struct net_device *pnetdev)
 	_set_timer(&padapter->mlmepriv.dynamic_chk_timer, 2000);
 
 #ifndef CONFIG_IPS_CHECK_IN_WD
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_set_pwr_state_check_timer(pwrctrlpriv);
+#else
+	rtw_set_pwr_state_check_timer(padapter);
+#endif
 #endif
 
 	//netif_carrier_on(pnetdev);//call this func when rtw_joinbss_event_callback return success
@@ -2300,7 +2313,11 @@ static int  ips_netdrv_open(_adapter *padapter)
 	}
 
 #ifndef CONFIG_IPS_CHECK_IN_WD
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_set_pwr_state_check_timer(adapter_to_pwrctl(padapter));
+#else
+	rtw_set_pwr_state_check_timer(padapter);
+#endif
 #endif
 	_set_timer(&padapter->mlmepriv.dynamic_chk_timer,2000);
 

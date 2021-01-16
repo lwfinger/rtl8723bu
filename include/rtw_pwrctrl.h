@@ -332,8 +332,10 @@ struct pwrctrl_priv
 	u32		wowlan_pattern_context[8][5];
 	u64		wowlan_fw_iv;
 #endif // CONFIG_WOWLAN
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_timer	pwr_state_check_timer;
 	int		pwr_state_check_interval;
+#endif
 	u8		pwr_state_check_cnts;
 
 	int		ps_flag; /* used by autosuspend */

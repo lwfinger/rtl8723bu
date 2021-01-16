@@ -57,6 +57,7 @@ CONFIG_PNO_SET_DEBUG = n
 CONFIG_AP_WOWLAN = n
 ###################### Platform Related #######################
 CONFIG_PLATFORM_I386_PC = y
+CONFIG_PLATFORM_FS_MX61 = n
 ###############################################################
 
 CONFIG_DRVEXT_MODULE = n
@@ -265,6 +266,16 @@ MODDESTDIR := $(INSTALL_MOD_PATH)/lib/modules/$(KVER)/kernel/drivers/net/wireles
 INSTALL_PREFIX :=
 endif
 
+ifeq ($(CONFIG_PLATFORM_FS_MX61), y)
+EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211
+EXTRA_CFLAGS += -DRTW_USE_CFG80211_STA_EVENT # only enable when kernel >= 3.2
+EXTRA_CFLAGS += -DCONFIG_P2P_IPS
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -Wno-error=date-time
+ARCH := arm
+KSRC ?= $(KERNEL_SRC)
+MODDESTDIR := kernel/drivers/net/wireless/
+LICENSE = "GPLv2"
+endif
 
 ifneq ($(USER_MODULE_NAME),)
 MODULE_NAME := $(USER_MODULE_NAME)
@@ -312,11 +323,9 @@ $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 $(MODULE_NAME)-y += $(_OUTSRC_FILES)
 $(MODULE_NAME)-y += $(_PLATFORM_FILES)
 
-obj-$(CONFIG_RTL8723BU) := $(MODULE_NAME).o
+obj-m := $(MODULE_NAME).o
 
 else
-
-export CONFIG_RTL8723BU = m
 
 all: modules
 
@@ -328,12 +337,11 @@ strip:
 
 install:
 	install -p -m 644 -D $(MODULE_NAME).ko $(MODDESTDIR)$(MODULE_NAME).ko
-ifeq ($(INSTALL_MOD_PATH),)
-	$(DEPMOD) -a ${KVER}
-else
-	$(DEPMOD) -b "$(INSTALL_MOD_PATH)" -a ${KVER}
-endif
+	$(DEPMOD)  -a ${KVER}
 	install rtl8723b_fw.bin -D $(FW_DIR)/rtl8723b_fw.bin
+
+modules_install:
+	$(MAKE) INSTALL_MOD_DIR=$(MODDESTDIR) -C $(KSRC) M=$(shell pwd) modules_install
 
 uninstall:
 	rm -f $(MODDESTDIR)$(MODULE_NAME).ko
@@ -354,6 +362,6 @@ clean:
 	cd platform ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	rm -fr Module.symvers ; rm -fr Module.markers ; rm -fr modules.order
 	rm -fr *.mod.c *.mod *.o .*.cmd *.ko *~
-	rm -fr .tmp_versions
+	rm -fr .tmp_versions .cache.mk
 endif
 

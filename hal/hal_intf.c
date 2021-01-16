@@ -486,7 +486,7 @@ void	rtw_hal_get_tx_power_level(_adapter *padapter, s32 *powerlevel)
 void	rtw_hal_dm_watchdog(_adapter *padapter)
 {
 #if defined(CONFIG_CONCURRENT_MODE)
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
+	if (padapter->adapter_type != PRIMARYadapter)
 		return;
 #endif
 
@@ -549,7 +549,7 @@ void	rtw_hal_sreset_init(_adapter *padapter)
 }
 void rtw_hal_sreset_reset(_adapter *padapter)
 {
-	padapter = GET_PRIMARY_ADAPTER(padapter);
+	padapter = GET_PRIMARYadapter(padapter);
 
 	if(padapter->HalFunc.silentreset)
 		padapter->HalFunc.silentreset(padapter);
@@ -589,7 +589,7 @@ bool rtw_hal_sreset_inprogress(_adapter *padapter)
 {
 	bool inprogress = _FALSE;
 
-	padapter = GET_PRIMARY_ADAPTER(padapter);
+	padapter = GET_PRIMARYadapter(padapter);
 
 	if(padapter->HalFunc.sreset_inprogress)
 		inprogress = padapter->HalFunc.sreset_inprogress(padapter);

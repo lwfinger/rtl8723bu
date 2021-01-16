@@ -1814,6 +1814,7 @@ static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
 		break;		
 	default:
 		ret = -EOPNOTSUPP;
+		pr_info("%s - Operation of type %d not supported\n", __func__, type);
 		goto exit;
 	}
 
@@ -3037,6 +3038,7 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 
 		if(rtw_set_802_11_add_wep(padapter, pwep) == (u8)_FAIL)
 		{
+			pr_info("%s - rtw_set_802_11_add_wep() failed\n", __func__);
 			ret = -EOPNOTSUPP ;
 		}
 

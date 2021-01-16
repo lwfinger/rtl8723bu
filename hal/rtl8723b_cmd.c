@@ -74,7 +74,7 @@ s32 FillH2CCmd8723B(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
 	__le32 le_tmp;
 
-	padapter = GET_PRIMARY_ADAPTER(padapter);
+	padapter = GET_PRIMARYadapter(padapter);
 	pHalData = GET_HAL_DATA(padapter);
 #ifdef DBG_CHECK_FW_PS_STATE
 #ifdef DBG_CHECK_FW_PS_STATE_H2C

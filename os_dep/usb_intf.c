@@ -976,7 +976,7 @@ static _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 #if defined(CONFIG_CONCURRENT_MODE)
 	//set adapter_type/iface type for primary padapter
 	padapter->isprimary = _TRUE;
-	padapter->adapter_type = PRIMARY_ADAPTER;
+	padapter->adapter_type = PRIMARYadapter;
 	#ifndef CONFIG_HWPORT_SWAP
 	padapter->iface_type = IFACE_PORT0;
 	#else

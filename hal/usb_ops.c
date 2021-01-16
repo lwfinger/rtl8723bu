@@ -443,13 +443,7 @@ static void rtl8723bu_c2h_packet_handler(PADAPTER padapter, u8 *pbuf, u16 length
 #endif
 
 
-static int recvbuf2recvframe(_adapter *padapter, u8 *tmpbuf,
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-struct recv_buf *precvbuf
-#else
-_pkt *pskb
-#endif
-)
+static int recvbuf2recvframe(_adapter *padapter, u8 *tmpbuf, _pkt *pskb)
 {
 	u8	*pbuf;
 	u8	pkt_cnt = 0;
@@ -462,13 +456,8 @@ _pkt *pskb
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 	_queue			*pfree_recv_queue = &precvpriv->free_recv_queue;
 
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-	transfer_len = (s32)precvbuf->transfer_len;
-	pbuf = precvbuf->pbuf;
-#else
 	transfer_len = (s32)pskb->len;
 	pbuf = pskb->data;
-#endif//CONFIG_USE_USB_BUFFER_ALLOC_RX
 
 #ifdef CONFIG_USB_RX_AGGREGATION
 	pkt_cnt = GET_RX_STATUS_DESC_USB_AGG_PKTNUM_8723B(pbuf);
@@ -517,11 +506,7 @@ _pkt *pskb
 		if (rtw_os_alloc_recvframe(padapter, precvframe,
 					   (pbuf+pattrib->shift_sz +
 					    pattrib->drvinfo_sz + RXDESC_SIZE),
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-					   NULL
-#else
 					   pskb
-#endif
 			    ) == _FAIL) {
 			rtw_free_recvframe(precvframe, pfree_recv_queue);
 
@@ -602,168 +587,6 @@ _exit_recvbuf2recvframe:
 
 	return _SUCCESS;
 }
-
-
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-void rtl8723bu_recv_tasklet(void *priv)
-{
-	struct recv_buf *precvbuf = NULL;
-	_adapter	*padapter = (_adapter*)priv;
-	struct recv_priv *precvpriv = &padapter->recvpriv;
-	u8 *tmpbuf = NULL;
-
-	while (NULL != (precvbuf = rtw_dequeue_recvbuf(&precvpriv->recv_buf_pending_queue))) {
-		if ((padapter->bDriverStopped == _TRUE) ||
-		    (padapter->bSurpriseRemoved== _TRUE)) {
-			DBG_8192C("recv_tasklet => bDriverStopped or bSurpriseRemoved \n");
-
-			break;
-		}
-
-		recvbuf2recvframe(padapter, tmpbuf, precvbuf);
-
-		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
-			      (unsigned char *)precvbuf);
-	}
-	kfree(tmpbuf);
-}
-
-static void usb_read_port_complete(struct urb *purb, struct pt_regs *regs)
-{
-	struct recv_buf	*precvbuf = (struct recv_buf *)purb->context;
-	_adapter	*padapter =(_adapter *)precvbuf->adapter;
-	struct recv_priv *precvpriv = &padapter->recvpriv;
-
-	RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-		 ("usb_read_port_complete!!!\n"));
-
-	precvpriv->rx_pending_cnt --;
-
-	if (RTW_CANNOT_RX(padapter)) {
-		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_read_port_complete:bDriverStopped(%d) OR bSurpriseRemoved(%d)\n",
-			  padapter->bDriverStopped,
-			  padapter->bSurpriseRemoved));
-		return;
-	}
-
-	if (purb->status==0) { //SUCCESS
-		if ((purb->actual_length > MAX_RECVBUF_SZ) ||
-		    (purb->actual_length < RXDESC_SIZE)) {
-			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_read_port_complete: (purb->actual_length > MAX_RECVBUF_SZ) || (purb->actual_length < RXDESC_SIZE)\n"));
-
-			rtw_read_port(padapter, precvpriv->ff_hwaddr,
-				      0, (unsigned char *)precvbuf);
-		} else {
-			rtw_reset_continual_io_error(adapter_to_dvobj(padapter));
-
-			precvbuf->transfer_len = purb->actual_length;
-
-			//rtw_enqueue_rx_transfer_buffer(precvpriv, rx_transfer_buf);
-			rtw_enqueue_recvbuf(precvbuf,
-					    &precvpriv->recv_buf_pending_queue);
-
-			tasklet_schedule(&precvpriv->recv_tasklet);
-		}
-	} else {
-		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_read_port_complete : purb->status(%d) != 0 \n",
-			  purb->status));
-
-		DBG_8192C("###=> usb_read_port_complete => urb status(%d)\n",
-			  purb->status);
-
-		if (rtw_inc_and_chk_continual_io_error(adapter_to_dvobj(padapter)) == _TRUE ){
-			padapter->bSurpriseRemoved = _TRUE;
-		}
-
-		switch(purb->status) {
-		case -EINVAL:
-		case -EPIPE:
-		case -ENODEV:
-		case -ESHUTDOWN:
-			//padapter->bSurpriseRemoved=_TRUE;
-			//RT_TRACE(_module_hci_ops_os_c_,_drv_err_,("usb_read_port_complete:bSurpriseRemoved=TRUE\n"));
-		case -ENOENT:
-			padapter->bDriverStopped=_TRUE;
-			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("usb_read_port_complete:bDriverStopped=TRUE\n"));
-			break;
-		case -EPROTO:
-		case -EILSEQ:
-		case -ETIME:
-		case -ECOMM:
-		case -EOVERFLOW:
-#ifdef DBG_CONFIG_ERROR_DETECT
-		{
-			HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-			pHalData->srestpriv.Wifi_Error_Status =
-				USB_READ_PORT_FAIL;
-		}
-#endif
-		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0,
-			      (unsigned char *)precvbuf);
-		break;
-		case -EINPROGRESS:
-			DBG_8192C("ERROR: URB IS IN PROGRESS!/n");
-			break;
-		default:
-			break;
-		}
-	}
-}
-
-static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
-{
-	int err;
-	unsigned int pipe;
-	u32 ret = _SUCCESS;
-	PURB purb = NULL;
-	struct recv_buf	*precvbuf = (struct recv_buf *)rmem;
-	_adapter		*adapter = pintfhdl->padapter;
-	struct dvobj_priv	*pdvobj = adapter_to_dvobj(adapter);
-	struct pwrctrl_priv *pwrctl = dvobj_to_pwrctl(pdvobj);
-	struct recv_priv	*precvpriv = &adapter->recvpriv;
-	struct usb_device	*pusbd = pdvobj->pusbdev;
-
-	if (RTW_CANNOT_RX(adapter) || (precvbuf == NULL)) {
-		RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-			 ("usb_read_port:( RTW_CANNOT_RX ) || precvbuf == NULL!!!\n"));
-		return _FAIL;
-	}
-
-	rtl8723bu_init_recvbuf(adapter, precvbuf);
-
-	if (precvbuf->pbuf) {
-		precvpriv->rx_pending_cnt++;
-
-		purb = precvbuf->purb;
-
-		//translate DMA FIFO addr to pipehandle
-		pipe = ffaddr2pipehdl(pdvobj, addr);
-
-		usb_fill_bulk_urb(purb, pusbd, pipe, precvbuf->pbuf,
-				  MAX_RECVBUF_SZ, usb_read_port_complete,
-				  precvbuf);//context is precvbuf
-
-		purb->transfer_dma = precvbuf->dma_transfer_addr;
-		purb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-
-		err = usb_submit_urb(purb, GFP_ATOMIC);
-		if (err && err != (-EPERM)) {
-			RT_TRACE(_module_hci_ops_os_c_, _drv_err_,
-				 ("cannot submit rx in-token(err=0x%.8x), URB_STATUS =0x%.8x",
-				  err, purb->status));
-			DBG_8192C("cannot submit rx in-token(err = 0x%08x),urb_status = %d\n",
-				  err, purb->status);
-			ret = _FAIL;
-		}
-	}
-
-	return ret;
-}
-#else	// CONFIG_USE_USB_BUFFER_ALLOC_RX
 
 void rtl8723bu_recv_tasklet(void *priv)
 {
@@ -1021,8 +844,6 @@ static u32 usb_read_port(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *rmem)
 
 	return ret;
 }
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
-
 
 void rtl8723bu_xmit_tasklet(void *priv)
 {
