@@ -379,16 +379,11 @@ static struct country_code_to_enum_rd *_rtw_regd_find_country(u16 countrycode)
 	return NULL;
 }
 
-int rtw_regd_init(_adapter * padapter,
+void rtw_regd_init(struct wiphy *wiphy,
 		  void (*reg_notifier) (struct wiphy * wiphy,
 				       struct regulatory_request * request))
 {
-	//struct registry_priv  *registrypriv = &padapter->registrypriv;
-	struct wiphy *wiphy = padapter->rtw_wdev->wiphy;
-
 	_rtw_regd_init_wiphy(NULL, wiphy, reg_notifier);
-
-	return 0;
 }
 
 void rtw_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
