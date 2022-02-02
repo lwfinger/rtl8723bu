@@ -970,7 +970,11 @@ int rtw_change_ifname(_adapter *padapter, const char *ifname)
 
 	rtw_init_netdev_name(pnetdev, ifname);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0)
 	_rtw_memcpy(pnetdev->dev_addr, padapter->eeprompriv.mac_addr, ETH_ALEN);
+#else
+	dev_addr_set(pnetdev, padapter->eeprompriv.mac_addr);
+#endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26))
 	if(!rtnl_is_locked())

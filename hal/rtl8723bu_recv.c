@@ -51,8 +51,8 @@ int	rtl8723bu_init_recv_priv(_adapter *padapter)
 #endif
 
 	tasklet_init(&precvpriv->recv_tasklet,
-	     (void(*)(unsigned long))rtl8723bu_recv_tasklet,
-	     (unsigned long)padapter);
+		     (void( *))rtl8723bu_recv_tasklet,
+		     (unsigned long)padapter);
 
 #ifdef CONFIG_USB_INTERRUPT_IN_PIPE
 	precvpriv->int_in_urb = usb_alloc_urb(0, GFP_KERNEL);
