@@ -1611,9 +1611,9 @@ static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0)) || defined(COMPAT_KERNEL_RELEASE)
 					int link_id,
 #endif
-					u8 key_index,
+					u8 key_index
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)) || defined(COMPAT_KERNEL_RELEASE)
-					bool unicast, bool multicast
+					, bool unicast, bool multicast
 #endif
 	)
 {
