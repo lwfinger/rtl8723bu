@@ -1,6 +1,5 @@
 INSTALL_FW_PATH = $(INSTALL_MOD_PATH)/lib/firmware
 FW_DIR	:= $(INSTALL_FW_PATH)/rtl_bt
-MODDESTDIR := kernel/drivers/net/wireless/
 
 DEPMOD  = /sbin/depmod
 
@@ -263,6 +262,7 @@ ARCH ?= $(SUBARCH)
 CROSS_COMPILE ?=
 KVER  := $(shell uname -r)
 KSRC := /lib/modules/$(KVER)/build
+MODDESTDIR := $(INSTALL_MOD_PATH)/lib/modules/$(KVER)/kernel/drivers/net/wireless/
 INSTALL_PREFIX :=
 endif
 
@@ -273,6 +273,7 @@ EXTRA_CFLAGS += -DCONFIG_P2P_IPS
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -Wno-error=date-time
 ARCH := arm
 KSRC ?= $(KERNEL_SRC)
+MODDESTDIR := kernel/drivers/net/wireless/
 LICENSE = "GPLv2"
 endif
 
