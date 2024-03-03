@@ -2462,7 +2462,6 @@ static int netdev_close(struct net_device *pnetdev)
 				rtw_netif_stop_queue(pnetdev);
 		}
 
-#ifndef CONFIG_ANDROID
 		//s2.
 		LeaveAllPowerSaveMode(padapter);
 		rtw_disassoc_cmd(padapter, 500, _FALSE);
@@ -2472,7 +2471,6 @@ static int netdev_close(struct net_device *pnetdev)
 		rtw_free_assoc_resources(padapter, 1);
 		//s2-4.
 		rtw_free_network_queue(padapter,_TRUE);
-#endif
 		// Close LED
 		rtw_led_control(padapter, LED_CTL_POWER_OFF);
 	}
