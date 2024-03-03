@@ -25,7 +25,7 @@ ccflags-y += -D__CHECK_ENDIAN__
 
 #EXTRA_CFLAGS += -Wno-uninitialized
 
-EXTRA_CFLAGS += -g -I$(src)/include
+EXTRA_CFLAGS += -g -I$(srctree)/$(src)/include
 
 #EXTRA_LDFLAGS += --strip-debug
 
@@ -104,11 +104,11 @@ _OUTSRC_FILES := hal/odm_debug.o	\
 		hal/odm_CfoTracking.o\
 		hal/odm_NoiseMonitor.o
 		
-EXTRA_CFLAGS += -I$(src)/platform
+EXTRA_CFLAGS += -I$(srctree)/$(src)/platform
 _PLATFORM_FILES := platform/platform_ops.o
 
 ifeq ($(CONFIG_BT_COEXIST), y)
-EXTRA_CFLAGS += -I$(src)/hal
+EXTRA_CFLAGS += -I$(srctree)/$(src)/hal
 _OUTSRC_FILES += hal/HalBtc8723b1Ant.o \
 		 hal/HalBtc8723b2Ant.o
 endif
